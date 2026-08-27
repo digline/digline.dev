@@ -1,0 +1,112 @@
+/* The presentation pages — home, why, about, contact. Only what is inside the
+ * bar and the band: those two live in chrome.css, and the colour in tokens.css.
+ *
+ * Free HTML, none of the theme. What every one of these pages keeps: nothing
+ * loaded from a third party, a page that reads the same with script blocked,
+ * and no animation under prefers-reduced-motion.
+ */
+
+* { box-sizing: border-box; }
+
+body {
+  font: 16px/1.5 var(--sans);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Reading width, as everywhere else on the site. */
+.dg-page {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 3.25rem 1.25rem 4.5rem;
+}
+
+a { color: var(--link); }
+
+h1 { font-size: 2rem; line-height: 1.18; letter-spacing: -.025em; font-weight: 600; margin: 0 0 1.5rem; }
+h2 { font-size: 1.125rem; line-height: 1.35; margin: 2.5rem 0 .75rem; }
+h2:first-child { margin-top: 0; }
+
+/* What the product is, then where the difference is. Both size themselves
+   against the window rather than against a breakpoint: the first stays one line
+   down to a phone, the second two. */
+.lede {
+  font-size: clamp(1.625rem, 3.4vw, 2.25rem);
+  line-height: 1.15; font-weight: 600; letter-spacing: -.03em;
+  margin: 0 0 .75rem; max-width: 46rem;
+}
+.sub {
+  font-size: clamp(1rem, 1.5vw, 1.1875rem);
+  line-height: 1.45; font-weight: 400;
+  color: var(--muted);
+  margin: 0 0 2.75rem; max-width: 34rem;
+}
+
+.prose { max-width: 46rem; }
+.prose p { margin: 0 0 1rem; color: var(--muted); }
+.prose p:last-child { margin-bottom: 0; }
+code {
+  font-family: var(--mono);
+  font-size: .875em;
+  color: var(--ink);
+}
+
+/* Shell blocks: what you type, and what digline says back. */
+.block { position: relative; margin: 0 0 1.25rem; }
+pre {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: .375rem;
+  padding: .875rem 1rem; margin: 0;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: .8125rem; line-height: 1.55;
+  white-space: pre;
+  color: var(--ink);
+}
+pre .p     { color: var(--faint); }   /* the $ prompt */
+pre .worse { color: var(--worse); }   /* the checks that got worse */
+pre .head  { color: var(--ink); }
+
+/* Drawn by the script at the end of the page, so nothing dead is drawn for a
+   reader without it: the command stays selectable either way. */
+button.copy {
+  position: absolute; top: .5rem; right: .5rem;
+  font: inherit; font-size: .75rem; line-height: 1;
+  padding: .3rem .5rem; cursor: pointer;
+  color: var(--muted); background: var(--btn-bg);
+  border: 1px solid var(--btn-rule); border-radius: .25rem;
+}
+button.copy:hover { color: var(--ink); border-color: var(--ink); }
+
+.console { margin: 0 0 3rem; }
+
+/* Sections that arrive as you reach them. The class that hides them is added by
+   script, never here, so with no script they are simply already in place — and
+   under prefers-reduced-motion the script never adds it either. */
+.reveal.armed { opacity: 0; transform: translateY(.75rem); }
+.reveal.armed.in {
+  opacity: 1; transform: none;
+  transition: opacity .5s ease-out, transform .5s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal.armed { opacity: 1; transform: none; }
+  .reveal.armed.in { transition: none; }
+}
+
+/* These pages are read straight through: the anchor link Markdown puts beside
+   every heading belongs in the documentation, not here. */
+.dg-page .headerlink { display: none; }
+
+@media (max-width: 34rem) {
+  .dg-page { padding: 2.25rem 1rem 3rem; }
+  h1 { font-size: 1.625rem; }
+  pre { font-size: .75rem; }
+}

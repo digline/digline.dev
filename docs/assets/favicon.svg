@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="48" fill="#1C2430"/>
+  <!-- baseline: the reference -->
+  <line x1="44" y1="104" x2="212" y2="104" stroke="#8FA3B8" stroke-width="6" stroke-linecap="round" stroke-dasharray="1 14"/>
+  <!-- the measured line: holds the baseline, dips (regression), comes back -->
+  <path d="M44 104 L96 104 L118 158 L140 158 L162 104 L212 104" fill="none" stroke="#7BD88F" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- the dig: where the drop was measured -->
+  <circle cx="129" cy="158" r="12" fill="#1C2430" stroke="#7BD88F" stroke-width="8"/>
+</svg>

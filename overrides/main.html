@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{#-
+  `navigation.tabs` is switched on for one effect only: it is what makes the
+  sidebar show the section you are in and nothing else, instead of repeating the
+  whole site on every page. The row of tabs the theme also draws for it is
+  redundant here — the bar at the top already carries the sections — so the
+  block that would render it stays empty.
+-#}
+{% block tabs %}{% endblock %}

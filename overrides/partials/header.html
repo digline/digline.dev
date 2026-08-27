@@ -1,0 +1,126 @@
+{#-
+  The bar, and there is only one of it.
+
+  Material includes `partials/header.html` from its own base.html, and
+  _shell.html includes the same file for the presentation pages, so the bar on
+  the landing and the bar on the guide are not two things that resemble each
+  other — they are this file. `plain_page` is set by _shell.html and undefined
+  everywhere else: what it guards is the handful of controls that only mean
+  something inside the documentation (the drawer, search).
+
+  Deliberately absent: Material's `partials/source.html`. Rendering
+  `data-md-component="source"` makes the theme call api.github.com for stars and
+  the latest release, and this site asks nothing of anyone.
+-#}
+{% set docs = not plain_page %}
+{% set here = page.file.src_uri if page and page.file else "" %}
+
+{%- set palette_options = [] %}
+{%- for option in config.theme.palette %}
+  {%- set _ = palette_options.append({
+        "index": loop.index0,
+        "color": {
+          "media":   option.media,
+          "scheme":  option.scheme  | default("default", true),
+          "primary": option.primary | default("indigo", true),
+          "accent":  option.accent  | default("indigo", true)
+        }}) %}
+{%- endfor %}
+
+<header class="md-header dg-bar" data-md-component="header">
+  <div class="md-header__inner dg-bar__in">
+
+    {% if docs %}
+    <label class="md-header__button md-icon dg-burger" for="__drawer" title="Navigation">
+      {% include ".icons/material/menu.svg" %}
+    </label>
+    {% endif %}
+
+    <a class="dg-brand" href="{{ base_url }}/" title="digline" data-md-component="logo">
+      {% include "partials/mark.html" %}
+      <span>digline</span>
+    </a>
+
+    {% if docs %}
+    {# Material's JS reaches for these; the bar does not show them. #}
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">{{ page.title if page else config.site_name }}</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <nav class="dg-nav" aria-label="Sections">
+      <a href="{{ base_url }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>Why</a>
+      <a href="{{ base_url }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>Handbook</a>
+      <a href="{{ base_url }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>Docs</a>
+    </nav>
+
+    <div class="dg-actions">
+      {% if docs and "material/search" in config.plugins %}
+        {% set search = config.plugins["material/search"] | attr("config") %}
+        {% if search.enabled %}
+          <label class="md-header__button md-icon" for="__search" title="Search">
+            {% include ".icons/material/magnify.svg" %}
+          </label>
+          {% include "partials/search.html" %}
+        {% endif %}
+      {% endif %}
+
+      <a class="dg-icon" href="{{ config.repo_url }}" title="digline on GitHub" aria-label="digline on GitHub">
+        {% include ".icons/fontawesome/brands/github.svg" %}
+      </a>
+
+      <button class="dg-icon" type="button" id="__dg_palette" title="Switch between light and dark" aria-label="Switch between light and dark" hidden>
+        <span class="dg-moon">{% include ".icons/material/weather-night.svg" %}</span>
+        <span class="dg-sun">{% include ".icons/material/weather-sunny.svg" %}</span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<script>
+/* Light and dark. The choice is kept under the key Material uses and in the
+   shape Material expects, so the palette a reader picks on the landing is still
+   theirs on the guide, and back again.
+
+   Nothing on the page depends on this running: the button stays hidden until it
+   has, and with no script at all the palette follows the system through the
+   media queries in tokens.css. */
+(function () {
+  var options = {{ palette_options | tojson }};
+  var body = document.body;
+  var dark = options[options.length - 1];
+
+  function apply(option) {
+    for (var key in option.color) {
+      body.setAttribute("data-md-color-" + key, option.color[key]);
+    }
+  }
+
+  var stored = null;
+  try { stored = __md_get("__palette"); } catch (e) {}
+
+  if (stored && stored.color && stored.color.scheme) {
+    apply(options[Math.min(Math.max(stored.index | 0, 0), options.length - 1)]);
+  } else if (body.hasAttribute("data-md-color-scheme")) {
+    /* Material stamps the first palette onto <body> before it knows anything
+       about the reader. Put back what the system actually asks for. */
+    apply(matchMedia(dark.color.media).matches ? dark : options[0]);
+  }
+
+  var button = document.getElementById("__dg_palette");
+  if (!button) return;
+  button.hidden = false;
+  button.addEventListener("click", function () {
+    var now = body.getAttribute("data-md-color-scheme");
+    var isDark = now ? now === dark.color.scheme : matchMedia(dark.color.media).matches;
+    var next = isDark ? options[0] : dark;
+    apply(next);
+    __md_set("__palette", next);
+  });
+})();
+</script>

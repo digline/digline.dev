@@ -1,0 +1,11 @@
+# Not a Python package: the only reason this file exists is to pin what builds
+# the site, so `uv run mkdocs` gives the same output here and in CI.
+[project]
+name = "digline-dev"
+version = "0"
+description = "The site behind digline.dev"
+requires-python = ">=3.12"
+dependencies = ["mkdocs-material>=9.6"]
+
+[tool.uv]
+package = false

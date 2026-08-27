@@ -1,0 +1,97 @@
+/* Material, wired to digline's palette and to the bar and band in chrome.css.
+ *
+ * Two jobs, and nothing else: hand Material's own `--md-*` variables the values
+ * from tokens.css, so the documentation is the same product as the page that
+ * sent you to it; and stop Material's header styling from fighting the bar that
+ * partials/header.html renders in its place.
+ */
+
+:root {
+  --md-text-font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --md-code-font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── digline's colours, under Material's names ───────────────────────────
+   One rule for both schemes: the values are the tokens, and tokens.css has
+   already decided which set those are. */
+[data-md-color-scheme="default"],
+[data-md-color-scheme="slate"] {
+  --md-default-fg-color:           var(--ink);
+  --md-default-fg-color--light:    var(--muted);
+  --md-default-fg-color--lighter:  var(--faint);
+  --md-default-fg-color--lightest: var(--rule);
+  --md-default-bg-color:           var(--bg);
+
+  --md-primary-fg-color:           var(--bg);
+  --md-primary-bg-color:           var(--ink);
+  --md-accent-fg-color:            var(--link);
+
+  --md-typeset-color:              var(--ink);
+  --md-typeset-a-color:            var(--link);
+
+  --md-code-bg-color:              var(--surface);
+  --md-code-fg-color:              var(--ink);
+
+  --md-footer-bg-color:            var(--band-bg);
+  --md-footer-bg-color--dark:      var(--band-bg);
+}
+
+[data-md-color-scheme="slate"] { --md-hue: 220; }
+
+/* ── the bar ─────────────────────────────────────────────────────────────
+   The element keeps Material's `md-header` class, because Material's search
+   overlay is selected through it (`[data-md-toggle=search]:checked ~ .md-header
+   …`). Everything it looks like comes from chrome.css; these rules take the
+   theme's own header paint back off. */
+.md-header.dg-bar {
+  background-color: var(--bg);
+  color: var(--ink);
+  box-shadow: none;
+  border-bottom: 1px solid var(--rule);
+}
+.md-header__inner.dg-bar__in { padding: 0 20px; }
+
+/* Material's scrolling page title. The bar shows the sections instead. */
+.dg-bar .md-header__title { display: none; }
+
+/* The drawer and search buttons, made to match the two .dg-icon buttons beside
+   them — same box, same icon, same hover. Material decides when each is shown. */
+.dg-bar .md-header__button {
+  margin: 0;
+  padding: 8px;
+  border-radius: 6px;
+  line-height: 0;
+  color: var(--muted);
+  transition: none;
+}
+.dg-bar .md-header__button:hover {
+  opacity: 1;
+  color: var(--ink);
+  background: var(--surface);
+}
+.dg-bar .md-header__button > svg {
+  display: block;
+  width: 18px; height: 18px;
+  fill: currentColor;
+}
+
+/* Search sits between the sections and the two icons. */
+.dg-bar .md-search { flex: none; }
+.dg-bar .md-search__form { background-color: var(--surface); border: 1px solid var(--rule); }
+.dg-bar .md-search__form:hover { background-color: var(--surface); }
+.dg-bar .md-search__input::placeholder { color: var(--faint); }
+
+/* The sidebars stick under a taller bar than the one Material sized them for. */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar { top: 64px; }
+}
+
+/* ── the typeset ─────────────────────────────────────────────────────────
+   The report draws rules, not boxes; the documentation follows it. */
+.md-typeset h1 { letter-spacing: -.02em; font-weight: 600; color: var(--ink); }
+.md-typeset table:not([class]) th { font-weight: 600; }
+.md-typeset pre > code { border-radius: .375rem; }
+
+/* `digline compare` says worse in one colour and fine in another. */
+.md-typeset .worse { color: var(--worse); }
+.md-typeset .fine  { color: var(--fine); }

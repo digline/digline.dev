@@ -1,0 +1,44 @@
+{#-
+  The shell the presentation pages share. It is not the theme: these pages never
+  touch Material's stylesheet, they are the plain document below, and each page
+  that extends this file lays out its own content and adds its own CSS in the
+  `style` block.
+
+  The bar and the band are not laid out here — they are `partials/header.html`
+  and `partials/footer.html`, the very files Material includes on the
+  documentation pages. `plain_page` tells them which side they are being
+  rendered on; it is undefined everywhere else.
+-#}
+{% set plain_page = true %}
+<!doctype html>
+<html lang="{{ config.theme.language | default('en') }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ page.title }} — digline{% endblock %}</title>
+<meta name="description" content="{% block description %}{{ page.meta.description | default(config.site_description) | striptags | trim | e }}{% endblock %}">
+{%- if page.canonical_url %}
+<link rel="canonical" href="{{ page.canonical_url }}">
+{%- endif %}
+<link rel="icon" href="{{ base_url }}/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{ base_url }}/assets/tokens.css">
+<link rel="stylesheet" href="{{ base_url }}/assets/chrome.css">
+<link rel="stylesheet" href="{{ base_url }}/assets/pages.css">
+{# Material's four-line storage helper: the bar's palette toggle writes through
+   it, under the same key the documentation reads. No request, no dependency. #}
+{% include "partials/javascripts/base.html" %}
+{%- block style %}{% endblock %}
+</head>
+<body>
+
+{% include "partials/header.html" %}
+
+<main class="dg-page">
+{% block main %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
+
+{% block script %}{% endblock %}
+</body>
+</html>

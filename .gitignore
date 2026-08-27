@@ -1,0 +1,12 @@
+# The product documentation is not written here: `make docs` (or the workflow)
+# copies it out of digline/digline before every build. Nothing under this path
+# is ever committed — the source of truth is the other repository.
+/docs/product/
+
+/site/
+/.venv/
+__pycache__/
+.DS_Store
+
+# Only ever present in CI: the digline checkout the docs are copied out of.
+/_digline/

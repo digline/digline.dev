@@ -1,0 +1,15 @@
+{#-
+  The repository link Material puts in the drawer. This is Material's own
+  partial with one thing taken out: `data-md-component="source"`. With that
+  attribute present the theme calls api.github.com for the star count and the
+  latest release on every page load, and this site asks nothing of anyone.
+-#}
+<a href="{{ config.repo_url }}" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
+    {% include ".icons/" ~ icon ~ ".svg" %}
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>

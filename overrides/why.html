@@ -1,0 +1,38 @@
+{% extends "_shell.html" %}
+
+{#- Why. The layout is here; the words are in docs/why.md, so writing them is
+    writing prose and not editing a template. Six sections, one argument each,
+    read top to bottom. -#}
+
+{% block style %}
+<style>
+/* Long-form reading: a narrower measure than the landing, and a rule between
+   the sections so each one is a stop rather than a paragraph break. */
+.essay { max-width: 40rem; }
+.essay h1 { margin-bottom: 2.5rem; }
+.essay h2 {
+  margin: 0 0 .875rem;
+  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.01em;
+  color: var(--ink);
+}
+.essay h2 + p { margin-top: 0; }
+.essay p { margin: 0 0 1rem; color: var(--muted); }
+.essay p:last-child { margin-bottom: 0; }
+.essay strong { color: var(--ink); font-weight: 600; }
+.essay em { font-style: italic; }
+.essay a { color: var(--link); }
+.essay > h2 {
+  padding-top: 2.25rem;
+  margin-top: 2.25rem;
+  border-top: 1px solid var(--rule-soft);
+}
+.essay > h1 + h2 { padding-top: 0; margin-top: 0; border-top: 0; }
+.essay code { font-family: var(--mono); font-size: .875em; color: var(--ink); }
+</style>
+{% endblock %}
+
+{% block main %}
+<article class="essay">
+{{ page.content }}
+</article>
+{% endblock %}
