@@ -61,6 +61,9 @@ code {
 
 /* Shell blocks: what you type, and what digline says back. */
 .block { position: relative; margin: 0 0 1.25rem; }
+/* What the command needs of you, where you read the command. The value is
+   `requires-python` in digline's pyproject.toml, nowhere else. */
+.block .req { margin: .5rem 0 0; font-size: .875rem; color: var(--muted); }
 pre {
   background: var(--surface);
   border: 1px solid var(--rule);
