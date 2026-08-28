@@ -88,6 +88,11 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  # The roadmap is written as a task list. Without this the boxes reach the
+  # page as a literal `[x]`; custom_checkbox draws them with the palette
+  # instead of the browser's, so light and dark look the same everywhere.
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 # --strict turns every one of these into a build failure. A link that has gone
 # stale in digline/digline stops the release of the site, which is the point.
@@ -135,6 +140,9 @@ nav:
           - ADR 0003 — Artifacts: product/adr/0003-artifacts-travel-only-when-the-suite-says-so.md
           - ADR 0004 — Plugins, target and judge: product/adr/0004-every-plugin-is-a-target-and-a-judge.md
           - ADR 0005 — The configuration under test: product/adr/0005-the-configuration-of-the-system-under-test.md
+      # The decisions say why it is shaped this way; the roadmap says what is
+      # not decided yet. Both come out of digline/digline, like everything here.
+      - Roadmap: product/roadmap.md
       - Changelog: product/changelog.md
 
   - About: about.md

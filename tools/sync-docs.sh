@@ -19,7 +19,11 @@ rm -rf "$out"
 mkdir -p "$out/examples"
 
 cp -R "$src/docs/." "$out/"
+
+# Two files live at the root of the repository rather than in its docs/, because
+# that is where a reader arriving on GitHub looks for them. They are pages here.
 cp "$src/CHANGELOG.md" "$out/changelog.md"
+cp "$src/ROADMAP.md"   "$out/roadmap.md"
 
 # One page per example, named after the directory it came from. quickstart has
 # no README — it is the guide's first chapter, not a case of its own.

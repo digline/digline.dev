@@ -95,3 +95,14 @@
 /* `digline compare` says worse in one colour and fine in another. */
 .md-typeset .worse { color: var(--worse); }
 .md-typeset .fine  { color: var(--fine); }
+
+/* The roadmap arrives as a task list. Material marks a done item in a green of
+   its own that belongs to nothing else here; done and not done yet use the two
+   colours the report already uses, so a shipped track reads like a check that
+   passed. */
+.md-typeset .task-list-indicator::before {
+  background-color: var(--md-default-fg-color--lighter);
+}
+.md-typeset [type="checkbox"]:checked + .task-list-indicator::before {
+  background-color: var(--fine);
+}
