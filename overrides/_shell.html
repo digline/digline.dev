@@ -15,8 +15,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}{{ page.title }} — digline{% endblock %}</title>
-<meta name="description" content="{% block description %}{{ page.meta.description | default(config.site_description) | striptags | trim | e }}{% endblock %}">
+{#- Both come from tools/hooks/seo.py and are escaped there, which is why
+    neither is escaped again here. The same two values reach the documentation
+    pages through Material's base.html. -#}
+<title>{{ page.meta.seo_title }}</title>
+<meta name="description" content="{{ page.meta.description }}">
 {%- if page.canonical_url %}
 <link rel="canonical" href="{{ page.canonical_url }}">
 {%- endif %}
@@ -28,6 +31,7 @@
    it, under the same key the documentation reads. No request, no dependency. #}
 {% include "partials/javascripts/base.html" %}
 {%- block style %}{% endblock %}
+{% include "partials/seo.html" %}
 {% include "partials/analytics.html" %}
 </head>
 <body>

@@ -1,3 +1,12 @@
+---
+seo_title: >-
+  The judge, and how to measure its noise
+description: >-
+  An LLM judge samples too. Why you must measure the judge's noise before
+  you can read your system's, and the procedure that replaces guessing
+  with a number.
+---
+
 # 4. The judge
 
 Chapter 3 ended with a rule: at most one judged check, sampled, with a measured tolerance. This chapter is about the word *measured* — what happens when you skip it, and the forty-minute procedure that replaces guessing with a number. All the figures are from the [newsletter judge](https://github.com/digline/brief), and you can reproduce them.

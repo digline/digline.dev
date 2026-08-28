@@ -1,3 +1,12 @@
+---
+seo_title: >-
+  Checks: deterministic first, judge last
+description: >-
+  How to turn an LLM output into a verdict, and the rule that saves the
+  most time in evaluation: use a model to judge only what nothing else
+  can.
+---
+
 # 3. Checks: deterministic first, judge last
 
 A case says what goes in and what you know about the right answer. A check is how you turn an output into a verdict. This chapter is about choosing checks — and about a rule that sounds too simple to matter and saves more time than anything else here: **use a model to judge only what nothing else can.**

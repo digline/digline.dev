@@ -1,3 +1,12 @@
+---
+seo_title: >-
+  What you are actually shipping
+description: >-
+  A model call looks like a function and is not one: the same prompt,
+  sampled twice, gives two answers. What that costs you, and why ordinary
+  tests cannot see it.
+---
+
 # 1. What you are actually shipping
 
 If you come from ordinary software, the first thing to unlearn is what a function is.

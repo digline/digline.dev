@@ -1,3 +1,11 @@
+---
+seo_title: >-
+  Maintenance: running the suite as a practice
+description: >-
+  When an evaluation suite should run, what should make you look, and what
+  to do the morning CI turns red and you changed nothing at all.
+---
+
 # 6. Maintenance
 
 A suite that runs once is a demo. This chapter is about the part that makes it a practice: when it runs, what should make you look, and what to do on the morning it turns red and you changed nothing.

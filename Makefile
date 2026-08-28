@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs serve build clean
+.PHONY: docs serve build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -10,8 +10,12 @@ docs:            ## copy digline's docs/ and examples/*/README.md into docs/prod
 serve: docs      ## local preview on http://127.0.0.1:8000/
 	uv run mkdocs serve
 
-build: docs      ## what CI does: a broken link fails the build
+build: docs      ## what CI does; a broken link or a wrong sitemap fails it
 	uv run mkdocs build --strict
+	tools/check-sitemap.py site
+
+check:           ## sitemap.xml against an existing site/, on its own
+	tools/check-sitemap.py site
 
 clean:
 	rm -rf site docs/product

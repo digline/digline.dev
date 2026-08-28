@@ -1,0 +1,47 @@
+{#-
+  What a link to this page looks like when it is pasted somewhere else, and the
+  card search engines and chat clients read. Meta tags only: no script, no
+  stylesheet, no request. `og:image` names a file that is already in this
+  repository — docs/assets/digline-wordmark.png, the wordmark over the navy —
+  and naming it fetches nothing; only a client that decides to draw the card
+  ever asks for it.
+
+  Included from both sides of the site — `main.html` for the documentation pages
+  Material renders, `_shell.html` for the four presentation pages that never
+  touch the theme — because neither template is an ancestor of the other. The
+  same arrangement as `partials/analytics.html`.
+
+  The values come from tools/hooks/seo.py, already HTML-escaped there: mkdocs
+  renders templates with autoescape off, and Material's own base.html prints
+  `page.meta.description` raw, so escaping once at the source is the only way
+  both sides can be right. Nothing here adds `| e`.
+-#}
+{%- if page and page.meta and page.meta.seo_title %}
+<meta property="og:type" content="{{ page.meta.og_type }}">
+<meta property="og:site_name" content="{{ config.site_name }}">
+<meta property="og:locale" content="en">
+<meta property="og:title" content="{{ page.meta.seo_title }}">
+<meta property="og:description" content="{{ page.meta.description }}">
+{%- if page.canonical_url %}
+<meta property="og:url" content="{{ page.canonical_url }}">
+{%- endif %}
+<meta property="og:image" content="{{ page.meta.og_image }}">
+<meta property="og:image:width" content="{{ page.meta.og_image_width }}">
+<meta property="og:image:height" content="{{ page.meta.og_image_height }}">
+<meta property="og:image:alt" content="{{ page.meta.og_image_alt }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page.meta.seo_title }}">
+<meta name="twitter:description" content="{{ page.meta.description }}">
+<meta name="twitter:image" content="{{ page.meta.og_image }}">
+<meta name="twitter:image:alt" content="{{ page.meta.og_image_alt }}">
+{%- if page.meta.jsonld %}
+{#- Data, not behaviour. `application/ld+json` is never executed and never
+    fetches anything: the browser hands the block to nobody and a reader with
+    script blocked sees exactly the same page. It is here so that a search
+    engine can tell this digline from the other one. Built in
+    tools/hooks/seo.py, home page only. -#}
+<script type="application/ld+json">
+{{ page.meta.jsonld }}
+</script>
+{%- endif %}
+{%- endif %}

@@ -1,3 +1,11 @@
+---
+seo_title: >-
+  Cases: the asset nobody builds
+description: >-
+  Every team shipping an LLM feature has a prompt and almost none has
+  cases. What a case is, and how to have twenty of them by this afternoon.
+---
+
 # 2. Cases: the asset nobody builds
 
 Every team that ships an LLM feature has a prompt. Almost none has cases. This chapter is about why that is backwards, and what to do about it — concretely, starting this afternoon.

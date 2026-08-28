@@ -1,8 +1,11 @@
 ---
 title: Handbook
 description: >-
-  Seven chapters on keeping an LLM feature under control, for people who have
-  one in production and have not yet had the bad week.
+  Seven chapters on evaluating LLM applications in practice: cases,
+  checks, the judge, the baseline, maintenance. About the problem, not the
+  tool.
+seo_title: >-
+  Handbook: keeping an LLM feature under control
 ---
 
 # Handbook

@@ -1,12 +1,13 @@
 ---
 title: Contact
 template: contact.html
-description: How to reach the people behind digline.
+description: >-
+  How to reach the people behind digline: mail for questions about
+  evaluating LLM applications, GitHub issues for bugs and feature
+  requests.
 ---
 
 # Contact
-
-<!-- Placeholder: three lines, to be replaced. -->
 
 Write to [hello@digline.dev](mailto:hello@digline.dev) — questions about using digline, and anything that does not belong in a public issue.
 

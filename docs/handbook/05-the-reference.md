@@ -1,3 +1,12 @@
+---
+seo_title: >-
+  The reference: a threshold is not a baseline
+description: >-
+  A run that fell from 0.91 to 0.78 passes a 0.7 threshold on both days.
+  The one number you write down and agree to be measured against is what
+  catches it.
+---
+
 # 5. The reference
 
 Everything so far produces numbers. This chapter is about the one number that matters more than the others: the one you write down and agree to be measured against.

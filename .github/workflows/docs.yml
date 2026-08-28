@@ -26,7 +26,13 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 on both checkouts, for one reason: sitemap.xml says when
+      # each page last changed, and that date is the date of the commit that
+      # last touched the file. The default shallow clone has one commit in it
+      # and would date every page the same day.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Check out digline/digline
         uses: actions/checkout@v5
@@ -36,18 +42,29 @@ jobs:
           # carries nothing and gets the default branch.
           ref: ${{ github.event.client_payload.ref }}
           path: _digline
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
       - name: Copy the product documentation in
+        # Also writes .lastmod.tsv — when each page under product/ last changed,
+        # read back by tools/hooks/seo.py while the sitemap is being written.
         run: tools/sync-docs.sh _digline
 
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
-        # reaching the site.
+        # reaching the site. sitemap.xml and robots.txt come out of this step
+        # too — the first written by mkdocs, the second carried across from
+        # docs/ — so both are current on every release without a step of their
+        # own.
         run: uv run mkdocs build --strict
+
+      - name: Check the sitemap
+        # Cheap, and it is the one output nobody looks at: every <loc> must be
+        # a page that is actually in site/, and the file must parse.
+        run: tools/check-sitemap.py site
 
       - uses: actions/upload-pages-artifact@v4
         with:

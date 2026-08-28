@@ -1,6 +1,12 @@
 ---
 title: Home
 template: home.html
+seo_title: >-
+  digline — catch LLM quality regressions in your repo
+description: >-
+  Regression testing for LLM applications: digline compares every run
+  against an approved baseline versioned in your repository, and names the
+  checks that got worse.
 ---
 
 <!--

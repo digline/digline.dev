@@ -9,9 +9,26 @@
 -#}
 {% block tabs %}{% endblock %}
 
-{#- The counter, on every documentation page. The presentation pages get it
-    from the same partial, included by `_shell.html`. -#}
+{#-
+  The title, in the one shape the whole site uses: "<topic> — digline", with the
+  topic decided in tools/hooks/seo.py. Material's own block builds
+  "<page.title> - digline" from the h1, which is right for a page whose h1 is
+  three words and wrong for an ADR whose h1 is a sentence.
+
+  `page` is undefined when Material renders 404.html, which is why this asks.
+-#}
+{% block htmltitle %}
+  {%- if page and page.meta and page.meta.seo_title %}
+    <title>{{ page.meta.seo_title }}</title>
+  {%- else %}
+    <title>{{ config.site_name }}</title>
+  {%- endif %}
+{% endblock %}
+
+{#- The card, and the counter, on every documentation page. The presentation
+    pages get both from the same partials, included by `_shell.html`. -#}
 {% block extrahead %}
+  {% include "partials/seo.html" %}
   {% include "partials/analytics.html" %}
 {% endblock %}
 

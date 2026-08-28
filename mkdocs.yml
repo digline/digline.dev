@@ -69,6 +69,13 @@ extra:
 plugins:
   - search
 
+# Titles, descriptions, the Open Graph card and the <lastmod> of every page in
+# sitemap.xml. It is a hook rather than a plugin because half of what it does is
+# about this repository specifically — where the product pages come from, and
+# which git history holds their dates. See the docstring at the top of the file.
+hooks:
+  - tools/hooks/seo.py
+
 markdown_extensions:
   - abbr
   - admonition

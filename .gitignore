@@ -4,6 +4,11 @@
 /docs/product/
 
 /site/
+
+# Written by tools/sync-docs.sh, read by tools/hooks/seo.py: when each page
+# under docs/product/ last changed, according to digline/digline's history.
+/.lastmod.tsv
+
 /.venv/
 __pycache__/
 .DS_Store

@@ -1,0 +1,12 @@
+# Everything is public and everything may be indexed. The one thing this file
+# is really here for is the last line: it is where a crawler that arrives at the
+# root looks for the map of the site.
+#
+# It is copied verbatim to https://digline.dev/robots.txt by the build, like
+# docs/CNAME — mkdocs treats anything that is not Markdown as a file to carry
+# across untouched.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://digline.dev/sitemap.xml

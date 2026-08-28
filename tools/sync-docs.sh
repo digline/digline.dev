@@ -51,4 +51,47 @@ perl -pi -e 's{\]\(\.\./README\.md\)}{](https://github.com/digline/digline#readm
 perl -pi -e 's{\]\(adr/\)}{](adr/index.md)}g'                                        "$out"/*.md
 perl -pi -e 's{\]\(docs/adr/\)}{](adr/index.md)}g'                                   "$out/changelog.md"
 
-echo "docs/product/ ← $src ($(find "$out" -name '*.md' | wc -l | tr -d ' ') pages)"
+# The dates the sitemap needs.
+#
+# `cp` gives every file the time it was copied, which would make <lastmod> say
+# "today" for the whole of product/ on every build. The dates that are true are
+# in the other repository's history, and this is the only moment both are in
+# reach — so they are written down here, keyed by the page path they will have
+# on the site, and tools/hooks/seo.py reads them back at build time.
+#
+# Needs real history: `actions/checkout` with fetch-depth: 0. Under a shallow
+# clone git reports the same commit for every file, which the hook detects; it
+# then falls back to mtimes rather than writing a date it cannot stand behind.
+manifest="$here/.lastmod.tsv"
+: > "$manifest"
+
+if git -C "$src" rev-parse --git-dir >/dev/null 2>&1; then
+  git -C "$src" log --format='%x01%cs' --name-only |
+  awk -v OFS='\t' '
+    /^\001/ { date = substr($0, 2); next }
+    !NF || !date { next }
+    seen[$0]++ { next }            # newest first: the first sighting is the last change
+    {
+      p = $0
+      if (p == "CHANGELOG.md")                    page = "product/changelog.md"
+      else if (p == "ROADMAP.md")                 page = "product/roadmap.md"
+      else if (p ~ /^docs\//)                     { page = "product/" substr(p, 6) }
+      else if (p ~ /^examples\/[^\/]+\/README\.md$/) {
+        split(p, a, "/"); page = "product/examples/" a[2] ".md"
+      }
+      else next
+      if (!(page in out)) { out[page] = date; print page, date }
+    }
+  ' >> "$manifest"
+
+  # adr/index.md is written by this script, not by anyone: it is as old as the
+  # newest record it lists.
+  newest="$(awk -F'\t' '$1 ~ /^product\/adr\/[0-9]/ { print $2 }' "$manifest" | sort | tail -1)"
+  if [ -n "$newest" ]; then
+    printf 'product/adr/index.md\t%s\n' "$newest" >> "$manifest"
+  fi
+else
+  echo "note: $src is not a git checkout — product/ pages will be dated by mtime" >&2
+fi
+
+echo "docs/product/ ← $src ($(find "$out" -name '*.md' | wc -l | tr -d ' ') pages, $(wc -l < "$manifest" | tr -d ' ') dated)"

@@ -1,6 +1,12 @@
 ---
 title: Why
 template: why.html
+seo_title: >-
+  Why LLM applications need a baseline
+description: >-
+  A prompt is not code, and the model moves under you. Why a pass/fail
+  threshold cannot see a quality regression, and what an approved baseline
+  measures instead.
 ---
 
 # Why

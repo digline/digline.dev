@@ -1,3 +1,12 @@
+---
+seo_title: >-
+  For teams building for others
+description: >-
+  One evaluation suite, three interested parties: what the developer, the
+  consultancy and the customer each need from the same runs, and the rule
+  that cannot bend.
+---
+
 # 7. For teams building for others
 
 Everything up to here applies to anyone with an LLM in production. This chapter is for a narrower group: consultancies, software houses, anyone who builds and maintains an LLM feature for a customer who does not develop, and who owns the data the feature runs on. If that is you, the same suite does two more jobs — and one of them has a rule that cannot be bent.
