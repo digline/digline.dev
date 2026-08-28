@@ -75,6 +75,53 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 @media (max-width: 48rem) {
   .dg-cols { grid-template-columns: 1fr; gap: 1.75rem; }
 }
+
+/* ── the invitation ──────────────────────────────────────────────────────
+   The last thing on the page and the only one that asks for something back, so
+   it is set apart rather than made loud: the surface the shell blocks already
+   use, and the green the report spends on a check that did not get worse down
+   its edge. The same invitation closes the roadmap, in one line. */
+.pilot {
+  margin: 3.5rem 0 0;
+  padding: 1.875rem 2rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--fine);
+  border-radius: .5rem;
+}
+.pilot__eyebrow {
+  font-size: .6875rem; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--fine);
+}
+.pilot h2 {
+  margin: .75rem 0 .625rem;
+  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.015em;
+  color: var(--ink);
+}
+.pilot p { margin: 0; font-size: .9375rem; line-height: 1.6; color: var(--muted); }
+.pilot__body { max-width: 40rem; }
+
+/* The two ways to reach us, side by side while there is room for both. Parted
+   from the paragraph by a rule, because it is the part you act on. */
+.pilot .pilot__cta {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: .375rem .625rem;
+  margin: 1.375rem 0 0;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--rule);
+}
+.pilot__mail {
+  font-family: var(--mono); font-size: .875rem; font-weight: 600;
+  color: var(--link); text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+.pilot__mail:hover { border-bottom-color: currentColor; }
+.pilot__sep { color: var(--faint); }
+
+@media (max-width: 34rem) {
+  .pilot { padding: 1.5rem 1.25rem; }
+}
 </style>
 {% endblock %}
 
@@ -145,6 +192,21 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
     network call you have not configured yourself.</p>
   </section>
 </div>
+
+<section class="pilot reveal" aria-labelledby="pilot-h">
+  <p class="pilot__eyebrow">Pilots</p>
+  <h2 id="pilot-h">Building LLM features for clients?</h2>
+  <p class="pilot__body">I&rsquo;m looking for a few pilot teams to run digline on
+  real projects &mdash; especially teams that build and maintain AI solutions for
+  third parties. In exchange you get direct support and a say in what gets built
+  next.</p>
+  <p class="pilot__cta">
+    <span>Write me:</span>
+    <a class="pilot__mail" href="mailto:hello@digline.dev">hello@digline.dev</a>
+    <span class="pilot__sep" aria-hidden="true">&middot;</span>
+    <a href="https://github.com/digline/digline/issues">or open a GitHub issue</a>
+  </p>
+</section>
 {% endblock %}
 
 {% block script %}

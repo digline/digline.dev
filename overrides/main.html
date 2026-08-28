@@ -14,3 +14,26 @@
 {% block extrahead %}
   {% include "partials/analytics.html" %}
 {% endblock %}
+
+{#-
+  The invitation, at the foot of the roadmap and nowhere else.
+
+  Tracks D and E are gated on evidence from real pilots and the page says so —
+  "open an issue — that is the fastest way to move them". This adds the second
+  channel next to it, so that the two are the same everywhere: a public thread
+  or a direct mail. It is added here rather than in the page because
+  product/roadmap.md is digline/digline's own ROADMAP.md, copied in by
+  tools/sync-docs.sh before every build and never edited in this repository.
+
+  The long form of the same invitation closes the home page.
+-#}
+{% block content %}
+  {{ super() }}
+  {%- if page and page.file and page.file.src_uri == "product/roadmap.md" %}
+  <aside class="dg-pilot">
+    <p>Want to be one of those pilots? <a href="https://github.com/digline/digline/issues">Open
+    an issue</a> or write to <a href="mailto:hello@digline.dev">hello@digline.dev</a> — a public
+    thread or a direct mail, whichever suits.</p>
+  </aside>
+  {%- endif %}
+{% endblock %}

@@ -106,3 +106,19 @@
 .md-typeset [type="checkbox"]:checked + .task-list-indicator::before {
   background-color: var(--fine);
 }
+
+/* ── the invitation, at the foot of the roadmap ──────────────────────────
+   The page ends by saying that tracks D and E move on pilot evidence; this is
+   the line that says how to become one, added by overrides/main.html. Same
+   panel as the invitation that closes the home page, at one line's height:
+   the surface, and the green of a check that did not get worse down its edge. */
+.md-typeset .dg-pilot {
+  margin: 2.5rem 0 0;
+  padding: .875rem 1.125rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--fine);
+  border-radius: .375rem;
+}
+.md-typeset .dg-pilot p { margin: 0; color: var(--muted); }
+.md-typeset .dg-pilot a { color: var(--link); }
