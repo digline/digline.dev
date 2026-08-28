@@ -12,7 +12,7 @@ site_url: https://digline.dev/
 site_description: >-
   Regression testing for LLM applications — with the baseline in your
   repository, not on someone's server.
-site_author: digline
+site_author: Alessandro Prandini
 copyright: Apache-2.0
 
 repo_url: https://github.com/digline/digline
