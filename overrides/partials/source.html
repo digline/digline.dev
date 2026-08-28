@@ -2,7 +2,9 @@
   The repository link Material puts in the drawer. This is Material's own
   partial with one thing taken out: `data-md-component="source"`. With that
   attribute present the theme calls api.github.com for the star count and the
-  latest release on every page load, and this site asks nothing of anyone.
+  latest release on every page load, from the reader's browser, and this site
+  asks that of no one. The counter in `partials/analytics.html` is the only
+  outside request there is.
 -#}
 <a href="{{ config.repo_url }}" title="Go to repository" class="md-source">
   <div class="md-source__icon md-icon">

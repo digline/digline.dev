@@ -25,8 +25,9 @@ site_dir: site
 theme:
   name: material
   custom_dir: overrides
-  # No Google Fonts: the site makes no request to anyone. System faces, the
-  # same ones the report and `digline view` use.
+  # No Google Fonts: no face and no stylesheet is fetched from anyone. System
+  # faces, the same ones the report and `digline view` use. The one third-party
+  # request the site makes is the counter, in overrides/partials/analytics.html.
   font: false
   language: en
   favicon: assets/favicon.svg

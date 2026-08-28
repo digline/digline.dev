@@ -10,7 +10,9 @@
 
   Deliberately absent: Material's `partials/source.html`. Rendering
   `data-md-component="source"` makes the theme call api.github.com for stars and
-  the latest release, and this site asks nothing of anyone.
+  the latest release, from the reader's browser and on every page load, and this
+  site asks that of no one. The counter in `partials/analytics.html` is the only
+  outside request there is.
 -#}
 {% set docs = not plain_page %}
 {% set here = page.file.src_uri if page and page.file else "" %}

@@ -8,3 +8,9 @@
   block that would render it stays empty.
 -#}
 {% block tabs %}{% endblock %}
+
+{#- The counter, on every documentation page. The presentation pages get it
+    from the same partial, included by `_shell.html`. -#}
+{% block extrahead %}
+  {% include "partials/analytics.html" %}
+{% endblock %}

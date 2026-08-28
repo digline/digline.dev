@@ -1,0 +1,12 @@
+{#-
+  GoatCounter. No cookie and no identifier: it records the page, the referrer,
+  the browser and the country, keeps them on goatcounter.com, and sets nothing
+  in the reader's browser. It is the one third-party request the site makes.
+
+  It is included from both sides of the site — `main.html`, for the
+  documentation pages Material renders, and `_shell.html`, for the four
+  presentation pages that never touch the theme — because neither template is
+  an ancestor of the other. This file is the one place the snippet is written.
+-#}
+<script data-goatcounter="https://digline.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>

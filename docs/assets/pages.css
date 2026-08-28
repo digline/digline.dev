@@ -1,9 +1,10 @@
 /* The presentation pages — home, why, about, contact. Only what is inside the
  * bar and the band: those two live in chrome.css, and the colour in tokens.css.
  *
- * Free HTML, none of the theme. What every one of these pages keeps: nothing
- * loaded from a third party, a page that reads the same with script blocked,
- * and no animation under prefers-reduced-motion.
+ * Free HTML, none of the theme. What every one of these pages keeps: no asset
+ * loaded from a third party — the counter's script is the only outside request,
+ * and nothing on the page depends on it — a page that reads the same with
+ * script blocked, and no animation under prefers-reduced-motion.
  */
 
 * { box-sizing: border-box; }
