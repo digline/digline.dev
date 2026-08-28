@@ -133,6 +133,7 @@ nav:
           - ADR 0001 — Verdict, not score: product/adr/0001-verdict-not-score.md
           - ADR 0002 — Three worlds: product/adr/0002-three-worlds-and-where-the-data-lives.md
           - ADR 0003 — Artifacts: product/adr/0003-artifacts-travel-only-when-the-suite-says-so.md
+          - ADR 0004 — Plugins, target and judge: product/adr/0004-every-plugin-is-a-target-and-a-judge.md
       - Changelog: product/changelog.md
 
   - About: about.md
