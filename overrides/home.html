@@ -117,6 +117,71 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 .pilot__mail:hover { border-bottom-color: currentColor; }
 .pilot__sep { color: var(--faint); }
 
+/* ── what it looks like ──────────────────────────────────────────────────
+   The block digline actually printed on the way to 0.2.0: one check down, and
+   the parameter that moved named on the same screen. It is text, not a picture
+   — it is crawlable, it is selectable, and it stays sharp at any zoom.
+
+   The one departure from the shell blocks above: these lines wrap instead of
+   scrolling sideways. A terminal wraps too, and the sentence is long enough
+   that the fact it is here for — `temperature 0.3 → 0.7` — would sit off the
+   right edge of a phone otherwise. Each line is its own block, so the wrap is
+   indented under the line it belongs to rather than starting back at the
+   margin, and the blank lines are margins rather than newlines. */
+.shot { margin: 2.5rem 0 3rem; }
+.shot h2 {
+  margin: 0 0 .875rem;
+  font-size: 1rem; font-weight: 600; letter-spacing: -.005em; color: var(--ink);
+}
+/* The two links belong to the block above them, so the gap the console carries
+   on its own is the section's to spend, not the block's. */
+.shot .console { margin-bottom: 0; }
+.shot pre { white-space: pre-wrap; word-break: break-word; }
+.shot pre span {
+  display: block;
+  padding-left: 1.5em; text-indent: -1.5em;   /* the hanging indent */
+}
+.shot pre .head  { margin-top: .25rem; }
+.shot pre .cfg   { margin: .9rem 0; padding-left: 3em; text-indent: -1.5em;
+                   color: var(--muted); }
+.shot pre .worse { color: var(--worse); }
+
+/* Where to go once you have read it: the argument behind the line, and the
+   same line on your own suite. Two links, not two buttons — nothing here is
+   the page's call to action, which is at the foot. */
+.shot__links {
+  display: flex; flex-wrap: wrap; gap: .375rem 1.5rem;
+  margin: .875rem 0 0; font-size: .9375rem;
+}
+.shot__links a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
+.shot__links a:hover { border-bottom-color: currentColor; }
+
+/* ── where it is headed ──────────────────────────────────────────────────
+   Three lines off the roadmap, in the roadmap's own words: what is being built,
+   what will never be built, and the page that says the rest. Quiet on purpose —
+   it sits just before the invitation and must not compete with it. */
+.ahead {
+  margin: 3.5rem 0 0;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--rule-soft);
+}
+.ahead__eyebrow {
+  margin: 0;
+  font-size: .6875rem; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--faint);
+}
+.ahead h2 {
+  margin: .75rem 0 1rem;
+  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.015em; color: var(--ink);
+}
+.ahead p { margin: 0 0 .75rem; max-width: 44rem;
+           font-size: .9375rem; line-height: 1.6; color: var(--muted); }
+.ahead p b { color: var(--ink); font-weight: 600; }
+.ahead__more { margin: 1.125rem 0 0; }
+.ahead__more a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
+.ahead__more a:hover { border-bottom-color: currentColor; }
+
 @media (max-width: 34rem) {
   .pilot { padding: 1.5rem 1.25rem; }
 }
@@ -157,15 +222,22 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
   <p class="req">Requires Python 3.12+.</p>
 </div>
 
-<div class="console">
-  <pre><span class="p">$ digline compare --suite suite.py --run latest</span>
-<span class="head">4 checks got worse compared with the reference. Every case could be judged. 1 case is suspended. The configuration is the same as the reference.</span>
+<section class="shot" aria-labelledby="shot-h">
+  <h2 id="shot-h">What it looks like</h2>
 
-<span class="worse">how-do-i-return · latency_budget · Score fell from 0.816327 to 0.650407.</span>
-<span class="worse">how-do-i-return · regex · Went from passing to failing (1.000000 → 0.000000).</span>
-<span class="worse">is-it-waterproof · latency_budget · Score fell from 0.816327 to 0.650407.</span>
-<span class="worse">where-is-my-order · latency_budget · Score fell from 0.816327 to 0.650407.</span></pre>
-</div>
+  {#- Printed by digline 0.2.0, not written for the page: one check down, and
+      the parameter that moved named beside it. The lines are spans rather than
+      newlines so that a long sentence wraps under itself; see .shot in the
+      stylesheet above. -#}
+  <div class="console">
+    <pre><span class="p">$ digline compare --suite support.py --run latest</span><span class="head">1 check got worse compared with the reference. Every case could be judged. No case is suspended. The suite is unchanged from the reference. The system under test answered under a different configuration: temperature 0.3 → 0.7.</span><span class="cfg">system · temperature 0.3 → 0.7</span><span class="worse">where-is-my-order · llm_rubric · Score fell from 1.000000 to 0.700000. This drop coincides with temperature 0.3 → 0.7.</span></pre>
+  </div>
+
+  <p class="shot__links">
+    <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
+    <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
+  </p>
+</section>
 
 <div class="dg-cols">
   <section class="reveal">
@@ -190,6 +262,20 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
     network call you have not configured yourself.</p>
   </section>
 </div>
+
+<section class="ahead reveal" aria-labelledby="ahead-h">
+  <p class="ahead__eyebrow">Roadmap</p>
+  <h2 id="ahead-h">Where it&rsquo;s headed</h2>
+  <p><b>Being built now &mdash; verdict credibility.</b> Repeated runs scored as a
+  distribution rather than one sample, and thresholds set against measured
+  variance: a drop is a regression only when it clears the noise floor of the
+  case.</p>
+  <p><b>Two things will never be on the roadmap.</b> A hosted service that
+  receives your payloads &mdash; prompts, outputs and the judge stay in your
+  perimeter. And usage data collection, ever.</p>
+  <p class="ahead__more"><a href="{{ base_url }}/product/roadmap/">the whole
+  roadmap, tracks and gates rather than dates &rarr;</a></p>
+</section>
 
 <section class="pilot reveal" aria-labelledby="pilot-h">
   <p class="pilot__eyebrow">Pilots</p>
