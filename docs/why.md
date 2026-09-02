@@ -74,3 +74,5 @@ That is what [digline](index.md) does, and it is all it does. The reference live
 ---
 
 If you have thirty minutes instead of five: the [Handbook](handbook/01-what-you-are-shipping.md).
+
+Wondering how this differs from the tools you already know? See [How digline compares](comparison.md).
