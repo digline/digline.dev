@@ -113,6 +113,10 @@ nav:
   - Home: index.md
   - Why: why.md
 
+  # Positioning, written here: which question each family of tools answers,
+  # and which one digline answers. Prose, deliberately: no us-vs-them table.
+  - How digline compares: comparison.md
+
   # Written here, not in digline/digline: these seven chapters are about the
   # problem, not about the tool, and they do not move with a release.
   - Handbook:
