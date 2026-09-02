@@ -153,6 +153,7 @@ nav:
           - ADR 0003 — Artifacts: product/adr/0003-artifacts-travel-only-when-the-suite-says-so.md
           - ADR 0004 — Plugins, target and judge: product/adr/0004-every-plugin-is-a-target-and-a-judge.md
           - ADR 0005 — The configuration under test: product/adr/0005-the-configuration-of-the-system-under-test.md
+          - ADR 0006 — Samples and the noise floor: product/adr/0006-repeated-samples-and-the-noise-floor.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
