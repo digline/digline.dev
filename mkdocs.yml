@@ -143,6 +143,7 @@ nav:
           - A classifier: product/examples/classifier.md
           - A RAG: product/examples/rag.md
           - An application digline cannot import: product/examples/external-app.md
+          - A LangChain pipeline: product/examples/langchain.md
           - A LangChain4j service: product/examples/langchain4j.md
           - A whole product (digline/brief): https://github.com/digline/brief
       - Decisions:
