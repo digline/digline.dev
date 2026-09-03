@@ -154,6 +154,7 @@ nav:
           - ADR 0004 — Plugins, target and judge: product/adr/0004-every-plugin-is-a-target-and-a-judge.md
           - ADR 0005 — The configuration under test: product/adr/0005-the-configuration-of-the-system-under-test.md
           - ADR 0006 — Samples and the noise floor: product/adr/0006-repeated-samples-and-the-noise-floor.md
+          - ADR 0007 — The declarative suite format: product/adr/0007-the-declarative-suite-format.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
