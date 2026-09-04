@@ -13,9 +13,11 @@ serve: docs      ## local preview on http://127.0.0.1:8000/
 build: docs      ## what CI does; a broken link or a wrong sitemap fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
+	tools/check-llms.py site
 
-check:           ## sitemap.xml against an existing site/, on its own
+check:           ## the two generated indexes against an existing site/, on their own
 	tools/check-sitemap.py site
+	tools/check-llms.py site
 
 clean:
 	rm -rf site docs/product

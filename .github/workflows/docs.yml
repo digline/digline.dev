@@ -66,6 +66,12 @@ jobs:
         # a page that is actually in site/, and the file must parse.
         run: tools/check-sitemap.py site
 
+      - name: Check llms.txt
+        # The same question about the index agents read: every URL a page in
+        # the build, and every page in the build listed. A page that quietly
+        # stops being listed fails nothing else.
+        run: tools/check-llms.py site
+
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site

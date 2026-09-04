@@ -75,6 +75,11 @@ plugins:
 # which git history holds their dates. See the docstring at the top of the file.
 hooks:
   - tools/hooks/seo.py
+  # llms.txt at the root, and the Markdown source of every page beside its
+  # rendered form — the machine-readable side of the site. Both are derived
+  # from the nav below and written into site/ after the build; a page in the
+  # nav that nobody has described fails the build. See the file's docstring.
+  - tools/hooks/llms.py
 
 markdown_extensions:
   - abbr
