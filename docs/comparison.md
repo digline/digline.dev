@@ -39,6 +39,16 @@ Two things digline will never do, by design: no hosted service that receives you
 
 promptfoo and DeepEval are excellent at exploration: comparing prompts, models and configurations side by side, with rich metric libraries. digline is deliberately narrower — it doesn't help you find the best configuration; it guards the one you approved. Many teams will use an exploration framework to choose, and digline to hold the line afterwards.
 
+## Opik
+
+Opik is Comet's open-source platform for the whole LLM lifecycle: tracing and observability with full trace trees for agent runs, datasets and experiments, LLM-as-judge metrics, production monitoring with online evaluation, prompt management. It is Apache-2.0 and genuinely self-hostable — the whole platform, backend included. If you want to see what your LLM application is doing, every call and every trace, it is a strong choice, and its self-hosted story is real.
+
+Where the theories diverge is where the truth lives. Opik's unit of record is the experiment, and the experiment lives in a platform: you deploy a backend — docker compose, a database, a UI — and the results live there. digline's unit of record is a file in your repository: the baseline goes through code review, rolls back with git, and carries who approved it and under which commit. One answers "what is happening?"; the other answers "did it get worse than what we approved — and who approved it?".
+
+The difference you feel day to day is operational. Opik's minimal unit is a running platform; digline's is uv add digline, or a docker run, and there is no server anywhere — not even yours. Scores over time on a dashboard, against a three-state verdict with an exit code that gates a pipeline.
+
+Choose Opik when you need tracing, and want one platform across the lifecycle. Choose digline when the question is regression against an approved reference, and the answer has to live in the client's repository, survive an audit and gate a CI job. Using both is coherent: they answer different questions.
+
 ## Using them together
 
 These families complement each other. A reasonable production setup is: an exploration framework while developing, digline as the gate in CI before deploy, and observability watching live traffic after. digline's only strong opinion is about its own layer: the verdict on regressions belongs in your repo, next to your code, before the deploy — never in someone else's cloud.
