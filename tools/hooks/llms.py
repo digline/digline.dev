@@ -232,6 +232,11 @@ DESCRIPTIONS: dict[str, str] = {
         "takes over, and why both forms build the same objects and share one "
         "baseline"
     ),
+    "product/adr/0008-the-two-run-report.md": (
+        "Why \"should I switch?\" is a different question from \"did it get "
+        "worse?\", and why the report that answers it names neither run the "
+        "reference and never gates a pipeline"
+    ),
 }
 
 
