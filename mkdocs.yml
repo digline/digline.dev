@@ -139,6 +139,7 @@ nav:
   - Docs:
       - Guide: product/guide.md
       - Metrics: product/metrics.md
+      - Suites as data: product/declarative.md
       - Reference:
           - "digline API": product/api.md
           - "digline view": product/view.md
@@ -150,6 +151,7 @@ nav:
           - An application digline cannot import: product/examples/external-app.md
           - A LangChain pipeline: product/examples/langchain.md
           - A LangChain4j service: product/examples/langchain4j.md
+          - A team that does not write Python: product/examples/quickstart-toml.md
           - A whole product (digline/brief): https://github.com/digline/brief
       - Decisions:
           - product/adr/index.md
