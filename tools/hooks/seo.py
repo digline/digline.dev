@@ -294,6 +294,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "declarative form end to end, with no code in the suite and the same "
         "baseline a Python suite would produce.",
     ),
+    "product/examples/operator.md": (
+        "Example: a suite watched on a schedule",
+        "The operator loop, assembled: a scheduled re-run within a declared "
+        "stopping rule, a draw told from a drift, and a three-layer alert "
+        "whose judgement is marked as an opinion.",
+    ),
 }
 
 
