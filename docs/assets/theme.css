@@ -122,3 +122,21 @@
 }
 .md-typeset .dg-pilot p { margin: 0; color: var(--muted); }
 .md-typeset .dg-pilot a { color: var(--link); }
+
+/* ── the bar on a phone ──────────────────────────────────────────────────
+   The sections leave the bar entirely under 480px, on the documentation pages
+   and there only — this file is the half of the site Material renders, and the
+   presentation pages never load it.
+
+   They can go because here there is somewhere for them to go: the drawer
+   button is in the bar at this width and the drawer holds the whole of
+   mkdocs.yml's nav, Start here included. On the presentation pages there is no
+   drawer, which is why chrome.css drops one entry there instead of all of them.
+
+   What was here before was a nav that scrolled sideways under a hidden
+   scrollbar: three entries needing 169px in 125px of bar, so a third of it was
+   only reachable by dragging something with no scrollbar to tell you it was
+   draggable. */
+@media (max-width: 480px) {
+  .dg-bar .dg-nav { display: none; }
+}
