@@ -53,6 +53,15 @@ jobs:
         # read back by tools/hooks/seo.py while the sitemap is being written.
         run: tools/sync-docs.sh _digline
 
+      - name: Check the stylesheets
+        # Before the build, because it reads docs/assets/ and not site/, and
+        # because a stylesheet that a browser only half-parses is not something
+        # the build itself can notice: mkdocs copies CSS across byte for byte.
+        # --selftest first, on the file that made this necessary.
+        run: |
+          uv run tools/check-css.py --selftest
+          uv run tools/check-css.py docs/assets
+
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
         # reaching the site. sitemap.xml and robots.txt come out of this step
