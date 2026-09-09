@@ -146,6 +146,21 @@ html { scroll-padding-top: 88px; }
   .dg-nav { gap: 14px; }
 }
 
+/* A phone, on the presentation pages. They have no drawer to fall back on, so
+   the bar stays the navigation and only the entry that can afford to go, goes:
+   Why. It is the only one of the four whose page another entry links to —
+   Start here opens by pointing at it and closes with it under "Where to go
+   next" — so this costs a tap, not a destination.
+
+   380px and not 480px: four entries need 209px and the plain bar still has
+   221px at 380px, so above this they all fit and all four stay. The
+   documentation pages solve the same problem the other way, in theme.css: they
+   have a drawer, so the whole nav goes rather than one entry of it. */
+@media (max-width: 380px) {
+  .dg-nav__optional { display: none; }
+}
+}
+
 /* ══ the band ══════════════════════════════════════════════════════════ */
 
 .dg-foot {

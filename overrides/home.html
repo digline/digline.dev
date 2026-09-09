@@ -117,6 +117,20 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 .pilot__mail:hover { border-bottom-color: currentColor; }
 .pilot__sep { color: var(--faint); }
 
+/* ── the way in ───────────────────────────────────────────
+   One line under the sentence, for the reader the sentence assumed too much
+   about. It borrows the sub's own size and colour rather than asking for
+   attention: whoever already knows what a regression is should read straight
+   past it and reach the drawing. The sub gives up its bottom margin to it, on
+   this page only — this block is not loaded anywhere else. */
+.lede + .sub { margin-bottom: .875rem; }
+.newcomer {
+  margin: 0 0 2.75rem; max-width: 34rem;
+  font-size: .9375rem; line-height: 1.5; color: var(--muted);
+}
+.newcomer a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
+.newcomer a:hover { border-bottom-color: currentColor; }
+
 /* ── what it looks like ──────────────────────────────────────────────────
    The block digline actually printed on the way to 0.2.0: one check down, and
    the parameter that moved named on the same screen. It is text, not a picture
@@ -192,6 +206,7 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 
 <h1 class="lede">Regression testing for LLM applications</h1>
 <p class="sub">with the baseline in your repository, not on someone&rsquo;s server.</p>
+<p class="newcomer">New to LLM regression? <a href="{{ base_url }}/start/">Start here</a>.</p>
 
 <figure class="figure">
   <svg viewBox="0 0 640 170" role="img" aria-labelledby="fig-t fig-d">

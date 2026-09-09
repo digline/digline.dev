@@ -116,6 +116,13 @@ validation:
 
 nav:
   - Home: index.md
+
+  # The way in for someone who has not met the problem yet: what a silent
+  # regression is, in plain language, and a video of one. Written here, at
+  # the root, for the same reason the comparison is — docs/product/ is wiped
+  # and rewritten by tools/sync-docs.sh before every build.
+  - Start here: start.md
+
   - Why: why.md
 
   # Positioning, written here: which question each family of tools answers,
