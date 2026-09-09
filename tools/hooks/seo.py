@@ -175,6 +175,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "result and measure a new one, and why promoting a baseline is not one "
         "of them.",
     ),
+    "product/operator.md": (
+        "The operator loop",
+        "Who watches the measurement when nobody is looking: an agent that "
+        "re-runs your suite on a schedule, absorbs the judge's noise, and "
+        "wakes a human only for the drift that deserves a decision \u2014 in "
+        "your perimeter, with your keys.",
+    ),
     "product/roadmap.md": (
         "Roadmap",
         "Where digline goes next: tracks and gates rather than dates, and the "
