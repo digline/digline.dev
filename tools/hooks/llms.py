@@ -221,6 +221,10 @@ DESCRIPTIONS: dict[str, str] = {
         "How a team that writes no Python gates a prompt in CI: a `suite.toml`, "
         "a `cases.json`, and no code at all"
     ),
+    "product/examples/operator.md": (
+        "The operator loop assembled: a suite re-run on a schedule within a "
+        "declared stopping rule, a draw told from a drift, a three-layer alert"
+    ),
     # Decisions
     "product/adr/index.md": (
         "Every architecture decision behind digline, in the order it was taken, "
