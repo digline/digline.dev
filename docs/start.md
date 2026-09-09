@@ -43,11 +43,11 @@ The baseline is a file in git. It has history, it can be diffed, and nobody prom
 
 ## Thirty seconds, with pictures
 
-<video controls preload="none" poster="assets/video/ep01-poster.jpg"
+<video controls preload="none" poster="/assets/video/ep01-poster.jpg"
        width="1920" height="1080"
        style="width:100%; height:auto; aspect-ratio:16/9; background:#0f1117">
-  <source src="assets/video/ep01.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="assets/video/ep01.mp4">Download the video</a>.
+  <source src="/assets/video/ep01.mp4" type="video/mp4">
+  Your browser does not support the video tag. <a href="/assets/video/ep01.mp4">Download the video</a>.
 </video>
 
 *Episode 1 of a short series on LLM regression. Served from this site — no third-party player, no cookies.*
