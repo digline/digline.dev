@@ -7,6 +7,10 @@ description: >-
   floor of an LLM-judged eval, what it caught the week after, and where it
   still can't see.
 date: 2026-09-09
+image: assets/digline-noise-floor-post.png
+image_alt: >-
+  The digline compare report: three checks worse, one moved within noise, and
+  each check's reference band printed beside its score.
 ---
 
 # My LLM eval cried wolf. Here's what I measured.

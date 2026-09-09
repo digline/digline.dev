@@ -47,6 +47,7 @@ import datetime
 import json
 import os
 import re
+import struct
 import subprocess
 
 from mkdocs.exceptions import PluginError
@@ -118,6 +119,54 @@ def _attr(value: str) -> str:
 OG_IMAGE = "assets/digline-wordmark.png"
 OG_IMAGE_SIZE = (1800, 440)
 OG_IMAGE_ALT = "digline — regression testing for LLM applications"
+
+# A page may put its own image on the card instead. A post whose subject *is* a
+# screenshot is better pasted as that screenshot than as the wordmark, and every
+# post after this one will have one. Two keys in the front matter, and they come
+# as a pair:
+#
+#     image:     assets/digline-noise-floor-post.png   ← the path under docs/
+#     image_alt: The digline compare report: three checks worse…
+#
+# The size is read out of the file rather than declared beside it: a declared
+# size is a second copy of a fact, and the copy is the one that goes stale when
+# the image is re-exported. A missing file, a missing alt, or a format this
+# cannot measure fails the build — the card is the one part of a page nobody
+# proof-reads, because it is only ever drawn somewhere else.
+
+# SOF0-SOF15, less the four markers in that range that are not frame headers
+# (DHT, JPG, DAC, DNL).
+_JPEG_SOF = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+
+
+def _image_size(path: str) -> tuple[int, int] | None:
+    """(width, height) of a PNG or JPEG, or None if the bytes do not say.
+
+    Header parsing rather than a dependency: the two formats a screenshot or a
+    photograph arrives in both carry their size in the first few bytes, and the
+    build already refuses to grow a package for something it can do itself.
+    """
+    try:
+        with open(path, "rb") as fh:
+            head = fh.read(24)
+            if head[:8] == b"\x89PNG\r\n\x1a\n" and head[12:16] == b"IHDR":
+                width, height = struct.unpack(">II", head[16:24])
+                return int(width), int(height)
+            if head[:2] == b"\xff\xd8":
+                fh.seek(2)
+                while True:
+                    marker = fh.read(2)
+                    if len(marker) < 2 or marker[0] != 0xFF:
+                        return None
+                    if marker[1] in _JPEG_SOF:
+                        fh.read(3)  # segment length, then sample precision
+                        height, width = struct.unpack(">HH", fh.read(4))
+                        return int(width), int(height)
+                    (length,) = struct.unpack(">H", fh.read(2))
+                    fh.seek(length - 2, os.SEEK_CUR)
+    except (OSError, struct.error):
+        return None
+    return None
 
 # The pages copied in from digline/digline. Keyed by the path under docs/.
 PRODUCT: dict[str, tuple[str, str]] = {
@@ -604,10 +653,37 @@ def on_page_content(html_content, page, config, files, **kwargs):
     site_url = (config["site_url"] or "").rstrip("/") + "/"
     meta["seo_title"] = _attr(full)
     meta["description"] = _attr(description)
-    meta["og_image"] = site_url + OG_IMAGE
-    meta["og_image_width"] = str(OG_IMAGE_SIZE[0])
-    meta["og_image_height"] = str(OG_IMAGE_SIZE[1])
-    meta["og_image_alt"] = _attr(OG_IMAGE_ALT)
+    image, size, image_alt = OG_IMAGE, OG_IMAGE_SIZE, OG_IMAGE_ALT
+    if meta.get("image"):
+        rel = str(meta["image"]).strip().lstrip("/")
+        abs_path = os.path.join(config["docs_dir"], *rel.split("/"))
+        alt = meta.get("image_alt")
+        found = os.path.isfile(abs_path)
+        measured = _image_size(abs_path) if found else None
+
+        wrong: list[str] = []
+        if not found:
+            wrong.append(f"no such file: {config['docs_dir']}/{rel}")
+        elif measured is None:
+            wrong.append(f"cannot read the pixel size of {rel} — PNG and JPEG only")
+        if not alt:
+            wrong.append(
+                "no `image_alt:` beside it. A card carries its own alt text: the "
+                "one on the image in the page describes it for a reader who is "
+                "already here, and it is the wrong length for a link preview."
+            )
+        if wrong:
+            raise PluginError(
+                f"seo: `image:` on {src_uri} is not usable.\n  " + "\n  ".join(wrong)
+            )
+
+        image, size = rel, measured
+        image_alt = _SPACE.sub(" ", str(alt)).strip()
+
+    meta["og_image"] = site_url + image
+    meta["og_image_width"] = str(size[0])
+    meta["og_image_height"] = str(size[1])
+    meta["og_image_alt"] = _attr(image_alt)
     meta["og_type"] = "website" if page.is_homepage else "article"
 
     # One page carries it, and it is the page the name is about. Repeating the
