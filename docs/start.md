@@ -48,7 +48,7 @@ The baseline is a file in git. It has history, it can be diffed, and nobody prom
   Your browser does not support the video tag. <a href="assets/video/ep01.mp4">Download the video</a>.
 </video>
 
-*Episode 1 of a short series on LLM regression. Served from this site — no third-party players, no trackers.*
+*Episode 1 of a short series on LLM regression. Served from this site — no third-party player, no cookies.*
 
 ## Where to go next
 

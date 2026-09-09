@@ -43,11 +43,17 @@ import re
 
 from mkdocs.exceptions import PluginError
 
-# The pages that are not in any nav section: Home, Why, the comparison, About
-# and Contact. They need a heading of their own because llms.txt has no nesting
-# — every section is an H2 — and "the ones that are not the documentation" is
-# what they have in common.
-ROOT_SECTION = "Start here"
+# The pages that are not in any nav section: Home, Start here, Why, the
+# comparison, About and Contact. They need a heading of their own because
+# llms.txt has no nesting — every section is an H2 — and "the ones that are not
+# the documentation" is what they have in common.
+#
+# Not "Start here", which is what this said until one of those pages was given
+# that name: a link titled "Start here" inside a section titled "Start here"
+# reads, to something deciding what to fetch, as though the section were about
+# the page. The label is only ever printed as that H2, so it names the group and
+# leaves the name to the page.
+ROOT_SECTION = "Overview"
 
 # The summary under the H1. The landing's own words: the sentence under the
 # wordmark, then the two paragraphs that say what you get and where it lives.
@@ -77,7 +83,7 @@ page — `/why.md` is `/why/`.\
 # title is in the link, this is the reason to open it.
 
 DESCRIPTIONS: dict[str, str] = {
-    # Start here
+    # Overview
     "index.md": (
         "What digline is in one screen: the sentence, what `digline compare` "
         "prints, and the two things that will never be on the roadmap"
