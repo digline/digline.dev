@@ -82,6 +82,11 @@ DESCRIPTIONS: dict[str, str] = {
         "What digline is in one screen: the sentence, what `digline compare` "
         "prints, and the two things that will never be on the roadmap"
     ),
+    "start.md": (
+        "What a silent LLM regression is and why an ordinary test cannot see "
+        "one, for a reader who has not met the problem yet — plus a short "
+        "video of `digline compare` finding one"
+    ),
     "why.md": (
         "Why an ordinary pass/fail test cannot see a quality regression — the "
         "same prompt scores 4 one morning and 3 the next, and the model moves "
