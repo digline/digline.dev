@@ -55,6 +55,7 @@
     {% endif %}
 
     <nav class="dg-nav" aria-label="Sections">
+      <a href="{{ base_url }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>Start here</a>
       <a href="{{ base_url }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>Why</a>
       <a href="{{ base_url }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>Handbook</a>
       <a href="{{ base_url }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>Docs</a>
