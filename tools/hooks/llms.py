@@ -273,6 +273,11 @@ DESCRIPTIONS: dict[str, str] = {
         "worse?\", and why the report that answers it names neither run the "
         "reference and never gates a pipeline"
     ),
+    "product/adr/0009-boundary-semantics.md": (
+        "One rule for every limit \u2014 compared at the precision the document "
+        "stores, and inclusive \u2014 and why a threshold met exactly must pass "
+        "while a delta must not be decided by a residue nobody can see"
+    ),
     "product/adr/0010-per-group-aggregates.md": (
         "Why an aggregate over the whole run hides a class that is broken, and "
         "how a suite splits one by a variable its cases already carry without "

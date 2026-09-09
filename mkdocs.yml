@@ -178,8 +178,7 @@ nav:
           - ADR 0006 — Samples and the noise floor: product/adr/0006-repeated-samples-and-the-noise-floor.md
           - ADR 0007 — The declarative suite format: product/adr/0007-the-declarative-suite-format.md
           - ADR 0008 — The two-run report: product/adr/0008-the-two-run-report.md
-          # 0009 is taken by a record that is not merged yet: the numbers are
-          # claimed on the branch that writes them, so the gap is expected.
+          - ADR 0009 — Boundary semantics: product/adr/0009-boundary-semantics.md
           - ADR 0010 — Per-group aggregates: product/adr/0010-per-group-aggregates.md
           - ADR 0011 — The MCP server: product/adr/0011-the-mcp-server.md
       # The decisions say why it is shaped this way; the roadmap says what is

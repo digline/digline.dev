@@ -296,6 +296,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "\u201cdid it get worse?\u201d, and why the report that answers it "
         "calls neither run the reference and gates nothing.",
     ),
+    "product/adr/0009-boundary-semantics.md": (
+        "ADR 0009: Boundary semantics",
+        "One rule for every limit digline compares \u2014 read at the precision "
+        "the document stores, and inclusive \u2014 so a threshold met exactly "
+        "passes and no edge is decided by a residue nobody can see.",
+    ),
     "product/adr/0010-per-group-aggregates.md": (
         "ADR 0010: Per-group aggregates",
         "Why one number over the whole run hides a class that is broken, and "
