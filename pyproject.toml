@@ -5,7 +5,10 @@ name = "digline-dev"
 version = "0"
 description = "The site behind digline.dev"
 requires-python = ">=3.12"
-dependencies = ["mkdocs-material>=9.6"]
+# tinycss2 is not for the build — mkdocs never sees it. tools/check-css.py
+# parses the stylesheets before the build runs, which is the one gate that
+# reads CSS at all.
+dependencies = ["mkdocs-material>=9.6", "tinycss2>=1.4"]
 
 [tool.uv]
 package = false
