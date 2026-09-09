@@ -23,6 +23,19 @@ Where the copy comes from, first match wins:
      is invented: a page digline/digline adds tomorrow still reaches the site
      with a description of its own, and it is the page's own opening line.
 
+── the gate ─────────────────────────────────────────────────────────────────
+Every page in the nav needs one of the first two, and the build fails naming
+the ones that do not have it. The mirror of the one in ``llms.py``, and for the
+same reason: (3) is a *net*, not a decision. A first paragraph is written to
+open a page, not to be read on a search result by somebody deciding whether to
+click, and the two differ most on exactly the pages that matter — the four
+whose lead sentence is a console block or a definition. Without a gate the net
+holds silently, and a page reaches Google described by its own throat-clearing.
+
+So (3) now catches only what the gate cannot see: a page outside the nav, which
+``--strict`` already refuses on the other side. It stays because a build that
+raises here should still be a build that would have rendered.
+
 Everything is HTML-escaped once, here, because mkdocs renders templates with
 autoescape off and Material's base.html prints ``page.meta.description`` raw.
 The templates in overrides/ print these values raw for the same reason.
@@ -35,6 +48,8 @@ import json
 import os
 import re
 import subprocess
+
+from mkdocs.exceptions import PluginError
 
 # The brand as it is written everywhere else: the wordmark, `pip install
 # digline`, site_name, the repository. Lower case. One constant, so that a
@@ -118,6 +133,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "it takes, what it produces, and what it will do to you if you are not "
         "looking.",
     ),
+    "product/declarative.md": (
+        "Suites as data",
+        "How to write a suite in a suite.toml rather than a suite.py: what the "
+        "format covers, where it stops and Python takes over, and why both "
+        "forms build the same objects and share one baseline.",
+    ),
     "product/api.md": (
         "Public API",
         "Reference for writing a digline suite: what digline.core and "
@@ -135,6 +156,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Bring the stored runs and the baseline of a suite up to the schema "
         "version this release reads, and what a scan does with a document it "
         "cannot read.",
+    ),
+    "product/docker.md": (
+        "The Docker image",
+        "The official ghcr.io/digline/digline image: what it contains and what "
+        "it deliberately does not, the tags it publishes, and how to derive it "
+        "for a suite with dependencies of its own.",
     ),
     "product/roadmap.md": (
         "Roadmap",
@@ -183,6 +210,24 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "configuration but not which model answered, at what temperature, "
         "under what token cap.",
     ),
+    "product/adr/0006-repeated-samples-and-the-noise-floor.md": (
+        "ADR 0006: Repeated samples and the noise floor",
+        "Why a case is asked more than once, and why a drop is a regression "
+        "only when it clears the noise those samples measured — the answer to "
+        "a tool that cries wolf on its own measurement error.",
+    ),
+    "product/adr/0007-the-declarative-suite-format.md": (
+        "ADR 0007: The declarative suite format",
+        "What a suite written as TOML can express, where it stops and Python "
+        "takes over, and why both forms build the same objects and are "
+        "measured against one baseline.",
+    ),
+    "product/adr/0008-the-two-run-report.md": (
+        "ADR 0008: The two-run report",
+        "Why \u201cshould I switch?\u201d is a different question from "
+        "\u201cdid it get worse?\u201d, and why the report that answers it "
+        "calls neither run the reference and gates nothing.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "
@@ -206,6 +251,24 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Your service is Java, Go or a shell script behind nc: digline needs a "
         "body it can post and a field it can read back, so what produced the "
         "answer is not its business.",
+    ),
+    "product/examples/langchain.md": (
+        "Example: a LangChain pipeline",
+        "What a LangChain upgrade changed, with digline importing the chain "
+        "and calling it in process: no server, no HTTP and no port between the "
+        "suite and the thing it measures.",
+    ),
+    "product/examples/langchain4j.md": (
+        "Example: a LangChain4j service",
+        "What belongs in the repository of a Spring Boot or Quarkus service "
+        "when the endpoint, and not the framework behind it, is the contract "
+        "digline is held to.",
+    ),
+    "product/examples/quickstart-toml.md": (
+        "Example: a team that writes no Python",
+        "Gating a prompt in CI with a suite.toml and a cases.json: the "
+        "declarative form end to end, with no code in the suite and the same "
+        "baseline a Python suite would produce.",
     ),
 }
 
@@ -377,6 +440,72 @@ _leads: dict[str, str] = {}
 
 
 # ── the hooks mkdocs calls ───────────────────────────────────────────────────
+
+
+_FRONT_MATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---[ \t]*\r?\n", re.S)
+_DESCRIBES = re.compile(r"^description:[ \t]*\S", re.M)
+
+
+def _declares_description(path: str) -> bool:
+    """Whether the page's own front matter carries a `description:`.
+
+    Read off disk rather than from `page.meta`, because `on_nav` runs before a
+    single page has been read — which is the whole point of checking there: the
+    build stops before rendering thirty pages to tell you about one line.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            head = fh.read(4096)
+    except OSError:
+        return False
+    front = _FRONT_MATTER.match(head)
+    return bool(front and _DESCRIBES.search(front.group(1)))
+
+
+def on_nav(nav, config, files, **kwargs):
+    """Refuse a page nobody has described.
+
+    Two ways to describe one, and which applies is decided by where the page is
+    written: everything under `product/` is copied in from digline/digline by
+    tools/sync-docs.sh and overwritten on every build, so its copy has to live
+    in `PRODUCT` here. A page written in this repository carries its own, in
+    front matter, next to the words it describes.
+    """
+    product: list[tuple[str, str]] = []
+    local: list[tuple[str, str]] = []
+    for page in nav.pages:
+        src = page.file.src_uri
+        if src in PRODUCT or _declares_description(page.file.abs_src_path):
+            continue
+        title = page.title or "no title in the nav"
+        (product if src.startswith("product/") else local).append((src, title))
+
+    if not (product or local):
+        return nav
+
+    parts: list[str] = [
+        f"seo: {len(product) + len(local)} page(s) in the nav with nothing to "
+        "put in <meta name=\"description\">."
+    ]
+    if product:
+        parts.append(
+            "\nCopied in from digline/digline, so the copy lives here — add to "
+            "PRODUCT in tools/hooks/seo.py:\n"
+            + "\n".join(
+                f'    "{src}": (\n        "…",  # {title}\n        "…",\n    ),'
+                for src, title in product
+            )
+        )
+    if local:
+        parts.append(
+            "\nWritten in this repository — add `description:` to the front "
+            "matter of:\n" + "\n".join(f"    {src}  # {title}" for src, title in local)
+        )
+    parts.append(
+        "\nOne sentence saying what the page is, for somebody reading a search "
+        "result and deciding whether to open it. Not the title again."
+    )
+    raise PluginError("\n".join(parts))
 
 
 def on_config(config, **kwargs):

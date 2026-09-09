@@ -144,6 +144,7 @@ nav:
           - "digline API": product/api.md
           - "digline view": product/view.md
           - "digline migrate": product/migrate.md
+          - The Docker image: product/docker.md
       - Examples:
           - A prompt, no application yet: product/examples/prompt-first.md
           - A classifier: product/examples/classifier.md

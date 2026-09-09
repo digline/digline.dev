@@ -166,6 +166,11 @@ DESCRIPTIONS: dict[str, str] = {
         "How to bring stored runs and a baseline up to the schema version this "
         "release reads, and what a scan does with a document it cannot read"
     ),
+    "product/docker.md": (
+        "What the official `ghcr.io/digline/digline` image contains and what it "
+        "deliberately does not, which tag to pin in CI, and how to derive it "
+        "for a suite with dependencies of its own"
+    ),
     # Examples
     "product/examples/prompt-first.md": (
         "How to tell whether an edit to a prompt made the answers better or "

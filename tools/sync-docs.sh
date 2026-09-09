@@ -25,6 +25,11 @@ cp -R "$src/docs/." "$out/"
 cp "$src/CHANGELOG.md" "$out/changelog.md"
 cp "$src/ROADMAP.md"   "$out/roadmap.md"
 
+# The image's own page, which lives beside the Dockerfile it documents rather
+# than in docs/: it is read on GitHub by whoever is editing the image, and it
+# is the reference page for whoever is only running it.
+cp "$src/docker/README.md" "$out/docker.md"
+
 # One page per example, named after the directory it came from. quickstart has
 # no README — it is the guide's first chapter, not a case of its own.
 for readme in "$src"/examples/*/README.md; do
@@ -75,6 +80,7 @@ if git -C "$src" rev-parse --git-dir >/dev/null 2>&1; then
       p = $0
       if (p == "CHANGELOG.md")                    page = "product/changelog.md"
       else if (p == "ROADMAP.md")                 page = "product/roadmap.md"
+      else if (p == "docker/README.md")           page = "product/docker.md"
       else if (p ~ /^docs\//)                     { page = "product/" substr(p, 6) }
       else if (p ~ /^examples\/[^\/]+\/README\.md$/) {
         split(p, a, "/"); page = "product/examples/" a[2] ".md"
