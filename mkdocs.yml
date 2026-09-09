@@ -187,5 +187,13 @@ nav:
       - Roadmap: product/roadmap.md
       - Changelog: product/changelog.md
 
+  # Written here, and the only part of the site that is dated: a post is tied
+  # to the week it was written in a way a documentation page is not. The
+  # folder is blog/ because that is what the URL should say; the section is
+  # what the site calls it, the same split product/ and "Docs" already have.
+  - Writing:
+      - blog/index.md
+      - "My LLM eval cried wolf": blog/my-llm-eval-cried-wolf.md
+
   - About: about.md
   - Contact: contact.md
