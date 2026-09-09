@@ -314,6 +314,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "absence rather than a refusal \u2014 and what a run projected for an "
         "agent may and may not carry.",
     ),
+    "product/adr/0012-the-reading.md": (
+        "ADR 0012: The reading",
+        "Why the command that reads a run back at length gives no advice and "
+        "quotes no judge \u2014 the reading, not the counsel \u2014 and why "
+        "its facts are a type that cannot hold a payload.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "

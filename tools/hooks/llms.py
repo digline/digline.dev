@@ -288,6 +288,11 @@ DESCRIPTIONS: dict[str, str] = {
         "absence, not a refusal \u2014 and what a run projected for an agent "
         "may and may not carry"
     ),
+    "product/adr/0012-the-reading.md": (
+        "Why the command that reads a run back at length states no advice and "
+        "quotes no judge, and why the facts it is built from are a type that "
+        "cannot hold a payload rather than a filter that drops one"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

@@ -181,6 +181,7 @@ nav:
           - ADR 0009 — Boundary semantics: product/adr/0009-boundary-semantics.md
           - ADR 0010 — Per-group aggregates: product/adr/0010-per-group-aggregates.md
           - ADR 0011 — The MCP server: product/adr/0011-the-mcp-server.md
+          - ADR 0012 — The reading: product/adr/0012-the-reading.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
