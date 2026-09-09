@@ -173,6 +173,11 @@ DESCRIPTIONS: dict[str, str] = {
         "prompt A or prompt B, one model or another \u2014 with a report that "
         "names no reference and gates nothing"
     ),
+    "product/explain.md": (
+        "How to read one run back at length \u2014 what moved, against which "
+        "measured interval, what differed underneath \u2014 from a command "
+        "that states the facts and gives no advice"
+    ),
     "product/view.md": (
         "How to read your runs, the baseline and a comparison in a local "
         "browser UI over `.digline/` — stdlib only, no JavaScript, no state of "

@@ -150,6 +150,7 @@ nav:
       - Reference:
           - "digline API": product/api.md
           - "digline diff": product/diff.md
+          - "digline explain": product/explain.md
           - "digline view": product/view.md
           - "digline migrate": product/migrate.md
           - The Docker image: product/docker.md

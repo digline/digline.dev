@@ -200,6 +200,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "\u201cshould I switch?\u201d, names neither run the reference, and "
         "always exits 0.",
     ),
+    "product/explain.md": (
+        "digline explain",
+        "The run read back at length: what ran, what moved, against which "
+        "measured interval, and what differed underneath \u2014 a reading that "
+        "states and never advises.",
+    ),
     "product/view.md": (
         "digline view",
         "The local browser UI over .digline/: four screens on your runs, the "
