@@ -283,6 +283,18 @@ DESCRIPTIONS: dict[str, str] = {
         "absence, not a refusal \u2014 and what a run projected for an agent "
         "may and may not carry"
     ),
+    # Writing
+    "blog/index.md": (
+        "The posts, newest first, each with the runs behind it \u2014 written "
+        "from the pipelines the author runs rather than about the library"
+    ),
+    "blog/my-llm-eval-cried-wolf.md": (
+        "A worked example of a false alarm and the fix: why one reference "
+        "score per case cannot tell a regression from a resample, how a "
+        "min/max band over K=5 separates them on a public fixture, the three "
+        "changes it judged the week after, and the three things it still "
+        "cannot see"
+    ),
 }
 
 
