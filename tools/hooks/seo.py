@@ -145,6 +145,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "digline.run export, the Judge protocols, and the verdict an assertion "
         "returns.",
     ),
+    "product/diff.md": (
+        "digline diff",
+        "Two runs, neither of them a baseline: the report that answers "
+        "\u201cshould I switch?\u201d, names neither run the reference, and "
+        "always exits 0.",
+    ),
     "product/view.md": (
         "digline view",
         "The local browser UI over .digline/: four screens on your runs, the "
@@ -162,6 +168,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "The official ghcr.io/digline/digline image: what it contains and what "
         "it deliberately does not, the tags it publishes, and how to derive it "
         "for a suite with dependencies of its own.",
+    ),
+    "product/mcp.md": (
+        "digline over MCP",
+        "The digline-mcp server: the six tools that let a coding agent read a "
+        "result and measure a new one, and why promoting a baseline is not one "
+        "of them.",
     ),
     "product/roadmap.md": (
         "Roadmap",
@@ -227,6 +239,18 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why \u201cshould I switch?\u201d is a different question from "
         "\u201cdid it get worse?\u201d, and why the report that answers it "
         "calls neither run the reference and gates nothing.",
+    ),
+    "product/adr/0010-per-group-aggregates.md": (
+        "ADR 0010: Per-group aggregates",
+        "Why one number over the whole run hides a class that is broken, and "
+        "how a suite splits an aggregate by a variable its cases already "
+        "carry without giving up the noise floor.",
+    ),
+    "product/adr/0011-the-mcp-server.md": (
+        "ADR 0011: The MCP server",
+        "Why the MCP surface has no tool that promotes a baseline \u2014 an "
+        "absence rather than a refusal \u2014 and what a run projected for an "
+        "agent may and may not carry.",
     ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",

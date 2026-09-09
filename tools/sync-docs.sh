@@ -56,6 +56,19 @@ perl -pi -e 's{\]\(\.\./README\.md\)}{](https://github.com/digline/digline#readm
 perl -pi -e 's{\]\(adr/\)}{](adr/index.md)}g'                                        "$out"/*.md
 perl -pi -e 's{\]\(docs/adr/\)}{](adr/index.md)}g'                                   "$out/changelog.md"
 
+# AGENTS.md is at the root of the other repository and is not a page here: it is
+# a file an agent reads in a checkout, not documentation about the product. It
+# is linked from docs/ and from an ADR, so from two depths.
+perl -pi -e 's{\]\((?:\.\./)+AGENTS\.md\)}{](https://github.com/digline/digline/blob/main/AGENTS.md)}g' \
+  "$out"/*.md "$out"/adr/*.md
+
+# The two files that live at the root of the repository reach the documentation
+# by path — `](docs/mcp.md)`, `](docs/adr/0011-....md)` — which is right where
+# they are read on GitHub. Here they are siblings of what they link to. Must
+# come after the `](docs/adr/)` line above, which would otherwise be left
+# pointing at a directory.
+perl -pi -e 's{\]\(docs/}{](}g'                                                       "$out/changelog.md" "$out/roadmap.md"
+
 # The dates the sitemap needs.
 #
 # `cp` gives every file the time it was copied, which would make <lastmod> say

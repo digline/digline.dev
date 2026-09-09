@@ -168,6 +168,11 @@ DESCRIPTIONS: dict[str, str] = {
         "`digline.run` export, the Judge protocols, and what an assertion "
         "returns"
     ),
+    "product/diff.md": (
+        "How to choose between two runs neither of which is a baseline \u2014 "
+        "prompt A or prompt B, one model or another \u2014 with a report that "
+        "names no reference and gates nothing"
+    ),
     "product/view.md": (
         "How to read your runs, the baseline and a comparison in a local "
         "browser UI over `.digline/` — stdlib only, no JavaScript, no state of "
@@ -181,6 +186,10 @@ DESCRIPTIONS: dict[str, str] = {
         "What the official `ghcr.io/digline/digline` image contains and what it "
         "deliberately does not, which tag to pin in CI, and how to derive it "
         "for a suite with dependencies of its own"
+    ),
+    "product/mcp.md": (
+        "How a coding agent reads a digline result and measures a new one over "
+        "MCP, and why the server has no tool that promotes a baseline"
     ),
     # Examples
     "product/examples/prompt-first.md": (
@@ -252,6 +261,16 @@ DESCRIPTIONS: dict[str, str] = {
         "Why \"should I switch?\" is a different question from \"did it get "
         "worse?\", and why the report that answers it names neither run the "
         "reference and never gates a pipeline"
+    ),
+    "product/adr/0010-per-group-aggregates.md": (
+        "Why an aggregate over the whole run hides a class that is broken, and "
+        "how a suite splits one by a variable its cases already carry without "
+        "losing the noise floor"
+    ),
+    "product/adr/0011-the-mcp-server.md": (
+        "Why the MCP server has no tool that promotes a baseline \u2014 an "
+        "absence, not a refusal \u2014 and what a run projected for an agent "
+        "may and may not carry"
     ),
 }
 
