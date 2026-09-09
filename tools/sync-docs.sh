@@ -69,6 +69,25 @@ perl -pi -e 's{\]\((?:\.\./)+AGENTS\.md\)}{](https://github.com/digline/digline/
 # pointing at a directory.
 perl -pi -e 's{\]\(docs/}{](}g'                                                       "$out/changelog.md" "$out/roadmap.md"
 
+# The pages under product/ that are written here rather than copied in.
+#
+# A page about how digline is *used* rather than about what it does — the
+# operator loop is the first — has no home in the other repository's docs/, but
+# its URL belongs under product/, beside everything it links to. So the source
+# is committed in pages/product/ and installed here.
+#
+# After the rewrites above, deliberately: those correct links that are right in
+# a repository and wrong on the site, and a page written here is already
+# written for the site. It has nothing to correct.
+#
+# This is also what keeps docs/product/ entirely generated, which is the whole
+# reason the `rm -rf` above and `make clean` can be as blunt as they are.
+native="$here/pages/product"
+for page in "$native"/*.md; do
+  [ -e "$page" ] || continue
+  cp "$page" "$out/"
+done
+
 # The dates the sitemap needs.
 #
 # `cp` gives every file the time it was copied, which would make <lastmod> say
@@ -111,6 +130,20 @@ if git -C "$src" rev-parse --git-dir >/dev/null 2>&1; then
   fi
 else
   echo "note: $src is not a git checkout — product/ pages will be dated by mtime" >&2
+fi
+
+# The native pages are dated from *this* repository's history. seo.py looks for
+# anything under product/ in the manifest and nowhere else — it scans docs/ and
+# overrides/ for the pages written here, and pages/ is neither — so their dates
+# have to arrive the same way the copied ones do.
+if git -C "$here" rev-parse --git-dir >/dev/null 2>&1; then
+  for page in "$native"/*.md; do
+    [ -e "$page" ] || continue
+    date="$(git -C "$here" log -1 --format=%cs -- "pages/product/$(basename "$page")")"
+    if [ -n "$date" ]; then
+      printf 'product/%s\t%s\n' "$(basename "$page")" "$date" >> "$manifest"
+    fi
+  done
 fi
 
 echo "docs/product/ ← $src ($(find "$out" -name '*.md' | wc -l | tr -d ' ') pages, $(wc -l < "$manifest" | tr -d ' ') dated)"

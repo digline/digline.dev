@@ -191,6 +191,13 @@ DESCRIPTIONS: dict[str, str] = {
         "How a coding agent reads a digline result and measures a new one over "
         "MCP, and why the server has no tool that promotes a baseline"
     ),
+    "product/operator.md": (
+        "What an operator may decide alone \u2014 re-run, classify a draw from "
+        "a drift, diff two candidates, all under a stopping rule declared "
+        "before the first run \u2014 what it must escalate, why `promote` is "
+        "absent from its surface rather than forbidden, and why the loop runs "
+        "in your perimeter instead of as a service of ours"
+    ),
     # Examples
     "product/examples/prompt-first.md": (
         "How to tell whether an edit to a prompt made the answers better or "

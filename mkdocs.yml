@@ -154,6 +154,10 @@ nav:
           - "digline migrate": product/migrate.md
           - The Docker image: product/docker.md
           - digline over MCP: product/mcp.md
+          # Not a command surface like the six above it: the design of
+          # the loop that drives them on a schedule. It sits here
+          # because it follows the MCP surface it is built on.
+          - The operator loop: product/operator.md
       - Examples:
           - A prompt, no application yet: product/examples/prompt-first.md
           - A classifier: product/examples/classifier.md
