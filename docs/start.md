@@ -1,5 +1,6 @@
 ---
 title: Start here
+template: start.html
 description: >-
   What an LLM regression is, why ordinary tests don't catch it, and what
   digline does about it — in plain language.

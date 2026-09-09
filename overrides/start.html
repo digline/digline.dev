@@ -1,0 +1,92 @@
+{% extends "_shell.html" %}
+
+{#- Start here. Like why.html: the layout is here, the words are in
+    docs/start.md, so writing them is writing prose. The essay treatment is the
+    same one Why uses — the two pages are read the same way, one after the
+    other — with three things Why has no need of, because its Markdown never
+    reaches for them: lists, quotes, and the video.
+
+    Those three are the whole reason this file is not `{% extends "why.html" %}`.
+    The .essay rules below are why.html's, repeated rather than shared: every
+    presentation template carries its own CSS in a style block, and a fourth
+    stylesheet loaded by two of the five pages would be a worse trade than the
+    duplication. If a third page wants this treatment, it moves to pages.css. -#}
+
+{% block style %}
+<style>
+/* ── the reading column ──────────────────────────────────────────────────
+   why.html's, unchanged, so that Why and Start here set prose identically. */
+.essay { max-width: 40rem; }
+.essay h1 { margin-bottom: 2.5rem; }
+.essay h2 {
+  margin: 0 0 .875rem;
+  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.01em;
+  color: var(--ink);
+}
+.essay h2 + p { margin-top: 0; }
+.essay p { margin: 0 0 1rem; color: var(--muted); }
+.essay p:last-child { margin-bottom: 0; }
+.essay strong { color: var(--ink); font-weight: 600; }
+.essay em { font-style: italic; }
+.essay a { color: var(--link); }
+.essay > h2 {
+  padding-top: 2.25rem;
+  margin-top: 2.25rem;
+  border-top: 1px solid var(--rule-soft);
+}
+.essay > h1 + h2 { padding-top: 0; margin-top: 0; border-top: 0; }
+.essay code { font-family: var(--mono); font-size: .875em; color: var(--ink); }
+
+/* ── the three Why does not use ──────────────────────────────────────────
+   Nothing in pages.css styles a list or a quote: the other presentation pages
+   are headings and paragraphs and never needed either. Without these rules the
+   browser's defaults would be the design on this page alone. */
+.essay ul {
+  margin: 0 0 1rem;
+  padding-left: 1.125rem;
+  color: var(--muted);
+}
+.essay li { margin: 0 0 .5rem; padding-left: .25rem; }
+.essay li:last-child { margin-bottom: 0; }
+.essay li::marker { color: var(--faint); }
+
+/* The two headlines digline prints. They are quoted because they are the
+   product's own words and not the page's, and they are set apart the way the
+   landing sets its invitation apart — a rule down the edge, the surface behind
+   them — rather than indented, which says nothing at a glance. The face is the
+   mono one: what a terminal printed should look like it. */
+.essay blockquote {
+  margin: 0 0 1rem;
+  padding: .875rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--fine);
+  border-radius: .375rem;
+}
+.essay blockquote p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: .8125rem; line-height: 1.55;
+  color: var(--ink);
+}
+
+/* ── the video ───────────────────────────────────────────────────────────
+   The element carries its own width, ratio and ground inline, in docs/start.md,
+   so it is correct under any stylesheet and correct here with none of these
+   rules — which is the point: a raw block in the Markdown cannot depend on the
+   template that happens to render it. What is left for this file is what a
+   stylesheet is for: the space around it, and the line under it. */
+.essay video { display: block; margin: 0 0 .75rem; }
+.essay video + p {
+  margin: 0 0 1rem;
+  font-size: .875rem;
+  color: var(--faint);
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<article class="essay">
+{{ page.content }}
+</article>
+{% endblock %}
