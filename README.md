@@ -1,6 +1,6 @@
 # digline.dev
 
-The site behind <https://digline.dev>: MkDocs Material, with the presentation pages (home, why, about, contact) rendered by free-HTML templates in `overrides/`, and the product documentation copied in from [digline/digline](https://github.com/digline/digline) — never written here.
+The site behind <https://digline.dev>: MkDocs Material, with the presentation pages (home, start, why, about, contact) rendered by free-HTML templates in `overrides/`, and the product documentation copied in from [digline/digline](https://github.com/digline/digline) — never written here.
 
 `make docs` copies that documentation from `../digline` into `docs/product/` (gitignored); `make serve` previews the site, `make build` runs the strict build CI runs.
 
