@@ -173,6 +173,11 @@ DESCRIPTIONS: dict[str, str] = {
         "prompt A or prompt B, one model or another \u2014 with a report that "
         "names no reference and gates nothing"
     ),
+    "product/explain.md": (
+        "How to read one run back at length \u2014 what moved, against which "
+        "measured interval, what differed underneath \u2014 from a command "
+        "that states the facts and gives no advice"
+    ),
     "product/view.md": (
         "How to read your runs, the baseline and a comparison in a local "
         "browser UI over `.digline/` — stdlib only, no JavaScript, no state of "
@@ -287,6 +292,11 @@ DESCRIPTIONS: dict[str, str] = {
         "Why the MCP server has no tool that promotes a baseline \u2014 an "
         "absence, not a refusal \u2014 and what a run projected for an agent "
         "may and may not carry"
+    ),
+    "product/adr/0012-the-reading.md": (
+        "Why the command that reads a run back at length states no advice and "
+        "quotes no judge, and why the facts it is built from are a type that "
+        "cannot hold a payload rather than a filter that drops one"
     ),
     # Writing
     "blog/index.md": (

@@ -200,6 +200,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "\u201cshould I switch?\u201d, names neither run the reference, and "
         "always exits 0.",
     ),
+    "product/explain.md": (
+        "digline explain",
+        "The run read back at length: what ran, what moved, against which "
+        "measured interval, and what differed underneath \u2014 a reading that "
+        "states and never advises.",
+    ),
     "product/view.md": (
         "digline view",
         "The local browser UI over .digline/: four screens on your runs, the "
@@ -313,6 +319,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why the MCP surface has no tool that promotes a baseline \u2014 an "
         "absence rather than a refusal \u2014 and what a run projected for an "
         "agent may and may not carry.",
+    ),
+    "product/adr/0012-the-reading.md": (
+        "ADR 0012: The reading",
+        "Why the command that reads a run back at length gives no advice and "
+        "quotes no judge \u2014 the reading, not the counsel \u2014 and why "
+        "its facts are a type that cannot hold a payload.",
     ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
