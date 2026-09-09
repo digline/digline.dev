@@ -147,16 +147,24 @@ html { scroll-padding-top: 88px; }
 }
 
 /* A phone, on the presentation pages. They have no drawer to fall back on, so
-   the bar stays the navigation and only the entry that can afford to go, goes:
-   Why. It is the only one of the four whose page another entry links to —
-   Start here opens by pointing at it and closes with it under "Where to go
-   next" — so this costs a tap, not a destination.
+   the bar stays the navigation and the entries that can afford to go, go: Why
+   and Writing. Neither is a destination this costs you. Why is the only entry
+   whose page another one links to — Start here opens by pointing at it and
+   closes with it under "Where to go next" — and Writing is in the footer's
+   Docs column on every page of the site.
 
-   380px and not 480px: four entries need 209px and the plain bar still has
-   221px at 380px, so above this they all fit and all four stay. The
-   documentation pages solve the same problem the other way, in theme.css: they
-   have a drawer, so the whole nav goes rather than one entry of it. */
-@media (max-width: 380px) {
+   The arithmetic, which moved when Writing arrived: four entries needed 209px
+   against the 221px the plain bar has at 380px, which is where this breakpoint
+   used to sit. Writing is seven characters and one more gap, about 61px at
+   this size, so five need roughly 270px — and the bar has about (viewport −
+   159px) to give them, which reaches 270px at around 430px of viewport. Hence
+   430 and no longer 380: between the two, Why now goes as well, which is the
+   cheaper of the two prices. Below it the three that remain are the product
+   path, and .dg-nav still scrolls rather than widening the page.
+
+   The documentation pages solve the same problem the other way, in theme.css:
+   they have a drawer, so the whole nav goes rather than two entries of it. */
+@media (max-width: 430px) {
   .dg-nav__optional { display: none; }
 }
 
