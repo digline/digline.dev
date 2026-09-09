@@ -146,6 +146,18 @@ html { scroll-padding-top: 88px; }
   .dg-nav { gap: 14px; }
 }
 
+/* A phone. The mark has already given up the word beside it at 600px, and the
+   bar is still asking for more than there is, so one section goes: Why. It is
+   the only one of the four whose page is linked from another entry — Start
+   here opens by pointing at it and closes with it under "Where to go next" —
+   so hiding it here costs a tap, not a destination.
+
+   The nav can still scroll, because .dg-nav has always been able to. Nothing
+   below should need it to. */
+@media (max-width: 480px) {
+  .dg-nav__optional { display: none; }
+}
+
 /* ══ the band ══════════════════════════════════════════════════════════ */
 
 .dg-foot {
