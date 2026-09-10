@@ -155,6 +155,7 @@ nav:
           - "digline migrate": product/migrate.md
           - The Docker image: product/docker.md
           - digline over MCP: product/mcp.md
+          - digline in pytest: product/pytest.md
           # Not a command surface like the six above it: the design of
           # the loop that drives them on a schedule. It sits here
           # because it follows the MCP surface it is built on.
@@ -184,6 +185,7 @@ nav:
           - ADR 0010 — Per-group aggregates: product/adr/0010-per-group-aggregates.md
           - ADR 0011 — The MCP server: product/adr/0011-the-mcp-server.md
           - ADR 0012 — The reading: product/adr/0012-the-reading.md
+          - ADR 0013 — The pytest plugin: product/adr/0013-the-pytest-plugin.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md

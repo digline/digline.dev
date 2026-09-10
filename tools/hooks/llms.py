@@ -196,6 +196,11 @@ DESCRIPTIONS: dict[str, str] = {
         "How a coding agent reads a digline result and measures a new one over "
         "MCP, and why the server has no tool that promotes a baseline"
     ),
+    "product/pytest.md": (
+        "How to gate a pytest run on a digline comparison \u2014 one row per "
+        "check, a suspension as a skip, and no provider call unless you ask "
+        "for one \u2014 and what pytest's single exit code cannot tell apart"
+    ),
     "product/operator.md": (
         "What an operator may decide alone \u2014 re-run, classify a draw from "
         "a drift, diff two candidates, all under a stopping rule declared "
@@ -302,6 +307,11 @@ DESCRIPTIONS: dict[str, str] = {
         "Why the command that reads a run back at length states no advice and "
         "quotes no judge, and why the facts it is built from are a type that "
         "cannot hold a payload rather than a filter that drops one"
+    ),
+    "product/adr/0013-the-pytest-plugin.md": (
+        "Why a pytest row is one check and not one case, why comparing is the "
+        "default and running is a flag that refuses under --collect-only, and "
+        "why there is no way to promote a baseline from a green test run"
     ),
     # Writing
     "blog/index.md": (

@@ -230,6 +230,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "result and measure a new one, and why promoting a baseline is not one "
         "of them.",
     ),
+    "product/pytest.md": (
+        "digline in pytest",
+        "The pytest-digline plugin: a digline comparison as one row per check "
+        "in pytest's own report, gating on the baseline committed in your "
+        "repository \u2014 and why a pytest run costs nothing by default.",
+    ),
     "product/operator.md": (
         "The operator loop",
         "Who watches the measurement when nobody is looking: an agent that "
@@ -325,6 +331,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why the command that reads a run back at length gives no advice and "
         "quotes no judge \u2014 the reading, not the counsel \u2014 and why "
         "its facts are a type that cannot hold a payload.",
+    ),
+    "product/adr/0013-the-pytest-plugin.md": (
+        "ADR 0013: The pytest plugin",
+        "Why a pytest row is one check rather than one case, why the plugin "
+        "compares without running unless you say so, and what pytest's exit "
+        "code cannot carry.",
     ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
