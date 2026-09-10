@@ -225,6 +225,11 @@ DESCRIPTIONS: dict[str, str] = {
         "How to tell what a LangChain upgrade changed, with digline importing "
         "the chain and calling it in process: no server, no HTTP, no port"
     ),
+    "product/examples/llamaindex.md": (
+        "How to tell whether a LlamaIndex RAG still answers from the right "
+        "page, with retrieval running on every run instead of frozen into "
+        "the cases"
+    ),
     "product/examples/langchain4j.md": (
         "What to put in the repository of a LangChain4j service — Spring Boot "
         "or Quarkus — when the endpoint and not the framework is the contract"

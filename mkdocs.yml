@@ -166,6 +166,7 @@ nav:
           - An application digline cannot import: product/examples/external-app.md
           - A LangChain pipeline: product/examples/langchain.md
           - A LangChain4j service: product/examples/langchain4j.md
+          - A LlamaIndex query engine: product/examples/llamaindex.md
           - A team that does not write Python: product/examples/quickstart-toml.md
           - A suite watched on a schedule: product/examples/operator.md
           - A whole product (digline/brief): https://github.com/digline/brief

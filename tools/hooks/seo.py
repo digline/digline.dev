@@ -356,6 +356,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and calling it in process: no server, no HTTP and no port between the "
         "suite and the thing it measures.",
     ),
+    "product/examples/llamaindex.md": (
+        "Example: a LlamaIndex query engine",
+        "Whether a LlamaIndex RAG still answers from the right page: retrieval "
+        "left running rather than frozen, and each case declaring the page "
+        "that ought to answer it.",
+    ),
     "product/examples/langchain4j.md": (
         "Example: a LangChain4j service",
         "What belongs in the repository of a Spring Boot or Quarkus service "
