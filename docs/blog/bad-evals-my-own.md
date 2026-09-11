@@ -5,7 +5,7 @@ seo_title: >-
 description: >-
   I applied the reading Dan Luu applies to other people's benchmarks to my own
   two LLM judges. Numbers first, explanations after.
-date: 2026-09-12
+date: 2026-09-11
 ---
 
 # Bad evals, my own: five exercises from two LLM judges
