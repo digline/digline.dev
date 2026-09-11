@@ -368,6 +368,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "watches the model rather than measuring it, left out of every metric, "
         "and a stop when it moves beyond its noise.",
     ),
+    "product/adr/0017-the-journal-and-the-resumed-run.md": (
+        "ADR 0017: The journal and the resumed run",
+        "Why a killed run no longer loses every paid call: a journal per case "
+        "that holds nothing the run file would not, and a --resume refused "
+        "unless every fact the run asserts is true of both halves.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "

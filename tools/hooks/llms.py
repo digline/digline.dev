@@ -339,6 +339,12 @@ DESCRIPTIONS: dict[str, str] = {
         "provider says nothing: a case kept out of every metric that stops "
         "the pipeline when it moves beyond its noise, in either direction"
     ),
+    "product/adr/0017-the-journal-and-the-resumed-run.md": (
+        "How a run killed mid-flight is finished rather than paid for again: a "
+        "per-case journal that holds nothing the run file would not, a "
+        "`--resume` refused unless every fact the run asserts is true of both "
+        "halves, and why the resumed run carries no marker and no schema bump"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

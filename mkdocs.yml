@@ -194,6 +194,7 @@ nav:
           - ADR 0014 — What may ride a schema bump: product/adr/0014-what-may-ride-a-schema-bump.md
           - ADR 0015 — The recorded output and the re-judge: product/adr/0015-the-recorded-output-and-the-declared-re-judge.md
           - ADR 0016 — The canary case: product/adr/0016-the-canary-case.md
+          - ADR 0017 — The journal and the resumed run: product/adr/0017-the-journal-and-the-resumed-run.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
