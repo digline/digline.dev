@@ -243,6 +243,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "wakes a human only for the drift that deserves a decision \u2014 in "
         "your perimeter, with your keys.",
     ),
+    "product/security.md": (
+        "Security",
+        "How digline thinks about its own attack surface: the five surfaces, "
+        "the boundaries it declares rather than assumes, the six fixes it "
+        "found and published \u2014 and the signs you can check for yourself.",
+    ),
     "product/roadmap.md": (
         "Roadmap",
         "Where digline goes next: tracks and gates rather than dates, and the "

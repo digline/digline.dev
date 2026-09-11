@@ -208,6 +208,12 @@ DESCRIPTIONS: dict[str, str] = {
         "absent from its surface rather than forbidden, and why the loop runs "
         "in your perimeter instead of as a service of ours"
     ),
+    "product/security.md": (
+        "digline's own threat model: the five surfaces an input can reach, "
+        "why a suite file executing is a declared boundary rather than a "
+        "gap, the six fixes and the three advisories, the delta-pass rule "
+        "\u2014 and the attestations, pins and Scorecard run you can check"
+    ),
     # Examples
     "product/examples/prompt-first.md": (
         "How to tell whether an edit to a prompt made the answers better or "

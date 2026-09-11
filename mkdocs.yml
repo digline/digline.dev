@@ -160,6 +160,10 @@ nav:
           # the loop that drives them on a schedule. It sits here
           # because it follows the MCP surface it is built on.
           - The operator loop: product/operator.md
+          # Nor is this one. It is about digline rather than about using
+          # it, and it sits at the end of the surfaces because it is the
+          # page that describes all of them at once.
+          - Security: product/security.md
       - Examples:
           - A prompt, no application yet: product/examples/prompt-first.md
           - A classifier: product/examples/classifier.md
