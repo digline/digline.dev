@@ -350,6 +350,14 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
+    "blog/bad-evals-my-own.md": (
+        "Five exercises on two LLM judges the author runs, artifacts first and "
+        "explanations after: a noise floor that itself moves across sixteen "
+        "identical runs, prompt edits a small judge misreads, a precision "
+        "measured on a censored ground truth, a suite whose class balance "
+        "decides the answer, a one-case threshold that stops holding as the "
+        "suite grows, and five gaps the exercise found in the tool"
+    ),
     "blog/my-llm-eval-cried-wolf.md": (
         "A worked example of a false alarm and the fix: why one reference "
         "score per case cannot tell a regression from a resample, how a "
