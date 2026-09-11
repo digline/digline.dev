@@ -16,6 +16,11 @@ these are the working out.
 
 ## 2026
 
+**12 September 2026** — [Bad evals, my own: five exercises from two LLM judges](bad-evals-my-own.md)
+
+I applied the reading Dan Luu applies to other people's benchmarks to my own
+two LLM judges. Numbers first, explanations after.
+
 **9 September 2026** — [My LLM eval cried wolf. Here's what I measured.](my-llm-eval-cried-wolf.md)
 
 A case went from 5/5 to 2/5 with nothing changed. Measuring the noise floor of

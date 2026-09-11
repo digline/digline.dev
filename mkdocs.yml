@@ -206,6 +206,7 @@ nav:
   # what the site calls it, the same split product/ and "Docs" already have.
   - Writing:
       - blog/index.md
+      - "Bad evals, my own": blog/bad-evals-my-own.md
       - "My LLM eval cried wolf": blog/my-llm-eval-cried-wolf.md
 
   - About: about.md
