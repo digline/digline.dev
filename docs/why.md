@@ -45,6 +45,8 @@ For anything that cannot be checked by exact match — is this answer polite, do
 
 In the newsletter project, once the judge was sampled several times per article instead of once, the picture got clearer and more uncomfortable at the same time. Most articles were judged the same way every time. Six out of twenty-one were not: on those, a five-vote judge would split 3–2 one run and 4–1 the next. Those six were exactly the articles a human would also have hesitated over. The judge was not broken; it was honest about the borderline.
 
+This isn't only our experience: Dan Luu re-graded the same Senior SWE-Bench outputs ten times and found the verdict disagreeing with the official result about a quarter of the time, on identical input ([exercise 7](https://danluu.com/exercise-7/)). The judge is an instrument. An instrument gets calibrated.
+
 Two consequences follow. First, you cannot know whether your *system* got worse until you know how much your *judge* wobbles on its own — the noise floor has to be measured before anything else is. Second, a single case is a bad unit for a decision. Across those same runs, the aggregate — how many articles the judge and the human agreed on — moved by one case out of twenty-one while individual cases swung by three votes. Individual cases are for diagnosis. The aggregate is what you can put a threshold on.
 
 ## The customer's question
