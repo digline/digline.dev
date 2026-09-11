@@ -183,9 +183,9 @@ A smaller confession that belongs here. When I went to write "here is the histor
 
 ## What the exercise found in the tool
 
-I set out to find flaws in two prompts and found five in the tool that measures them. In order of how much they bothered me:
+I set out to find flaws in two prompts and found five things in the tool that measures them, one of which turned out to be a flaw in me. In order of how much they bothered me:
 
-1. **Two prompt edits, same config hash.** Edit A's run has the same config hash as runs with the original JUDGE.md, because the hash covers the target's configuration and the prompt is a declared artifact with its own sha. That's by design and it's what let the edit be compared against the baseline at all; but `compare` has to say out loud when an artifact's sha differs from the baseline's, or a prompt change is invisible in the one number people look at. Open question, being checked.
+1. **Two prompt edits, same config hash.** Edit A's run has the same config hash as runs with the original JUDGE.md. I filed this as a hole and it isn't one: by design the hash is the identity of the suite (assertions, thresholds, samples), a declared artifact travels with its own sha, and a prompt change shows up in the report as a separate fact, artifacts_changed, next to the metrics. That's what let the edit be compared against the baseline at all. What I had actually found was that I'd never read that line of the report.
 2. **The gate's central act leaves no trace.** The two rejections of September 9 exist nowhere except a commit message I wrote. `compare` printed its verdict to a terminal and forgot it.
 3. **Promote had no history.** See exercise 5.
 4. **A case with no majority, and what the run says about it.** One of the 144 cases came back 2/2/1 across the three verdicts. The suite requires 3-of-5 agreement, so I expected a suspended case; the run reports zero. It turned out the agreement rule works on the pass/fail axis, not on the verdict axis: 2 samples agreed with my mark, 3 didn't, that's a 3/5 majority for "fail", and the case fails. Correct by design, and the design wasn't written down anywhere I'd read. It is now.
