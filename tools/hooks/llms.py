@@ -178,6 +178,11 @@ DESCRIPTIONS: dict[str, str] = {
         "measured interval, what differed underneath \u2014 from a command "
         "that states the facts and gives no advice"
     ),
+    "product/rejudge.md": (
+        "How to see what the same answers score under a changed judge, rubric "
+        "or threshold without paying the target again, why that is a replay "
+        "that declares itself rather than a cache, and why it cannot be promoted"
+    ),
     "product/view.md": (
         "How to read your runs, the baseline and a comparison in a local "
         "browser UI over `.digline/` — stdlib only, no JavaScript, no state of "
@@ -318,6 +323,21 @@ DESCRIPTIONS: dict[str, str] = {
         "Why a pytest row is one check and not one case, why comparing is the "
         "default and running is a flag that refuses under --collect-only, and "
         "why there is no way to promote a baseline from a green test run"
+    ),
+    "product/adr/0014-what-may-ride-a-schema-bump.md": (
+        "Why a field may ride a schema bump only if it leaves `config_hash` "
+        "alone, migrates without inventing a value and widens nothing that "
+        "travels — and why a document now says which digline wrote it"
+    ),
+    "product/adr/0015-the-recorded-output-and-the-declared-re-judge.md": (
+        "Why the model's answers are recorded only on opt-in and released by "
+        "no `Disclosure`, why a re-judge is a replay that declares itself "
+        "rather than a cache, and why a replay can never become the baseline"
+    ),
+    "product/adr/0016-the-canary-case.md": (
+        "How a suite notices that the model behind an alias changed when the "
+        "provider says nothing: a case kept out of every metric that stops "
+        "the pipeline when it moves beyond its noise, in either direction"
     ),
     # Writing
     "blog/index.md": (

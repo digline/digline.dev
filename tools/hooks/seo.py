@@ -206,6 +206,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "measured interval, and what differed underneath \u2014 a reading that "
         "states and never advises.",
     ),
+    "product/rejudge.md": (
+        "digline rejudge",
+        "Change the judge, the rubric or a threshold and see what the same "
+        "answers score: no call to the target, and a run that says it was "
+        "replayed and cannot be promoted.",
+    ),
     "product/view.md": (
         "digline view",
         "The local browser UI over .digline/: four screens on your runs, the "
@@ -343,6 +349,24 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why a pytest row is one check rather than one case, why the plugin "
         "compares without running unless you say so, and what pytest's exit "
         "code cannot carry.",
+    ),
+    "product/adr/0014-what-may-ride-a-schema-bump.md": (
+        "ADR 0014: What may ride a schema bump",
+        "The three conditions a field meets to ride a schema bump — the "
+        "hash untouched, a migration that invents nothing, nothing new "
+        "crossing a boundary — and what schema 10 carries.",
+    ),
+    "product/adr/0015-the-recorded-output-and-the-declared-re-judge.md": (
+        "ADR 0015: The recorded output, and the declared re-judge",
+        "Why digline records the model's answers only when a suite asks, lets "
+        "no boundary see them, strips them on promotion — and re-judges "
+        "them in a run that says so.",
+    ),
+    "product/adr/0016-the-canary-case.md": (
+        "ADR 0016: The canary case",
+        "When the alias rolls and the provider says nothing: a case that "
+        "watches the model rather than measuring it, left out of every metric, "
+        "and a stop when it moves beyond its noise.",
     ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",

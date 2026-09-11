@@ -151,6 +151,7 @@ nav:
           - "digline API": product/api.md
           - "digline diff": product/diff.md
           - "digline explain": product/explain.md
+          - "digline rejudge": product/rejudge.md
           - "digline view": product/view.md
           - "digline migrate": product/migrate.md
           - The Docker image: product/docker.md
@@ -190,6 +191,9 @@ nav:
           - ADR 0011 — The MCP server: product/adr/0011-the-mcp-server.md
           - ADR 0012 — The reading: product/adr/0012-the-reading.md
           - ADR 0013 — The pytest plugin: product/adr/0013-the-pytest-plugin.md
+          - ADR 0014 — What may ride a schema bump: product/adr/0014-what-may-ride-a-schema-bump.md
+          - ADR 0015 — The recorded output and the re-judge: product/adr/0015-the-recorded-output-and-the-declared-re-judge.md
+          - ADR 0016 — The canary case: product/adr/0016-the-canary-case.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
