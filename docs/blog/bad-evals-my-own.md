@@ -18,7 +18,7 @@ As in the original, the artifacts come first and the explanations later, in case
 
 ## The exercises
 
-### 1. Three runs, nothing changed
+### 1. Three runs
 
 On September 3 I ran the brief suite three times in ten minutes. 21 cases, Haiku 4.5, 5 samples per case, majority vote. The run files record the config hash and the sha256 of both prompt files; all three are identical (`98fc65b1e49e930e`, `05c20df6…`, `3ce6ed3b…`), and git shows no commit touching `prompts/` between the first and the third.
 
@@ -40,7 +40,7 @@ Here are the seven cases where at least one run was not unanimous. Each string i
 
 ### 2. A reasonable clause
 
-Scout's judge takes a Reddit thread and returns `comment`, `upvote` or `skip`. The rules live in a file called JUDGE.md. On September 9 I tried two edits, one after the other, against a baseline of 17 labelled threads. Both edits looked reasonable to me when I wrote them.
+Scout's judge takes a Reddit thread and returns `comment`, `upvote` or `skip`. The rules live in a file called JUDGE.md. Accuracy below is over the three classes; precision and recall are on `comment` only, since that is the verdict that costs me something. On September 9 I tried two edits, one after the other, against a baseline of 17 labelled threads. Both edits looked reasonable to me when I wrote them.
 
 Edit A adds a paragraph:
 
@@ -64,7 +64,7 @@ Edit B adds one line:
 +- A thread is a comment if any sentence in it asks how to detect that generated logic, prompts or outputs changed from what was previously approved, or how to know whether a fix worked — regardless of the thread's topic or the author's expertise.
 ```
 
-Results, same judge (Haiku 4.5), same 17 cases, 5 samples each:
+Results, same judge (Haiku 4.5, the model scout was running on that morning), same 17 cases, 5 samples each:
 
 | | accuracy | precision | recall |
 |---|---|---|---|
@@ -72,13 +72,13 @@ Results, same judge (Haiku 4.5), same 17 cases, 5 samples each:
 | edit A | **8/17** | 6/9 | **6/12** |
 | edit B | **9/17** | 8/11 | **8/12** |
 
-Both edits were reverted the same morning.
+Both edits were reverted the same morning. Later that day I moved the judge to Sonnet 5, which is why the baseline you'll see in exercise 4 has different numbers on the same 17 cases: the edits were tested against the reference of the moment, not against the baseline that was promoted afterwards.
 
 **Can you tell from the diff why? What would you need in order to tell?**
 
 ### 3. A clean precision
 
-Brief scores each item 1 to 5. It shows me everything scored 4 or 5, or the top 5 if fewer, and asks which ones interest me. That answer is the ground truth for the suite. The suite's 21 cases were exported from this file on August 27, when it was shorter; the table below is the file ten days later, which is why its totals don't match the suite's. The suite reports precision 10/15, and the gate has been green for two weeks.
+Brief scores each item 1 to 5. It shows me everything scored 4 or 5, or the top 5 if fewer, and asks which ones interest me. That answer is the ground truth for the suite. The suite's 21 cases are the items I had been shown by August 25: 18 that scored 4 or 5 and 3 below-threshold fillers from the pad-to-five rule. The 10 I marked are its positives. The suite reports precision 10/15, and the gate has been green for two weeks.
 
 Here is the state of the file that holds the ground truth, 446 items, on September 6:
 
@@ -107,7 +107,7 @@ For two weeks scout's suite had 17 cases. On September 11 I regenerated it from 
 | precision | 11/15 = 0.73 | 14/27 = 0.52 |
 | recall | 11/12 = 0.92 | 14/20 = 0.70 |
 
-The 17-case numbers are identical to the promoted baseline, so this is not drift between runs. The gate passes on 17 cases and fails on 144. Also: 11 of the 17 old cases came from r/LLMDevs; 73 of the 144 come from r/AI_Agents.
+The 17-case numbers are identical to the promoted baseline, so this is not drift between runs. The gate passes on 17 cases and fails on 144.
 
 **Which of the two precisions is the true one?**
 
@@ -143,7 +143,7 @@ One caveat that matters for the honesty of this section. The run files store, pe
 
 I looked for the bug in the two edits for a good half hour, diff in hand, and there is nothing to find there. Edit A tells the judge "if the author already lists the practice you'd recommend, don't comment". Edit B tells it "any thread asking how to detect a change from an approved state is a comment". Both are things I believe.
 
-What happened is that Haiku read a sufficient condition as a necessary one. After edit B, threads that clearly matched the earlier rules but didn't contain a sentence about "detecting change" started coming back as `skip`, because the new line read like the definition of a comment rather than one more way to earn one. Recall went from 9/12 to 8/12 on that edit and 6/12 on the other, and the cases that dropped were ones that had been unanimous `comment` for days. The prompt edits were fine as English. They were bad as instructions to this particular model, and no amount of staring at the diff tells you that. What you need is not a sharper eye but a run against a baseline you trust.
+My reading, from which cases fell rather than from any recorded reasoning (I wasn't keeping the raw output yet), is that Haiku read a sufficient condition as a necessary one. After edit B, threads that clearly matched the earlier rules but didn't contain a sentence about "detecting change" started coming back as `skip`, because the new line read like the definition of a comment rather than one more way to earn one. Recall went from 9/12 to 8/12 on that edit and 6/12 on the other, and the cases that dropped were ones that had been unanimous `comment` for days. The prompt edits were fine as English. They were bad as instructions to this particular model, and no amount of staring at the diff tells you that. What you need is not a sharper eye but a run against a baseline you trust.
 
 Two footnotes. First, the difference between 9/12 and 8/12 is one case, and given exercise 1 you should ask whether that's noise. It's a fair question; the reason I reverted anyway is that the cases that flipped were the stable ones, not the flapping ones, and the 6/12 of edit A is outside anything the noise floor produces. Second, the two diffs above do not exist in git. I reverted with a working-tree checkout, so the repository has exactly one blob of JUDGE.md, ever. The diffs come from the run files, which store the full text of every declared artifact at the moment of the run. September 11 was the first time that design decision paid for itself, and it paid for the whole exercise.
 
@@ -154,6 +154,8 @@ Two footnotes. First, the difference between 9/12 and 8/12 is one case, and give
 There is a second layer I hadn't noticed until I made the table: 265 of the 446 items were never scored at all. The script caps how many items it judges per run, and everything past the cap is stored as skipped. So it isn't "the judge hides the low scores from me"; it's "the judge hides the low scores from me, and something else hides 60% of the feed from the judge".
 
 The 16 low-scoring items I did see (through the pad-to-five rule) I marked as not interesting, all 16. That's mildly reassuring about the judge and says nothing about recall, since 16 of 160 low scores is not a sample of anything.
+
+One more thing hides in the gap between the two tables. 18 of the 21 suite cases scored 4 or 5 the first time; when the suite re-judges them, 15 come back at 4 or above. The three that drop are all items I hadn't marked, and it is the same three in 14 of the 16 runs. That is not exercise 1's noise showing up again at random. For two of the three my reading is that it is exercise 1's noise turned into a bias by selection: the morning pass judges each item once and shows me whatever clears 4, so an item that clears on one lucky sample gets into the suite, and the suite, sampling five times, puts it back. Across the 16 runs those two items reach 4 in 9 and 7 samples out of 80, so a lucky single sample is plausible. The third item reaches 4 in 0 samples out of 80, which makes a lucky sample very unlikely; the more probable story is that the prompt on August 24 was not the prompt the suite runs today, and I can't check, because the morning pass didn't record the prompt's hash and git starts two days later. Either way, the 10/15 precision counts three items against the judge for a decision the suite's own judge would not make.
 
 None of this makes the precision number wrong. It makes it a number about half the pipeline, reported as if it were about the pipeline.
 
