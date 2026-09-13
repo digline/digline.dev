@@ -72,7 +72,7 @@ Results, same judge (Haiku 4.5, the model scout was running on that morning), sa
 | edit A | **8/17** | 6/9 | **6/12** |
 | edit B | **9/17** | 8/11 | **8/12** |
 
-Both edits were reverted the same morning. Later that day I moved the judge to Sonnet 5, which is why the baseline you'll see in exercise 4 has different numbers on the same 17 cases: the edits were tested against the reference of the moment, not against the baseline that was promoted afterwards.
+Both edits were reverted the same morning. Later that day I moved the judge to Sonnet 5 and re-set the gate's thresholds on its run, which is why the baseline you'll see in exercises 4 and 5 has different numbers on the same 17 cases, and why the Haiku reference above would not pass that gate: the edits were tested against the reference of the moment, not against the baseline promoted afterwards.
 
 **Can you tell from the diff why? What would you need in order to tell?**
 
@@ -169,6 +169,8 @@ The 144-case suite fixes that, then breaks in a different place. The labels come
 
 Nine threads I ignored came back `comment`, five of them unanimously across the 5 samples. With the raw outputs recorded this time, I could read the judge's reasoning on each. On at least five, the judge is right by the letter of JUDGE.md: a thread asking how to tell which of forty diffs between two runs actually matters, one asking what would make you distrust a project-level quality score, one about test-set leakage in prompt optimization. Those are questions for me. I didn't ignore them because the rules say skip. I ignored them because it was the fourth thread that morning, or because I had already commented twice on that subreddit that day. So the ground truth for "not a comment" is polluted with "not today", and the measured precision is lower than the true one by an amount I can't compute from this data.
 
+This also reaches back into exercise 2. Both edits were rejected on the 17-case suite, the one with a single negative, so was that rejection worth anything? I think so, for one reason: the verdict rested on recall (9/12 down to 6/12 and 8/12), and recall over the positives is the one quantity a suite made almost entirely of positives measures properly. Had the rejection rested on precision, it would have been a coin toss on 9 to 12 predictions.
+
 The honest answer is that the suite measures agreement with my behaviour, and my behaviour is not the rule. To measure the rule I have to change the question the script asks me at the end of each morning: not "did you comment?" but "should this have been a comment?", which is a different, slower and more annoying question. That change is next.
 
 One more thing the recorded outputs showed and no aggregate would have: across the nine false positives the judge's proposed angle is nearly always one of two anecdotes from my own experience, recycled. Precision doesn't care. The person who then writes the comment does.
@@ -187,13 +189,13 @@ A smaller confession that belongs here. When I went to write "here is the histor
 
 ## What the exercise found in the tool
 
-I set out to find flaws in two prompts and found five things in the tool that measures them, one of which turned out to be a flaw in me. In order of how much they bothered me:
+I set out to find flaws in two prompts and found four in the tool that measures them, in order of how much they bothered me, plus one that turned out to be me.
 
-1. **Two prompt edits, same config hash.** Edit A's run has the same config hash as runs with the original JUDGE.md. I filed this as a hole and it isn't one: by design the hash is the identity of the suite (assertions, thresholds, samples), a declared artifact travels with its own sha, and a prompt change shows up in the report as a separate fact, `artifacts_changed`, next to the metrics. That's what let the edit be compared against the baseline at all. What I had actually found was that I'd never read that line of the report.
-2. **The gate's central act leaves no trace.** The two rejections of September 9 exist nowhere except a commit message I wrote. `compare` printed its verdict to a terminal and forgot it.
-3. **Promote had no history.** See exercise 5.
-4. **A case with no majority, and what the run says about it.** One of the 144 cases came back 2/2/1 across the three verdicts. The suite requires 3-of-5 agreement, so I expected a suspended case; the run reports zero. It turned out the agreement rule works on the pass/fail axis, not on the verdict axis: 2 samples agreed with my mark, 3 didn't, that's a 3/5 majority for "fail", and the case fails. Correct by design, and the design wasn't written down anywhere I'd read. It is now.
-5. **Per-call cost budget, checked on the mean.** Nine individual judgments exceeded the $0.020 budget, one by 17%, and the budget assertion passed on all 144 cases because it evaluates the mean of five samples. Possibly by design. Not what the name promises.
+1. **The gate's central act leaves no trace.** The two rejections of September 9 exist nowhere except a commit message I wrote. `compare` printed its verdict to a terminal and forgot it.
+2. **Promote had no history.** See exercise 5.
+3. **A case with no majority, and what the run says about it.** One of the 144 cases came back 2/2/1 across the three verdicts. The suite requires 3-of-5 agreement, so I expected a suspended case; the run reports zero. It turned out the agreement rule works on the pass/fail axis, not on the verdict axis: 2 samples agreed with my mark, 3 didn't, that's a 3/5 majority for "fail", and the case fails. Correct by design, and the design wasn't written down anywhere I'd read. It is now.
+4. **Per-call cost budget, checked on the mean.** Nine individual judgments exceeded the $0.020 budget, one by 17%, and the budget assertion passed on all 144 cases because it evaluates the mean of five samples. Possibly by design. Not what the name promises.
+5. **Two prompt edits, same config hash.** Edit A's run has the same config hash as runs with the original JUDGE.md. I filed this as a hole and it isn't one: by design the hash is the identity of the suite (assertions, thresholds, samples), a declared artifact travels with its own sha, and a prompt change shows up in the report as a separate fact, `artifacts_changed`, next to the metrics. That's what let the edit be compared against the baseline at all. What I had actually found was that I'd never read that line of the report.
 
 And one incident that turned into a feature. The first attempt at the 144-case run, 720 calls to Sonnet, was killed at around call 400 by a memory watchdog on my laptop. The tool had measured itself flat under 100 MB; the pressure came from an IDE. But the run file was written only at the end, so about $4 of judgments were gone with nothing on disk. The fix, a per-case journal with `--resume`, shipped the same evening and the second attempt ran through it. $6.18 for 720 calls, against an estimate of $8.06; adaptive thinking is cheaper on the easy skips.
 
