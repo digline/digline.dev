@@ -1,11 +1,11 @@
 ---
 title: "Bad evals, my own: five exercises from two LLM judges"
 seo_title: >-
-  Five exercises on my own LLM judge evals
+  Bad evals, my own: five exercises from two LLM judges
 description: >-
   I applied the reading Dan Luu applies to other people's benchmarks to my own
   two LLM judges. Numbers first, explanations after.
-date: 2026-09-11
+date: 2026-09-13
 ---
 
 # Bad evals, my own: five exercises from two LLM judges
@@ -115,11 +115,11 @@ The 17-case numbers are identical to the promoted baseline, so this is not drift
 
 Scout's gate is three thresholds: accuracy ≥ 0.60, precision ≥ 0.70, recall ≥ 0.85. I set them from the promoted run (11/17, 11/15, 11/12) with a written rule: the threshold sits between the measured value and the value one case lower, so a single case flipping the wrong way fails the gate.
 
+Exercise 7 spends a section on exactly this pattern in Senior SWE-Bench: a continuous score, then a hard cutoff, so that one line of code more turns a "tasteful" solve into a failure. The criticism is that the cutoff is an arbitrary formula that nobody had to write down.
+
 Here is what one case is worth, in accuracy points, as a function of suite size:
 
 [![Curve of how many accuracy points a single case is worth as the suite grows from 5 to 300 cases, falling steeply and then flattening. Marked on it: my old suite at 17 cases, where one case is 5.9 points; DeepSWE, 0.9 points; my new suite at 144 cases, 0.7 points.](../assets/bad-evals/ex5_one_case.svg)](../assets/bad-evals/ex5_one_case.svg)
-
-Exercise 7 spends a section on exactly this pattern in Senior SWE-Bench: a continuous score, then a hard cutoff, so that one line of code more turns a "tasteful" solve into a failure. The criticism is that the cutoff is an arbitrary formula that nobody had to write down.
 
 **Is my gate an instance of the same mistake? If not, what is the difference, and when does it stop holding?**
 
@@ -143,7 +143,7 @@ One caveat that matters for the honesty of this section. The run files store, pe
 
 I looked for the bug in the two edits for a good half hour, diff in hand, and there is nothing to find there. Edit A tells the judge "if the author already lists the practice you'd recommend, don't comment". Edit B tells it "any thread asking how to detect a change from an approved state is a comment". Both are things I believe.
 
-What happened is that Haiku read a sufficient condition as a necessary one. After edit B, threads that clearly matched the earlier rules but didn't contain a sentence about "detecting change" started coming back as `skip`, because the new line read like the definition of a comment rather than one more way to earn one. Recall went from 9/12 to 8/12 on that edit and 6/12 on the other, and the cases that dropped were ones that had been unanimous `comment` for days. The prompt edits were fine as English. They were bad as instructions to this particular model, and no amount of staring at the diff tells you that. What you need is not a sharper eye but a run against a baseline you trust, and the answer to "what would you need" is exactly that: the run.
+What happened is that Haiku read a sufficient condition as a necessary one. After edit B, threads that clearly matched the earlier rules but didn't contain a sentence about "detecting change" started coming back as `skip`, because the new line read like the definition of a comment rather than one more way to earn one. Recall went from 9/12 to 8/12 on that edit and 6/12 on the other, and the cases that dropped were ones that had been unanimous `comment` for days. The prompt edits were fine as English. They were bad as instructions to this particular model, and no amount of staring at the diff tells you that. What you need is not a sharper eye but a run against a baseline you trust.
 
 Two footnotes. First, the difference between 9/12 and 8/12 is one case, and given exercise 1 you should ask whether that's noise. It's a fair question; the reason I reverted anyway is that the cases that flipped were the stable ones, not the flapping ones, and the 6/12 of edit A is outside anything the noise floor produces. Second, the two diffs above do not exist in git. I reverted with a working-tree checkout, so the repository has exactly one blob of JUDGE.md, ever. The diffs come from the run files, which store the full text of every declared artifact at the moment of the run. September 11 was the first time that design decision paid for itself, and it paid for the whole exercise.
 
@@ -203,4 +203,4 @@ Dan Luu's line is that evals are more about avoiding mistakes than following a p
 
 ---
 
-*All numbers in this post come from `.digline/` in the two repos and from `seen.json` in each; run ids are `2026-09-03T06-14-13…`, `06-18-43…`, `06-24-50…` for exercise 1, `2026-09-09T06-34-01…` and `06-51-45…` for exercise 2, `2026-09-11T15-09-23…` for exercise 4. The analysis scripts are [in the site's repository](https://github.com/digline/digline.dev/tree/main/analysis). Thread titles in exercise 4 are paraphrased; the threads are public but the point is not who wrote them.*
+*All numbers in this post come from `.digline/` in the two repos and from `seen.json` in each; run ids are `2026-09-03T06-14-13…`, `06-18-43…`, `06-24-50…` for exercise 1, `2026-09-09T06-34-01…` and `06-51-45…` for exercise 2, `2026-09-11T15-09-23…` for exercise 4. Thread titles in exercise 4 are paraphrased; the threads are public but the point is not who wrote them.*
