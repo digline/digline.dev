@@ -20,6 +20,18 @@ mkdir -p "$out/examples"
 
 cp -R "$src/docs/." "$out/"
 
+# A README that accompanies an asset is not a page. `docs/assets/` holds images
+# and the note that explains how one was made — read in a checkout by whoever
+# edits the SVG, never by anyone on the site — and `cp -R` cannot tell the two
+# apart. mkdocs can: a file that lands in the tree with no entry in `nav` is a
+# warning, and `--strict` makes it a failed build. In `publish.yml` that build
+# runs *after* PyPI, so the first sighting would be a version already spent.
+#
+# By pattern and not by name. The one that arrived was `assets/flow/README.md`;
+# the next asset with a note beside it would fail the same build for the same
+# reason, and a rule naming one file closes only the instance it met.
+find "$out/assets" -name 'README.md' -type f -delete 2>/dev/null || true
+
 # Two files live at the root of the repository rather than in its docs/, because
 # that is where a reader arriving on GitHub looks for them. They are pages here.
 cp "$src/CHANGELOG.md" "$out/changelog.md"
