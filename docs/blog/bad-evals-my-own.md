@@ -74,11 +74,11 @@ Results, same judge (Haiku 4.5), same 17 cases, 5 samples each:
 
 Both edits were reverted the same morning.
 
-**Where is the error?**
+**Can you tell from the diff why? What would you need in order to tell?**
 
 ### 3. A clean precision
 
-Brief scores each item 1 to 5. It shows me everything scored 4 or 5, or the top 5 if fewer, and asks which ones interest me. That answer is the ground truth for the suite. The suite reports precision 10/15 on 21 cases, and the gate has been green for two weeks.
+Brief scores each item 1 to 5. It shows me everything scored 4 or 5, or the top 5 if fewer, and asks which ones interest me. That answer is the ground truth for the suite. The suite's 21 cases were exported from this file on August 27, when it was shorter; the table below is the file ten days later, which is why its totals don't match the suite's. The suite reports precision 10/15, and the gate has been green for two weeks.
 
 Here is the state of the file that holds the ground truth, 446 items, on September 6:
 
@@ -115,6 +115,10 @@ The 17-case numbers are identical to the promoted baseline, so this is not drift
 
 Scout's gate is three thresholds: accuracy ≥ 0.60, precision ≥ 0.70, recall ≥ 0.85. I set them from the promoted run (11/17, 11/15, 11/12) with a written rule: the threshold sits between the measured value and the value one case lower, so a single case flipping the wrong way fails the gate.
 
+Here is what one case is worth, in accuracy points, as a function of suite size:
+
+[![Curve of how many accuracy points a single case is worth as the suite grows from 5 to 300 cases, falling steeply and then flattening. Marked on it: my old suite at 17 cases, where one case is 5.9 points; DeepSWE, 0.9 points; my new suite at 144 cases, 0.7 points.](../assets/bad-evals/ex5_one_case.svg)](../assets/bad-evals/ex5_one_case.svg)
+
 Exercise 7 spends a section on exactly this pattern in Senior SWE-Bench: a continuous score, then a hard cutoff, so that one line of code more turns a "tasteful" solve into a failure. The criticism is that the cutoff is an arbitrary formula that nobody had to write down.
 
 **Is my gate an instance of the same mistake? If not, what is the difference, and when does it stop holding?**
@@ -135,11 +139,11 @@ Dan Luu re-graded Senior SWE-Bench outputs ten times and found the official resu
 
 One caveat that matters for the honesty of this section. The run files store, per sample, whether the assertion passed, not the raw score the judge produced. So I know that sample 2 disagreed with my mark; I don't know whether it said 3 instead of 4 or 1 instead of 5. Keeping the raw output per sample became possible only this week, and only if you turn it on. I hadn't.
 
-### 2. In the judge, not in the prompt
+### 2. You can't, and neither could I
 
-I looked for the bug in the two edits for a good half hour. Edit A tells the judge "if the author already lists the practice you'd recommend, don't comment". Edit B tells it "any thread asking how to detect a change from an approved state is a comment". Both are things I believe.
+I looked for the bug in the two edits for a good half hour, diff in hand, and there is nothing to find there. Edit A tells the judge "if the author already lists the practice you'd recommend, don't comment". Edit B tells it "any thread asking how to detect a change from an approved state is a comment". Both are things I believe.
 
-What happened is that Haiku read a sufficient condition as a necessary one. After edit B, threads that clearly matched the earlier rules but didn't contain a sentence about "detecting change" started coming back as `skip`, because the new line read like the definition of a comment rather than one more way to earn one. Recall went from 9/12 to 8/12 on that edit and 6/12 on the other, and the cases that dropped were ones that had been unanimous `comment` for days. The prompt edits were fine as English. They were bad as instructions to this particular model, and no amount of staring at the diff tells you that. Running it does.
+What happened is that Haiku read a sufficient condition as a necessary one. After edit B, threads that clearly matched the earlier rules but didn't contain a sentence about "detecting change" started coming back as `skip`, because the new line read like the definition of a comment rather than one more way to earn one. Recall went from 9/12 to 8/12 on that edit and 6/12 on the other, and the cases that dropped were ones that had been unanimous `comment` for days. The prompt edits were fine as English. They were bad as instructions to this particular model, and no amount of staring at the diff tells you that. What you need is not a sharper eye but a run against a baseline you trust, and the answer to "what would you need" is exactly that: the run.
 
 Two footnotes. First, the difference between 9/12 and 8/12 is one case, and given exercise 1 you should ask whether that's noise. It's a fair question; the reason I reverted anyway is that the cases that flipped were the stable ones, not the flapping ones, and the 6/12 of edit A is outside anything the noise floor produces. Second, the two diffs above do not exist in git. I reverted with a working-tree checkout, so the repository has exactly one blob of JUDGE.md, ever. The diffs come from the run files, which store the full text of every declared artifact at the moment of the run. September 11 was the first time that design decision paid for itself, and it paid for the whole exercise.
 
@@ -175,8 +179,6 @@ That's the defence, and I think it holds for a gate, provided the step is placed
 
 It stops holding as the suite grows.
 
-[![Curve of how many accuracy points a single case is worth as the suite grows from 5 to 300 cases, falling steeply and then flattening. Marked on it: my old suite at 17 cases, where one case is 5.9 points; DeepSWE, 0.9 points; my new suite at 144 cases, 0.7 points.](../assets/bad-evals/ex5_one_case.svg)](../assets/bad-evals/ex5_one_case.svg)
-
 On 17 cases one case is 5.9 accuracy points, which is more than the noise floor, so "one case worse" is a meaningful event. On 144 cases one case is 0.7 points, and the September 11 run had 13 non-unanimous cases. A threshold one case below the measured value is now inside the noise, and the rule I wrote down for 17 cases is wrong for 144. I don't have the replacement yet. The candidate is a threshold expressed in cases rather than in points, with the count of stable cases that moved as the quantity, which is roughly what the floor already knows.
 
 A smaller confession that belongs here. When I went to write "here is the history of my thresholds", there wasn't one. `promote` overwrote a single file with no log, the baseline file recorded the run's timestamp but not the promotion's, and of the three threshold configurations that appear in run files, one was never committed and is unrecoverable. The history of my own gate lived in commit messages I happened to write. That got fixed this week, after this exercise, not before.
@@ -185,7 +187,7 @@ A smaller confession that belongs here. When I went to write "here is the histor
 
 I set out to find flaws in two prompts and found five things in the tool that measures them, one of which turned out to be a flaw in me. In order of how much they bothered me:
 
-1. **Two prompt edits, same config hash.** Edit A's run has the same config hash as runs with the original JUDGE.md. I filed this as a hole and it isn't one: by design the hash is the identity of the suite (assertions, thresholds, samples), a declared artifact travels with its own sha, and a prompt change shows up in the report as a separate fact, artifacts_changed, next to the metrics. That's what let the edit be compared against the baseline at all. What I had actually found was that I'd never read that line of the report.
+1. **Two prompt edits, same config hash.** Edit A's run has the same config hash as runs with the original JUDGE.md. I filed this as a hole and it isn't one: by design the hash is the identity of the suite (assertions, thresholds, samples), a declared artifact travels with its own sha, and a prompt change shows up in the report as a separate fact, `artifacts_changed`, next to the metrics. That's what let the edit be compared against the baseline at all. What I had actually found was that I'd never read that line of the report.
 2. **The gate's central act leaves no trace.** The two rejections of September 9 exist nowhere except a commit message I wrote. `compare` printed its verdict to a terminal and forgot it.
 3. **Promote had no history.** See exercise 5.
 4. **A case with no majority, and what the run says about it.** One of the 144 cases came back 2/2/1 across the three verdicts. The suite requires 3-of-5 agreement, so I expected a suspended case; the run reports zero. It turned out the agreement rule works on the pass/fail axis, not on the verdict axis: 2 samples agreed with my mark, 3 didn't, that's a 3/5 majority for "fail", and the case fails. Correct by design, and the design wasn't written down anywhere I'd read. It is now.
@@ -201,4 +203,4 @@ Dan Luu's line is that evals are more about avoiding mistakes than following a p
 
 ---
 
-*All numbers in this post come from `.digline/` in the two repos and from `seen.json` in each; run ids are `2026-09-03T06-14-13…`, `06-18-43…`, `06-24-50…` for exercise 1, `2026-09-09T06-34-01…` and `06-51-45…` for exercise 2, `2026-09-11T15-09-23…` for exercise 4. The analysis scripts are in the post's repo. Thread titles in exercise 4 are paraphrased; the threads are public but the point is not who wrote them.*
+*All numbers in this post come from `.digline/` in the two repos and from `seen.json` in each; run ids are `2026-09-03T06-14-13…`, `06-18-43…`, `06-24-50…` for exercise 1, `2026-09-09T06-34-01…` and `06-51-45…` for exercise 2, `2026-09-11T15-09-23…` for exercise 4. The analysis scripts are [in the site's repository](https://github.com/digline/digline.dev/tree/main/analysis). Thread titles in exercise 4 are paraphrased; the threads are public but the point is not who wrote them.*
