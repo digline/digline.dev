@@ -374,6 +374,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "that holds nothing the run file would not, and a --resume refused "
         "unless every fact the run asserts is true of both halves.",
     ),
+    "product/adr/0018-the-recorded-trajectory-and-the-agent-under-test.md": (
+        "ADR 0018: The recorded trajectory",
+        "Why a suite that judged an agent's tool calls could never be "
+        "re-judged, and what closing that cost: the trajectory recorded beside "
+        "the answer, arguments that never travel, and an agent under the gate.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "
@@ -403,6 +409,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "What a LangChain upgrade changed, with digline importing the chain "
         "and calling it in process: no server, no HTTP and no port between the "
         "suite and the thing it measures.",
+    ),
+    "product/examples/langgraph.md": (
+        "Example: a LangGraph agent",
+        "Whether an agent still calls the right tools with the right arguments: "
+        "the trajectory held against a committed baseline, the tools real and "
+        "the model scripted, and no key anywhere.",
     ),
     "product/examples/llamaindex.md": (
         "Example: a LlamaIndex query engine",

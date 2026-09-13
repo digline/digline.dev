@@ -241,6 +241,12 @@ DESCRIPTIONS: dict[str, str] = {
         "How to tell what a LangChain upgrade changed, with digline importing "
         "the chain and calling it in process: no server, no HTTP, no port"
     ),
+    "product/examples/langgraph.md": (
+        "How to gate a LangGraph agent on what it did rather than what it "
+        "said: which tools it called, in what order, and with which arguments, "
+        "with the tools executing for real and the model scripted so CI needs "
+        "no key"
+    ),
     "product/examples/llamaindex.md": (
         "How to tell whether a LlamaIndex RAG still answers from the right "
         "page, with retrieval running on every run instead of frozen into "
@@ -344,6 +350,12 @@ DESCRIPTIONS: dict[str, str] = {
         "per-case journal that holds nothing the run file would not, a "
         "`--resume` refused unless every fact the run asserts is true of both "
         "halves, and why the resumed run carries no marker and no schema bump"
+    ),
+    "product/adr/0018-the-recorded-trajectory-and-the-agent-under-test.md": (
+        "Why a suite that judged an agent's tool calls could never be "
+        "re-judged, and what it cost to close that: the trajectory recorded "
+        "beside the answer it belongs to, arguments that are payload and never "
+        "travel, and a check for the right tool asked the wrong question"
     ),
     # Writing
     "blog/index.md": (
