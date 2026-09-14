@@ -6,6 +6,10 @@ description: >-
   I applied the reading Dan Luu applies to other people's benchmarks to my own
   two LLM judges. Numbers first, explanations after.
 date: 2026-09-13
+image: assets/bad-evals/heading.png
+image_alt: >-
+  Curve of how many accuracy points a single case is worth as the suite grows,
+  with three points marked: 17 cases, 5.9 points; DeepSWE, 0.9; 144 cases, 0.7.
 ---
 
 # Bad evals, my own: five exercises from two LLM judges
