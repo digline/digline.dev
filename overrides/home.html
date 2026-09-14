@@ -1,7 +1,7 @@
 {% extends "_shell.html" %}
 
 {#- The landing. Free HTML, none of the theme: the sentence the product is, the
-    one drawing, the command you copy, the output digline actually prints, and
+    drawing, the command you copy, the flow and the output digline prints, and
     three columns underneath that arrive as you reach them. -#}
 
 {% block style %}
@@ -25,7 +25,7 @@
 
 body { background-image: linear-gradient(var(--wash), var(--wash)); }
 
-/* ── the one drawing on the site ─────────────────────────────────────────
+/* ── the drawing under the sentence ──────────────────────────────────────
    The mark, at a size where you can read it: a reference the runs are judged
    against, a threshold under it, and a run that fell — below the reference, not
    below the threshold. SVG and CSS, so it draws itself with script blocked. */
@@ -160,6 +160,22 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
                    color: var(--muted); }
 .shot pre .worse { color: var(--worse); }
 
+/* The flow, above the block: the same animated SVG the README opens with, as
+   an <img> — it animates with SMIL and keeps its own reduced-motion rule, so
+   it needs no script. Two files, one per theme, switched by the same rules as
+   the toggle's sun and moon rather than by <picture>, which would follow the
+   system and ignore the toggle. Both are lazy, so the hidden one is not
+   fetched. */
+.flow { margin: 0 0 1.5rem; }
+.flow img { display: block; width: 100%; height: auto; }
+.flow .flow__dark { display: none; }
+[data-md-color-scheme="slate"] .flow .flow__dark  { display: block; }
+[data-md-color-scheme="slate"] .flow .flow__light { display: none; }
+@media (prefers-color-scheme: dark) {
+  body:not([data-md-color-scheme="default"]) .flow .flow__dark  { display: block; }
+  body:not([data-md-color-scheme="default"]) .flow .flow__light { display: none; }
+}
+
 /* Where to go once you have read it: the argument behind the line, and the
    same line on your own suite. Two links, not two buttons — nothing here is
    the page's call to action, which is at the foot. */
@@ -239,6 +255,17 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 
 <section class="shot" aria-labelledby="shot-h">
   <h2 id="shot-h">What it looks like</h2>
+
+  {#- Copied from digline/docs/assets/flow/, where a private generator writes
+      them: replace them from there, do not edit them here. -#}
+  <div class="flow">
+    <img class="flow__light" src="{{ base_url }}/assets/flow/digline-flow-light.svg"
+         width="960" height="540" loading="lazy" decoding="async"
+         alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent tries to write the baseline itself, it is refused.">
+    <img class="flow__dark" src="{{ base_url }}/assets/flow/digline-flow.svg"
+         width="960" height="540" loading="lazy" decoding="async"
+         alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent tries to write the baseline itself, it is refused.">
+  </div>
 
   {#- Printed by digline 0.2.0, not written for the page: one check down, and
       the parameter that moved named beside it. The lines are spans rather than
