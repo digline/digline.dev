@@ -380,6 +380,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "re-judged, and what closing that cost: the trajectory recorded beside "
         "the answer, arguments that never travel, and an agent under the gate.",
     ),
+    "product/adr/0019-the-reasoning-operator.md": (
+        "ADR 0019: The reasoning operator",
+        "Why the operator's escalation rules became data: a policy in TOML the "
+        "agent exercises and never edits, a decision that cites its clause, and "
+        "a clause that may hold but never wake.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "

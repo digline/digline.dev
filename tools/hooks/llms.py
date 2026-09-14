@@ -357,6 +357,13 @@ DESCRIPTIONS: dict[str, str] = {
         "beside the answer it belongs to, arguments that are payload and never "
         "travel, and a check for the right tool asked the wrong question"
     ),
+    "product/adr/0019-the-reasoning-operator.md": (
+        "How the operator loop exercises a judgment somebody wrote down: a "
+        "`[policy]` in `operator.toml` the agent may not edit, a decision that "
+        "names the clause it applied and the policy's digest, clauses that may "
+        "hold a cycle but never wake one, three floors none may lower, and an "
+        "append-only journal where every hold is written"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
