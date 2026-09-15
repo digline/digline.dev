@@ -377,13 +377,6 @@ DESCRIPTIONS: dict[str, str] = {
         "counts and keys per disposition, the reason in the commit message, "
         "absent from the MCP, and one retention rule for both ledgers"
     ),
-    "product/adr/0022-the-declared-price.md": (
-        "How a suite prices an OpenAI-compatible aggregator, a gateway or a "
-        "self-hosted model: `[target.pricing]` with four per-million rates, a "
-        "declared price that wins over the plugin's list and enters "
-        "`config_hash`, rates withheld at a named endpoint as a declared latch, "
-        "and `promote --target` so a multi-target suite names what it signs"
-    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

@@ -398,12 +398,6 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "register of human dispositions, counts and keys only, beside a "
         "decision journal that stays the machine's memory.",
     ),
-    "product/adr/0022-the-declared-price.md": (
-        "ADR 0022: The declared price",
-        "Why a data suite can now declare what its endpoint charges: four "
-        "per-million rates that enter the suite's identity because a price is "
-        "the ruler a cost budget reads on, withheld at a named endpoint.",
-    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "
