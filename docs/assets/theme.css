@@ -140,3 +140,14 @@
 @media (max-width: 480px) {
   .dg-bar .dg-nav { display: none; }
 }
+
+/* Above 480px the nav is back, in a bar that also holds the drawer and search
+   buttons, so it has less room than the presentation pages' bar at the same
+   width. Six entries need 342px, and 352px once the wordmark returns at 601px;
+   measured in Chrome, this bar gives them that from 670px. Until then the three
+   optional entries go, as they do on a phone in chrome.css, and the three that
+   remain fit from 481px. Without this the nav scrolled under a hidden scrollbar
+   across most of that range — the thing the rule above was written to end. */
+@media (max-width: 669px) {
+  .dg-bar .dg-nav__optional { display: none; }
+}

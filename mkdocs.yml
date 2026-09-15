@@ -125,6 +125,10 @@ nav:
 
   - Why: why.md
 
+  # Written here: what a coding agent can reach on each surface, and the one
+  # thing none of them lets it do. Links into Docs, adds nothing to them.
+  - digline for agents: agents.md
+
   # Positioning, written here: which question each family of tools answers,
   # and which one digline answers. Prose, deliberately: no us-vs-them table.
   - How digline compares: comparison.md
