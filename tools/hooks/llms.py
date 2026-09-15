@@ -43,10 +43,10 @@ import re
 
 from mkdocs.exceptions import PluginError
 
-# The pages that are not in any nav section: Home, Start here, Why, the
-# comparison, About and Contact. They need a heading of their own because
-# llms.txt has no nesting — every section is an H2 — and "the ones that are not
-# the documentation" is what they have in common.
+# The pages that are not in any nav section: Home, Start here, Why, digline for
+# agents, the comparison, About and Contact. They need a heading of their own
+# because llms.txt has no nesting — every section is an H2 — and "the ones that
+# are not the documentation" is what they have in common.
 #
 # Not "Start here", which is what this said until one of those pages was given
 # that name: a link titled "Start here" inside a section titled "Start here"
@@ -97,6 +97,11 @@ DESCRIPTIONS: dict[str, str] = {
         "Why an ordinary pass/fail test cannot see a quality regression — the "
         "same prompt scores 4 one morning and 3 the next, and the model moves "
         "under you — and what an approved baseline measures instead"
+    ),
+    "agents.md": (
+        "What a coding agent can reach on each surface — MCP, the operator "
+        "loop, pytest, the Action — and why none of them lets it promote a "
+        "baseline"
     ),
     "comparison.md": (
         "Which question each family of tools answers — snapshot testing, "

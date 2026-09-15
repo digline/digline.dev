@@ -58,8 +58,11 @@
       <a href="{{ base_url }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>Start here</a>
       {#- The entry that yields when the bar runs out of room: Why is reachable
           from Start here, which is the entry beside it, and from the landing.
-          Hidden under 480px by .dg-nav__optional in chrome.css. -#}
+          Hidden by .dg-nav__optional: under 500px in chrome.css, and on the
+          documentation pages under 670px in theme.css. -#}
       <a class="dg-nav__optional" href="{{ base_url }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>Why</a>
+      {#- Yields with Why: the footer carries it in the Docs column, beside Why. -#}
+      <a class="dg-nav__optional" href="{{ base_url }}/agents/"{% if here == "agents.md" %} aria-current="page"{% endif %}>Agents</a>
       <a href="{{ base_url }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>Handbook</a>
       <a href="{{ base_url }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>Docs</a>
       {#- The second entry that yields when the bar runs out of room, and it
