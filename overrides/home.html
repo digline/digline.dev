@@ -187,7 +187,7 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 .shot__links a:hover { border-bottom-color: currentColor; }
 
 /* ── where it is headed ──────────────────────────────────────────────────
-   Three lines off the roadmap, in the roadmap's own words: what is being built,
+   Three lines off the roadmap, in the roadmap's own words: what has shipped,
    what will never be built, and the page that says the rest. Quiet on purpose —
    it sits just before the invitation and must not compete with it. */
 .ahead {
@@ -249,8 +249,8 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 </figure>
 
 <div class="block">
-  <pre id="install">pip install digline</pre>
-  <p class="req">Requires Python 3.12+.</p>
+  <pre id="install">uv init &amp;&amp; uv add digline</pre>
+  <p class="req">Requires Python 3.12+. Or with pip in an existing environment: <code>pip install digline</code>.</p>
 </div>
 
 <section class="shot" aria-labelledby="shot-h">
@@ -261,10 +261,10 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
   <div class="flow">
     <img class="flow__light" src="{{ base_url }}/assets/flow/digline-flow-light.svg"
          width="960" height="540" loading="lazy" decoding="async"
-         alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent tries to write the baseline itself, it is refused.">
+         alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent reaches for promote, the server answers that no such tool exists.">
     <img class="flow__dark" src="{{ base_url }}/assets/flow/digline-flow.svg"
          width="960" height="540" loading="lazy" decoding="async"
-         alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent tries to write the baseline itself, it is refused.">
+         alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent reaches for promote, the server answers that no such tool exists.">
   </div>
 
   {#- Printed by digline 0.2.0, not written for the page: one check down, and
@@ -278,6 +278,7 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
   <p class="shot__links">
     <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
     <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
+    <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
   </p>
 </section>
 
@@ -301,17 +302,18 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
     <h2>The baseline is a file you own</h2>
     <p>The baseline is a JSON file in your repository, so it goes through code
     review and it rolls back with <code>git</code>. No server, no account, no
-    network call you have not configured yourself.</p>
+    network call you have not configured yourself. The same verdict reaches a
+    pull request, a pytest report and an agent over MCP &mdash; and none of them
+    can move the baseline.</p>
   </section>
 </div>
 
 <section class="ahead reveal" aria-labelledby="ahead-h">
   <p class="ahead__eyebrow">Roadmap</p>
   <h2 id="ahead-h">Where it&rsquo;s headed</h2>
-  <p><b>Being built now &mdash; verdict credibility.</b> Repeated runs scored as a
-  distribution rather than one sample, and thresholds set against measured
-  variance: a drop is a regression only when it clears the noise floor of the
-  case.</p>
+  <p><b>Shipped &mdash; verdict credibility:</b> a drop is a regression only when
+  it leaves the interval the baseline measured across its own samples, and the
+  open work now is adoption.</p>
   <p><b>Two things will never be on the roadmap.</b> A hosted service that
   receives your payloads &mdash; prompts, outputs and the judge stay in your
   perimeter. And usage data collection, ever.</p>

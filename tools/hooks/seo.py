@@ -232,7 +232,7 @@ PRODUCT: dict[str, tuple[str, str]] = {
     ),
     "product/mcp.md": (
         "digline over MCP",
-        "The digline-mcp server: the six tools that let a coding agent read a "
+        "The digline-mcp server: the eight tools that let an agent read a "
         "result and measure a new one, and why promoting a baseline is not one "
         "of them.",
     ),
@@ -252,8 +252,9 @@ PRODUCT: dict[str, tuple[str, str]] = {
     "product/security.md": (
         "Security",
         "How digline thinks about its own attack surface: the five surfaces, "
-        "the boundaries it declares rather than assumes, the six fixes it "
-        "found and published \u2014 and the signs you can check for yourself.",
+        "the boundaries it declares rather than assumes, the fixes it found "
+        "and the four advisories it published \u2014 and the signs you can "
+        "check for yourself.",
     ),
     "product/roadmap.md": (
         "Roadmap",
