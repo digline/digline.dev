@@ -364,6 +364,19 @@ DESCRIPTIONS: dict[str, str] = {
         "hold a cycle but never wake one, three floors none may lower, and an "
         "append-only journal where every hold is written"
     ),
+    "product/adr/0020-the-reading-across-runs.md": (
+        "How `digline log` reads the story of an alias down a suite's stored "
+        "runs: a roll is only the same sent model answering as a different "
+        "recorded one, six absences each with its own sentence, a replay that "
+        "asked the target nothing, a row with no score by type, and the MCP "
+        "surface growing once to eight tools with `explain` beside it"
+    ),
+    "product/adr/0021-the-register.md": (
+        "How a person's decision about a comparison is kept: `digline register` "
+        "with a mandatory accepted, rejected or unsure, one committed line of "
+        "counts and keys per disposition, the reason in the commit message, "
+        "absent from the MCP, and one retention rule for both ledgers"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

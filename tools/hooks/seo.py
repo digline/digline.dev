@@ -386,6 +386,18 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "agent exercises and never edits, a decision that cites its clause, and "
         "a clause that may hold but never wake.",
     ),
+    "product/adr/0020-the-reading-across-runs.md": (
+        "ADR 0020: The reading across runs",
+        "Why digline reads which model answered down the stored runs: a roll "
+        "declared by the record and never deduced from scores, six absences "
+        "named rather than collapsed, and a replay that is never a sighting.",
+    ),
+    "product/adr/0021-the-register.md": (
+        "ADR 0021: The register",
+        "Why a rejected comparison is now written down: a committed, per-tenant "
+        "register of human dispositions, counts and keys only, beside a "
+        "decision journal that stays the machine's memory.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "
