@@ -181,6 +181,12 @@ nav:
           - A team that does not write Python: product/examples/quickstart-toml.md
           - A suite watched on a schedule: product/examples/operator.md
           - A whole product (digline/brief): https://github.com/digline/brief
+      # A new ADR does not get its line here on main. Its three entries — this
+      # line, PRODUCT in tools/hooks/seo.py, DESCRIPTIONS in tools/hooks/llms.py —
+      # go on a branch adr-NNNN-site, merged only once the record is on digline
+      # main and the build with sync-docs from main is green: until then
+      # --strict refuses the line and no release of the site goes out.
+      # RUNBOOK.md, "An ADR".
       - Decisions:
           - product/adr/index.md
           - ADR 0001 — Verdict, not score: product/adr/0001-verdict-not-score.md
