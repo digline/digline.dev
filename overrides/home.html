@@ -278,6 +278,7 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
   <p class="shot__links">
     <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
     <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
+    <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
   </p>
 </section>
 
@@ -301,7 +302,9 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
     <h2>The baseline is a file you own</h2>
     <p>The baseline is a JSON file in your repository, so it goes through code
     review and it rolls back with <code>git</code>. No server, no account, no
-    network call you have not configured yourself.</p>
+    network call you have not configured yourself. The same verdict reaches a
+    pull request, a pytest report and an agent over MCP &mdash; and none of them
+    can move the baseline.</p>
   </section>
 </div>
 

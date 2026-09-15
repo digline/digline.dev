@@ -123,7 +123,9 @@ round** — not before the tag, before anyone is told to upgrade. Three
 questions per new field: where does it cross a boundary, who wrote the
 value, and what does a hostile value do there.
 
-It has run twice.
+It has run on 0.7.1 and on every minor release since: seven so far,
+each in the [changelog](changelog.md). The first two under the standing
+rule:
 
 - **Over 0.8.0.** Found `resolved_model` travelling in clear out of a
   redacted run, next to a `base_url` that redaction had withheld —
