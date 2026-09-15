@@ -200,6 +200,7 @@ nav:
           - ADR 0019 — The reasoning operator: product/adr/0019-the-reasoning-operator.md
           - ADR 0020 — The reading across runs: product/adr/0020-the-reading-across-runs.md
           - ADR 0021 — The register: product/adr/0021-the-register.md
+          - ADR 0022 — The declared price: product/adr/0022-the-declared-price.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
