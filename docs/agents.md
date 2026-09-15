@@ -13,7 +13,7 @@ An agent can measure everything and approve nothing. Measurement is work that ca
 
 ## The absence, not the refusal
 
-On the MCP server `promote` does not exist: six tools read a result or measure a new one, and none of them writes a baseline. A refusal is a conversation an agent can reopen — argue with, retry, work around. An absence is not. The surface is in [digline over MCP](product/mcp.md), the reasoning in [ADR 0011](product/adr/0011-the-mcp-server.md).
+On the MCP server `promote` does not exist: eight tools read a result or measure a new one, and none of them writes a baseline. A refusal is a conversation an agent can reopen — argue with, retry, work around. An absence is not. The surface is in [digline over MCP](product/mcp.md), the reasoning in [ADR 0011](product/adr/0011-the-mcp-server.md).
 
 ## The loop that watches
 

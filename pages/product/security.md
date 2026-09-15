@@ -143,8 +143,11 @@ It has run twice.
 The line is **exposure**, and it is the same line every time.
 
 A **published advisory** for a vulnerability that shipped: a released
-version, on an index somebody could install from. Three exist, and they
-are the three in the table above.
+version, on an index somebody could install from. Four exist: the three
+in the table above, and one from the delta-pass over 0.12.0, fixed in
+0.12.1 —
+[GHSA-g25g-q7j3-jcgp](https://github.com/digline/digline/security/advisories/GHSA-g25g-q7j3-jcgp)
+(low, perimeter fields in comparison deltas).
 
 A **`Security` entry in the changelog and no advisory** for a finding
 the process caught before it could reach anybody. There is no version to
