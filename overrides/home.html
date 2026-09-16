@@ -25,7 +25,7 @@
       </div>
       <p class="install__req">Requires Python {{ home.requires_python }}</p>
       <p class="hero__links">
-        <a href="{{ base_url }}/start/">Start here</a>
+        <a class="hero__link--primary" href="{{ base_url }}/start/">Start here</a>
         <a class="hero__link--quiet" href="{{ base_url }}/why/">Why a reference in the repo</a>
       </p>
       <ul class="facts">
@@ -71,7 +71,7 @@
 <section class="part" aria-labelledby="problem-h">
   <div class="part__inner">
     <p class="part__kicker">The problem</p>
-    <h2 class="part__title" id="problem-h">An LLM app can get worse without anything breaking.</h2>
+    <h2 class="part__title" id="problem-h">An LLM app can get worse <span class="grad-text">without anything breaking.</span></h2>
     <p class="part__intro">The tests pass, the app answers, the demo works. Then a prompt edit, a model version or a library upgrade changes one answer your client depended on, and nothing in the pipeline says so.</p>
     <div class="contrast">
       <div class="panel">
@@ -99,7 +99,7 @@
 <section class="part" aria-labelledby="fits-h">
   <div class="part__inner">
     <p class="part__kicker">How it fits</p>
-    <h2 class="part__title" id="fits-h">It lives in your repo, not on a server.</h2>
+    <h2 class="part__title" id="fits-h">It lives in your repo, <span class="grad-text">not on a server.</span></h2>
     <p class="part__intro">Nothing to sign up for and nothing to host. The reference is a file, and the tool is a package.</p>
     <div class="tiles">
       <div class="tile">
@@ -134,7 +134,7 @@
 <section class="part" aria-labelledby="readings-h">
   <div class="part__inner">
     <p class="part__kicker">Without a reference, and with one</p>
-    <h2 class="part__title" id="readings-h">The same eval run, read two ways.</h2>
+    <h2 class="part__title" id="readings-h">The same eval run, <span class="grad-text">read two ways.</span></h2>
     <p class="part__intro">One line of the prompt changed between two runs. On the left, the scores you get without a reference. On the right, what digline prints against the approved one.</p>
     <div class="readings">
       <div class="panel">
@@ -160,7 +160,7 @@
 <section class="part" aria-labelledby="try-h">
   <div class="part__inner">
     <p class="part__kicker">Try it</p>
-    <h2 class="part__title" id="try-h">The quickstart runs without an API key.</h2>
+    <h2 class="part__title" id="try-h">The quickstart runs <span class="grad-text">without an API key.</span></h2>
     <p class="part__intro">You need Python {{ home.requires_python }}. The model call in the guide is canned, so you can see the whole loop before wiring a real provider.</p>
     <ol class="steps">
       <li><code>digline run</code><p>Runs the suite and writes a run file.</p></li>
@@ -190,7 +190,7 @@
 <section class="part" aria-labelledby="flow-h">
   <div class="part__inner">
     <p class="part__kicker">In an agentic flow</p>
-    <h2 class="part__title" id="flow-h">Where the check sits when an agent is making the changes.</h2>
+    <h2 class="part__title" id="flow-h">Where the check sits <span class="grad-text">when an agent is making the changes.</span></h2>
     <p class="part__intro">The agent edits, digline decides whether the edit can go further.</p>
   {#- Copied from digline/docs/assets/flow/, where a private generator writes
       them: replace them from there, do not edit them here. -#}
@@ -208,7 +208,7 @@
 <section class="part ahead" aria-labelledby="ahead-h">
   <div class="part__inner">
   <p class="part__kicker">Roadmap</p>
-  <h2 class="part__title" id="ahead-h">Where it&rsquo;s headed</h2>
+  <h2 class="part__title" id="ahead-h">Where it&rsquo;s <span class="grad-text">headed</span></h2>
   <p><b>Shipped &mdash; verdict credibility:</b> a drop is a regression only when
   it leaves the interval the baseline measured across its own samples, and the
   open work now is adoption.</p>
@@ -223,7 +223,7 @@
 <section class="part pilot" aria-labelledby="pilot-h">
   <div class="part__inner">
   <p class="part__kicker">Pilots</p>
-  <h2 class="part__title" id="pilot-h">Building LLM features for clients?</h2>
+  <h2 class="part__title" id="pilot-h">Building LLM features <span class="grad-text">for clients?</span></h2>
   <p class="pilot__body">I&rsquo;m looking for a few pilot teams to run digline on
   real projects &mdash; especially teams that build and maintain AI solutions for
   third parties. In exchange you get direct support and a say in what gets built

@@ -347,9 +347,11 @@ body {
   .md-container > .opening .reading__inner { padding: 0 1.2rem 0 13.3rem; }
 }
 .md-container > .opening .part__kicker {
-  margin: 0 0 10px;
-  font-size: 14px; font-weight: 600;
-  color: var(--fine);
+  display: inline-block;
+  margin: 0 0 12px; padding: 3px 12px;
+  font-size: 13px; font-weight: 600; line-height: 1.5;
+  color: var(--fine); background: var(--wash-fine);
+  border: 1px solid var(--rule-fine); border-radius: 999px;
 }
 .md-container > .opening .opening__title {
   margin: 0 0 16px;

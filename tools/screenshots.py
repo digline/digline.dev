@@ -35,6 +35,8 @@ What it does, for every page × width × theme:
     the top of the window, the way a link to it would — under the sticky bar,
     by the page's own scroll-padding — and fails if nothing matches; with
     --scroll-block nearest, only as far as it takes to bring it into view;
+  * with --scroll-y, scrolls the page that many CSS px further down, for the
+    sticky parts of a page seen part-way through it;
   * writes <page>-<width>-<theme><suffix>.png in --out, where <page> is "home"
     for / and the path's last segment otherwise: the full page, or with
     --viewport-only the window alone, --height tall (900 by default), from
@@ -271,6 +273,8 @@ def main(argv: list[str]) -> int:
                         help="draw scrollbars, the page's and every scrolling box's; hidden by default")
     parser.add_argument("--scroll-to", metavar="SELECTOR",
                         help="scroll the first element matching this CSS selector into the window first")
+    parser.add_argument("--scroll-y", type=int, metavar="PX",
+                        help="scroll the page this many CSS px down first (after --scroll-to, if both)")
     parser.add_argument("--scroll-block", choices=["start", "center", "end", "nearest"], default="start",
                         help="where --scroll-to puts it: start (the top, the default), or nearest, "
                              "which scrolls only as far as needed to show it")
@@ -338,6 +342,11 @@ def main(argv: list[str]) -> int:
                 if top is None:
                     raise RuntimeError(f"{path}: nothing matches --scroll-to {args.scroll_to!r}")
                 print(f"scroll {path} {width}px {theme}  {args.scroll_to!r} at y={top}")
+            if args.scroll_y:
+                top = browser.evaluate(
+                    f"new Promise(done => {{ window.scrollBy(0, {int(args.scroll_y)}); "
+                    "requestAnimationFrame(() => requestAnimationFrame(() => done(Math.round(scrollY)))); })")
+                print(f"scroll {path} {width}px {theme}  by {args.scroll_y}px, at y={top}")
             for pre in json.loads(browser.evaluate(MEASURE_PRE)):
                 scrolls = pre["scrollWidth"] > pre["clientWidth"]
                 overflowing += scrolls
