@@ -29,6 +29,11 @@
      measured in it. */
   --sans-page: "IBM Plex Sans", var(--sans);
   --mono-page: "IBM Plex Mono", var(--mono);
+
+  /* How far a band's deeper tint takes to fade into the body's: the last
+     --band-fade of an opening band, the first of a closing band. No rule is
+     drawn between them. */
+  --band-fade: 96px;
 }
 
 /* ── 1. light ─────────────────────────────────────────────────────────── */

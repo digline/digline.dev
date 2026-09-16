@@ -332,14 +332,17 @@ body {
 
    The band sits above <main>, straight on <body>, so it lays two layers of
    --wash where the reading pages' band lays one on a ground that already has
-   one: the same depth, a degree past the body's, and the same hairline. */
+   one: the same depth, a degree past the body's, fading to it at the foot. */
 .md-container > .opening {
   padding: calc(64px + var(--bar-room)) 0 48px;
   background-color: var(--bg);
+  /* The body's --wash all the way down, and one more over it that fades out
+     over the last --band-fade: at the band's foot the colour is exactly the
+     body's (the ground of <main>, below), so the sidebar, the TOC and the
+     article start on it with no rule and no strip. */
   background-image:
-    linear-gradient(var(--wash), var(--wash)),
+    linear-gradient(var(--wash) calc(100% - var(--band-fade)), transparent),
     linear-gradient(var(--wash), var(--wash));
-  border-bottom: 1px solid var(--rule-soft);
 }
 .md-container > .opening .reading__inner {
   box-sizing: border-box;

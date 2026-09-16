@@ -641,11 +641,15 @@ a.chip:hover { border-color: var(--fine); }
 /* ── the closing band ────────────────────────────────────────────────────── */
 .closing {
   padding: 4.5rem 0;
-  border-top: 1px solid var(--rule-soft);
-  /* The glow the hero has behind its card, across the band. */
+  /* The glow the hero has behind its card, across the band, over one more
+     layer of --wash than the body it closes. That layer rises out of the body
+     over --band-fade, so there is no line where the band begins. The glow is
+     85% of the hero's here: over the deeper tint, that keeps --muted and the
+     gradient's teal at 4.6:1 where the glow is strongest, in both themes. */
   background-image:
-    radial-gradient(40% 70% at 55% 43%, var(--glow-fine), transparent 70%),
-    radial-gradient(35% 63% at 80% 64%, var(--glow-link), transparent 70%);
+    radial-gradient(40% 70% at 55% 43%, color-mix(in srgb, var(--glow-fine) 85%, transparent), transparent 70%),
+    radial-gradient(35% 63% at 80% 64%, color-mix(in srgb, var(--glow-link) 85%, transparent), transparent 70%),
+    linear-gradient(transparent, var(--wash) var(--band-fade));
 }
 .closing .part__inner {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
@@ -679,8 +683,9 @@ a.chip:hover { border-color: var(--fine); }
    The ground is the home's, laid the home's way: one flat layer of --wash on
    <main>, over the --bg of <body>, edge to edge at any width because <main>
    is. The opening keeps its place against it by being one layer deeper — a
-   second --wash over the ground — and by a hairline rule; the closing band is
-   the home's, glow and all. */
+   second --wash over the ground, which fades into it at the band's foot
+   rather than stopping at a rule; the closing band is the home's, glow and
+   all. */
 .dg-page--reading {
   max-width: none; padding: 0;
   background-image: linear-gradient(var(--wash), var(--wash));
@@ -689,8 +694,9 @@ a.chip:hover { border-color: var(--fine); }
 
 .opening {
   padding: calc(4rem + var(--bar-room)) 0 3rem;
-  background-image: linear-gradient(var(--wash), var(--wash));
-  border-bottom: 1px solid var(--rule-soft);
+  /* One layer of --wash deeper than the body, down to the last --band-fade,
+     where it thins out into the body's tint: no rule, no step. */
+  background-image: linear-gradient(var(--wash) calc(100% - var(--band-fade)), transparent);
 }
 .opening__title { margin-bottom: 1rem; }
 .opening__lede { margin: 0; max-width: 40rem; }
