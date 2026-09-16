@@ -29,14 +29,28 @@ Each of these is a claim the home would make that the file does not support:
   * ``compare_json`` does not say ``worse: true`` and ``artifacts_changed:
     true``;
   * ``runtime_dependencies`` is missing;
-  * ``requires_python`` is missing, or carries no ``specifier``.
+  * ``requires_python`` is missing, or carries no ``specifier``;
+  * ``cli_commands`` or ``checks`` is missing, has no ``source``, or has no
+    ``items``;
+  * a command in ``cli_commands`` has no group in COMMAND_GROUPS below, or
+    COMMAND_GROUPS names a command digline does not have;
+  * a command has no page of its own, product/<name>/, no heading in the guide
+    or in a Reference page that names it, and is not written in the guide's
+    text either (see ``command_link()`` for the order they are tried in);
+  * a check's ``kind`` is not one of CHECK_KINDS, or its ``anchor`` is not an
+    id on product/metrics/.
+
+The pages and anchors are looked for twice: in the rendered Markdown, before
+the home is rendered, to build its links; and in site/ after the build, to
+check that the files the links point to are the ones that were written.
 
 The characters the home shows in IBM Plex are checked after the build, on the
 HTML, with the other presentation pages: tools/check-glyphs.py.
 
 ── what the template gets ───────────────────────────────────────────────────
 One variable, ``home``, and only on the page whose source is ``index.md``. See
-``compute()`` for its shape.
+``compute()`` for its shape, and ``grids()`` for its ``commands`` and
+``checks``.
 
     usage: tools/hooks/home.py --selftest
 """
@@ -47,6 +61,7 @@ import json
 import os
 import re
 import sys
+from html import unescape as html_unescape
 from typing import Any
 
 from mkdocs.exceptions import PluginError
@@ -74,7 +89,45 @@ SCORE_LO = 0.0
 SCORE_HI = 1.0
 
 _WORDS = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
-          7: "Seven", 8: "Eight", 9: "Nine"}
+          7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven",
+          12: "Twelve", 13: "Thirteen", 14: "Fourteen", 15: "Fifteen",
+          16: "Sixteen", 17: "Seventeen", 18: "Eighteen", 19: "Nineteen",
+          20: "Twenty"}
+
+# How the home groups digline's commands: a choice this site makes, not
+# something digline declares. Every command home.json lists must be in exactly
+# one group, and every name here must be a command home.json lists, so a
+# command added or removed in digline stops the build here until it is placed.
+COMMAND_GROUPS = (
+    ("record", "Record and approve", ("run", "promote")),
+    ("compare", "Compare", ("compare", "diff", "explain", "report")),
+    ("history", "History", ("list", "log", "register", "view")),
+    ("maintenance", "Maintenance", ("rejudge", "migrate")),
+)
+
+# The kinds a check declares (digline's `KIND`), in the order the home shows
+# them, with the words it shows them with. An unknown kind stops the build.
+CHECK_KINDS = (
+    ("deterministic", "Deterministic", "No model involved. Same output, same verdict."),
+    ("judged", "Judged", "A second model scores the answer, and its noise is measured."),
+    ("budget", "Budgets", "A ceiling on cost or latency, scored graded rather than pass/fail."),
+    ("aggregate", "Aggregates", "One verdict over the whole run."),
+    ("wrapper", "Wrappers", "Takes the nature of the check it wraps."),
+)
+
+# Where a command without a page of its own is written about, and where the
+# checks' cards are: source paths under docs/, and their URLs on the site.
+GUIDE = "product/guide.md"
+METRICS = "product/metrics.md"
+
+
+def _fail_site(problem: str) -> PluginError:
+    """A refusal whose fix is on this site, not in digline's capture."""
+    return PluginError(
+        f"home: {problem}\n"
+        "  The grouping, the kinds and where each command links to are decided in\n"
+        "  tools/hooks/home.py (COMMAND_GROUPS, CHECK_KINDS)."
+    )
 
 
 def _fail(problem: str) -> PluginError:
@@ -160,6 +213,16 @@ def validate(data: dict, changelog_text: str) -> None:
         dependencies.get("names"), list
     ):
         raise _fail("runtime_dependencies is missing, or has no list of names.")
+
+    for key in ("cli_commands", "checks"):
+        block = data.get(key)
+        if not isinstance(block, dict):
+            raise _fail(f"{key} is missing.")
+        if not isinstance(block.get("source"), str) or not block["source"].strip():
+            raise _fail(f"{key} has no source: the home says where every list comes from.")
+        items = block.get("items")
+        if not isinstance(items, list) or not items:
+            raise _fail(f"{key}.items is missing or empty.")
 
     requires = data.get("requires_python")
     specifier = requires.get("specifier") if isinstance(requires, dict) else None
@@ -390,6 +453,187 @@ def compute(data: dict) -> dict[str, Any]:
     }
 
 
+# ── the two grids ────────────────────────────────────────────────────────────
+
+_ID = re.compile(r'\bid="([^"]+)"')
+_HEADING = re.compile(r'<h[2-6][^>]*\bid="([^"]+)"', re.I)
+_INLINE = re.compile(r"</?(?:span|code|a|em|strong|b|i|kbd|mark|abbr)\b", re.I)
+
+
+def ids_in(html: str) -> set[str]:
+    return set(_ID.findall(html))
+
+
+def first_mention(html: str, name: str) -> str | None:
+    """The id of the heading above the first place `digline <name>` is written
+    in a page's rendered HTML, "" when that place is above every heading, or
+    None when it is not written. The words are read across tags, because a
+    highlighted shell line puts `digline` and the command in spans of their
+    own."""
+    text = ""
+    where: list[tuple[int, int]] = []   # (offset in text, offset in html)
+    for piece in re.finditer(r"<[^>]*>|[^<]+", html):
+        if piece.group(0).startswith("<"):
+            # An inline tag joins the words either side of it; any other tag
+            # ends one, so "compare</pre><h2>2." is not "compare2.".
+            if not _INLINE.match(piece.group(0)):
+                text += "\n"
+            continue
+        where.append((len(text), piece.start()))
+        text += piece.group(0)
+    found = re.search(rf"\bdigline\s+{re.escape(name)}\b(?!-)", text)
+    if not found:
+        return None
+    in_text, in_html = next((t, h) for t, h in reversed(where) if t <= found.start())
+    position = in_html + (found.start() - in_text)
+    headings = [m.group(1) for m in _HEADING.finditer(html) if m.start() < position]
+    return headings[-1] if headings else ""
+
+
+_HEADING_BLOCK = re.compile(r'<h([2-4])\b[^>]*\bid="([^"]+)"[^>]*>(.*?)</h\1>', re.I | re.S)
+_CODE = re.compile(r"<code\b[^>]*>(.*?)</code>", re.I | re.S)
+
+
+def _plain(fragment: str) -> str:
+    return html_unescape(re.sub(r"<[^>]*>", "", fragment))
+
+
+def heading_naming(page_html: str, name: str, in_text: bool,
+                   bare_name: bool = True) -> str | None:
+    """The id of the first h2–h4 in a page that names the command: a <code>
+    in it holding `digline <name>`, or — with bare_name — the name alone as a
+    word of its own (`compare`, not `Case.compare` or `compare-all`); or, with
+    in_text, its text writing `digline <name>`. None when no heading does."""
+    command = re.compile(rf"\bdigline\s+{re.escape(name)}(?![\w\-])")
+    word = re.compile(rf"(?<![\w.\-]){re.escape(name)}(?![\w\-])")
+    code_match = word if bare_name else command
+    for match in _HEADING_BLOCK.finditer(page_html):
+        inner = match.group(3)
+        if any(code_match.search(_plain(code)) for code in _CODE.findall(inner)):
+            return match.group(2)
+        if in_text and re.search(rf"\bdigline\s+{re.escape(name)}(?![\w\-])", _plain(inner)):
+            return match.group(2)
+    return None
+
+
+def _url(src_uri: str) -> str:
+    """product/api.md as the site serves it: product/api/."""
+    return src_uri[: -len(".md")] + "/"
+
+
+def command_link(name: str, pages: set[str], guide_html: str,
+                 reference: list[tuple[str, str]]) -> tuple[str, str] | None:
+    """Where a command's tile sends a reader, and why, trying in this order:
+
+      1. its own page, product/<name>/;
+      2. the first h2–h4 in the guide that writes `digline <name>`, or the
+         name in code;
+      3. the first h2–h4 in a Reference page, in the order of the nav, with
+         `digline <name>` in code — the name alone does not count there, where
+         a heading like "What `run` costs" on the MCP page is about a tool of
+         the same name, not the command;
+      4. the heading above the first place the guide's text writes
+         `digline <name>`.
+
+    None when all four come up empty."""
+    if f"product/{name}.md" in pages:
+        return f"product/{name}/", "page"
+    anchor = heading_naming(guide_html, name, in_text=True)
+    if anchor:
+        return f"{_url(GUIDE)}#{anchor}", "guide heading"
+    for src_uri, page_html in reference:
+        anchor = heading_naming(page_html, name, in_text=False, bare_name=False)
+        if anchor:
+            return f"{_url(src_uri)}#{anchor}", "reference heading"
+    anchor = first_mention(guide_html, name)
+    if anchor is not None:
+        return _url(GUIDE) + (f"#{anchor}" if anchor else ""), "guide text"
+    return None
+
+
+def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
+          reference: list[tuple[str, str]] = ()) -> dict[str, Any]:
+    """The Commands and Checks sections: grouped, linked and counted here.
+
+    pages        the source paths the build has (``product/diff.md``, …)
+    guide_html   the guide's rendered content
+    metrics_ids  the ids on the metrics page
+    reference    (source path, rendered content) of each Reference page, in
+                 the order of the nav
+    """
+    commands = data["cli_commands"]["items"]
+    names = [c["name"] for c in commands]
+    grouped = [name for _, _, members in COMMAND_GROUPS for name in members]
+    ungrouped = [n for n in names if n not in grouped]
+    if ungrouped:
+        raise _fail_site(
+            f"digline has commands the home does not group: {', '.join(ungrouped)}. "
+            "Put each in a group of COMMAND_GROUPS."
+        )
+    unknown = [n for n in grouped if n not in names]
+    if unknown:
+        raise _fail_site(
+            f"COMMAND_GROUPS names commands digline does not have: {', '.join(unknown)}."
+        )
+    helps = {c["name"]: c["help"] for c in commands}
+
+    groups = []
+    for key, label, members in COMMAND_GROUPS:
+        items = []
+        for name in members:
+            found = command_link(name, pages, guide_html, list(reference))
+            if found is None:
+                raise PluginError(
+                    f"home: `digline {name}` has no page of its own (product/{name}/), no "
+                    "heading in the guide or in a Reference page names it, and it is not "
+                    "written anywhere in the guide, so the Commands grid has nowhere to "
+                    "send a reader.\n"
+                    "  The fix is in digline/digline: a page for the command, or "
+                    f"`digline {name}` written in docs/guide.md."
+                )
+            href, place = found
+            items.append({"name": name, "help": helps[name], "href": href, "place": place})
+        groups.append({"key": key, "label": label, "commands": items})
+
+    checks = data["checks"]["items"]
+    kinds = [k for k, _, _ in CHECK_KINDS]
+    strange = sorted({c["kind"] for c in checks} - set(kinds))
+    if strange:
+        raise _fail_site(
+            f"checks of a kind the home does not know: {', '.join(strange)}. "
+            "Add the kind to CHECK_KINDS, with its words."
+        )
+    missing = [c["name"] for c in checks if c["anchor"] not in metrics_ids]
+    if missing:
+        raise _fail(
+            f"no card on product/metrics/ for {', '.join(missing)}: the anchor in "
+            "home.json is not an id on the page."
+        )
+    kind_groups = []
+    for key, label, description in CHECK_KINDS:
+        # Alphabetical, without regard to case, rather than in digline's
+        # declaration order, which a reader has no way to see.
+        members = [{"name": c["name"], "href": f"product/metrics/#{c['anchor']}"}
+                   for c in sorted((c for c in checks if c["kind"] == key),
+                                   key=lambda c: (c["name"].casefold(), c["name"]))]
+        kind_groups.append({"key": key, "label": label, "description": description,
+                            "count": len(members), "checks": members})
+
+    count = len(names)
+    return {
+        "commands": {
+            "count": count,
+            "heading": f"{_WORDS.get(count, str(count))} commands",
+            "groups": groups,
+        },
+        "checks": {
+            "total": len(checks),
+            "kinds_word": _WORDS.get(len(CHECK_KINDS), str(len(CHECK_KINDS))).lower(),
+            "kinds": kind_groups,
+        },
+    }
+
+
 def load(json_path: str, changelog_path: str) -> dict[str, Any]:
     """Read both files, refuse what they do not support, and compute."""
     if not os.path.isfile(json_path):
@@ -419,11 +663,85 @@ def on_pre_build(config, **kwargs):
     _home = load(os.path.join(docs, HOME_JSON), os.path.join(docs, CHANGELOG))
 
 
+# What the grids need from the rest of the site, gathered while it builds:
+# every page mkdocs has, the guide's rendered content, and the ids on the
+# metrics page. mkdocs renders every page's Markdown before it renders any
+# template, so all three are here by the time the home's template is.
+_pages: set[str] = set()
+_rendered: dict[str, str] = {}
+_reference: list[str] = []
+
+# The nav section whose pages a command's tile may point into, after the guide.
+REFERENCE_SECTION = "Reference"
+
+
+def on_files(files, config, **kwargs):
+    _pages.clear()
+    _pages.update(f.src_uri for f in files.documentation_pages())
+    _rendered.clear()
+    return files
+
+
+def on_nav(nav, config, files, **kwargs):
+    """The Reference pages, in the order the nav lists them."""
+    _reference.clear()
+
+    def walk(items):
+        for item in items:
+            if getattr(item, "is_section", False):
+                if item.title == REFERENCE_SECTION:
+                    _reference.extend(
+                        child.file.src_uri for child in item.children
+                        if getattr(child, "is_page", False) and child.file)
+                else:
+                    walk(item.children)
+
+    walk(nav.items)
+    return nav
+
+
+def on_page_content(html, page, config, files, **kwargs):
+    if page.file.src_uri in (GUIDE, METRICS) or page.file.src_uri in _reference:
+        _rendered[page.file.src_uri] = html
+    return html
+
+
+def _built_grids(data: dict) -> dict[str, Any]:
+    return grids(data, _pages, _rendered.get(GUIDE, ""), ids_in(_rendered.get(METRICS, "")),
+                 [(uri, _rendered.get(uri, "")) for uri in _reference])
+
+
 def on_page_context(context, page, config, nav, **kwargs):
     """The values reach the home and no other page."""
     if page.file.src_uri == "index.md":
-        context["home"] = _home
+        home = dict(_home)
+        with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
+            data = json.load(fh)
+        home.update(_built_grids(data))
+        context["home"] = home
     return context
+
+
+def on_post_build(config, **kwargs):
+    """The links the home was built with, checked against the files written:
+    each page exists in site/, and each anchor is an id on it."""
+    site = config["site_dir"]
+    with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
+        data = json.load(fh)
+    built = _built_grids(data)
+    hrefs = [c["href"] for g in built["commands"]["groups"] for c in g["commands"]]
+    hrefs += [c["href"] for k in built["checks"]["kinds"] for c in k["checks"]]
+    cache: dict[str, set[str]] = {}
+    for href in hrefs:
+        path, _, anchor = href.partition("#")
+        page = os.path.join(site, path, "index.html")
+        if path not in cache:
+            if not os.path.isfile(page):
+                raise _fail_site(f"the home links to {href}, and site/{path} was not written.")
+            with open(page, encoding="utf-8") as fh:
+                cache[path] = ids_in(fh.read())
+        if anchor and anchor not in cache[path]:
+            raise _fail_site(f"the home links to {href}, and there is no id {anchor!r} on it.")
 
 
 # ── the selftest ─────────────────────────────────────────────────────────────
@@ -484,6 +802,127 @@ def selftest() -> int:
     expect("requires python", home["requires_python"], "3.12 or newer")
     expect("python range kept as declared", _python_range(">=3.12,<3.15"), ">=3.12,<3.15")
 
+    # 1b. The two grids, against a site of the fixture's shape: a page for some
+    #     commands; a guide whose headings name one command in code and one in
+    #     text, and whose text writes the rest (inline, and on a highlighted
+    #     shell line, where the words are in spans of their own); two
+    #     Reference pages; and a metrics page with every card. Each of the four
+    #     ways a link is found is used, and each one wins over the ones after
+    #     it.
+    with open(good_json, encoding="utf-8") as fh:
+        grid_data = json.load(fh)
+    command_names = [c["name"] for c in grid_data["cli_commands"]["items"]]
+    pages = {"product/guide.md", "product/metrics.md"} | {
+        f"product/{n}.md" for n in command_names if n not in ("run", "promote", "compare", "list", "report")}
+    guide_html = (
+        '<h1 id="working">Working</h1><p>Intro.</p>'
+        '<h2 id="one">1. A baseline</h2><pre><code><span class="gp">$ </span>digline'
+        '<span class="w"> </span>run<span class="w"> </span>--suite s.py\n'
+        '<span class="gp">$ </span>digline<span class="w"> </span>promote\n'
+        '<span class="gp">$ </span>digline<span class="w"> </span>compare</code></pre>'
+        '<h2 id="two">2. Reading</h2><p><code>digline report</code> and <code>digline list</code>, '
+        'not <code>digline list-runs</code>.</p>'
+        '<h3 id="approving">Approving with <code>promote</code></h3><p>Later.</p>'
+        '<h4 id="the-list">What digline list prints</h4><p>Later still.</p>'
+        '<h5 id="deep">Deep <code>report</code></h5>')
+    reference = [
+        ("product/api.md",
+         '<h2 id="suite">Suite</h2><h3 id="case-compare"><code>Case.compare</code></h3>'
+         '<h3 id="compare-all"><code>digline compare-all</code></h3>'
+         '<h3 id="compare-function">The <code>compare</code> function</h3>'
+         '<h3 id="compare">Reading <code>digline compare</code></h3>'
+         '<h3 id="promote-api"><code>digline promote</code></h3>'),
+        ("product/mcp.md",
+         '<h2 id="what-run-costs">What <code>run</code> costs</h2>'
+         '<h2 id="what-compare-costs">What <code>digline compare</code> costs</h2>'),
+    ]
+    metrics_ids = {c["anchor"] for c in grid_data["checks"]["items"]}
+    g = grids(grid_data, pages, guide_html, metrics_ids, reference)
+    links = {c["name"]: c["href"] for grp in g["commands"]["groups"] for c in grp["commands"]}
+    expect("command count", g["commands"]["count"], 12)
+    expect("command heading", g["commands"]["heading"], "Twelve commands")
+    expect("group order", [grp["key"] for grp in g["commands"]["groups"]],
+           ["record", "compare", "history", "maintenance"])
+    expect("group sizes", [len(grp["commands"]) for grp in g["commands"]["groups"]], [2, 4, 4, 2])
+    expect("a command with a page", links["diff"], "product/diff/")
+    expect("2. a guide heading with the name in code, over the reference and the text",
+           links["promote"], "product/guide/#approving")
+    expect("2. a guide heading writing `digline <name>`, over the text", links["list"],
+           "product/guide/#the-list")
+    expect("3. a Reference heading with `digline <name>` in code, the first in nav order",
+           links["compare"], "product/api/#compare")
+    expect("3. a Reference heading with the name alone in code does not win: run falls to 4",
+           links["run"], "product/guide/#one")
+    expect("the name alone in a Reference heading is not enough",
+           heading_naming('<h2 id="what-run-costs">What <code>run</code> costs</h2>', "run",
+                          in_text=False, bare_name=False), None)
+    expect("4. the guide's text, on a highlighted line", links["run"], "product/guide/#one")
+    expect("4. the guide's text, inline (an h5 does not count)", links["report"], "product/guide/#two")
+    places = {c["name"]: c["place"] for grp in g["commands"]["groups"] for c in grp["commands"]}
+    expect("places", [places[n] for n in ("diff", "promote", "compare", "run")],
+           ["page", "guide heading", "reference heading", "guide text"])
+    expect("a heading in text needs `digline` before the name",
+           heading_naming('<h2 id="x">Run it</h2>', "run", in_text=True), None)
+    expect("a Reference heading does not count by text alone",
+           heading_naming('<h2 id="x">digline compare</h2>', "compare", in_text=False), None)
+    expect("a command's help", g["commands"]["groups"][0]["commands"][0]["help"],
+           "execute the suite and write a run")
+    expect("kind order", [k["key"] for k in g["checks"]["kinds"]],
+           ["deterministic", "judged", "budget", "aggregate", "wrapper"])
+    expect("kind counts", [k["count"] for k in g["checks"]["kinds"]], [12, 2, 2, 4, 2])
+    expect("check total", g["checks"]["total"], 22)
+    expect("kinds in words", g["checks"]["kinds_word"], "five")
+    expect("a check's link", g["checks"]["kinds"][2]["checks"][0],
+           {"name": "CostBudget", "href": "product/metrics/#costbudget"})
+    expect("checks in alphabetical order, case aside (aggregates, which digline declares F1 first)",
+           [c["name"] for c in g["checks"]["kinds"][3]["checks"]],
+           ["Accuracy", "F1", "Precision", "Recall"])
+    expect("checks in alphabetical order, case aside (deterministic)",
+           [c["name"] for c in g["checks"]["kinds"][0]["checks"]],
+           ["Affix", "Contains", "Equals", "IsJson", "JsonSchema", "Length", "Levenshtein",
+            "NotContains", "PiiAbsent", "Regex", "ToolCalledWith", "ToolsCalled"])
+    expect("wrappers",
+           [c["name"] for c in g["checks"]["kinds"][4]["checks"]], ["FromAutoevals", "Repeated"])
+    mixed = copy.deepcopy(grid_data)
+    mixed["checks"]["items"] = [{"name": n, "kind": "deterministic", "anchor": "affix"}
+                                for n in ("regex", "Contains", "affix", "Zeta")]
+    expect("case does not decide the order",
+           [c["name"] for c in grids(mixed, pages, guide_html, metrics_ids, reference)
+            ["checks"]["kinds"][0]["checks"]], ["affix", "Contains", "regex", "Zeta"])
+    expect("first mention above every heading", first_mention("<p>digline run</p><h2 id='x'>X</h2>", "run"), "")
+    expect("a longer name is not the command", first_mention('<h2 id="a">A</h2><p>digline list-runs</p>', "list"), None)
+
+    grid_refusals = [
+        ("a command with no group",
+         lambda d, p, h, m: d["cli_commands"]["items"].append({"name": "doctor", "help": "x"}),
+         "does not group: doctor"),
+        ("a group naming a command digline does not have",
+         lambda d, p, h, m: d["cli_commands"]["items"].pop(
+             next(i for i, c in enumerate(d["cli_commands"]["items"]) if c["name"] == "migrate")),
+         "commands digline does not have: migrate"),
+        ("a command with no page and no place in the guide",
+         lambda d, p, h, m: None, "`digline view` has no page of its own"),
+        ("a check of an unknown kind",
+         lambda d, p, h, m: d["checks"]["items"][0].update(kind="heuristic"),
+         "a kind the home does not know: heuristic"),
+        ("a check whose card is not on metrics",
+         lambda d, p, h, m: m.discard("repeated"), "no card on product/metrics/ for Repeated"),
+    ]
+    for label, mutate, needle in grid_refusals:
+        d, p, h, m = copy.deepcopy(grid_data), set(pages), guide_html, set(metrics_ids)
+        mutate(d, p, h, m)
+        if label == "a command with no page and no place in the guide":
+            p.discard("product/view.md")
+        try:
+            grids(d, p, h, m)
+        except PluginError as error:
+            if needle not in str(error):
+                failures.append(f"{label}: refused, but not for this: {error}")
+            else:
+                print(f"selftest: refused, as it must — {label}: {str(error).splitlines()[0]}")
+            continue
+        failures.append(f"{label}: accepted, which it exists to refuse")
+
     # 2. Every refusal, on a modified copy.
     with open(good_json, encoding="utf-8") as fh:
         base = json.load(fh)
@@ -522,6 +961,14 @@ def selftest() -> int:
         ("requires_python without a specifier",
          lambda d: d["requires_python"].pop("specifier"), None,
          "requires_python is missing, or has no specifier"),
+        ("no cli_commands", lambda d: d.pop("cli_commands"), None, "cli_commands is missing"),
+        ("no checks", lambda d: d.pop("checks"), None, "checks is missing"),
+        ("empty cli_commands", lambda d: d["cli_commands"].update(items=[]), None,
+         "cli_commands.items is missing or empty"),
+        ("checks without items", lambda d: d["checks"].pop("items"), None,
+         "checks.items is missing or empty"),
+        ("checks without a source", lambda d: d["checks"].pop("source"), None,
+         "checks has no source"),
     ]
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -554,8 +1001,8 @@ def selftest() -> int:
         print(f"selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print(f"selftest: home.json fixture computes as expected, "
-          f"{len(cases)} refusals refused")
+    print(f"selftest: home.json fixture computes as expected, grids included; "
+          f"{len(cases) + len(grid_refusals)} refusals refused")
     return 0
 
 

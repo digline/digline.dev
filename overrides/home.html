@@ -131,6 +131,73 @@
   </div>
 </section>
 
+{#- Every command digline has, in the groups tools/hooks/home.py declares, each
+    linked to its page or to the place in the guide that first writes it. The
+    icons are drawn here, one per command; a command that has none gets the
+    group's. -#}
+{%- set icons = {
+  "run": '<circle cx="12" cy="12" r="8"/><path d="M10 8.5l5 3.5-5 3.5z"/>',
+  "promote": '<path d="M5 12.5l4.5 4.5L19 7"/>',
+  "compare": '<path d="M4 8h12M12 4l4 4-4 4M20 16H8M12 12l-4 4 4 4"/>',
+  "diff": '<path d="M6 4v16M18 4v16M9 9h6M12 6v6M9 16h6"/>',
+  "explain": '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>',
+  "report": '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  "list": '<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',
+  "log": '<path d="M5 5h14M5 10h14M5 15h9M5 20h6"/>',
+  "register": '<path d="M7 4h10v16l-5-3-5 3z"/>',
+  "view": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/>',
+  "rejudge": '<path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/>',
+  "migrate": '<ellipse cx="10" cy="6" rx="6" ry="2.5"/><path d="M4 6v12c0 1.4 2.7 2.5 6 2.5M16 6v4"/><path d="M19 21v-8M16 16l3-3 3 3"/>',
+} %}
+<section class="part" aria-labelledby="commands-h">
+  <div class="part__inner">
+    <p class="part__kicker">Commands</p>
+    <h2 class="part__title" id="commands-h">{{ home.commands.heading }}, <span class="grad-text">one job each.</span></h2>
+    <p class="part__intro">Every command has its own page or a place in the guide.</p>
+    <ul class="legend">
+      {%- for group in home.commands.groups %}
+      <li class="group--{{ group.key }}">{{ group.label }}</li>
+      {%- endfor %}
+    </ul>
+    <ul class="cmds">
+      {%- for group in home.commands.groups %}
+      {%- for c in group.commands %}
+      <li class="group--{{ group.key }}">
+        <a class="cmd" href="{{ base_url }}/{{ c.href }}">
+          <span class="cmd__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">{{ icons.get(c.name, '<circle cx="12" cy="12" r="3"/>') }}</svg></span>
+          <code class="cmd__name">digline {{ c.name }}</code>
+          <span class="cmd__help">{{ c.help }}</span>
+        </a>
+      </li>
+      {%- endfor %}
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+{#- Every check digline has, by the kind it declares, in tools/hooks/home.py's
+    order; each name links to its card in Metrics. -#}
+<section class="part" aria-labelledby="checks-h">
+  <div class="part__inner">
+    <p class="part__kicker">Checks</p>
+    <h2 class="part__title" id="checks-h">Deterministic first, <span class="grad-text">judge last.</span></h2>
+    <p class="part__intro">{{ home.checks.total }} checks today, in {{ home.checks.kinds_word }} kinds. The list grows; the kinds stay.</p>
+    <ul class="kinds">
+      {%- for kind in home.checks.kinds %}
+      <li class="kind kind--{{ kind.key }}">
+        <h3 class="kind__head">{{ kind.label }}<span class="kind__count">{{ kind.count }}</span></h3>
+        <p class="kind__text">{{ kind.description }}</p>
+        <ul class="kind__checks">
+          {%- for check in kind.checks %}
+          <li><a class="kind__check" href="{{ base_url }}/{{ check.href }}">{{ check.name }}</a></li>
+          {%- endfor %}
+        </ul>
+      </li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
 <section class="part" aria-labelledby="readings-h">
   <div class="part__inner">
     <p class="part__kicker">Without a reference, and with one</p>
