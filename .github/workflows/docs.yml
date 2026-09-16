@@ -126,6 +126,15 @@ jobs:
           uv run tools/check-glyphs.py --selftest
           uv run tools/check-glyphs.py site
 
+      - name: Check the asset hashes
+        # Every link to one of this site's own stylesheets and fonts carries the
+        # hash of the file it links (tools/hooks/assets.py), so a changed file
+        # is never served from a cache under its old URL. --selftest first: a
+        # versioned site passes, five ways of linking without the hash fail.
+        run: |
+          uv run tools/check-assets.py --selftest
+          uv run tools/check-assets.py site
+
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.
       - uses: actions/upload-pages-artifact@v4

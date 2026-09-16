@@ -143,7 +143,9 @@ def font_faces(css_path: str) -> dict[str, list[tuple[str, str]]]:
         values = {d.lower_name: tinycss2.serialize(d.value).strip()
                   for d in _declarations(node.content)}
         family = _PLEX_NAMES.get(values.get("font-family", "").strip("\"'"))
-        url = re.search(r"url\(\s*[\"']?([^\"')]+)", values.get("src", ""))
+        # The served fonts.css versions its URLs (?v=<hash>, tools/hooks/assets.py):
+        # the file is the path without the query.
+        url = re.search(r"url\(\s*[\"']?([^\"')?#]+)", values.get("src", ""))
         if family and url:
             path = os.path.normpath(os.path.join(os.path.dirname(css_path), url.group(1)))
             faces[family].append((values.get("font-weight", "400"), path))
