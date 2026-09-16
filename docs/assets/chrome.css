@@ -7,19 +7,66 @@
  * built in `rem` would be two different bars. Colour comes from tokens.css.
  */
 
-html { scroll-padding-top: 88px; }
+/* ══ the bar ═══════════════════════════════════════════════════════════
 
-/* ══ the bar ═══════════════════════════════════════════════════════════ */
+   A pill that floats: held off the edges of the window, sticky a gap below
+   its top, over the page rather than above it. Its three measures are the
+   ones everything else is computed from:
+
+     --bar-height  the pill, borders included
+     --bar-gap     the space above it, and at its sides on a phone
+     --bar-room    the two together: how far down the page the pill reaches
+
+   The page scrolls under it, so a heading reached by an anchor stops
+   --bar-room from the top (scroll-padding-top), and the first band of every
+   page — the home's hero, an opening band — starts --bar-room further down
+   inside its own ground, which runs up behind the pill. */
+:root {
+  --bar-height: 60px;
+  --bar-gap: 12px;
+  --bar-side: 16px;
+  --bar-room: calc(var(--bar-height) + var(--bar-gap));
+}
+@media (max-width: 600px) {
+  :root { --bar-height: 54px; --bar-gap: 8px; --bar-side: 8px; }
+}
+
+html { scroll-padding-top: var(--bar-room); }
 
 .dg-bar {
   position: sticky;
-  top: 0;
+  top: var(--bar-gap);
   z-index: 4;                       /* Material's own header sits at 4 */
-  background: var(--bg);
+  box-sizing: border-box;
+  width: calc(100% - 2 * var(--bar-side));
+  max-width: 1220px;
+  height: var(--bar-height);
+  margin: var(--bar-gap) auto calc(-1 * var(--bar-room));
   color: var(--ink);
-  border-bottom: 1px solid var(--rule);
-  box-shadow: none;
+  background: var(--bg);            /* where the glass below is not drawn */
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  box-shadow: var(--shadow-soft);   /* none in the dark: tokens.css */
   font-family: var(--sans);
+}
+/* The glass: --bg at 78% and a blur of what scrolls under it. It is drawn by a
+   layer behind the bar's contents and not by the bar itself, because an
+   element with a backdrop-filter becomes the containing block of its fixed
+   descendants — and Material's search, on a narrow screen, is a fixed
+   full-window panel inside this element. Without backdrop-filter the bar
+   keeps its solid --bg. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dg-bar { background: transparent; }
+  .dg-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
 }
 
 .dg-bar__in {
@@ -27,11 +74,10 @@ html { scroll-padding-top: 88px; }
   display: flex;
   align-items: center;
   gap: 18px;
-  height: 64px;
+  height: 100%;
   min-width: 0;
-  max-width: 1220px;
-  margin: 0 auto;
-  padding: 0 20px;
+  margin: 0;
+  padding: 0 8px 0 18px;
 }
 
 /* the mark, and the word */
@@ -68,20 +114,22 @@ html { scroll-padding-top: 88px; }
 .dg-nav::-webkit-scrollbar { display: none; }
 .dg-nav a {
   display: block;
-  padding: 21px 0;                  /* the whole height of the bar is the target */
+  padding: 12px 0;                  /* a target as tall as the pill allows */
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
   color: var(--muted);
   text-decoration: none;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
 }
 .dg-nav a:hover { color: var(--ink); }
+/* The section you are in: underlined under its own word, not at the bar's
+   edge, which the pill's radius would cut. */
 .dg-nav a[aria-current] {
   color: var(--ink);
-  border-bottom-color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
 }
 
 /* GitHub, the light/dark toggle, and — in the documentation — search */
@@ -98,10 +146,10 @@ html { scroll-padding-top: 88px; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px; height: 34px;
+  width: 38px; height: 38px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   background: none;
   color: var(--muted);
   cursor: pointer;
@@ -135,15 +183,20 @@ html { scroll-padding-top: 88px; }
 /* Narrow screens. The sections are the part that has to give: they shrink, and
    past that they scroll inside the bar rather than making the whole page wider
    than the window. */
+@media (max-width: 1000px) {
+  .dg-nav { gap: 18px; }
+}
 @media (max-width: 860px) {
-  .dg-bar__in { gap: 12px; padding: 0 14px; }
+  .dg-bar__in { gap: 12px; padding: 0 6px 0 14px; }
   .dg-nav { gap: 16px; }
   .dg-nav a { font-size: 13px; }
   .dg-actions { padding-left: 8px; margin-left: 0; }
 }
+@media (max-width: 640px) {
+  .dg-nav { gap: 14px; }
+}
 @media (max-width: 600px) {
   .dg-brand span { display: none; }
-  .dg-nav { gap: 14px; }
 }
 
 /* A phone, on the presentation pages. They have no drawer to fall back on, so
@@ -153,13 +206,17 @@ html { scroll-padding-top: 88px; }
    and closes with it under "Where to go next" — and Agents and Writing are in
    the footer's Docs column on every page of the site.
 
-   The arithmetic, which moved when Writing arrived and again with Agents: four
-   entries needed 209px against the 221px the plain bar has at 380px, which is
-   where this breakpoint first sat; Writing made five and moved it to 430.
-   Agents makes six, and six were measured in Chrome rather than estimated:
-   342px, which the bar gives them from 501px of viewport. Hence 500. Below it
-   the three that remain are the product path, and .dg-nav still scrolls rather
-   than widening the page.
+   The arithmetic, measured in Chrome on the pill (--bar-side off each edge, a
+   1px border, 14px of padding before the mark and 6px after the last icon)
+   rather than estimated. Six entries at 13px with 14px between them need
+   342px, and the pill gives the nav 342px from 519px of viewport: hence 518.
+   Below it the three that remain need 185px, which they have from 362px; at
+   390px they fit with room to spare, and under 362px .dg-nav scrolls inside
+   the pill rather than widening the page.
+
+   Two ranges above it are held by the spacing, not by a breakpoint: from 601px
+   the wordmark is back and costs 10px, which the 14px gap up to 640px pays;
+   and at 1000px and under the gap is 18px, not 24px.
 
    Two classes in the selector, not one: `.dg-nav a` above sets display: block
    and outranks a lone `.dg-nav__optional`, which is how this rule matched and
@@ -167,7 +224,7 @@ html { scroll-padding-top: 88px; }
 
    The documentation pages solve the same problem the other way, in theme.css:
    they have a drawer, so the whole nav goes rather than two entries of it. */
-@media (max-width: 500px) {
+@media (max-width: 518px) {
   .dg-nav .dg-nav__optional { display: none; }
 }
 

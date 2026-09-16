@@ -26,7 +26,8 @@ body {
   width: 100%;
   max-width: 52rem;
   margin: 0 auto;
-  padding: 3.25rem 1.25rem 4.5rem;
+  /* --bar-room: the pill floats over the top of the page (chrome.css). */
+  padding: calc(3.25rem + var(--bar-room)) 1.25rem 4.5rem;
   font-family: var(--sans-page);
 }
 
@@ -75,7 +76,7 @@ pre {
 }
 
 @media (max-width: 34rem) {
-  .dg-page { padding: 2.25rem 1rem 3rem; }
+  .dg-page { padding: calc(2.25rem + var(--bar-room)) 1rem 3rem; }
   h1 { font-size: 1.625rem; }
   pre { font-size: .75rem; }
 }
@@ -126,7 +127,7 @@ pre {
 /* ── the hero ────────────────────────────────────────────────────────────
    The sentence and the install on one side, and the one bold thing on the page
    on the other: the verdict digline printed. */
-.hero { padding: 4.5rem 0 4rem; }
+.hero { padding: calc(4.5rem + var(--bar-room)) 0 4rem; }
 .hero .part__inner {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
@@ -533,7 +534,7 @@ a.chip:hover { border-color: var(--fine); }
 .reading__inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
 
 .opening {
-  padding: 4rem 0 3rem;
+  padding: calc(4rem + var(--bar-room)) 0 3rem;
   background-image: linear-gradient(var(--wash), var(--wash));
   border-bottom: 1px solid var(--rule-soft);
 }
@@ -642,7 +643,7 @@ a.chip:hover { border-color: var(--fine); }
   .contrast,
   .readings,
   .term { grid-template-columns: minmax(0, 1fr); }
-  .hero { padding: 3rem 0; }
+  .hero { padding: calc(3rem + var(--bar-room)) 0 3rem; }
   .part { padding: 3.5rem 0; }
   .readings__arrow { justify-self: center; transform: rotate(90deg); }
   /* Each pair stacks, command first; the headings go, the $ says which is
@@ -664,7 +665,7 @@ a.chip:hover { border-color: var(--fine); }
   .part__inner,
   .reading__inner,
   .dg-page--reading .closing .part__inner { padding: 0 1rem; }
-  .opening { padding: 2.75rem 0 2.25rem; }
+  .opening { padding: calc(2.75rem + var(--bar-room)) 0 2.25rem; }
   .reading { padding: 2.25rem 0 3rem; }
   .essay h2 { font-size: 1.3125rem; }
   .tiles { grid-template-columns: minmax(0, 1fr); }
