@@ -15,8 +15,8 @@ what puts --sans-page on the text, in pages.css. Which face draws a piece of
 text is decided by the stylesheets, not by a list here: every rule in pages.css
 and in the page's own <style> blocks that sets `font-family` or `font` is read,
 and the nearest element one of them matches decides. A rule naming --sans-page
-or --mono-page means Plex; any other family (--mono on the essays' <code>, say)
-means a system face, whose text is not counted.
+or --mono-page means Plex; any other family (--mono on start's quoted output,
+say) means a system face, whose text is not counted.
 """
 
 from __future__ import annotations

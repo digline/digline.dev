@@ -204,6 +204,25 @@ def _short_run(run_id: str) -> str:
     return match.group(0) if match else run_id
 
 
+def command_groups(cmd: str) -> list[str]:
+    """A command cut where a line may break: each word on its own, except a
+    flag and the value after it, which stay one group (`--suite support.py`).
+    The groups joined with a space are the command, character for character."""
+    words = cmd.split(" ")
+    groups: list[str] = []
+    i = 0
+    while i < len(words):
+        word = words[i]
+        if (word.startswith("-") and "=" not in word and i + 1 < len(words)
+                and words[i + 1] and not words[i + 1].startswith("-")):
+            groups.append(f"{word} {words[i + 1]}")
+            i += 2
+        else:
+            groups.append(word)
+            i += 1
+    return groups
+
+
 def _stdout_lines(command: dict) -> list[str]:
     return str(command.get("stdout", "")).rstrip("\n").split("\n")
 
@@ -327,6 +346,7 @@ def compute(data: dict) -> dict[str, Any]:
         "version": version,
         "pre_1_0": major == 0,
         "pinned_install": f"pip install digline=={version}",
+        "pinned_install_groups": command_groups(f"pip install digline=={version}"),
         "requires_python": _python_range(data["requires_python"]["specifier"]),
         "dependencies": {
             "names": names,
@@ -362,7 +382,8 @@ def compute(data: dict) -> dict[str, Any]:
             "run_id": quickstart_run,
             "run_short": _short_run(quickstart_run),
             "commands": [
-                {"cmd": c["cmd"], "stdout": _stdout_lines(c), "exit": c["exit"]}
+                {"cmd": c["cmd"], "groups": command_groups(c["cmd"]),
+                 "stdout": _stdout_lines(c), "exit": c["exit"]}
                 for c in quickstart["commands"]
             ],
         },
@@ -454,6 +475,12 @@ def selftest() -> int:
     expect("dependencies", home["dependencies"]["names"], ["jsonschema"])
     expect("dependency heading", home["dependencies"]["heading"], "One dependency")
     expect("quickstart commands", len(home["quickstart"]["commands"]), 3)
+    expect("command groups", home["quickstart"]["commands"][2]["groups"],
+           ["digline", "compare", "--suite support.py", "--run latest"])
+    for c in home["quickstart"]["commands"]:
+        expect(f"groups rejoin to {c['cmd']!r}", " ".join(c["groups"]), c["cmd"])
+    expect("a flag with no value stays alone", command_groups("digline compare --json --run latest"),
+           ["digline", "compare", "--json", "--run latest"])
     expect("requires python", home["requires_python"], "3.12 or newer")
     expect("python range kept as declared", _python_range(">=3.12,<3.15"), ">=3.12,<3.15")
 

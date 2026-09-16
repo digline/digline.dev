@@ -168,16 +168,18 @@
       <li><code>digline compare</code><p>Every later run is checked against it.</p></li>
     </ol>
     {#- One row per command: what you type on the left, what digline printed on
-        the right, so a pair stays level when either side wraps. Below 900px
+        the right, so a pair stays level when either side wraps. A command
+        breaks only between its groups (the hook's command_groups: a flag stays
+        with its value). Below 900px
         each pair stacks, command first. The capture keeps nothing pip prints,
         so its output cell is empty. -#}
     <div class="term">
       <div class="term__bar">you type</div>
       <div class="term__bar">digline prints</div>
-      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{{ home.pinned_install }}</span></pre>
+      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{% for g in home.pinned_install_groups %}<span class="term__group">{{ g }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></pre>
       <pre class="out term__out"></pre>
       {%- for c in home.quickstart.commands %}
-      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{{ c.cmd }}</span></pre>
+      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{% for g in c.groups %}<span class="term__group">{{ g }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></pre>
       <pre class="out term__out">{% for line in c.stdout %}<span class="out__line">{{ line }}</span>{% endfor %}</pre>
       {%- endfor %}
     </div>

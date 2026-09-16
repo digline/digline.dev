@@ -466,6 +466,8 @@ a.chip:hover { border-color: var(--fine); }
 .term__bar + .term__bar + pre + pre { padding-top: 1.125rem; }
 .term pre:nth-last-child(-n+2) { padding-bottom: 1.125rem; }
 .term__prompt { color: var(--faint); }
+/* A flag and its value, or one word: a command wraps between these only. */
+.term__group { white-space: nowrap; }
 
 /* The flow: the same animated SVG the README opens with, as an <img>. It
    animates with SMIL and keeps its own reduced-motion rule. One file per theme,
