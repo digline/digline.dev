@@ -262,5 +262,173 @@
         "worse": true
       }
     }
+  },
+  "cli_commands": {
+    "items": [
+      {
+        "name": "run",
+        "help": "execute the suite and write a run"
+      },
+      {
+        "name": "rejudge",
+        "help": "judge a stored run's recorded answers again, declaring the source"
+      },
+      {
+        "name": "compare",
+        "help": "compare a run with the baseline"
+      },
+      {
+        "name": "diff",
+        "help": "report what differs between two runs; judges neither"
+      },
+      {
+        "name": "list",
+        "help": "list stored runs, newest first"
+      },
+      {
+        "name": "migrate",
+        "help": "bring stored runs and the baseline up to the current schema"
+      },
+      {
+        "name": "promote",
+        "help": "make a run the baseline"
+      },
+      {
+        "name": "register",
+        "help": "record a person's disposition about a comparison; commit the line"
+      },
+      {
+        "name": "view",
+        "help": "browse stored runs, compare any two, promote"
+      },
+      {
+        "name": "explain",
+        "help": "read a run back at length; compares if there is a baseline"
+      },
+      {
+        "name": "log",
+        "help": "which model answered, read down the stored runs; never a gate"
+      },
+      {
+        "name": "report",
+        "help": "render the report"
+      }
+    ],
+    "source": "digline.cli.build_parser(), the parser `digline` itself runs: every subcommand in the order it is declared, with the one-line help `digline --help` prints beside it. Read from argparse's own list of subcommands, not from a list kept for the home."
+  },
+  "checks": {
+    "items": [
+      {
+        "name": "F1",
+        "kind": "aggregate",
+        "anchor": "f1"
+      },
+      {
+        "name": "Accuracy",
+        "kind": "aggregate",
+        "anchor": "accuracy"
+      },
+      {
+        "name": "Affix",
+        "kind": "deterministic",
+        "anchor": "affix"
+      },
+      {
+        "name": "Contains",
+        "kind": "deterministic",
+        "anchor": "contains"
+      },
+      {
+        "name": "CostBudget",
+        "kind": "budget",
+        "anchor": "costbudget"
+      },
+      {
+        "name": "Equals",
+        "kind": "deterministic",
+        "anchor": "equals"
+      },
+      {
+        "name": "Faithfulness",
+        "kind": "judged",
+        "anchor": "faithfulness"
+      },
+      {
+        "name": "FromAutoevals",
+        "kind": "wrapper",
+        "anchor": "fromautoevals"
+      },
+      {
+        "name": "IsJson",
+        "kind": "deterministic",
+        "anchor": "isjson"
+      },
+      {
+        "name": "JsonSchema",
+        "kind": "deterministic",
+        "anchor": "jsonschema"
+      },
+      {
+        "name": "LatencyBudget",
+        "kind": "budget",
+        "anchor": "latencybudget"
+      },
+      {
+        "name": "Length",
+        "kind": "deterministic",
+        "anchor": "length"
+      },
+      {
+        "name": "Levenshtein",
+        "kind": "deterministic",
+        "anchor": "levenshtein"
+      },
+      {
+        "name": "LlmRubric",
+        "kind": "judged",
+        "anchor": "llmrubric"
+      },
+      {
+        "name": "NotContains",
+        "kind": "deterministic",
+        "anchor": "notcontains"
+      },
+      {
+        "name": "PiiAbsent",
+        "kind": "deterministic",
+        "anchor": "piiabsent"
+      },
+      {
+        "name": "Precision",
+        "kind": "aggregate",
+        "anchor": "precision"
+      },
+      {
+        "name": "Recall",
+        "kind": "aggregate",
+        "anchor": "recall"
+      },
+      {
+        "name": "Regex",
+        "kind": "deterministic",
+        "anchor": "regex"
+      },
+      {
+        "name": "ToolCalledWith",
+        "kind": "deterministic",
+        "anchor": "toolcalledwith"
+      },
+      {
+        "name": "ToolsCalled",
+        "kind": "deterministic",
+        "anchor": "toolscalled"
+      },
+      {
+        "name": "Repeated",
+        "kind": "wrapper",
+        "anchor": "repeated"
+      }
+    ],
+    "source": "Every class in digline.core.__all__ that subclasses AssertionBase or RunAssertionBase, in the order of __all__, with the `KIND` the class declares and the anchor of its card in docs/metrics.md, derived from the card's heading the way the site's Markdown derives a heading id."
   }
 }
