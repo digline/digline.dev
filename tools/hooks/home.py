@@ -611,8 +611,11 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
         )
     kind_groups = []
     for key, label, description in CHECK_KINDS:
+        # Alphabetical, without regard to case, rather than in digline's
+        # declaration order, which a reader has no way to see.
         members = [{"name": c["name"], "href": f"product/metrics/#{c['anchor']}"}
-                   for c in checks if c["kind"] == key]
+                   for c in sorted((c for c in checks if c["kind"] == key),
+                                   key=lambda c: (c["name"].casefold(), c["name"]))]
         kind_groups.append({"key": key, "label": label, "description": description,
                             "count": len(members), "checks": members})
 
@@ -871,6 +874,21 @@ def selftest() -> int:
     expect("kinds in words", g["checks"]["kinds_word"], "five")
     expect("a check's link", g["checks"]["kinds"][2]["checks"][0],
            {"name": "CostBudget", "href": "product/metrics/#costbudget"})
+    expect("checks in alphabetical order, case aside (aggregates, which digline declares F1 first)",
+           [c["name"] for c in g["checks"]["kinds"][3]["checks"]],
+           ["Accuracy", "F1", "Precision", "Recall"])
+    expect("checks in alphabetical order, case aside (deterministic)",
+           [c["name"] for c in g["checks"]["kinds"][0]["checks"]],
+           ["Affix", "Contains", "Equals", "IsJson", "JsonSchema", "Length", "Levenshtein",
+            "NotContains", "PiiAbsent", "Regex", "ToolCalledWith", "ToolsCalled"])
+    expect("wrappers",
+           [c["name"] for c in g["checks"]["kinds"][4]["checks"]], ["FromAutoevals", "Repeated"])
+    mixed = copy.deepcopy(grid_data)
+    mixed["checks"]["items"] = [{"name": n, "kind": "deterministic", "anchor": "affix"}
+                                for n in ("regex", "Contains", "affix", "Zeta")]
+    expect("case does not decide the order",
+           [c["name"] for c in grids(mixed, pages, guide_html, metrics_ids, reference)
+            ["checks"]["kinds"][0]["checks"]], ["affix", "Contains", "regex", "Zeta"])
     expect("first mention above every heading", first_mention("<p>digline run</p><h2 id='x'>X</h2>", "run"), "")
     expect("a longer name is not the command", first_mention('<h2 id="a">A</h2><p>digline list-runs</p>', "list"), None)
 

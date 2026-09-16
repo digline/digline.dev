@@ -467,7 +467,7 @@ a.chip:hover { border-color: var(--fine); }
 
 .cmds,
 .kinds { display: grid; gap: .875rem; list-style: none; margin: 0; padding: 0; }
-.cmds { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.cmds { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 .cmd,
 .kind {
@@ -522,11 +522,11 @@ a.chip:hover { border-color: var(--fine); }
 }
 .kind__check:hover { color: var(--c); border-color: var(--c); }
 
-@media (max-width: 1000px) {
+@media (max-width: 999px) {
   .cmds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .kinds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 520px) {
+@media (max-width: 519px) {
   .cmds,
   .kinds { grid-template-columns: minmax(0, 1fr); }
   .kind--deterministic { grid-column: auto; }
