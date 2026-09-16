@@ -133,7 +133,8 @@ pre {
 .dg-page--home .mono { font-family: var(--mono-page); overflow-wrap: anywhere; }
 
 /* Depth, in two steps. The verdict card carries the page's one marked shadow
-   (in its own rule, below). Every other box in the sections carries
+   (in its own rule, below, from --shadow-card in tokens.css: dark in both
+   themes, so it never glows). Every other box in the sections carries
    --shadow-soft: close to the box and faint, enough to lift it off the ground
    and no more. In the dark it does not read — tried down to --band-bg, the
    darkest token, it was not there on the page — so it is none, rather than
@@ -247,7 +248,7 @@ pre {
   margin: 0;
   background: var(--bg);
   border: 1px solid var(--rule); border-radius: .875rem;
-  box-shadow: 0 24px 60px -32px color-mix(in srgb, var(--ink) 35%, transparent);
+  box-shadow: 0 24px 60px -32px var(--shadow-card);
   min-width: 0;
 }
 .verdict__head {
