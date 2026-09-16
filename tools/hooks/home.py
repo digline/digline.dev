@@ -29,9 +29,10 @@ Each of these is a claim the home would make that the file does not support:
   * ``compare_json`` does not say ``worse: true`` and ``artifacts_changed:
     true``;
   * ``runtime_dependencies`` is missing;
-  * ``requires_python`` is missing, or carries no ``specifier``;
-  * a character the home shows in IBM Plex is not in the subset of the face
-    that shows it (see "the faces" below).
+  * ``requires_python`` is missing, or carries no ``specifier``.
+
+The characters the home shows in IBM Plex are checked after the build, on the
+HTML, with the other presentation pages: tools/check-glyphs.py.
 
 ── what the template gets ───────────────────────────────────────────────────
 One variable, ``home``, and only on the page whose source is ``index.md``. See
@@ -385,232 +386,6 @@ def load(json_path: str, changelog_path: str) -> dict[str, Any]:
     return compute(data)
 
 
-# ── the faces ────────────────────────────────────────────────────────────────
-#
-# IBM Plex is served as a subset cut from the characters the home shows, one set
-# for Plex Sans and one for Plex Mono. A character outside the subset is not an
-# error a browser reports: it draws that one glyph in the system face. So the
-# selftest works out, from the page itself, which characters each face draws,
-# and reads each woff2's cmap for them. tools/subset-fonts.py cuts the files
-# from the same sets, through the same functions.
-#
-# Which face draws a piece of text is decided by pages.css, not by a list here:
-# every rule whose `font-family` or `font` names --sans-page or --mono-page is
-# read out of the stylesheet, and the nearest element that one of them matches
-# decides.
-
-# Where the faces and the rules that choose them are, from the repository root.
-PAGES_CSS = "docs/assets/pages.css"
-HOME_TEMPLATE = "home.html"
-OVERRIDES = "overrides"
-
-# Text the page shows that is in neither the template's text nor home.json:
-# `content: "$ "` on .install__cmd::before, the step counters of .steps li
-# (1 to 3), and the Copy / Copied label the script writes on .install__copy.
-_GENERATED = {"mono": "$ ", "sans": "123CopyCopied"}
-
-_FAMILIES = {"--sans-page": "sans", "--mono-page": "mono"}
-_PLEX = {"IBM Plex Sans": "sans", "IBM Plex Mono": "mono"}
-_COMPOUND = re.compile(r"^([a-z][a-z0-9]*)?((?:\.[\w-]+)*)$")
-_VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
-         "meta", "source", "track", "wbr"}
-
-
-def _declarations(content) -> list:
-    import tinycss2
-
-    return [d for d in tinycss2.parse_blocks_contents(content, skip_comments=True,
-                                                      skip_whitespace=True)
-            if d.type == "declaration"]
-
-
-def _css_rules(css_text: str):
-    """Every qualified rule in the stylesheet, @media contents included."""
-    import tinycss2
-
-    def walk(nodes):
-        for node in nodes:
-            if node.type == "qualified-rule":
-                yield node
-            elif node.type == "at-rule" and node.lower_at_keyword == "media" and node.content:
-                yield from walk(tinycss2.parse_rule_list(node.content, skip_comments=True,
-                                                         skip_whitespace=True))
-
-    return walk(tinycss2.parse_stylesheet(css_text, skip_comments=True, skip_whitespace=True))
-
-
-def font_faces(css_text: str, css_dir: str) -> dict[str, list[tuple[str, str]]]:
-    """(weight, woff2 path) for each Plex family, from the @font-face rules."""
-    import tinycss2
-
-    faces: dict[str, list[tuple[str, str]]] = {"sans": [], "mono": []}
-    for node in tinycss2.parse_stylesheet(css_text, skip_comments=True, skip_whitespace=True):
-        if node.type != "at-rule" or node.lower_at_keyword != "font-face":
-            continue
-        values = {d.lower_name: tinycss2.serialize(d.value).strip()
-                  for d in _declarations(node.content)}
-        family = _PLEX.get(values.get("font-family", "").strip("\"'"))
-        url = re.search(r"url\(\s*[\"']?([^\"')]+)", values.get("src", ""))
-        if family and url:
-            path = os.path.normpath(os.path.join(css_dir, url.group(1)))
-            faces[family].append((values.get("font-weight", "400"), path))
-    return faces
-
-
-def face_rules(css_text: str) -> list[tuple[list[tuple[str, set[str]]], str]]:
-    """(selector as compounds, family) for every rule that picks a Plex face,
-    in source order. Pseudo-classes, pseudo-elements and combinators other than
-    the descendant one are left out: the generated text is _GENERATED."""
-    import tinycss2
-
-    rules = []
-    for rule in _css_rules(css_text):
-        family = None
-        for d in _declarations(rule.content):
-            if d.lower_name in ("font", "font-family"):
-                value = tinycss2.serialize(d.value)
-                for token, name in _FAMILIES.items():
-                    if token in value:
-                        family = name
-        if family is None:
-            continue
-        for selector in tinycss2.serialize(rule.prelude).split(","):
-            compounds = []
-            for part in selector.split():
-                match = _COMPOUND.match(part)
-                if not match or not part:
-                    compounds = None
-                    break
-                classes = {c for c in match.group(2).split(".") if c}
-                compounds.append((match.group(1) or "", classes))
-            if compounds:
-                rules.append((compounds, family))
-    return rules
-
-
-def _matches(compounds, chain) -> bool:
-    """Whether a descendant selector matches the last element of chain."""
-    def fits(compound, element):
-        tag, classes = compound
-        return (not tag or tag == element[0]) and classes <= element[1]
-
-    if not fits(compounds[-1], chain[-1]):
-        return False
-    wanted = len(compounds) - 2
-    for element in reversed(chain[:-1]):
-        if wanted < 0:
-            break
-        if fits(compounds[wanted], element):
-            wanted -= 1
-    return wanted < 0
-
-
-def plex_text(html: str, rules) -> dict[str, set[str]]:
-    """The characters of the text inside <main class="dg-page">, by the face
-    that draws them. Markup, attributes, <script> and <style> are not text."""
-    from html.parser import HTMLParser
-
-    found: dict[str, set[str]] = {"sans": set(), "mono": set()}
-
-    class Reader(HTMLParser):
-        def __init__(self):
-            super().__init__(convert_charrefs=True)
-            self.chain: list[tuple[str, set[str]]] = []
-
-        def handle_starttag(self, tag, attrs):
-            if tag in _VOID:
-                return
-            classes = set((dict(attrs).get("class") or "").split())
-            self.chain.append((tag, classes))
-
-        def handle_startendtag(self, tag, attrs):
-            pass
-
-        def handle_endtag(self, tag):
-            for i in range(len(self.chain) - 1, -1, -1):
-                if self.chain[i][0] == tag:
-                    del self.chain[i:]
-                    return
-
-        def handle_data(self, data):
-            tags = [e[0] for e in self.chain]
-            if "script" in tags or "style" in tags:
-                return
-            if not any(t == "main" and "dg-page" in c for t, c in self.chain):
-                return
-            family = None
-            for depth in range(len(self.chain), 0, -1):
-                picked = [f for compounds, f in rules if _matches(compounds, self.chain[:depth])]
-                if picked:
-                    family = picked[-1]
-                    break
-            if family:
-                found[family].update(ch for ch in data if not ch.isspace())
-
-    reader = Reader()
-    reader.feed(html)
-    reader.close()
-    return found
-
-
-def json_strings(value) -> set[str]:
-    """Every character of every string value in home.json."""
-    if isinstance(value, str):
-        return {ch for ch in value if not ch.isspace()}
-    if isinstance(value, dict):
-        value = list(value.values())
-    if isinstance(value, list):
-        return set().union(*(json_strings(v) for v in value)) if value else set()
-    return set()
-
-
-def render_home(root: str, home: dict[str, Any]) -> str:
-    """The home's main block, rendered with `home` as the build renders it."""
-    import jinja2
-
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(os.path.join(root, OVERRIDES)), autoescape=True
-    )
-    template = env.get_template(HOME_TEMPLATE)
-    context = template.new_context({"home": home, "base_url": ""})
-    body = "".join(template.blocks["main"](context))
-    return f'<main class="dg-page dg-page--home">{body}</main>'
-
-
-def plex_characters(root: str, datasets: list[dict]) -> dict[str, set[str]]:
-    """What each Plex face must draw: the home's text rendered from each
-    capture, every string in each capture, and _GENERATED."""
-    with open(os.path.join(root, PAGES_CSS), encoding="utf-8") as fh:
-        rules = face_rules(fh.read())
-    chars = {family: set(_GENERATED[family]) - {" "} for family in ("sans", "mono")}
-    for data in datasets:
-        text = plex_text(render_home(root, compute(data)), rules)
-        strings = json_strings(data)
-        for family in chars:
-            chars[family] |= text[family] | strings
-    return chars
-
-
-def glyph_gaps(root: str, chars: dict[str, set[str]]) -> list[str]:
-    """Each character a face must draw that its woff2 has no glyph for."""
-    from fontTools.ttLib import TTFont
-
-    with open(os.path.join(root, PAGES_CSS), encoding="utf-8") as fh:
-        faces = font_faces(fh.read(), os.path.dirname(os.path.join(root, PAGES_CSS)))
-    gaps = []
-    for family, paths in faces.items():
-        if not paths:
-            gaps.append(f"no @font-face for Plex {family} in {PAGES_CSS}")
-        for _, path in paths:
-            cmap = TTFont(path).getBestCmap()
-            missing = sorted(ch for ch in chars[family] if ord(ch) not in cmap)
-            if missing:
-                shown = " ".join(f"{ch!r} U+{ord(ch):04X}" for ch in missing)
-                gaps.append(f"{os.path.relpath(path, root)} has no glyph for {shown}; "
-                            "cut it again with tools/subset-fonts.py")
-    return gaps
-
-
 # ── the hooks mkdocs calls ───────────────────────────────────────────────────
 
 _home: dict[str, Any] | None = None
@@ -636,8 +411,7 @@ def on_page_context(context, page, config, nav, **kwargs):
 def selftest() -> int:
     """The hook against the fixtures in tools/testdata/home/: the capture as it
     was committed must compute to what the home shows, every way the file can
-    stop supporting the home must fail the build, naming why, and every
-    character the home shows in Plex must be in the subset of its face."""
+    stop supporting the home must fail the build, naming why."""
     import copy
     import tempfile
 
@@ -749,30 +523,12 @@ def selftest() -> int:
                 continue
             failures.append(f"{label}: accepted, which it exists to refuse")
 
-    # 3. Every character the home shows in Plex has a glyph in the face that
-    #    shows it, and a character that has none is caught.
-    root = os.path.normpath(os.path.join(here, "..", ".."))
-    chars = plex_characters(root, [base])
-    expect("‘…’ is drawn in Mono", "…" in chars["mono"], True)
-    expect("‘’’ is drawn in Sans", "’" in chars["sans"], True)
-    gaps = glyph_gaps(root, chars)
-    failures.extend(f"faces: {gap}" for gap in gaps)
-    unshown = copy.deepcopy(base)
-    unshown["runtime_dependencies"]["names"].append("✱")
-    planted = glyph_gaps(root, plex_characters(root, [unshown]))
-    if not planted or not all("U+2731" in gap for gap in planted):
-        failures.append(f"faces: a character no face has went unnoticed: {planted!r}")
-    else:
-        print(f"selftest: refused, as it must — a character outside the subset: "
-              f"{len(planted)} faces without U+2731")
-
     for failure in failures:
         print(f"selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
     print(f"selftest: home.json fixture computes as expected, "
-          f"{len(cases)} refusals refused, every Plex character in its subset "
-          f"({len(chars['sans'])} Sans, {len(chars['mono'])} Mono)")
+          f"{len(cases)} refusals refused")
     return 0
 
 

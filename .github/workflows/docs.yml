@@ -108,6 +108,15 @@ jobs:
         # stops being listed fails nothing else.
         run: tools/check-llms.py site
 
+      - name: Check the Plex glyphs
+        # The fonts are subsets, and a browser draws a character a subset
+        # lacks in the system face without a word. Every page whose <main> is
+        # a .dg-page: the text each Plex face draws there, against the cmap of
+        # each woff2. --selftest first: a clean page passes, a planted ✱ fails.
+        run: |
+          uv run tools/check-glyphs.py --selftest
+          uv run tools/check-glyphs.py site
+
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.
       - uses: actions/upload-pages-artifact@v4
