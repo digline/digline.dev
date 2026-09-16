@@ -132,6 +132,30 @@ pre {
 }
 .dg-page--home .mono { font-family: var(--mono-page); overflow-wrap: anywhere; }
 
+/* Depth, in two steps. The verdict card carries the page's one marked shadow
+   (in its own rule, below). Every other box in the sections carries
+   --shadow-soft: close to the box and faint, enough to lift it off the ground
+   and no more. In the dark it does not read — tried down to --band-bg, the
+   darkest token, it was not there on the page — so it is none, rather than
+   traded for a lighter border; the same three states as tokens.css. */
+:root,
+[data-md-color-scheme="default"] {
+  --shadow-soft:
+    0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent),
+    0 6px 16px -8px color-mix(in srgb, var(--ink) 14%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-md-color-scheme="default"]),
+  body:not([data-md-color-scheme="default"]) { --shadow-soft: none; }
+}
+[data-md-color-scheme="slate"] { --shadow-soft: none; }
+
+.contrast .panel,
+.tiles,
+.stack,
+.readings .panel,
+.term { box-shadow: var(--shadow-soft); }
+
 /* Output that wraps. Every block of digline's output on the home is a <pre
    class="out"> of one <span class="out__line"> per line: a line too long for
    its box goes on underneath itself, indented, the hanging indent .console had
