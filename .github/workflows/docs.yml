@@ -112,8 +112,10 @@ jobs:
     name: Deploy
     needs: build
     # A push to main, or a digline release. Not a pull request, and not a manual
-    # workflow_dispatch either: that one builds and checks, and to publish by
-    # hand you push to main or re-send the release dispatch.
+    # workflow_dispatch either: that one builds and checks. To publish again
+    # with nothing new to push, use "Re-run jobs" on the latest push run on
+    # main — an older run would deploy the commit it was built from — or push
+    # an empty commit to main.
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'repository_dispatch' && github.event.action == 'digline-release')
