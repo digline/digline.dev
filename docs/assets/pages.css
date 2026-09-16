@@ -132,6 +132,15 @@ pre {
 }
 .dg-page--home .mono { font-family: var(--mono-page); overflow-wrap: anywhere; }
 
+/* Output that wraps. Every block of digline's output on the home is a <pre
+   class="out"> of one <span class="out__line"> per line: a line too long for
+   its box goes on underneath itself, indented, the hanging indent .console had
+   before, and never scrolls sideways. Run ids and hashes have no space to break
+   at, so they break anywhere. An empty line keeps its height. */
+.dg-page--home pre.out { white-space: pre-wrap; overflow-wrap: anywhere; }
+.out__line { display: block; padding-left: 2ch; text-indent: -2ch; }
+.out__line:empty::before { content: "\a0"; }
+
 /* ── the hero ────────────────────────────────────────────────────────────
    The sentence and the install on one side, and the one bold thing on the page
    on the other: the verdict digline printed. */
@@ -152,6 +161,9 @@ pre {
   margin: 0 0 1.375rem;
   font-size: clamp(2.25rem, 4.2vw, 3rem);
   line-height: 1.06; letter-spacing: -.035em; font-weight: 700;
+  /* Lines of even length, so the first does not end on "one". Where balance
+     is not supported the no-break space in "one prompt." does the same job. */
+  text-wrap: balance;
 }
 .hero__quiet { display: block; color: var(--muted); font-weight: 500; }
 .hero__lede {
@@ -431,23 +443,29 @@ a.chip:hover { border-color: var(--fine); }
 .steps code { display: block; margin: .875rem 0 .25rem; font-size: .90625rem; font-weight: 500; }
 .steps p { margin: 0; max-width: 18em; font-size: .9375rem; color: var(--muted); }
 
+/* The quickstart: a grid of command / output pairs under the two headings,
+   so each output sits level with the command that printed it, however either
+   one wraps. */
 .term {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   background: var(--bg);
   border: 1px solid var(--rule); border-radius: .875rem; overflow: hidden;
 }
-.term__pane { min-width: 0; }
-.term__pane + .term__pane { border-left: 1px solid var(--rule); }
 .term__bar {
   padding: .6875rem 1rem;
   font-size: .8125rem; color: var(--muted);
   background: var(--surface); border-bottom: 1px solid var(--rule);
 }
+.term__bar + .term__bar,
+.term__out { border-left: 1px solid var(--rule); }
 .term pre {
   border: 0; border-radius: 0; background: transparent;
-  padding: 1.125rem; font-size: .84375rem; line-height: 1.75;
+  padding: .5rem 1.125rem; font-size: .84375rem; line-height: 1.75;
 }
-.term__prompt, .term__comment { color: var(--faint); }
+.term__bar + .term__bar + pre,
+.term__bar + .term__bar + pre + pre { padding-top: 1.125rem; }
+.term pre:nth-last-child(-n+2) { padding-bottom: 1.125rem; }
+.term__prompt { color: var(--faint); }
 
 /* The flow: the same animated SVG the README opens with, as an <img>. It
    animates with SMIL and keeps its own reduced-motion rule. One file per theme,
@@ -464,51 +482,19 @@ a.chip:hover { border-color: var(--fine); }
 }
 
 /* ── the text that was already here ──────────────────────────────────────
-   The way in, where it is headed, and the invitation: their words unchanged. */
-.words { padding: 4rem 0 4.5rem; border-top: 1px solid var(--rule-soft); }
-.words .part__inner { max-width: calc(46rem + 3rem); }
-
-.newcomer {
-  margin: 0; max-width: 34rem;
-  font-size: .9375rem; line-height: 1.5; color: var(--muted);
-}
-.newcomer a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
-.newcomer a:hover { border-bottom-color: currentColor; }
-
-.ahead { margin: 3rem 0 0; padding-top: 2.5rem; border-top: 1px solid var(--rule-soft); }
-.ahead__eyebrow {
-  margin: 0;
-  font-size: .6875rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
-  color: var(--faint);
-}
-.ahead h2 {
-  margin: .75rem 0 1rem;
-  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.015em; color: var(--ink);
-}
-.ahead p { margin: 0 0 .75rem; max-width: 44rem; font-size: .9375rem; line-height: 1.6; color: var(--muted); }
+   Where it is headed, and the invitation: their words unchanged, laid out as
+   the parts above them are, with the text held to a reading width. */
+.ahead p:not(.part__kicker),
+.pilot p:not(.part__kicker) { margin: 0 0 .75rem; max-width: 44rem; font-size: 1rem; line-height: 1.6; color: var(--muted); }
 .ahead p b { color: var(--ink); font-weight: 600; }
-.ahead__more { margin: 1.125rem 0 0; }
+.ahead .ahead__more { margin: 1.125rem 0 0; }
 .ahead__more a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
 .ahead__more a:hover { border-bottom-color: currentColor; }
 
-.pilot {
-  margin: 3.5rem 0 0; padding: 1.875rem 2rem;
-  background: var(--surface);
-  border: 1px solid var(--rule); border-left: 3px solid var(--fine); border-radius: .5rem;
-}
-.pilot__eyebrow {
-  font-size: .6875rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
-  color: var(--fine);
-}
-.pilot h2 {
-  margin: .75rem 0 .625rem;
-  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.015em; color: var(--ink);
-}
-.pilot p { margin: 0; font-size: .9375rem; line-height: 1.6; color: var(--muted); }
-.pilot__body { max-width: 40rem; }
+.pilot .pilot__body { max-width: 40rem; margin: 0; }
 .pilot .pilot__cta {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: .375rem .625rem;
-  margin: 1.375rem 0 0; padding-top: 1.125rem;
+  max-width: 40rem; margin: 1.375rem 0 0; padding-top: 1.125rem;
   border-top: 1px solid var(--rule);
 }
 .pilot__mail {
@@ -552,7 +538,16 @@ a.chip:hover { border-color: var(--fine); }
   .hero { padding: 3rem 0; }
   .part { padding: 3.5rem 0; }
   .readings__arrow { justify-self: center; transform: rotate(90deg); }
-  .term__pane + .term__pane { border-left: 0; border-top: 1px solid var(--rule); }
+  /* Each pair stacks, command first; the headings go, the $ says which is
+     which, and a rule separates one pair from the next. */
+  .term__bar { display: none; }
+  .term__out { border-left: 0; }
+  .term .term__cmd { padding-top: .875rem; padding-bottom: .25rem; }
+  .term .term__out { padding-top: 0; padding-bottom: .875rem; }
+  .term__cmd ~ .term__cmd { border-top: 1px solid var(--rule); }
+  .term__out:empty { display: none; }
+  .term pre.term__cmd:nth-last-child(2) { padding-bottom: .25rem; }
+  .term__cmd:has(+ .term__out:empty) { padding-bottom: .875rem; }
   .steps { grid-template-columns: minmax(0, 1fr); gap: 1.625rem; }
   .steps li::after { display: none; }
   .stack__row { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
@@ -562,5 +557,4 @@ a.chip:hover { border-color: var(--fine); }
   .part__inner { padding: 0 1rem; }
   .tiles { grid-template-columns: minmax(0, 1fr); }
   .tile { padding: 1.375rem; }
-  .pilot { padding: 1.5rem 1.25rem; }
 }

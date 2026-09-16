@@ -18,7 +18,7 @@
   <div class="part__inner">
     <div>
       <p class="hero__status"><span>Open source, Apache-2.0</span><span>v{{ home.version }}{% if home.pre_1_0 %}, pre-1.0{% endif %}</span></p>
-      <h1 class="hero__title" id="hero-h">You changed one prompt.<span class="hero__quiet">What else got worse?</span></h1>
+      <h1 class="hero__title" id="hero-h">You changed one&nbsp;prompt.<span class="hero__quiet">What else got worse?</span></h1>
       <p class="hero__lede">A new prompt, a model version, a library upgrade. The app still runs, and one answer your client relied on is now wrong. digline tells you which case, by how much, and whether the drop is bigger than the judge&rsquo;s own noise.</p>
       <div class="install" data-copy>
         <code class="install__cmd">pip install digline</code>
@@ -56,8 +56,9 @@
         {%- if r.diff %}
         <div class="diff">
           <div class="diff__head">{{ r.diff.path }} · +{{ r.diff.added }} −{{ r.diff.removed }} lines, changed since the reference</div>
-          <pre>{% for line in r.diff.changes %}<span class="diff__{{ line.kind }}">{{ line.text }}</span>{% if not loop.last %}
-{% endif %}{% endfor %}</pre>
+          <pre class="out">
+            {%- for line in r.diff.changes %}<span class="out__line diff__{{ line.kind }}">{{ line.text }}</span>{% endfor -%}
+          </pre>
         </div>
         {%- endif %}
         <p class="verdict__exit"><span>{{ r.regressed_count }} checks got worse. CI stops here.</span><b>exit {{ r.exit }}</b></p>
@@ -138,19 +139,17 @@
     <div class="readings">
       <div class="panel">
         <h3 class="panel__head">The new run on its own <span>no reference</span></h3>
-        <pre><span class="quiet">{{ r.table.header }}</span>
-{% for row in r.table.rows %}{{ row }}
-{% endfor %}
-<span class="quiet">Were these {% if r.before_common %}{{ r.before_common }}{% else %}better{% endif %} yesterday? Did anything change?
-Nothing here says.</span></pre>
+        <pre class="out"><span class="out__line quiet">{{ r.table.header }}</span>
+          {%- for row in r.table.rows %}<span class="out__line">{{ row }}</span>{% endfor -%}
+          <span class="out__line"></span><span class="out__line quiet">Were these {% if r.before_common %}{{ r.before_common }}{% else %}better{% endif %} yesterday? Did anything change?</span><span class="out__line quiet">Nothing here says.</span></pre>
         <div class="tags"><span>no baseline</span><span>no change on record</span><span>no exit code</span></div>
       </div>
       <div class="readings__arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="panel panel--good">
         <h3 class="panel__head">digline compare <span>against the reference</span></h3>
-        <pre>{% for line in r.compare_lines %}{% if line.kind == "worse" %}<span class="worse">{{ line.text }}</span>{% elif line.kind in ("head", "more") %}<span class="quiet">{{ line.text }}</span>{% else %}{{ line.text }}{% endif %}
-{% endfor %}
-<span class="worse">exit {{ r.exit }}</span></pre>
+        <pre class="out">
+          {%- for line in r.compare_lines %}<span class="out__line{% if line.kind == "worse" %} worse{% elif line.kind in ("head", "more") %} quiet{% endif %}">{{ line.text }}</span>{% endfor -%}
+          <span class="out__line"></span><span class="out__line worse">exit {{ r.exit }}</span></pre>
         <div class="tags"><span>each check named</span><span>prompt change detected</span><span>exit {{ r.exit }}</span></div>
       </div>
     </div>
@@ -168,22 +167,19 @@ Nothing here says.</span></pre>
       <li><code>digline promote</code><p>A person approves that run as the reference.</p></li>
       <li><code>digline compare</code><p>Every later run is checked against it.</p></li>
     </ol>
+    {#- One row per command: what you type on the left, what digline printed on
+        the right, so a pair stays level when either side wraps. Below 900px
+        each pair stacks, command first. The capture keeps nothing pip prints,
+        so its output cell is empty. -#}
     <div class="term">
-      <div class="term__pane">
-        <div class="term__bar">you type</div>
-        <pre><span class="term__prompt">$</span> {{ home.pinned_install }}
-{% for c in home.quickstart.commands %}<span class="term__prompt">$</span> {{ c.cmd }}
-{% for _ in c.stdout[1:] %}
-{% endfor %}{% if not loop.last %}
-{% endif %}{% endfor %}</pre>
-      </div>
-      <div class="term__pane">
-        <div class="term__bar">digline prints</div>
-        <pre><span class="term__comment"># stdout</span>
-{% for c in home.quickstart.commands %}{% for line in c.stdout %}{{ line }}
-{% endfor %}{% if not loop.last %}
-{% endif %}{% endfor %}</pre>
-      </div>
+      <div class="term__bar">you type</div>
+      <div class="term__bar">digline prints</div>
+      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{{ home.pinned_install }}</span></pre>
+      <pre class="out term__out"></pre>
+      {%- for c in home.quickstart.commands %}
+      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{{ c.cmd }}</span></pre>
+      <pre class="out term__out">{% for line in c.stdout %}<span class="out__line">{{ line }}</span>{% endfor %}</pre>
+      {%- endfor %}
     </div>
     <p class="part__note">Output captured from digline {{ home.version }}, run <span class="mono" title="{{ home.quickstart.run_id }}">{{ home.quickstart.run_short }}…</span>. <a href="{{ base_url }}/product/guide/">Full guide</a></p>
   </div>
@@ -207,13 +203,10 @@ Nothing here says.</span></pre>
   </div>
 </section>
 
-<div class="words">
+<section class="part ahead" aria-labelledby="ahead-h">
   <div class="part__inner">
-<p class="newcomer">New to LLM regression? <a href="{{ base_url }}/start/">Start here</a>.</p>
-
-<section class="ahead" aria-labelledby="ahead-h">
-  <p class="ahead__eyebrow">Roadmap</p>
-  <h2 id="ahead-h">Where it&rsquo;s headed</h2>
+  <p class="part__kicker">Roadmap</p>
+  <h2 class="part__title" id="ahead-h">Where it&rsquo;s headed</h2>
   <p><b>Shipped &mdash; verdict credibility:</b> a drop is a regression only when
   it leaves the interval the baseline measured across its own samples, and the
   open work now is adoption.</p>
@@ -222,11 +215,13 @@ Nothing here says.</span></pre>
   perimeter. And usage data collection, ever.</p>
   <p class="ahead__more"><a href="{{ base_url }}/product/roadmap/">the whole
   roadmap, tracks and gates rather than dates &rarr;</a></p>
+  </div>
 </section>
 
-<section class="pilot" aria-labelledby="pilot-h">
-  <p class="pilot__eyebrow">Pilots</p>
-  <h2 id="pilot-h">Building LLM features for clients?</h2>
+<section class="part pilot" aria-labelledby="pilot-h">
+  <div class="part__inner">
+  <p class="part__kicker">Pilots</p>
+  <h2 class="part__title" id="pilot-h">Building LLM features for clients?</h2>
   <p class="pilot__body">I&rsquo;m looking for a few pilot teams to run digline on
   real projects &mdash; especially teams that build and maintain AI solutions for
   third parties. In exchange you get direct support and a say in what gets built
@@ -237,9 +232,8 @@ Nothing here says.</span></pre>
     <span class="pilot__sep" aria-hidden="true">&middot;</span>
     <a href="https://github.com/digline/digline/issues">or open a GitHub issue</a>
   </p>
-</section>
   </div>
-</div>
+</section>
 
 <section class="closing" aria-labelledby="closing-h">
   <div class="part__inner">
