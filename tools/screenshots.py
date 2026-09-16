@@ -16,6 +16,11 @@ before and after the push.
     uv run tools/screenshots.py --out /tmp/shots --page / --widths 1280,390 \\
         --measure-widths 900
 
+    # one window's worth, 1280x1600, scrolled to the first table
+    uv run tools/screenshots.py --out ~/Desktop/digline-shots --page /product/api/ \\
+        --widths 1280 --height 1600 --viewport-only --scroll-to "article table" \\
+        --name "api-table-{theme}"
+
 What it does, for every page × width × theme:
 
   * serves site/ (or --site) on a free local port, or uses --base as it is;
@@ -26,10 +31,18 @@ What it does, for every page × width × theme:
     is not a blank box and an animated mark is where it settles;
   * measures scrollWidth and clientWidth of every <pre> inside <main> and prints
     both — a <pre> whose scrollWidth is larger scrolls sideways inside itself;
-  * writes <page>-<width>-<theme><suffix>.png in --out, the full page, where
-    <page> is "home" for / and the path's last segment otherwise.
+  * with --scroll-to, scrolls the first element the CSS selector matches to
+    the top of the window, the way a link to it would — under the sticky bar,
+    by the page's own scroll-padding — and fails if nothing matches;
+  * writes <page>-<width>-<theme><suffix>.png in --out, where <page> is "home"
+    for / and the path's last segment otherwise: the full page, or with
+    --viewport-only the window alone, --height tall (900 by default), from
+    wherever it is scrolled to.
 
---measure-widths adds widths that are measured but not photographed.
+--measure-widths adds widths that are measured but not photographed. --name
+replaces the file name, without .png, and may use {page}, {width} and {theme}:
+with more than one page, width or theme it must use the ones that vary, or
+the pictures overwrite each other, which is refused.
 
 Exit status: 0 when every <pre> fits, 1 when one scrolls (the screenshots are
 still written), 2 on a usage or browser error or an interruption, 3 on the
@@ -89,6 +102,23 @@ JSON.stringify([...document.querySelectorAll("main pre")].map((pre, index) => {
   const where = section.getAttribute("aria-labelledby") || section.id || section.className || section.tagName.toLowerCase();
   return { index, where, cls: pre.className || "", scrollWidth: pre.scrollWidth, clientWidth: pre.clientWidth };
 }))
+"""
+
+
+# The first match of a selector to the top of the window, as following a link to
+# it would: scrollIntoView honours the page's scroll-padding-top, which keeps
+# it clear of the sticky bar. Returns the page's scroll offset, or null when
+# nothing matches. Two frames, so a lazy image above it has laid out.
+SCROLL_TO = """
+new Promise(done => {
+  const el = document.querySelector(%s);
+  if (!el) return done(null);
+  el.scrollIntoView({block: "start"});
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.scrollIntoView({block: "start"});
+    done(Math.round(scrollY));
+  }));
+})
 """
 
 
@@ -182,8 +212,8 @@ class Browser:
             raise RuntimeError(f"page script failed: {result['exceptionDetails']}")
         return result["result"].get("value")
 
-    def open(self, url: str, width: int, theme: str) -> None:
-        self.send("Emulation.setDeviceMetricsOverride", width=width, height=900,
+    def open(self, url: str, width: int, theme: str, height: int = 900) -> None:
+        self.send("Emulation.setDeviceMetricsOverride", width=width, height=height,
                   deviceScaleFactor=1, mobile=width < 600)
         self.send("Emulation.setEmulatedMedia",
                   features=[{"name": "prefers-color-scheme", "value": theme}])
@@ -223,6 +253,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--site", default=os.path.join(ROOT, "site"), help="the built site to serve")
     parser.add_argument("--base", help="a URL to use instead of serving --site, e.g. https://digline.dev")
     parser.add_argument("--name-suffix", default="", help="appended to each file name, e.g. --name-suffix=-live")
+    parser.add_argument("--name", help="the file name without .png, with {page}, {width} and {theme}; "
+                                       "replaces <page>-<width>-<theme><suffix>")
+    parser.add_argument("--height", type=int, default=900, help="the window's height in CSS px")
+    parser.add_argument("--viewport-only", action="store_true",
+                        help="photograph the window, --height tall, not the full page")
+    parser.add_argument("--scroll-to", metavar="SELECTOR",
+                        help="scroll the first element matching this CSS selector to the top first")
     parser.add_argument("--chrome", help="path to chrome-headless-shell")
     parser.add_argument("--timeout", type=int, default=120, help="seconds for the whole run")
     args = parser.parse_args(argv)
@@ -235,6 +272,13 @@ def main(argv: list[str]) -> int:
         parser.error("--themes takes light and dark")
     if not args.base and not os.path.isfile(os.path.join(args.site, "index.html")):
         parser.error(f"{args.site} has no index.html; build first, or pass --base")
+    if args.name:
+        varying = [key for key, values in (("page", pages), ("width", widths), ("theme", themes))
+                   if len(values) > 1]
+        missing = [key for key in varying if "{" + key + "}" not in args.name]
+        if missing:
+            parser.error(f"--name must use {', '.join('{' + k + '}' for k in missing)}: "
+                         "more than one picture would get the same name")
     out = os.path.expanduser(args.out)
     os.makedirs(out, exist_ok=True)
     chrome = find_chrome(args.chrome)
@@ -269,11 +313,16 @@ def main(argv: list[str]) -> int:
         for path, width, theme, photograph in jobs:
             url = urljoin(base + "/", path.lstrip("/"))
             url += ("&" if "?" in url else "?") + f"shot={stamp}-{width}-{theme}"
-            browser.open(url, width, theme)
+            browser.open(url, width, theme, args.height)
             failed = browser.evaluate(LOAD_EVERYTHING)
             if failed:
                 print(f"screenshots: {path} {width}px: images that did not load: {failed}",
                       file=sys.stderr)
+            if args.scroll_to:
+                top = browser.evaluate(SCROLL_TO % json.dumps(args.scroll_to))
+                if top is None:
+                    raise RuntimeError(f"{path}: nothing matches --scroll-to {args.scroll_to!r}")
+                print(f"scroll {path} {width}px {theme}  {args.scroll_to!r} at y={top}")
             for pre in json.loads(browser.evaluate(MEASURE_PRE)):
                 scrolls = pre["scrollWidth"] > pre["clientWidth"]
                 overflowing += scrolls
@@ -282,11 +331,18 @@ def main(argv: list[str]) -> int:
                       f"clientWidth={pre['clientWidth']}{'  SCROLLS' if scrolls else ''}")
             if not photograph:
                 continue
-            size = browser.send("Page.getLayoutMetrics")["cssContentSize"]
-            height = int(-(-size["height"] // 1))
-            shot = browser.send("Page.captureScreenshot", format="png", captureBeyondViewport=True,
-                                clip={"x": 0, "y": 0, "width": width, "height": height, "scale": 1})
-            name = f"{page_name(path)}-{width}-{theme}{args.name_suffix}.png"
+            if args.viewport_only:
+                height = args.height
+                shot = browser.send("Page.captureScreenshot", format="png")
+            else:
+                size = browser.send("Page.getLayoutMetrics")["cssContentSize"]
+                height = int(-(-size["height"] // 1))
+                shot = browser.send("Page.captureScreenshot", format="png", captureBeyondViewport=True,
+                                    clip={"x": 0, "y": 0, "width": width, "height": height, "scale": 1})
+            if args.name:
+                name = args.name.format(page=page_name(path), width=width, theme=theme) + ".png"
+            else:
+                name = f"{page_name(path)}-{width}-{theme}{args.name_suffix}.png"
             target = os.path.join(out, name)
             with open(target, "wb") as fh:
                 fh.write(base64.b64decode(shot["data"]))
