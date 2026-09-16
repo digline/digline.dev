@@ -57,6 +57,6 @@ The baseline is a file in git. It has history, it can be diffed, and nobody prom
 
 - [Why](why.md) — the reasoning behind the design, if you want to argue with it.
 - [Guide](product/guide.md) — install it and get your first `compare` in a few minutes.
-- [How digline compares](comparison.md) — if you're already using an eval tool and want to know what's different.
+- [How digline compares](comparison/index.md) — if you're already using an eval tool and want to know what's different.
 
 Ten words you'll meet along the way: **run**, **baseline**, **compare**, **promote**, **check**, **judge**, **tolerance**, **noise floor**, **regression**, **gate**. Each is explained the first time it appears in the Guide.
