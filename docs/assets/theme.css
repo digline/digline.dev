@@ -334,16 +334,26 @@ body {
    --wash where the reading pages' band lays one on a ground that already has
    one: the same depth, a degree past the body's, fading to it at the foot. */
 .md-container > .opening {
-  padding: calc(64px + var(--bar-room)) 0 48px;
+  padding: calc(64px + var(--bar-room)) 0 var(--band-gap);
   background-color: var(--bg);
   /* The body's --wash all the way down, and one more over it that fades out
-     over the last --band-fade: at the band's foot the colour is exactly the
+     over the last --band-gap: at the band's foot the colour is exactly the
      body's (the ground of <main>, below), so the sidebar, the TOC and the
      article start on it with no rule and no strip. */
   background-image:
-    linear-gradient(var(--wash) calc(100% - var(--band-fade)), transparent),
+    linear-gradient(var(--wash) calc(100% - var(--band-gap)), transparent),
     linear-gradient(var(--wash), var(--wash));
 }
+/* Under the band, the page starts --band-gap down, as the reading pages do:
+   the article's first element and the first line of the sidebar and the TOC
+   level with each other. The sidebars' own top padding is 1.2rem, so <main>
+   gives the rest, and the article takes the same 1.2rem — .8rem of padding
+   and the .4rem spacer Material draws above it (.md-content__inner::before) —
+   with its first element's top margin dropped. */
+.md-container > .opening ~ .md-main .md-main__inner { margin-top: calc(var(--band-gap) - 1.2rem); }
+.md-container > .opening ~ .md-main .md-content__inner { padding-top: .8rem; }
+.md-container > .opening ~ .md-main .md-content__inner > :first-child { margin-top: 0; }
+
 .md-container > .opening .reading__inner {
   box-sizing: border-box;
   max-width: 61rem;
@@ -384,6 +394,9 @@ body {
   .md-container > .opening .grad-text { color: CanvasText; background-image: none; }
 }
 
+/* A band with a title and no lede — an ADR, the 404 — ends on the title. */
+.md-container > .opening .opening__title:last-child { margin-bottom: 0; }
+
 /* The reading pages hide the permalink beside a title; so does the band here.
    The id stays on the <h1>, so a link to it still lands. */
 .md-container > .opening .headerlink { display: none; }
@@ -398,7 +411,7 @@ body {
   font-size: .875em;
 }
 @media (max-width: 34rem) {
-  .md-container > .opening { padding: calc(44px + var(--bar-room)) 0 36px; }
+  .md-container > .opening { padding: calc(44px + var(--bar-room)) 0 var(--band-gap); }
 }
 
 /* The roadmap arrives as a task list. Material marks a done item in a green of

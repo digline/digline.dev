@@ -693,17 +693,21 @@ a.chip:hover { border-color: var(--fine); }
 .reading__inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
 
 .opening {
-  padding: calc(4rem + var(--bar-room)) 0 3rem;
-  /* One layer of --wash deeper than the body, down to the last --band-fade,
-     where it thins out into the body's tint: no rule, no step. */
-  background-image: linear-gradient(var(--wash) calc(100% - var(--band-fade)), transparent);
+  padding: calc(4rem + var(--bar-room)) 0 var(--band-gap);
+  /* One layer of --wash deeper than the body, down to the band's foot, where
+     it thins out into the body's tint across the last --band-gap: the fade
+     sits in the band's own bottom space, with no rule and no step. */
+  background-image: linear-gradient(var(--wash) calc(100% - var(--band-gap)), transparent);
 }
 .opening__title { margin-bottom: 1rem; }
+/* A band with a title and no lede ends on the title: its margin would add to
+   --band-gap. */
+.opening__title:last-child { margin-bottom: 0; }
 .opening__lede { margin: 0; max-width: 40rem; }
 .opening__lede a { color: var(--link); }
 .opening__lede code { font-size: .875em; }
 
-.reading { padding: 3rem 0 4.5rem; }
+.reading { padding: var(--band-gap) 0 4.5rem; }
 /* The closing band is the home's partial. On a reading page it is one column:
    title, line, install and links stacked on the text column's left edge, and
    nothing wider than the column (40rem). The home keeps its two. */
@@ -820,8 +824,8 @@ a.chip:hover { border-color: var(--fine); }
   .part__inner,
   .reading__inner,
   .dg-page--reading .closing .part__inner { padding: 0 1rem; }
-  .opening { padding: calc(2.75rem + var(--bar-room)) 0 2.25rem; }
-  .reading { padding: 2.25rem 0 3rem; }
+  .opening { padding: calc(2.75rem + var(--bar-room)) 0 var(--band-gap); }
+  .reading { padding: var(--band-gap) 0 3rem; }
   .essay h2 { font-size: 1.3125rem; }
   .tiles { grid-template-columns: minmax(0, 1fr); }
   .tile { padding: 1.375rem; }
