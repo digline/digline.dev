@@ -89,6 +89,30 @@
   --code-special:  #7a4b12;   /* 6.83:1 — escapes, interpolation, regex */
   --code-comment:  #5b6270;   /* 5.67:1 — comments, operators, prompts */
   --code-error:    #8a1c1c;   /* 8.58:1 — errors, tracebacks, deletions */
+
+  /* Colour for the presentation pages, beyond the report's palette.
+
+     The gradient runs from a green to a blue by way of a teal: the hues of
+     --fine and --link, lifted so that the ends are still distinct from each
+     other. Every stop is at least 6:1 as text on the tinted body and as the
+     ground under --on-grad, and 4.5:1 on the strongest point of the glow
+     (--glow-fine and --glow-link, set low enough for that). --grad-shadow is
+     the colour of the one lifted button's shadow, and nothing in the dark. */
+  --grad-start:  #1c6b3f;
+  --grad-mid:    #1f6a78;
+  --grad-end:    #2456a6;
+  --grad:        linear-gradient(100deg, #1c6b3f 0%, #1f6a78 50%, #2456a6 100%);
+  --on-grad:     #ffffff;
+  --grad-shadow: rgba(36, 86, 166, .6);
+  --glow-fine:   rgba(123, 216, 143, .25);
+  --glow-link:   rgba(120, 160, 240, .20);
+  /* The green and red of a panel that holds, or does not: a wash for its
+     heading and a rule for its edge. Not --fine-wash and --worse-wash, which
+     the verdict card keeps. */
+  --wash-fine:   #e6f5eb;
+  --rule-fine:   #9fd1b1;
+  --wash-worse:  #fbecec;
+  --rule-worse:  #efc4c4;
 }
 
 /* ── 2. dark, by system preference ────────────────────────────────────── */
@@ -130,6 +154,19 @@
     --code-special:  #dcb47c;   /* 8.45:1 */
     --code-comment:  #98a0ad;   /* 6.20:1 */
     --code-error:    #e29a9a;   /* 7.25:1 */
+
+    --grad-start:  #7fd39a;
+    --grad-mid:    #7cc7cf;
+    --grad-end:    #8fb3f0;
+    --grad:        linear-gradient(100deg, #7fd39a 0%, #7cc7cf 50%, #8fb3f0 100%);
+    --on-grad:     #16181d;
+    --grad-shadow: transparent;
+    --glow-fine:   rgba(127, 211, 154, .09);
+    --glow-link:   rgba(143, 179, 240, .07);
+    --wash-fine:   rgba(127, 211, 154, .10);
+    --rule-fine:   rgba(127, 211, 154, .45);
+    --wash-worse:  rgba(240, 154, 154, .09);
+    --rule-worse:  rgba(240, 154, 154, .40);
   }
 }
 
@@ -168,6 +205,19 @@
   --code-special:  #dcb47c;
   --code-comment:  #98a0ad;
   --code-error:    #e29a9a;
+
+  --grad-start:  #7fd39a;
+  --grad-mid:    #7cc7cf;
+  --grad-end:    #8fb3f0;
+  --grad:        linear-gradient(100deg, #7fd39a 0%, #7cc7cf 50%, #8fb3f0 100%);
+  --on-grad:     #16181d;
+  --grad-shadow: transparent;
+  --glow-fine:   rgba(127, 211, 154, .09);
+  --glow-link:   rgba(143, 179, 240, .07);
+  --wash-fine:   rgba(127, 211, 154, .10);
+  --rule-fine:   rgba(127, 211, 154, .45);
+  --wash-worse:  rgba(240, 154, 154, .09);
+  --rule-worse:  rgba(240, 154, 154, .40);
 }
 
 /* ── 3b. light, by choice ─────────────────────────────────────────────── */
@@ -207,4 +257,18 @@
   --code-special:  #7a4b12;
   --code-comment:  #5b6270;
   --code-error:    #8a1c1c;
+
+     --fine and --link, lifted so that the ends are still distinct from each
+  --grad-start:  #1c6b3f;
+  --grad-mid:    #1f6a78;
+  --grad-end:    #2456a6;
+  --grad:        linear-gradient(100deg, #1c6b3f 0%, #1f6a78 50%, #2456a6 100%);
+  --on-grad:     #ffffff;
+  --grad-shadow: rgba(36, 86, 166, .6);
+  --glow-fine:   rgba(123, 216, 143, .25);
+  --glow-link:   rgba(120, 160, 240, .20);
+  --wash-fine:   #e6f5eb;
+  --rule-fine:   #9fd1b1;
+  --wash-worse:  #fbecec;
+  --rule-worse:  #efc4c4;
 }

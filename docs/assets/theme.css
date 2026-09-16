@@ -79,15 +79,25 @@ body {
 /* ── the bar ─────────────────────────────────────────────────────────────
    The element keeps Material's `md-header` class, because Material's search
    overlay is selected through it (`[data-md-toggle=search]:checked ~ .md-header
-   …`). Everything it looks like comes from chrome.css; these rules take the
-   theme's own header paint back off. */
+   …`). Everything it looks like comes from chrome.css — the pill, its glass,
+   its measures; these rules take the theme's own header paint back off:
+   Material's sticky top of 0, its primary colour, and the shadow it adds on
+   scroll (.md-header--shadow). */
 .md-header.dg-bar {
-  background-color: var(--bg);
+  top: var(--bar-gap);
+  left: auto; right: auto;
   color: var(--ink);
-  box-shadow: none;
-  border-bottom: 1px solid var(--rule);
+  background-color: var(--bg);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-soft);
 }
-.md-header__inner.dg-bar__in { padding: 0 20px; }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .md-header.dg-bar { background-color: transparent; }
+}
+.md-header__inner.dg-bar__in { padding: 0 8px 0 18px; }
+@media (max-width: 860px) {
+  .md-header__inner.dg-bar__in { padding: 0 6px 0 10px; }
+}
 
 /* Material's scrolling page title. The bar shows the sections instead. */
 .dg-bar .md-header__title { display: none; }
@@ -96,8 +106,8 @@ body {
    them — same box, same icon, same hover. Material decides when each is shown. */
 .dg-bar .md-header__button {
   margin: 0;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 999px;
   line-height: 0;
   color: var(--muted);
   transition: none;
@@ -115,15 +125,34 @@ body {
 
 /* Search sits between the sections and the two icons. */
 .dg-bar .md-search { flex: none; }
-.dg-bar .md-search__form { background-color: var(--surface); border: 1px solid var(--rule); }
+.dg-bar .md-search__form {
+  background-color: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
 .dg-bar .md-search__form:hover { background-color: var(--surface); }
+/* Focus in the field is its border, by mouse or keyboard alike (chrome.css,
+   "focus"); the field itself draws no ring. */
+.dg-bar .md-search__form:focus-within { border-color: var(--link); }
+.dg-bar .md-search__input:focus-visible { outline: none; }
 .dg-bar .md-search__input { font-family: var(--sans); }
 .dg-bar .md-search__input::placeholder { color: var(--faint); }
 
-/* The sidebars stick under a taller bar than the one Material sized them for. */
+/* The sidebars stick under the pill, which reaches --bar-room down the page
+   (chrome.css). Material's script writes their `top` inline as the header's
+   height — the pill's 60px, without the gap above it, which left them 12px
+   under the pill — so this has to be !important to win over a style attribute.
+   A heading reached by an anchor already stops --bar-room down, by the page's
+   scroll-padding-top; Material's own scroll margin on :target, 3.6rem to clear
+   its header, would add to that, so it is the bar's gap instead. */
 @media screen and (min-width: 76.25em) {
-  .md-sidebar { top: 64px; }
+  .md-sidebar {
+    /* !important, for the sidebar and the TOC alike: Material writes their
+       top inline as the header's height, without the pill's margin above it. */
+    top: var(--bar-room) !important;
+  }
 }
+.md-typeset :target { --md-scroll-margin: var(--bar-gap); }
 
 /* ── the typeset ─────────────────────────────────────────────────────────
    The report draws rules, not boxes; the documentation follows it. Sizes are
@@ -305,7 +334,7 @@ body {
    --wash where the reading pages' band lays one on a ground that already has
    one: the same depth, a degree past the body's, and the same hairline. */
 .md-container > .opening {
-  padding: 64px 0 48px;
+  padding: calc(64px + var(--bar-room)) 0 48px;
   background-color: var(--bg);
   background-image:
     linear-gradient(var(--wash), var(--wash)),
@@ -322,9 +351,11 @@ body {
   .md-container > .opening .reading__inner { padding: 0 1.2rem 0 13.3rem; }
 }
 .md-container > .opening .part__kicker {
-  margin: 0 0 10px;
-  font-size: 14px; font-weight: 600;
-  color: var(--fine);
+  display: inline-block;
+  margin: 0 0 12px; padding: 3px 12px;
+  font-size: 13px; font-weight: 600; line-height: 1.5;
+  color: var(--fine); background: var(--wash-fine);
+  border: 1px solid var(--rule-fine); border-radius: 999px;
 }
 .md-container > .opening .opening__title {
   margin: 0 0 16px;
@@ -347,7 +378,7 @@ body {
   font-size: .875em;
 }
 @media (max-width: 34rem) {
-  .md-container > .opening { padding: 44px 0 36px; }
+  .md-container > .opening { padding: calc(44px + var(--bar-room)) 0 36px; }
 }
 
 /* The roadmap arrives as a task list. Material marks a done item in a green of
@@ -378,30 +409,30 @@ body {
 .md-typeset .dg-pilot a { color: var(--link); }
 
 /* ── the bar on a phone ──────────────────────────────────────────────────
-   The sections leave the bar entirely under 480px, on the documentation pages
-   and there only — this file is the half of the site Material renders, and the
-   presentation pages never load it.
+   The sections leave the bar entirely at 453px and under, on the documentation
+   pages and there only — this file is the half of the site Material renders,
+   and the presentation pages never load it. What is left, the drawer button,
+   the mark, search, GitHub and the theme, sits at the two ends of the pill.
 
    They can go because here there is somewhere for them to go: the drawer
    button is in the bar at this width and the drawer holds the whole of
    mkdocs.yml's nav, Start here included. On the presentation pages there is no
    drawer, which is why chrome.css drops one entry there instead of all of them.
 
-   What was here before was a nav that scrolled sideways under a hidden
-   scrollbar: three entries needing 169px in 125px of bar, so a third of it was
-   only reachable by dragging something with no scrollbar to tell you it was
-   draggable. */
-@media (max-width: 480px) {
+   Measured in Chrome on the pill, which also holds the drawer and search
+   buttons here: the three entries that stay need 185px, and the pill gives
+   the nav that from 454px of viewport. */
+@media (max-width: 453px) {
   .dg-bar .dg-nav { display: none; }
+  .dg-bar .dg-actions { margin-left: auto; }
 }
 
-/* Above 480px the nav is back, in a bar that also holds the drawer and search
-   buttons, so it has less room than the presentation pages' bar at the same
-   width. Six entries need 342px, and 352px once the wordmark returns at 601px;
-   measured in Chrome, this bar gives them that from 670px. Until then the three
-   optional entries go, as they do on a phone in chrome.css, and the three that
-   remain fit from 481px. Without this the nav scrolled under a hidden scrollbar
-   across most of that range — the thing the rule above was written to end. */
-@media (max-width: 669px) {
+/* Above 453px the nav is back, with less room than the presentation pages'
+   pill at the same width. Six entries need 342px at 13px, which this pill
+   gives them from 697px: until then the three optional
+   ones go, as they do on a phone in chrome.css, and the three that remain fit
+   from 454px. At 960px Material widens search into a field; the 18px gap
+   chrome.css keeps up to 1000px is what lets all six stay there. */
+@media (max-width: 696px) {
   .dg-bar .dg-nav__optional { display: none; }
 }
