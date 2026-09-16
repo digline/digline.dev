@@ -33,7 +33,8 @@ What it does, for every page × width × theme:
     both — a <pre> whose scrollWidth is larger scrolls sideways inside itself;
   * with --scroll-to, scrolls the first element the CSS selector matches to
     the top of the window, the way a link to it would — under the sticky bar,
-    by the page's own scroll-padding — and fails if nothing matches;
+    by the page's own scroll-padding — and fails if nothing matches; with
+    --scroll-block nearest, only as far as it takes to bring it into view;
   * writes <page>-<width>-<theme><suffix>.png in --out, where <page> is "home"
     for / and the path's last segment otherwise: the full page, or with
     --viewport-only the window alone, --height tall (900 by default), from
@@ -108,17 +109,21 @@ JSON.stringify([...document.querySelectorAll("main pre")].map((pre, index) => {
 """
 
 
-# The first match of a selector to the top of the window, as following a link to
-# it would: scrollIntoView honours the page's scroll-padding-top, which keeps
-# it clear of the sticky bar. Returns the page's scroll offset, or null when
-# nothing matches. Two frames, so a lazy image above it has laid out.
+# The first match of a selector into the window — to its top by default, as
+# following a link to it would: scrollIntoView honours the page's
+# scroll-padding-top, which keeps it clear of the sticky bar. With
+# --scroll-block nearest it scrolls only as far as it takes to show the
+# element, so what is above it stays in the picture when there is room.
+# Returns the page's scroll offset, or null when nothing matches. Two frames,
+# so a lazy image above it has laid out.
 SCROLL_TO = """
 new Promise(done => {
   const el = document.querySelector(%s);
+  const block = %s;
   if (!el) return done(null);
-  el.scrollIntoView({block: "start"});
+  el.scrollIntoView({block});
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    el.scrollIntoView({block: "start"});
+    el.scrollIntoView({block});
     done(Math.round(scrollY));
   }));
 })
@@ -265,7 +270,10 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--scrollbars", action="store_true",
                         help="draw scrollbars, the page's and every scrolling box's; hidden by default")
     parser.add_argument("--scroll-to", metavar="SELECTOR",
-                        help="scroll the first element matching this CSS selector to the top first")
+                        help="scroll the first element matching this CSS selector into the window first")
+    parser.add_argument("--scroll-block", choices=["start", "center", "end", "nearest"], default="start",
+                        help="where --scroll-to puts it: start (the top, the default), or nearest, "
+                             "which scrolls only as far as needed to show it")
     parser.add_argument("--chrome", help="path to chrome-headless-shell")
     parser.add_argument("--timeout", type=int, default=120, help="seconds for the whole run")
     args = parser.parse_args(argv)
@@ -325,7 +333,8 @@ def main(argv: list[str]) -> int:
                 print(f"screenshots: {path} {width}px: images that did not load: {failed}",
                       file=sys.stderr)
             if args.scroll_to:
-                top = browser.evaluate(SCROLL_TO % json.dumps(args.scroll_to))
+                top = browser.evaluate(SCROLL_TO % (json.dumps(args.scroll_to),
+                                                    json.dumps(args.scroll_block)))
                 if top is None:
                     raise RuntimeError(f"{path}: nothing matches --scroll-to {args.scroll_to!r}")
                 print(f"scroll {path} {width}px {theme}  {args.scroll_to!r} at y={top}")

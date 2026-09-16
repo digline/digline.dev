@@ -1,12 +1,16 @@
-{#- The opening band of a reading page: tools/hooks/opening.py takes the page's
-    first <h1> and first paragraph out of its content and passes them here, with
-    the optional `kicker:` from its front matter. -#}
+{#- The opening band, on a reading page and on every documentation page:
+    tools/hooks/opening.py takes the page's first <h1>, and the paragraph right
+    after it when there is one, out of its content and passes them here, with
+    the optional `kicker:` from its front matter. A page with no such paragraph
+    has a band with its title alone. -#}
 <header class="opening">
   <div class="reading__inner">
     {%- if opening.kicker %}
     <p class="part__kicker">{{ opening.kicker }}</p>
     {%- endif %}
     <h1 class="opening__title"{% if opening.title_id %} id="{{ opening.title_id }}"{% endif %}>{{ opening.title }}</h1>
+    {%- if opening.lede %}
     <p class="opening__lede">{{ opening.lede }}</p>
+    {%- endif %}
   </div>
 </header>

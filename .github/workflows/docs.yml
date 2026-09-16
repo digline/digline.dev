@@ -90,10 +90,10 @@ jobs:
         run: uv run tools/hooks/home.py --selftest
 
       - name: Check the opening band's hook
-        # tools/hooks/opening.py: the first <h1> and paragraph split out as they
-        # must be, the pages that open with the band being the ones named, and a
-        # page that cannot open with it refused. The build checks the real pages
-        # against the same list.
+        # tools/hooks/opening.py: a title and its paragraph, a title alone and
+        # no title at all split or refused as they must, on a reading page and
+        # on a documentation page, and a page copied from digline/digline sent
+        # back there to be fixed.
         run: uv run tools/hooks/opening.py --selftest
 
       - name: Build

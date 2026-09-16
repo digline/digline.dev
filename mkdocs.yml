@@ -86,10 +86,9 @@ hooks:
   # tools/home_capture.py, refused when it does not support the page and turned
   # into the values overrides/home.html prints. See the file's docstring.
   - tools/hooks/home.py
-  # The reading pages (why, start, about, contact) and four documentation pages
-  # (agents and the indexes of comparison, handbook and blog) open with a band:
-  # their first <h1> and first paragraph, split out of the rendered page and
-  # handed to overrides/partials/opening.html. See the file's docstring.
+  # Every page but the home opens with a band: its first <h1> and, when a
+  # paragraph follows it at once, that paragraph, split out of the rendered page
+  # and handed to overrides/partials/opening.html. See the file's docstring.
   - tools/hooks/opening.py
 
 markdown_extensions:

@@ -52,6 +52,10 @@
   --fine-wash:  #e6f4ea;
   /* The home's ground: a flat tint of the mark's green, #7BD88F. */
   --wash:       rgba(123, 216, 143, .055);
+  /* The same ground as one opaque colour — --wash laid on --bg, which is
+     what color-mix computes — for what has to hide what scrolls under it:
+     the sticky titles of Material's sidebars. Keep the two in step. */
+  --tint:       color-mix(in srgb, rgb(123, 216, 143) 5.5%, #ffffff);
 
   /* The band at the foot of every page is dark in both states — only how dark
      changes, so that it still parts from the page behind it. */
@@ -108,6 +112,7 @@
     --worse-wash: rgba(226, 154, 154, .12);
     --fine-wash:  rgba(143, 199, 166, .12);
     --wash:       rgba(123, 216, 143, .03);
+    --tint:       color-mix(in srgb, rgb(123, 216, 143) 3%, #16181d);
 
     --band-bg:    #0f1115;
     --band-ink:   #e6e9ee;
@@ -147,6 +152,7 @@
   --worse-wash: rgba(226, 154, 154, .12);
   --fine-wash:  rgba(143, 199, 166, .12);
   --wash:       rgba(123, 216, 143, .03);
+  --tint:       color-mix(in srgb, rgb(123, 216, 143) 3%, #16181d);
 
   --band-bg:    #0f1115;
   --band-ink:   #e6e9ee;
@@ -183,6 +189,7 @@
   --worse-wash: #fceceb;
   --fine-wash:  #e6f4ea;
   --wash:       rgba(123, 216, 143, .055);
+  --tint:       color-mix(in srgb, rgb(123, 216, 143) 5.5%, #ffffff);
 
   --band-bg:    #16181d;
   --band-ink:   #e6e9ee;

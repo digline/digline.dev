@@ -269,17 +269,47 @@ body {
 .md-typeset .worse { color: var(--worse); }
 .md-typeset .fine  { color: var(--fine); }
 
+/* ── the ground ──────────────────────────────────────────────────────────
+   The home's ground, laid the home's way: one flat layer of --wash as a
+   background-image on the element between the bar and the band — here
+   Material's <main>, which spans the page and holds the sidebars, the table
+   of contents and the article — over the --bg <body> paints. The bar and the
+   band are outside it and do not change.
+
+   Inside it, Material paints a handful of things with --md-default-bg-color so
+   that they hide what scrolls under them: the sticky titles of the sidebar and
+   of the table of contents, and on a narrow screen the drawer. Left white they
+   would be white boxes on the ground, and a translucent --wash would let the
+   text show through; so inside <main> that variable is --tint, the same ground
+   as one opaque colour (tokens.css). What must stand off the ground — code,
+   tables, quotes — sets its own background above and keeps it, as the home's
+   panels do. */
+.md-main {
+  --md-default-bg-color: var(--tint);
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--wash), var(--wash));
+}
+/* The drawer's own header, on a narrow screen, is painted with the primary
+   colour, which is --bg here: the same ground as the drawer under it. */
+.md-main .md-nav--primary .md-nav__title[for="__drawer"] { background-color: var(--tint); }
+
 /* ── the opening band ────────────────────────────────────────────────────
-   How digline compares, Handbook, Writing and digline for agents open as the
-   reading pages do (overrides/partials/opening.html, filled by
-   tools/hooks/opening.py): the home's ground, the title in the home's title
-   style, the first paragraph as the lede. These are pages.css's .opening rules
-   in px, because Material's rem is not the presentation pages' — and the inner
-   column is Material's grid, with the text on the same edge as the article's
-   below it. */
+   Every documentation page opens as the reading pages do
+   (overrides/partials/opening.html, filled by tools/hooks/opening.py): the
+   title in the home's title style and, where the page opens on a paragraph,
+   that paragraph as the lede. These are pages.css's .opening rules in px,
+   because Material's rem is not the presentation pages' — and the inner column
+   is Material's grid, with the text on the same edge as the article's below it.
+
+   The band sits above <main>, straight on <body>, so it lays two layers of
+   --wash where the reading pages' band lays one on a ground that already has
+   one: the same depth, a degree past the body's, and the same hairline. */
 .md-container > .opening {
   padding: 64px 0 48px;
-  background-image: linear-gradient(var(--wash), var(--wash));
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--wash), var(--wash)),
+    linear-gradient(var(--wash), var(--wash));
   border-bottom: 1px solid var(--rule-soft);
 }
 .md-container > .opening .reading__inner {
