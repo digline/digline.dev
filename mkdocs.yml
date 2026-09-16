@@ -109,7 +109,13 @@ markdown_extensions:
 # --strict turns every one of these into a build failure. A link that has gone
 # stale in digline/digline stops the release of the site, which is the point.
 validation:
-  omitted_files: warn
+  # A page in docs/ that no nav entry lists. Always `warn` — so always fatal —
+  # except under `make preview`, which sets MKDOCS_OMITTED_FILES=info: a page
+  # that is not on digline main yet has, by the rule in RUNBOOK.md, no nav line
+  # on main either, and a preview of it would otherwise refuse the very page it
+  # exists to show. Nothing else loosens, links included; and a preview is
+  # refused on the way out by tools/check-source.sh whatever this says.
+  omitted_files: !ENV [MKDOCS_OMITTED_FILES, warn]
   absolute_links: info
   unrecognized_links: warn
   anchors: warn

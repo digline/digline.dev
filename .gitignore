@@ -9,6 +9,11 @@
 # under docs/product/ last changed, according to digline/digline's history.
 /.lastmod.tsv
 
+# Written by tools/sync-docs.sh only when SYNC_UNRELEASED=1 told it to copy from
+# a checkout it was not allowed to check, read by tools/check-source.sh: the one
+# thing standing between a local preview of an unreleased page and the site.
+/.sync-preview
+
 /.venv/
 __pycache__/
 .DS_Store

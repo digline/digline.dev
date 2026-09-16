@@ -2,10 +2,19 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs serve css build check clean
+.PHONY: docs preview serve css source build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
+
+preview:         ## build with pages that are not on digline main yet — never deployable
+	SYNC_UNRELEASED=1 tools/sync-docs.sh $(DIGLINE)
+	MKDOCS_OMITTED_FILES=info uv run mkdocs build --strict
+	@echo
+	@echo "  Built in site/, with the unreleased pages in it. \`make build\` and the"
+	@echo "  workflow both refuse this build: tools/check-source.sh sees .sync-preview."
+	@echo "  \`SYNC_UNRELEASED=1 make serve\` to read it in a browser."
+	@echo
 
 serve: docs      ## local preview on http://127.0.0.1:8000/
 	uv run mkdocs serve
@@ -13,14 +22,17 @@ serve: docs      ## local preview on http://127.0.0.1:8000/
 css:             ## parse docs/assets/*.css — needs no build, so run it first
 	uv run tools/check-css.py docs/assets
 
-build: docs css  ## what CI does; a broken link, a wrong sitemap or a stylesheet a browser cannot read fails it
+source:          ## refuse a build made from an unreleased sync
+	tools/check-source.sh
+
+build: docs css source  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read or an unreleased source fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 
-check: css       ## the stylesheets, and the two generated indexes against an existing site/
+check: css source  ## the stylesheets, the source, and the two generated indexes against an existing site/
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 
 clean:
-	rm -rf site docs/product
+	rm -rf site docs/product .sync-preview
