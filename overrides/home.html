@@ -237,45 +237,5 @@
   </div>
 </section>
 
-<section class="closing" aria-labelledby="closing-h">
-  <div class="part__inner">
-    <div>
-      <h2 class="part__title" id="closing-h">Start with one suite and one approved run.</h2>
-      <p>The guide needs no key.</p>
-    </div>
-    <div class="install" data-copy>
-      <code class="install__cmd">pip install digline</code>
-    </div>
-    <p class="closing__links">
-      <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
-      <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
-      <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
-      <a href="{{ base_url }}/comparison/">how it differs from the tools you know &rarr;</a>
-    </p>
-  </div>
-</section>
-{% endblock %}
-
-{% block script %}
-<script>
-/* One enhancement, and the page is whole without it: a Copy button beside each
-   install command, where the clipboard is there to write to. */
-(function () {
-  if (!navigator.clipboard) return;
-  document.querySelectorAll(".install[data-copy]").forEach(function (box) {
-    var cmd = box.querySelector(".install__cmd");
-    var b = document.createElement("button");
-    b.className = "install__copy";
-    b.type = "button";
-    b.textContent = "Copy";
-    b.addEventListener("click", function () {
-      navigator.clipboard.writeText(cmd.textContent.trim()).then(function () {
-        b.textContent = "Copied";
-        setTimeout(function () { b.textContent = "Copy"; }, 1500);
-      });
-    });
-    box.appendChild(b);
-  });
-})();
-</script>
+{% include "partials/closing.html" %}
 {% endblock %}
