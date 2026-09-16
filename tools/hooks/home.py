@@ -34,8 +34,9 @@ Each of these is a claim the home would make that the file does not support:
     ``items``;
   * a command in ``cli_commands`` has no group in COMMAND_GROUPS below, or
     COMMAND_GROUPS names a command digline does not have;
-  * a command has neither a page of its own, product/<name>/, nor a place in
-    the guide where `digline <name>` is written;
+  * a command has no page of its own, product/<name>/, no heading in the guide
+    or in a Reference page that names it, and is not written in the guide's
+    text either (see ``command_link()`` for the order they are tried in);
   * a check's ``kind`` is not one of CHECK_KINDS, or its ``anchor`` is not an
     id on product/metrics/.
 
@@ -60,6 +61,7 @@ import json
 import os
 import re
 import sys
+from html import unescape as html_unescape
 from typing import Any
 
 from mkdocs.exceptions import PluginError
@@ -488,12 +490,71 @@ def first_mention(html: str, name: str) -> str | None:
     return headings[-1] if headings else ""
 
 
-def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str]) -> dict[str, Any]:
+_HEADING_BLOCK = re.compile(r'<h([2-4])\b[^>]*\bid="([^"]+)"[^>]*>(.*?)</h\1>', re.I | re.S)
+_CODE = re.compile(r"<code\b[^>]*>(.*?)</code>", re.I | re.S)
+
+
+def _plain(fragment: str) -> str:
+    return html_unescape(re.sub(r"<[^>]*>", "", fragment))
+
+
+def heading_naming(page_html: str, name: str, in_text: bool) -> str | None:
+    """The id of the first h2–h4 in a page that names the command: a <code>
+    in it holding the name as a word of its own (`compare`, `digline compare`,
+    not `Case.compare` or `compare-all`), or — with in_text — its text writing
+    `digline <name>`. None when no heading does."""
+    word = re.compile(rf"(?<![\w.\-]){re.escape(name)}(?![\w\-])")
+    for match in _HEADING_BLOCK.finditer(page_html):
+        inner = match.group(3)
+        if any(word.search(_plain(code)) for code in _CODE.findall(inner)):
+            return match.group(2)
+        if in_text and re.search(rf"\bdigline\s+{re.escape(name)}(?![\w\-])", _plain(inner)):
+            return match.group(2)
+    return None
+
+
+def _url(src_uri: str) -> str:
+    """product/api.md as the site serves it: product/api/."""
+    return src_uri[: -len(".md")] + "/"
+
+
+def command_link(name: str, pages: set[str], guide_html: str,
+                 reference: list[tuple[str, str]]) -> tuple[str, str] | None:
+    """Where a command's tile sends a reader, and why, trying in this order:
+
+      1. its own page, product/<name>/;
+      2. the first h2–h4 in the guide that writes `digline <name>`, or the
+         name in code;
+      3. the first h2–h4 in a Reference page, in the order of the nav, with
+         the name in code;
+      4. the heading above the first place the guide's text writes
+         `digline <name>`.
+
+    None when all four come up empty."""
+    if f"product/{name}.md" in pages:
+        return f"product/{name}/", "page"
+    anchor = heading_naming(guide_html, name, in_text=True)
+    if anchor:
+        return f"{_url(GUIDE)}#{anchor}", "guide heading"
+    for src_uri, page_html in reference:
+        anchor = heading_naming(page_html, name, in_text=False)
+        if anchor:
+            return f"{_url(src_uri)}#{anchor}", "reference heading"
+    anchor = first_mention(guide_html, name)
+    if anchor is not None:
+        return _url(GUIDE) + (f"#{anchor}" if anchor else ""), "guide text"
+    return None
+
+
+def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
+          reference: list[tuple[str, str]] = ()) -> dict[str, Any]:
     """The Commands and Checks sections: grouped, linked and counted here.
 
     pages        the source paths the build has (``product/diff.md``, …)
     guide_html   the guide's rendered content
     metrics_ids  the ids on the metrics page
+    reference    (source path, rendered content) of each Reference page, in
+                 the order of the nav
     """
     commands = data["cli_commands"]["items"]
     names = [c["name"] for c in commands]
@@ -515,21 +576,17 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str]) -
     for key, label, members in COMMAND_GROUPS:
         items = []
         for name in members:
-            page = f"product/{name}.md"
-            if page in pages:
-                href, place = f"product/{name}/", "page"
-            else:
-                anchor = first_mention(guide_html, name)
-                if anchor is None:
-                    raise PluginError(
-                        f"home: `digline {name}` has no page of its own (product/{name}/) "
-                        "and is not written anywhere in the guide, so the Commands grid "
-                        "has nowhere to send a reader.\n"
-                        "  The fix is in digline/digline: a page for the command, or "
-                        f"`digline {name}` written in docs/guide.md."
-                    )
-                href = "product/guide/" + (f"#{anchor}" if anchor else "")
-                place = "guide"
+            found = command_link(name, pages, guide_html, list(reference))
+            if found is None:
+                raise PluginError(
+                    f"home: `digline {name}` has no page of its own (product/{name}/), no "
+                    "heading in the guide or in a Reference page names it, and it is not "
+                    "written anywhere in the guide, so the Commands grid has nowhere to "
+                    "send a reader.\n"
+                    "  The fix is in digline/digline: a page for the command, or "
+                    f"`digline {name}` written in docs/guide.md."
+                )
+            href, place = found
             items.append({"name": name, "help": helps[name], "href": href, "place": place})
         groups.append({"key": key, "label": label, "commands": items})
 
@@ -604,6 +661,10 @@ def on_pre_build(config, **kwargs):
 # template, so all three are here by the time the home's template is.
 _pages: set[str] = set()
 _rendered: dict[str, str] = {}
+_reference: list[str] = []
+
+# The nav section whose pages a command's tile may point into, after the guide.
+REFERENCE_SECTION = "Reference"
 
 
 def on_files(files, config, **kwargs):
@@ -613,10 +674,33 @@ def on_files(files, config, **kwargs):
     return files
 
 
+def on_nav(nav, config, files, **kwargs):
+    """The Reference pages, in the order the nav lists them."""
+    _reference.clear()
+
+    def walk(items):
+        for item in items:
+            if getattr(item, "is_section", False):
+                if item.title == REFERENCE_SECTION:
+                    _reference.extend(
+                        child.file.src_uri for child in item.children
+                        if getattr(child, "is_page", False) and child.file)
+                else:
+                    walk(item.children)
+
+    walk(nav.items)
+    return nav
+
+
 def on_page_content(html, page, config, files, **kwargs):
-    if page.file.src_uri in (GUIDE, METRICS):
+    if page.file.src_uri in (GUIDE, METRICS) or page.file.src_uri in _reference:
         _rendered[page.file.src_uri] = html
     return html
+
+
+def _built_grids(data: dict) -> dict[str, Any]:
+    return grids(data, _pages, _rendered.get(GUIDE, ""), ids_in(_rendered.get(METRICS, "")),
+                 [(uri, _rendered.get(uri, "")) for uri in _reference])
 
 
 def on_page_context(context, page, config, nav, **kwargs):
@@ -625,8 +709,7 @@ def on_page_context(context, page, config, nav, **kwargs):
         home = dict(_home)
         with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
             data = json.load(fh)
-        home.update(grids(data, _pages, _rendered.get(GUIDE, ""),
-                          ids_in(_rendered.get(METRICS, ""))))
+        home.update(_built_grids(data))
         context["home"] = home
     return context
 
@@ -637,7 +720,7 @@ def on_post_build(config, **kwargs):
     site = config["site_dir"]
     with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
         data = json.load(fh)
-    built = grids(data, _pages, _rendered.get(GUIDE, ""), ids_in(_rendered.get(METRICS, "")))
+    built = _built_grids(data)
     hrefs = [c["href"] for g in built["commands"]["groups"] for c in g["commands"]]
     hrefs += [c["href"] for k in built["checks"]["kinds"] for c in k["checks"]]
     cache: dict[str, set[str]] = {}
@@ -712,9 +795,12 @@ def selftest() -> int:
     expect("python range kept as declared", _python_range(">=3.12,<3.15"), ">=3.12,<3.15")
 
     # 1b. The two grids, against a site of the fixture's shape: a page for some
-    #     commands, a guide that writes the others (one inline, one on a
-    #     highlighted shell line, where the words are in spans of their own),
-    #     and a metrics page with every card.
+    #     commands; a guide whose headings name one command in code and one in
+    #     text, and whose text writes the rest (inline, and on a highlighted
+    #     shell line, where the words are in spans of their own); two
+    #     Reference pages; and a metrics page with every card. Each of the four
+    #     ways a link is found is used, and each one wins over the ones after
+    #     it.
     with open(good_json, encoding="utf-8") as fh:
         grid_data = json.load(fh)
     command_names = [c["name"] for c in grid_data["cli_commands"]["items"]]
@@ -727,9 +813,20 @@ def selftest() -> int:
         '<span class="gp">$ </span>digline<span class="w"> </span>promote\n'
         '<span class="gp">$ </span>digline<span class="w"> </span>compare</code></pre>'
         '<h2 id="two">2. Reading</h2><p><code>digline report</code> and <code>digline list</code>, '
-        'not <code>digline list-runs</code>.</p>')
+        'not <code>digline list-runs</code>.</p>'
+        '<h3 id="approving">Approving with <code>promote</code></h3><p>Later.</p>'
+        '<h4 id="the-list">What digline list prints</h4><p>Later still.</p>'
+        '<h5 id="deep">Deep <code>report</code></h5>')
+    reference = [
+        ("product/api.md",
+         '<h2 id="suite">Suite</h2><h3 id="case-compare"><code>Case.compare</code></h3>'
+         '<h3 id="compare-all"><code>compare-all</code></h3>'
+         '<h3 id="compare">The <code>compare</code> function</h3>'
+         '<h3 id="promote-api"><code>promote</code></h3>'),
+        ("product/mcp.md", '<h2 id="what-compare-costs">What <code>compare</code> costs</h2>'),
+    ]
     metrics_ids = {c["anchor"] for c in grid_data["checks"]["items"]}
-    g = grids(grid_data, pages, guide_html, metrics_ids)
+    g = grids(grid_data, pages, guide_html, metrics_ids, reference)
     links = {c["name"]: c["href"] for grp in g["commands"]["groups"] for c in grp["commands"]}
     expect("command count", g["commands"]["count"], 12)
     expect("command heading", g["commands"]["heading"], "Twelve commands")
@@ -737,8 +834,21 @@ def selftest() -> int:
            ["record", "compare", "history", "maintenance"])
     expect("group sizes", [len(grp["commands"]) for grp in g["commands"]["groups"]], [2, 4, 4, 2])
     expect("a command with a page", links["diff"], "product/diff/")
-    expect("a command on a highlighted line", links["promote"], "product/guide/#one")
-    expect("a command written inline", links["report"], "product/guide/#two")
+    expect("2. a guide heading with the name in code, over the reference and the text",
+           links["promote"], "product/guide/#approving")
+    expect("2. a guide heading writing `digline <name>`, over the text", links["list"],
+           "product/guide/#the-list")
+    expect("3. a Reference heading, the first in nav order, name as a word of its own",
+           links["compare"], "product/api/#compare")
+    expect("4. the guide's text, on a highlighted line", links["run"], "product/guide/#one")
+    expect("4. the guide's text, inline (an h5 does not count)", links["report"], "product/guide/#two")
+    places = {c["name"]: c["place"] for grp in g["commands"]["groups"] for c in grp["commands"]}
+    expect("places", [places[n] for n in ("diff", "promote", "compare", "run")],
+           ["page", "guide heading", "reference heading", "guide text"])
+    expect("a heading in text needs `digline` before the name",
+           heading_naming('<h2 id="x">Run it</h2>', "run", in_text=True), None)
+    expect("a Reference heading does not count by text alone",
+           heading_naming('<h2 id="x">digline compare</h2>', "compare", in_text=False), None)
     expect("a command's help", g["commands"]["groups"][0]["commands"][0]["help"],
            "execute the suite and write a run")
     expect("kind order", [k["key"] for k in g["checks"]["kinds"]],
