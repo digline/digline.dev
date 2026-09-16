@@ -114,19 +114,45 @@
       </div>
     </div>
 
-    <div class="stack">
-      <div class="stack__row">
-        <span class="stack__label"><a href="{{ base_url }}/product/declarative/#type-provider">Providers</a></span>
-        <div class="chips"><span class="chip">Anthropic</span><span class="chip">OpenAI-compatible</span><span class="chip">Amazon Bedrock</span></div>
-      </div>
-      <div class="stack__row">
-        <span class="stack__label">Worked examples</span>
-        <div class="chips"><a class="chip" href="{{ base_url }}/product/examples/langchain/">LangChain</a><a class="chip" href="{{ base_url }}/product/examples/llamaindex/">LlamaIndex</a><a class="chip" href="{{ base_url }}/product/examples/langgraph/">LangGraph</a><a class="chip" href="{{ base_url }}/product/examples/langchain4j/">LangChain4j</a></div>
-      </div>
-      <div class="stack__row">
-        <span class="stack__label">Other ways to run it</span>
-        <div class="chips"><a class="chip" href="{{ base_url }}/product/docker/">Docker image</a><a class="chip" href="{{ base_url }}/product/mcp/">MCP server</a></div>
-      </div>
+    {#- The stack band: what digline plugs into, three blocks side by side.
+        Every name below a block's title, and every second line, comes from
+        tools/hooks/home.py (home.stack), which reads it out of the build and
+        fails when it cannot. Providers are not links: a provider is a package
+        to install, not a page. -#}
+    <div class="stacks">
+      <section class="stackcol stackcol--providers" aria-labelledby="stack-providers-h">
+        <div class="stackcol__head">
+          <span class="stackcol__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0z"/><path d="M12 16v5"/></svg></span>
+          <div><h3 class="stackcol__title" id="stack-providers-h">Providers</h3><p class="stackcol__text">One plugin each, installed only if you use it.</p></div>
+        </div>
+        <ul class="stackcol__rows">
+          {%- for p in home.stack.providers %}
+          <li><div class="stackrow"><span class="stackrow__name">{{ p.name }}</span><span class="stackrow__sub stackrow__sub--mono">{{ p.package }}</span></div></li>
+          {%- endfor %}
+        </ul>
+      </section>
+      <section class="stackcol stackcol--examples" aria-labelledby="stack-examples-h">
+        <div class="stackcol__head">
+          <span class="stackcol__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 5h6v6H4zM14 13h6v6h-6z"/><path d="M10 8h4a3 3 0 0 1 3 3v2"/></svg></span>
+          <div><h3 class="stackcol__title" id="stack-examples-h">Worked examples</h3><p class="stackcol__text">A real app on each framework, with its suite.</p></div>
+        </div>
+        <ul class="stackcol__rows">
+          {%- for e in home.stack.examples %}
+          <li><a class="stackrow stackrow--link" href="{{ base_url }}/{{ e.href }}"><span><span class="stackrow__name">{{ e.name }}</span><span class="stackrow__sub stackrow__sub--question">{{ e.question }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
+          {%- endfor %}
+        </ul>
+      </section>
+      <section class="stackcol stackcol--run" aria-labelledby="stack-run-h">
+        <div class="stackcol__head">
+          <span class="stackcol__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>
+          <div><h3 class="stackcol__title" id="stack-run-h">Other ways to run it</h3><p class="stackcol__text">In a container, or for an agent.</p></div>
+        </div>
+        <ul class="stackcol__rows">
+          {%- for r in home.stack.run %}
+          <li><a class="stackrow stackrow--link" href="{{ base_url }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub stackrow__sub--mono">{{ r.code }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
+          {%- endfor %}
+        </ul>
+      </section>
     </div>
   </div>
 </section>
