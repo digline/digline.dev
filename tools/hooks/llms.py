@@ -226,6 +226,16 @@ DESCRIPTIONS: dict[str, str] = {
         "measured interval, what differed underneath \u2014 from a command "
         "that states the facts and gives no advice"
     ),
+    "product/log.md": (
+        "How to tell whether the model behind your alias changed, read down the "
+        "runs you already stored \u2014 what each side sent, what the provider "
+        "said answered, and why most of that history is absence"
+    ),
+    "product/register.md": (
+        "How to write down what a person decided about a comparison \u2014 "
+        "accepted, rejected or unsure \u2014 where the reason goes, and why no "
+        "agent and no schedule may record one"
+    ),
     "product/rejudge.md": (
         "How to see what the same answers score under a changed judge, rubric "
         "or threshold without paying the target again, why that is a replay "

@@ -206,6 +206,18 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "measured interval, and what differed underneath \u2014 a reading that "
         "states and never advises.",
     ),
+    "product/log.md": (
+        "digline log",
+        "Which model answered, read down the stored runs: the spans of one "
+        "sent model, the rolls between the answering ones, and every absence "
+        "named for what it is. Never a gate.",
+    ),
+    "product/register.md": (
+        "digline register",
+        "Record what a person decided about a comparison \u2014 accepted, "
+        "rejected or unsure \u2014 as one committed line, with the reason in "
+        "the commit message and no agent able to write it.",
+    ),
     "product/rejudge.md": (
         "digline rejudge",
         "Change the judge, the rubric or a threshold and see what the same "
