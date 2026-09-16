@@ -1,6 +1,8 @@
 {#- The closing band: the install and the four ways further in. One copy, used
     by the home, Why and Start here, so it reads the same wherever a page ends
-    on it. The Copy script comes with it: it finds every .install[data-copy] on
+    on it. A link to the page it is on is left out: `page.url` is the page's
+    own path under the site root ("why/", "" for the home), compared with each
+    link's. The Copy script comes with it: it finds every .install[data-copy] on
     the page that is above it, the home's hero included, so a page includes
     this partial once and at its end. -#}
 <section class="closing" aria-labelledby="closing-h">
@@ -13,10 +15,16 @@
       <code class="install__cmd">pip install digline</code>
     </div>
     <p class="closing__links">
-      <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
-      <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
-      <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
-      <a href="{{ base_url }}/comparison/">how it differs from the tools you know &rarr;</a>
+      {%- for path, label in [
+        ("why/", "why a hash wasn&rsquo;t enough &rarr;"),
+        ("product/guide/", "see it on your own suite &rarr;"),
+        ("agents/", "what an agent can and cannot do &rarr;"),
+        ("comparison/", "how it differs from the tools you know &rarr;"),
+      ] %}
+      {%- if path != page.url %}
+      <a href="{{ base_url }}/{{ path }}">{{ label }}</a>
+      {%- endif %}
+      {%- endfor %}
     </p>
   </div>
 </section>

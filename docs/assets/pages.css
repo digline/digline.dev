@@ -99,6 +99,14 @@ pre {
 /* These pages are read straight through: the anchor link Markdown puts beside
    every heading belongs in the documentation, not here. */
 .dg-page .headerlink { display: none; }
+/* A thematic break is a hairline in the page's own rule colour, in both
+   themes, and nothing the browser would draw on its own: no inset, no bevel,
+   no height. */
+.dg-page hr {
+  height: 0; margin: 2.25rem 0;
+  border: 0; border-top: 1px solid var(--rule-soft);
+  color: inherit; background: none;
+}
 
 @media (max-width: 34rem) {
   .dg-page { padding: 2.25rem 1rem 3rem; }
