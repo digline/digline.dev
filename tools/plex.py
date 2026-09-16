@@ -1,26 +1,40 @@
-"""Which characters the presentation pages draw in IBM Plex, and whether the
-woff2 files have a glyph for each.
+"""Which characters the pages draw in IBM Plex, and whether the woff2 files have
+a glyph for each.
 
-The presentation pages draw their body in IBM Plex Sans and IBM Plex Mono,
-served from assets/fonts/ as subsets. A character outside a subset is not an
-error a browser reports: it draws that one glyph in the system face. Two tools
-share what is here:
+Every page on the site draws its text in IBM Plex Sans and IBM Plex Mono, served
+from assets/fonts/ as subsets declared in assets/fonts.css. A character outside
+a subset is not an error a browser reports: it draws that one glyph in the
+system face. Two tools share what is here:
 
-  * tools/subset-fonts.py cuts the subsets from the characters counted here;
+  * tools/subset-fonts.py cuts the subsets from BASE, RANGES and the characters
+    counted here;
   * tools/check-glyphs.py fails the build when a page shows a character its
-    face has no glyph for.
+    face has no glyph for, NO_PLEX_GLYPH aside.
 
-A presentation page is any page whose <main> carries `dg-page`: that class is
-what puts --sans-page on the text, in pages.css. Which face draws a piece of
-text is decided by the stylesheets, not by a list here: every rule in pages.css
-and in the page's own <style> blocks that sets `font-family` or `font` is read,
-and the nearest element one of them matches decides. A rule naming --sans-page
-or --mono-page means Plex; any other family (--mono or --sans, say) means a
-system face, whose text is not counted.
+There are two kinds of page, and they are read the same way over different
+stylesheets:
+
+  * a presentation page — its <main> carries `dg-page` — is read inside that
+    <main>, over pages.css and the page's own <style> blocks: that class is
+    what puts --sans-page on the text;
+  * a documentation page — Material's, its <body> carries
+    `data-md-color-scheme` — is read inside <body>, over Material's own
+    stylesheet from the build, then chrome.css and theme.css, in the order the
+    page loads them. Material names its faces through --md-text-font-family and
+    --md-code-font-family; theme.css sets those to --sans-page and --mono-page,
+    and a custom property set to a Plex variable counts as that variable.
+
+Which face draws a piece of text is decided by the stylesheets, not by a list
+here: every rule that sets `font-family` or `font` is read, and the nearest
+element one of them matches decides, the later rule winning at the same
+element. A rule naming Plex means Plex; any other family (--sans on the bar and
+the band, say) means a system face, whose text is not counted. `inherit` sets
+nothing.
 """
 
 from __future__ import annotations
 
+import glob
 import os
 import re
 from html.parser import HTMLParser
@@ -30,9 +44,46 @@ from html.parser import HTMLParser
 # only these needs no new cut.
 BASE = {chr(c) for c in range(0x20, 0x7F)} | set("–—‘’“”…·→−×•")
 
-# Text a page shows that is in no HTML, by the class of the element that shows
-# it: `content: "$ "` on .install__cmd::before, the step counters of .steps li,
-# and the Copy / Copied label the home's script adds beside each .install.
+
+def _span(first: int, last: int) -> set[str]:
+    return {chr(c) for c in range(first, last + 1)}
+
+
+# Also always in the subsets: whole blocks a page can reach for without anyone
+# thinking of it as a new character — Latin-1 (accents, §, «»), the rest of
+# General Punctuation, the vulgar fractions, the arrows, the mathematical
+# operators (≈ ≥), and in Mono the box drawing a tree printed in a code block
+# is made of. A code point in these that Plex does not have is simply not cut
+# in; it matters only if a page shows it, and then NO_PLEX_GLYPH decides.
+RANGES = {
+    "sans": (_span(0x00A0, 0x00FF) | _span(0x2010, 0x202F) | _span(0x2150, 0x215F)
+             | _span(0x2190, 0x219F) | _span(0x2200, 0x226F)),
+    "mono": (_span(0x00A0, 0x00FF) | _span(0x2010, 0x202F) | _span(0x2150, 0x215F)
+             | _span(0x2190, 0x219F) | _span(0x2200, 0x226F) | _span(0x2500, 0x257F)),
+}
+
+# Characters IBM Plex itself has no glyph for — not in the subsets, and not in
+# the complete fonts they are cut from (tools/subset-fonts.py, SOURCES) — which
+# a page may show anyway: the browser draws each in the system face, from the
+# fallbacks after Plex in --sans-page and --mono-page (tokens.css). Nothing
+# better can be served, so the glyph check lets these through; subset-fonts.py
+# refuses to cut when one of them turns out to be in the complete font after
+# all, or when a page shows a character missing from it that is not listed.
+#
+#   ∧ U+2227 LOGICAL AND — in neither family. ADR 0009's table of boundary
+#     operators writes `<=` ∧ `<=`, in text.
+#   U+2500–257F, box drawing — Plex Mono has the whole block, Plex Sans none of
+#     it. The trees in the documentation are in code blocks, in Mono; one drawn
+#     in running text (none today) would show its lines in the system face.
+NO_PLEX_GLYPH = {
+    "sans": {"∧"} | _span(0x2500, 0x257F),
+    "mono": {"∧"},
+}
+
+# Text a presentation page shows that is in no HTML, by the class of the element
+# that shows it: `content: "$ "` on .install__cmd::before, the step counters of
+# .steps li, and the Copy / Copied label the closing band's script adds beside
+# each .install.
 GENERATED = {
     "install__cmd": ("mono", set("$")),
     "steps": ("sans", set("123")),
@@ -40,11 +91,15 @@ GENERATED = {
 }
 
 FAMILIES = ("sans", "mono")
+KINDS = ("presentation", "documentation")
+FONTS_CSS = "fonts.css"
 _PLEX_VARS = {"--sans-page": "sans", "--mono-page": "mono"}
 _PLEX_NAMES = {"IBM Plex Sans": "sans", "IBM Plex Mono": "mono"}
+_VAR = re.compile(r"var\(\s*(--[\w-]+)")
 _COMPOUND = re.compile(r"^([a-z][a-z0-9]*)?((?:\.[\w-]+)*)$")
 _STYLE = re.compile(r"<style[^>]*>(.*?)</style>", re.S | re.I)
 _MAIN = re.compile(r"<main\b[^>]*\bclass=\"[^\"]*\bdg-page\b", re.I)
+_MATERIAL = re.compile(r"<body\b[^>]*\bdata-md-color-scheme=", re.I)
 _VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
          "meta", "source", "track", "wbr"}
 
@@ -76,7 +131,7 @@ def _qualified_rules(css_text: str):
 
 
 def font_faces(css_path: str) -> dict[str, list[tuple[str, str]]]:
-    """(weight, woff2 path) for each Plex family, from pages.css's @font-face."""
+    """(weight, woff2 path) for each Plex family, from fonts.css's @font-face."""
     import tinycss2
 
     with open(css_path, encoding="utf-8") as fh:
@@ -95,34 +150,59 @@ def font_faces(css_path: str) -> dict[str, list[tuple[str, str]]]:
     return faces
 
 
-def face_rules(css_text: str) -> list[tuple[list[tuple[str, set[str]]], str | None]]:
+def face_rules(*css_texts: str) -> list[tuple[list[tuple[str, set[str]]], str | None]]:
     """(selector as compounds, "sans" | "mono" | None) for every rule that
-    sets a font family, in source order; None is a face that is not Plex.
-    Pseudo-classes, pseudo-elements and combinators other than the descendant
-    one are left out: the generated text is GENERATED."""
+    sets a font family, in source order across the stylesheets given, which
+    are read in the order a page loads them; None is a face that is not Plex.
+    A custom property whose value names a Plex variable counts as that
+    variable wherever it is used, as in a browser, where a variable is
+    resolved when the page is laid out and not where it is written; its last
+    declaration in the stylesheets wins. Pseudo-classes, pseudo-elements,
+    attribute selectors and combinators other than the descendant one are left
+    out: the generated text is GENERATED."""
     import tinycss2
 
+    declared: dict[str, str] = {}
+    for css_text in css_texts:
+        for rule in _qualified_rules(css_text):
+            for d in _declarations(rule.content):
+                if d.name.startswith("--"):
+                    declared[d.name] = tinycss2.serialize(d.value)
+    aliases = dict(_PLEX_VARS)
+    for _ in range(len(declared)):
+        before = dict(aliases)
+        for name, value in declared.items():
+            if name not in _PLEX_VARS:
+                aliases[name] = next((aliases[v] for v in _VAR.findall(value)
+                                      if aliases.get(v)), None)
+        if aliases == before:
+            break
+
     rules = []
-    for rule in _qualified_rules(css_text):
-        family, sets_family = None, False
-        for d in _declarations(rule.content):
-            if d.lower_name in ("font", "font-family"):
-                sets_family = True
+    for css_text in css_texts:
+        for rule in _qualified_rules(css_text):
+            family, sets_family = None, False
+            for d in _declarations(rule.content):
                 value = tinycss2.serialize(d.value)
-                family = next((f for var, f in _PLEX_VARS.items() if var in value), None)
-        if not sets_family:
-            continue
-        for selector in tinycss2.serialize(rule.prelude).split(","):
-            compounds = []
-            for part in selector.split():
-                match = _COMPOUND.match(part)
-                if not match:
-                    compounds = []
-                    break
-                classes = {c for c in match.group(2).split(".") if c}
-                compounds.append((match.group(1) or "", classes))
-            if compounds:
-                rules.append((compounds, family))
+                if d.name.startswith("--"):
+                    continue
+                if d.lower_name in ("font", "font-family") and value.strip() != "inherit":
+                    sets_family = True
+                    family = next((aliases[v] for v in _VAR.findall(value) if aliases.get(v)),
+                                  None)
+            if not sets_family:
+                continue
+            for selector in tinycss2.serialize(rule.prelude).split(","):
+                compounds = []
+                for part in selector.split():
+                    match = _COMPOUND.match(part)
+                    if not match:
+                        compounds = []
+                        break
+                    classes = {c for c in match.group(2).split(".") if c}
+                    compounds.append((match.group(1) or "", classes))
+                if compounds:
+                    rules.append((compounds, family))
     return rules
 
 
@@ -143,35 +223,63 @@ def _matches(compounds, chain) -> bool:
     return wanted < 0
 
 
+def stylesheets(assets: str, kind: str) -> list[str]:
+    """The stylesheets that decide the faces on a page of this kind, from the
+    assets folder of a build, in the order the page loads them."""
+    if kind == "presentation":
+        names = [os.path.join(assets, "pages.css")]
+    else:
+        material = sorted(glob.glob(os.path.join(assets, "stylesheets", "main.*.min.css")))
+        if not material:
+            raise FileNotFoundError(f"no Material stylesheet in {assets}/stylesheets/")
+        names = [material[-1], os.path.join(assets, "chrome.css"),
+                 os.path.join(assets, "theme.css")]
+    texts = []
+    for name in names:
+        with open(name, encoding="utf-8") as fh:
+            texts.append(fh.read())
+    return texts
+
+
 # ── the pages ────────────────────────────────────────────────────────────────
 
 
-def is_presentation_page(html: str) -> bool:
-    return bool(_MAIN.search(html))
+def page_kind(html: str) -> str | None:
+    """"presentation", "documentation", or None for a file that is neither."""
+    if _MAIN.search(html):
+        return "presentation"
+    if _MATERIAL.search(html):
+        return "documentation"
+    return None
 
 
-def presentation_pages(site: str) -> list[str]:
-    """Every HTML file in the build whose <main> is a .dg-page, sorted."""
+def site_pages(site: str) -> list[tuple[str, str]]:
+    """(path, kind) for every page in the build, sorted by path."""
     pages = []
     for folder, _, files in os.walk(site):
         for name in files:
             if name.endswith(".html"):
                 path = os.path.join(folder, name)
                 with open(path, encoding="utf-8") as fh:
-                    if is_presentation_page(fh.read()):
-                        pages.append(path)
+                    kind = page_kind(fh.read())
+                if kind:
+                    pages.append((path, kind))
     return sorted(pages)
 
 
-def plex_text(html: str, pages_css: str) -> dict[str, set[str]]:
-    """The characters of the text inside <main class="dg-page">, by the Plex
-    face that draws them, GENERATED included where its element is. Markup,
-    attributes, <script> and <style> are not text; text in a system face is
-    not counted."""
-    rules = face_rules(pages_css)
-    for block in _STYLE.findall(html):
-        rules += face_rules(block)
+def plex_text(html: str, css_texts: list[str], kind: str) -> dict[str, set[str]]:
+    """The characters of the text a page draws in each Plex face: inside
+    <main class="dg-page"> on a presentation page, GENERATED included where its
+    element is; inside <body> on a documentation page. Markup, attributes,
+    <script> and <style> are not text; text in a system face is not counted."""
+    blocks = _STYLE.findall(html) if kind == "presentation" else []
+    rules = face_rules(*css_texts, *blocks)
     found: dict[str, set[str]] = {f: set() for f in FAMILIES}
+
+    def inside(chain) -> bool:
+        if kind == "presentation":
+            return any(t == "main" and "dg-page" in c for t, c in chain)
+        return any(t == "body" for t, _ in chain)
 
     class Reader(HTMLParser):
         def __init__(self):
@@ -183,7 +291,7 @@ def plex_text(html: str, pages_css: str) -> dict[str, set[str]]:
                 return
             classes = set((dict(attrs).get("class") or "").split())
             self.chain.append((tag, classes))
-            if any(t == "main" and "dg-page" in c for t, c in self.chain):
+            if kind == "presentation" and inside(self.chain):
                 for name in classes & GENERATED.keys():
                     family, chars = GENERATED[name]
                     found[family] |= chars
@@ -196,9 +304,7 @@ def plex_text(html: str, pages_css: str) -> dict[str, set[str]]:
 
         def handle_data(self, data):
             tags = [e[0] for e in self.chain]
-            if "script" in tags or "style" in tags:
-                return
-            if not any(t == "main" and "dg-page" in c for t, c in self.chain):
+            if "script" in tags or "style" in tags or not inside(self.chain):
                 return
             for depth in range(len(self.chain), 0, -1):
                 picked = [f for compounds, f in rules if _matches(compounds, self.chain[:depth])]

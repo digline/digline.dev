@@ -25,9 +25,10 @@ site_dir: site
 theme:
   name: material
   custom_dir: overrides
-  # No Google Fonts: no face and no stylesheet is fetched from anyone. System
-  # faces, the same ones the report and `digline view` use. The one third-party
-  # request the site makes is the counter, in overrides/partials/analytics.html.
+  # No Google Fonts: no face and no stylesheet is fetched from anyone. The
+  # documentation reads in IBM Plex, served from this site by assets/fonts.css
+  # below, as the presentation pages do. The one third-party request the site
+  # makes is the counter, in overrides/partials/analytics.html.
   font: false
   language: en
   favicon: assets/favicon.svg
@@ -56,10 +57,11 @@ theme:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
 
-# tokens.css and chrome.css are loaded by the presentation pages too: the colour
-# and the two bands are shared, not imitated.
+# tokens.css, fonts.css and chrome.css are loaded by the presentation pages too:
+# the colour, the faces and the two bands are shared, not imitated.
 extra_css:
   - assets/tokens.css
+  - assets/fonts.css
   - assets/chrome.css
   - assets/theme.css
 
@@ -84,9 +86,10 @@ hooks:
   # tools/home_capture.py, refused when it does not support the page and turned
   # into the values overrides/home.html prints. See the file's docstring.
   - tools/hooks/home.py
-  # The reading pages (why, start, about, contact) open with a band: their
-  # first <h1> and first paragraph, split out of the rendered page and handed to
-  # overrides/partials/opening.html. See the file's docstring.
+  # The reading pages (why, start, about, contact) and four documentation pages
+  # (agents and the indexes of comparison, handbook and blog) open with a band:
+  # their first <h1> and first paragraph, split out of the rendered page and
+  # handed to overrides/partials/opening.html. See the file's docstring.
   - tools/hooks/opening.py
 
 markdown_extensions:

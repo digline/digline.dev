@@ -45,8 +45,9 @@ import tinycss2
 # number in the commit that removes the rule.
 FLOORS = {
     "chrome.css": 56,
+    "fonts.css": 6,  # the six @font-face rules, out of pages.css
     "pages.css": 176,  # the home moved in from an inline <style>
-    "theme.css": 27,
+    "theme.css": 56,  # the typeset: faces, weights, code, tables, quotes, the band
     "tokens.css": 6,
 }
 

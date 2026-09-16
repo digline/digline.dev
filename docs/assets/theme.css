@@ -1,14 +1,30 @@
 /* Material, wired to digline's palette and to the bar and band in chrome.css.
  *
- * Two jobs, and nothing else: hand Material's own `--md-*` variables the values
- * from tokens.css, so the documentation is the same product as the page that
- * sent you to it; and stop Material's header styling from fighting the bar that
- * partials/header.html renders in its place.
+ * Three jobs, and nothing else: hand Material's own `--md-*` variables the
+ * values from tokens.css, so the documentation is the same product as the page
+ * that sent you to it; set the typeset — faces, weights, code, tables, quotes —
+ * the way the presentation pages set theirs; and stop Material's header styling
+ * from fighting the bar that partials/header.html renders in its place.
  */
 
-:root {
-  --md-text-font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --md-code-font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+/* ── the faces ───────────────────────────────────────────────────────────
+   IBM Plex, from fonts.css, as on the presentation pages. Material defines
+   both variables on <body> (`body { --md-text-font-family: … }` in its own
+   stylesheet), so a value on :root never reaches the page: they are set on
+   <body> here, after it.
+
+   The bar and the band are not the typeset. .dg-bar and .dg-foot set --sans in
+   chrome.css and everything inside them inherits it, except the search field:
+   Material gives <input> the text family by name, so it is handed --sans back
+   below, with the bar. */
+body {
+  --md-text-font-family: var(--sans-page);
+  --md-code-font-family: var(--mono-page);
+  /* Plex is served at 400, 500, 600 and 700 in Sans and at 400 and 500 in
+     Mono. A weight asked for that has no face is drawn with the nearest one
+     that does, never thickened by the browser: the weights below are mapped
+     onto faces that exist, and this is what holds for anything they miss. */
+  font-synthesis-weight: none;
 }
 
 /* ── digline's colours, under Material's names ───────────────────────────
@@ -31,6 +47,28 @@
 
   --md-code-bg-color:              var(--surface);
   --md-code-fg-color:              var(--ink);
+
+  /* The highlighted code, from the --code-* tokens: green for a string, red
+     only for an error or a deletion. A highlighted line is the link's blue. */
+  --md-code-hl-keyword-color:      var(--code-keyword);
+  --md-code-hl-string-color:       var(--code-string);
+  --md-code-hl-number-color:       var(--code-number);
+  --md-code-hl-constant-color:     var(--code-number);
+  --md-code-hl-function-color:     var(--code-function);
+  --md-code-hl-special-color:      var(--code-special);
+  --md-code-hl-comment-color:      var(--code-comment);
+  --md-code-hl-operator-color:     var(--code-comment);
+  --md-code-hl-punctuation-color:  var(--code-comment);
+  --md-code-hl-generic-color:      var(--code-comment);
+  --md-code-hl-name-color:         var(--ink);
+  --md-code-hl-variable-color:     var(--ink);
+  --md-code-hl-color:              var(--link);
+  --md-code-hl-color--light:       color-mix(in srgb, var(--link) 10%, transparent);
+
+  --md-typeset-del-color:          var(--worse-wash);
+  --md-typeset-ins-color:          var(--fine-wash);
+  --md-typeset-table-color:        var(--rule-soft);
+  --md-typeset-table-color--light: var(--surface);
 
   --md-footer-bg-color:            var(--band-bg);
   --md-footer-bg-color--dark:      var(--band-bg);
@@ -79,6 +117,7 @@
 .dg-bar .md-search { flex: none; }
 .dg-bar .md-search__form { background-color: var(--surface); border: 1px solid var(--rule); }
 .dg-bar .md-search__form:hover { background-color: var(--surface); }
+.dg-bar .md-search__input { font-family: var(--sans); }
 .dg-bar .md-search__input::placeholder { color: var(--faint); }
 
 /* The sidebars stick under a taller bar than the one Material sized them for. */
@@ -87,14 +126,199 @@
 }
 
 /* ── the typeset ─────────────────────────────────────────────────────────
-   The report draws rules, not boxes; the documentation follows it. */
+   The report draws rules, not boxes; the documentation follows it. Sizes are
+   in px where they copy the presentation pages, whose rem is 16px: Material's
+   is 20px and more on a wide screen. */
 .md-typeset h1 { letter-spacing: -.02em; font-weight: 600; color: var(--ink); }
-.md-typeset table:not([class]) th { font-weight: 600; }
-.md-typeset pre > code { border-radius: .375rem; }
+
+/* The weights. Material asks for 300 (h1, h2), 400 (h3) and 700 (h4 to h6,
+   strong, table headings, the sidebar's section links, the titles of the
+   sidebar and of the table of contents). Sans has no 300 and the pages use 700
+   for their largest titles only, so the headings and the emphasis are 600,
+   like the presentation pages' headings and <strong>; body text stays 400.
+   Code inside any of them is Mono, which stops at 500. */
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6,
+.md-typeset strong,
+.md-typeset b,
+.md-nav__title,
+.md-nav__item--section > .md-nav__link { font-weight: 600; }
+.md-typeset :is(h1, h2, h3, h4, h5, h6, strong, b, th) code,
+.md-nav__title code,
+.md-nav__item--section > .md-nav__link code { font-weight: 500; }
+
+/* Code blocks: the panel the home draws round its output — the rule, the
+   radius — on the surface, and no shadow. */
+.md-typeset pre > code {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+/* A block wider than its column scrolls inside itself, and says so before
+   anyone hovers it: a thin bar, always drawn, the track in --rule and the
+   thumb in --muted. The code never wraps — a line of output keeps its shape.
+
+   Two mechanisms, one per engine family. Chrome and Safari draw
+   ::-webkit-scrollbar, which is always visible; Chrome ignores it as soon as
+   scrollbar-color or scrollbar-width is set, and Material sets both on this
+   element (with a colour that changes on hover), so here they go back to
+   `auto`. Firefox has no ::-webkit-scrollbar and reads the standard
+   properties, inside the @supports below. */
+.md-typeset pre > code,
+.md-typeset pre > code:hover {
+  white-space: pre;
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+}
+.md-typeset pre > code::-webkit-scrollbar { height: 8px; width: 8px; }
+.md-typeset pre > code::-webkit-scrollbar-track {
+  background-color: var(--rule);
+  border-radius: 0 0 14px 14px;
+}
+.md-typeset pre > code::-webkit-scrollbar-thumb,
+.md-typeset pre > code::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted);
+  border-radius: 4px;
+}
+@supports not selector(::-webkit-scrollbar) {
+  .md-typeset pre > code,
+  .md-typeset pre > code:hover {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) var(--rule);
+  }
+}
+
+/* Material's Copy button sits on a small panel of its own code colours, which
+   in the dark are a visible square on every block. The panel is transparent in
+   both themes, as it already looks in the light; the icon stays faint until
+   the block is hovered, and takes the link colour when the button itself is
+   hovered or reached from the keyboard, with the outline the rest of the site
+   draws for focus. */
+.md-code__nav,
+:hover > .md-code__nav { background-color: transparent; }
+.md-code__button { color: var(--rule); }
+:hover > * > .md-code__button { color: var(--muted); }
+.md-code__button:hover,
+.md-code__button:focus-visible,
+.md-code__button.focus-visible { color: var(--link); }
+.md-code__button:focus-visible,
+.md-code__button.focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* An output line from a shell session is what digline said: the text, not
+   the chrome round it. The prompt stays quiet with the rest of `generic`. */
+.md-typeset .highlight .go { color: var(--ink); }
+/* Material colours errors, tracebacks and deletions as any other `generic`;
+   here they are the one red. */
+.md-typeset .highlight .gr,
+.md-typeset .highlight .gt,
+.md-typeset .highlight .gd,
+.md-typeset .highlight .err { color: var(--code-error); }
+.md-typeset .highlight .gi { color: var(--code-string); }
+
+/* Tables: the same panel, with the heading row on the surface and the rows
+   parted by the soft rule. A table wider than the column scrolls inside its
+   own box — Material's .md-typeset__scrollwrap, or the table itself where
+   script has not wrapped it — and never the page. */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--bg);
+  overflow-x: auto;
+}
+.md-typeset table:not([class]) th {
+  font-weight: 600;
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+}
+.md-typeset table:not([class]) td { border-top: 1px solid var(--rule-soft); }
+.md-typeset table:not([class]) tbody tr:first-child td { border-top: 0; }
+.md-typeset table:not([class]) tbody tr:hover { box-shadow: none; }
+
+/* Quotes: the box Start here puts round its quotes — the rule, the radius,
+   the page's ground and the soft shadow. The words keep the text face: on
+   Start here the quotes are what digline printed, here they are prose (a
+   rule for an agent, a note on a record). */
+.md-typeset blockquote {
+  margin: 1em 0;
+  padding: 16px 18px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+}
+[dir=ltr] .md-typeset blockquote,
+[dir=rtl] .md-typeset blockquote { border: 1px solid var(--rule); padding: 16px 18px; }
+.md-typeset blockquote > :first-child { margin-top: 0; }
+.md-typeset blockquote > :last-child { margin-bottom: 0; }
+
+.md-typeset hr { border-bottom: 1px solid var(--rule-soft); }
 
 /* `digline compare` says worse in one colour and fine in another. */
 .md-typeset .worse { color: var(--worse); }
 .md-typeset .fine  { color: var(--fine); }
+
+/* ── the opening band ────────────────────────────────────────────────────
+   How digline compares, Handbook, Writing and digline for agents open as the
+   reading pages do (overrides/partials/opening.html, filled by
+   tools/hooks/opening.py): the home's ground, the title in the home's title
+   style, the first paragraph as the lede. These are pages.css's .opening rules
+   in px, because Material's rem is not the presentation pages' — and the inner
+   column is Material's grid, with the text on the same edge as the article's
+   below it. */
+.md-container > .opening {
+  padding: 64px 0 48px;
+  background-image: linear-gradient(var(--wash), var(--wash));
+  border-bottom: 1px solid var(--rule-soft);
+}
+.md-container > .opening .reading__inner {
+  box-sizing: border-box;
+  max-width: 61rem;
+  margin: 0 auto;
+  padding: 0 .8rem;
+}
+@media screen and (min-width: 76.25em) {
+  .md-container > .opening .reading__inner { padding: 0 1.2rem 0 13.3rem; }
+}
+.md-container > .opening .part__kicker {
+  margin: 0 0 10px;
+  font-size: 14px; font-weight: 600;
+  color: var(--fine);
+}
+.md-container > .opening .opening__title {
+  margin: 0 0 16px;
+  font-size: clamp(36px, 4.2vw, 48px);
+  line-height: 1.06; letter-spacing: -.035em; font-weight: 700;
+  color: var(--ink);
+  text-wrap: balance;
+}
+/* The reading pages hide the permalink beside a title; so does the band here.
+   The id stays on the <h1>, so a link to it still lands. */
+.md-container > .opening .headerlink { display: none; }
+.md-container > .opening .opening__lede {
+  margin: 0; max-width: 640px;
+  font-size: 19px; line-height: 1.55;
+  color: var(--muted);
+}
+.md-container > .opening .opening__lede a { color: var(--link); }
+.md-container > .opening .opening__lede code {
+  font-family: var(--mono-page);
+  font-size: .875em;
+}
+@media (max-width: 34rem) {
+  .md-container > .opening { padding: 44px 0 36px; }
+}
 
 /* The roadmap arrives as a task list. Material marks a done item in a green of
    its own that belongs to nothing else here; done and not done yet use the two
