@@ -582,9 +582,15 @@ a.chip:hover { border-color: var(--fine); }
 .opening__lede code { font-size: .875em; }
 
 .reading { padding: 3rem 0 4.5rem; }
-/* The closing band is the home's partial; on a reading page its content keeps
-   to the reading column's edges, not the home's wider ones. */
-.dg-page--reading .closing .part__inner { max-width: 52rem; padding: 0 1.25rem; }
+/* The closing band is the home's partial. On a reading page it is one column:
+   title, line, install and links stacked on the text column's left edge, and
+   nothing wider than the column (40rem). The home keeps its two. */
+.dg-page--reading .closing .part__inner {
+  max-width: 52rem; padding: 0 1.25rem;
+  grid-template-columns: minmax(0, 40rem); justify-content: start;
+  gap: 1.25rem; align-items: start;
+}
+.dg-page--reading .closing .install { min-width: 0; }
 
 /* ── .essay: Why and Start here ──────────────────────────────────────────
    Long-form reading: a narrower measure than the landing, and a rule between
@@ -597,7 +603,9 @@ a.chip:hover { border-color: var(--fine); }
   color: var(--ink);
 }
 .essay h2 + p { margin-top: 0; }
-.essay p { margin: 0 0 1rem; color: var(--muted); }
+/* The body of the text is --ink; --muted is kept for the opening's lede and
+   for captions. */
+.essay p { margin: 0 0 1rem; color: var(--ink); }
 .essay p:last-child { margin-bottom: 0; }
 .essay strong { color: var(--ink); font-weight: 600; }
 .essay em { font-style: italic; }
@@ -615,7 +623,7 @@ a.chip:hover { border-color: var(--fine); }
 .essay ul {
   margin: 0 0 1rem;
   padding-left: 1.125rem;
-  color: var(--muted);
+  color: var(--ink);
 }
 .essay li { margin: 0 0 .5rem; padding-left: .25rem; }
 .essay li:last-child { margin-bottom: 0; }
@@ -655,7 +663,7 @@ a.chip:hover { border-color: var(--fine); }
 /* ── .plain: About and Contact ───────────────────────────────────────────
    Three lines, a short measure. */
 .plain { max-width: 36rem; }
-.plain p { margin: 0 0 1rem; color: var(--muted); }
+.plain p { margin: 0 0 1rem; color: var(--ink); }
 .plain p:last-child { margin-bottom: 0; }
 .plain a { color: var(--link); }
 .plain code { font-family: var(--mono-page); font-size: .875em; color: var(--ink); }
