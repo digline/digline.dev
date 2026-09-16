@@ -39,6 +39,9 @@ What it does, for every page × width × theme:
     --viewport-only the window alone, --height tall (900 by default), from
     wherever it is scrolled to.
 
+Scrollbars are hidden, so a picture shows the page and not the window chrome;
+--scrollbars draws them, for a picture of a block that scrolls.
+
 --measure-widths adds widths that are measured but not photographed. --name
 replaces the file name, without .png, and may use {page}, {width} and {theme}:
 with more than one page, width or theme it must use the ones that vary, or
@@ -157,11 +160,12 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
 class Browser:
     """chrome-headless-shell and one page target, over the DevTools protocol."""
 
-    def __init__(self, chrome: str):
+    def __init__(self, chrome: str, scrollbars: bool = False):
         self.profile = tempfile.mkdtemp(prefix="screenshots-profile-")
+        flags = [] if scrollbars else ["--hide-scrollbars"]
         self.process = subprocess.Popen(
             [chrome, "--remote-debugging-port=0", f"--user-data-dir={self.profile}",
-             "--no-first-run", "--hide-scrollbars", "about:blank"],
+             "--no-first-run", *flags, "about:blank"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
         )
         self.ws = None
@@ -258,6 +262,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--height", type=int, default=900, help="the window's height in CSS px")
     parser.add_argument("--viewport-only", action="store_true",
                         help="photograph the window, --height tall, not the full page")
+    parser.add_argument("--scrollbars", action="store_true",
+                        help="draw scrollbars, the page's and every scrolling box's; hidden by default")
     parser.add_argument("--scroll-to", metavar="SELECTOR",
                         help="scroll the first element matching this CSS selector to the top first")
     parser.add_argument("--chrome", help="path to chrome-headless-shell")
@@ -305,7 +311,7 @@ def main(argv: list[str]) -> int:
             base = args.base.rstrip("/")
         else:
             server, base = serve(args.site)
-        browser = Browser(chrome)
+        browser = Browser(chrome, args.scrollbars)
         browser.connect()
         stamp = int(time.time())
         jobs = [(p, w, t, True) for p in pages for w in widths for t in themes]
