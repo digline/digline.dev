@@ -82,6 +82,13 @@ jobs:
           uv run tools/check-css.py --selftest
           uv run tools/check-css.py docs/assets
 
+      - name: Check the home's hook
+        # tools/hooks/home.py against tools/testdata/home/: the capture it was
+        # written for computes to what the page shows, and every way home.json
+        # can stop supporting the page is refused. Before the build, so a hook
+        # that stopped refusing is caught before it is trusted with the real file.
+        run: uv run tools/hooks/home.py --selftest
+
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
         # reaching the site. sitemap.xml and robots.txt come out of this step

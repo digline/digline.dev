@@ -1,264 +1,198 @@
 {% extends "_shell.html" %}
 
-{#- The landing. Free HTML, none of the theme: the sentence the product is, the
-    drawing, the command you copy, the flow and the output digline prints, and
-    three columns underneath that arrive as you reach them. -#}
+{#- The landing. Free HTML, none of the theme, and no stylesheet of its own: the
+    rules are in docs/assets/pages.css, under "the home".
 
-{% block style %}
-<style>
-/* ── the ground ──────────────────────────────────────────────────────────
-   A flat tint of the mark's own green, and flat means flat: the two stops of
-   the gradient are the same colour, so it is one even layer with no falloff.
+    Every number, run id, line of output and dependency name below is `home`,
+    which tools/hooks/home.py computes from docs/product/assets/home/home.json —
+    what digline printed when tools/home_capture.py ran it. None is typed here,
+    and the build fails when the file stops supporting what the page says. -#}
 
-   It sits on the body, which is why it stops where it does. The bar at the top
-   and the band at the foot paint their own opaque grounds over it, so the green
-   is only ever the part between them — no extra element, no wrapper, nothing to
-   keep in step with the two bars. The console block has an opaque ground too
-   and stays out of it. */
-:root { --wash: rgba(123, 216, 143, .055); }   /* #7BD88F, the mark's green */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-md-color-scheme="default"]),
-  body:not([data-md-color-scheme="default"]) { --wash: rgba(123, 216, 143, .03); }
-}
-[data-md-color-scheme="slate"]   { --wash: rgba(123, 216, 143, .03); }
-[data-md-color-scheme="default"] { --wash: rgba(123, 216, 143, .055); }
-
-body { background-image: linear-gradient(var(--wash), var(--wash)); }
-
-/* ── the drawing under the sentence ──────────────────────────────────────
-   The mark, at a size where you can read it: a reference the runs are judged
-   against, a threshold under it, and a run that fell — below the reference, not
-   below the threshold. SVG and CSS, so it draws itself with script blocked. */
-.figure { margin: 0 0 3rem; }
-.figure svg { display: block; width: 100%; height: auto; }
-
-.fig-ref   { stroke: var(--ink); stroke-width: 2; opacity: .3; }
-.fig-thr   { stroke: var(--faint); stroke-width: 1.5; stroke-dasharray: 5 5; }
-.fig-run   { stroke: var(--ink); stroke-width: 4; fill: none;
-             stroke-linecap: round; stroke-linejoin: round; }
-.fig-dot   { fill: var(--bg); stroke: var(--ink); stroke-width: 3; }
-.fig-label { font: 500 13px/1 var(--sans); fill: var(--muted); }
-.fig-value { font: 600 15px/1 var(--sans); fill: var(--ink); }
-.fig-fell  { fill: var(--worse); }
-
-.figure figcaption { margin: .875rem 0 0; font-size: .9375rem; color: var(--muted); }
-.figure figcaption b { color: var(--ink); font-weight: 600; }
-
-/* Everything above is the finished picture. The motion lives here and only
-   here, so a reader who has asked for none gets the finished picture at once. */
-@media (prefers-reduced-motion: no-preference) {
-  .fig-run  { stroke-dasharray: 600; animation: fig-draw 1.4s ease-out both; }
-  .fig-late { animation: fig-in .5s ease-out 1.25s both; }
-  .figure figcaption { animation: fig-in .5s ease-out 1.6s both; }
-  @keyframes fig-draw { from { stroke-dashoffset: 600 } to { stroke-dashoffset: 0 } }
-  @keyframes fig-in   { from { opacity: 0 } to { opacity: 1 } }
-}
-
-/* ── the three below ─────────────────────────────────────────────────────
-   Side by side where there is room, one under the other where there is not. */
-.dg-cols {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2rem 2.25rem;
-  padding-top: 2.5rem;
-  border-top: 1px solid var(--rule-soft);
-}
-.dg-cols h2 {
-  margin: 0 0 .625rem;
-  font-size: 1rem; font-weight: 600; letter-spacing: -.005em;
-  color: var(--ink);
-}
-.dg-cols p { margin: 0; font-size: .9375rem; line-height: 1.55; color: var(--muted); }
-
-@media (max-width: 48rem) {
-  .dg-cols { grid-template-columns: 1fr; gap: 1.75rem; }
-}
-
-/* ── the invitation ──────────────────────────────────────────────────────
-   The last thing on the page and the only one that asks for something back, so
-   it is set apart rather than made loud: the surface the shell blocks already
-   use, and the green the report spends on a check that did not get worse down
-   its edge. The same invitation closes the roadmap, in one line. */
-.pilot {
-  margin: 3.5rem 0 0;
-  padding: 1.875rem 2rem;
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--fine);
-  border-radius: .5rem;
-}
-.pilot__eyebrow {
-  font-size: .6875rem; font-weight: 600;
-  letter-spacing: .09em; text-transform: uppercase;
-  color: var(--fine);
-}
-.pilot h2 {
-  margin: .75rem 0 .625rem;
-  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.015em;
-  color: var(--ink);
-}
-.pilot p { margin: 0; font-size: .9375rem; line-height: 1.6; color: var(--muted); }
-.pilot__body { max-width: 40rem; }
-
-/* The two ways to reach us, side by side while there is room for both. Parted
-   from the paragraph by a rule, because it is the part you act on. */
-.pilot .pilot__cta {
-  display: flex; flex-wrap: wrap; align-items: baseline;
-  gap: .375rem .625rem;
-  margin: 1.375rem 0 0;
-  padding-top: 1.125rem;
-  border-top: 1px solid var(--rule);
-}
-.pilot__mail {
-  font-family: var(--mono); font-size: .875rem; font-weight: 600;
-  color: var(--link); text-decoration: none;
-  border-bottom: 1px solid var(--rule);
-}
-.pilot__mail:hover { border-bottom-color: currentColor; }
-.pilot__sep { color: var(--faint); }
-
-/* ── the way in ───────────────────────────────────────────
-   One line under the sentence, for the reader the sentence assumed too much
-   about. It borrows the sub's own size and colour rather than asking for
-   attention: whoever already knows what a regression is should read straight
-   past it and reach the drawing. The sub gives up its bottom margin to it, on
-   this page only — this block is not loaded anywhere else. */
-.lede + .sub { margin-bottom: .875rem; }
-.newcomer {
-  margin: 0 0 2.75rem; max-width: 34rem;
-  font-size: .9375rem; line-height: 1.5; color: var(--muted);
-}
-.newcomer a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
-.newcomer a:hover { border-bottom-color: currentColor; }
-
-/* ── what it looks like ──────────────────────────────────────────────────
-   The block digline actually printed on the way to 0.2.0: one check down, and
-   the parameter that moved named on the same screen. It is text, not a picture
-   — it is crawlable, it is selectable, and it stays sharp at any zoom.
-
-   The one departure from the shell blocks above: these lines wrap instead of
-   scrolling sideways. A terminal wraps too, and the sentence is long enough
-   that the fact it is here for — `temperature 0.3 → 0.7` — would sit off the
-   right edge of a phone otherwise. Each line is its own block, so the wrap is
-   indented under the line it belongs to rather than starting back at the
-   margin, and the blank lines are margins rather than newlines. */
-.shot { margin: 2.5rem 0 3rem; }
-.shot h2 {
-  margin: 0 0 .875rem;
-  font-size: 1rem; font-weight: 600; letter-spacing: -.005em; color: var(--ink);
-}
-/* The two links belong to the block above them, so the gap the console carries
-   on its own is the section's to spend, not the block's. */
-.shot .console { margin-bottom: 0; }
-.shot pre { white-space: pre-wrap; word-break: break-word; }
-.shot pre span {
-  display: block;
-  padding-left: 1.5em; text-indent: -1.5em;   /* the hanging indent */
-}
-.shot pre .head  { margin-top: .25rem; }
-.shot pre .cfg   { margin: .9rem 0; padding-left: 3em; text-indent: -1.5em;
-                   color: var(--muted); }
-.shot pre .worse { color: var(--worse); }
-
-/* The flow, above the block: the same animated SVG the README opens with, as
-   an <img> — it animates with SMIL and keeps its own reduced-motion rule, so
-   it needs no script. Two files, one per theme, switched by the same rules as
-   the toggle's sun and moon rather than by <picture>, which would follow the
-   system and ignore the toggle. Both are lazy, so the hidden one is not
-   fetched. */
-.flow { margin: 0 0 1.5rem; }
-.flow img { display: block; width: 100%; height: auto; }
-.flow .flow__dark { display: none; }
-[data-md-color-scheme="slate"] .flow .flow__dark  { display: block; }
-[data-md-color-scheme="slate"] .flow .flow__light { display: none; }
-@media (prefers-color-scheme: dark) {
-  body:not([data-md-color-scheme="default"]) .flow .flow__dark  { display: block; }
-  body:not([data-md-color-scheme="default"]) .flow .flow__light { display: none; }
-}
-
-/* Where to go once you have read it: the argument behind the line, and the
-   same line on your own suite. Four links, not four buttons — nothing here is
-   the page's call to action, which is at the foot. They are the four questions
-   a reader has just after the console: why not a hash, how do I run it, what
-   may an agent do, and how is this different from the tool I already use. The
-   row is flex-wrap, so a fifth would cost nothing but a line. */
-.shot__links {
-  display: flex; flex-wrap: wrap; gap: .375rem 1.5rem;
-  margin: .875rem 0 0; font-size: .9375rem;
-}
-.shot__links a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
-.shot__links a:hover { border-bottom-color: currentColor; }
-
-/* ── where it is headed ──────────────────────────────────────────────────
-   Three lines off the roadmap, in the roadmap's own words: what has shipped,
-   what will never be built, and the page that says the rest. Quiet on purpose —
-   it sits just before the invitation and must not compete with it. */
-.ahead {
-  margin: 3.5rem 0 0;
-  padding-top: 2.5rem;
-  border-top: 1px solid var(--rule-soft);
-}
-.ahead__eyebrow {
-  margin: 0;
-  font-size: .6875rem; font-weight: 600;
-  letter-spacing: .09em; text-transform: uppercase;
-  color: var(--faint);
-}
-.ahead h2 {
-  margin: .75rem 0 1rem;
-  font-size: 1.1875rem; font-weight: 600; letter-spacing: -.015em; color: var(--ink);
-}
-.ahead p { margin: 0 0 .75rem; max-width: 44rem;
-           font-size: .9375rem; line-height: 1.6; color: var(--muted); }
-.ahead p b { color: var(--ink); font-weight: 600; }
-.ahead__more { margin: 1.125rem 0 0; }
-.ahead__more a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
-.ahead__more a:hover { border-bottom-color: currentColor; }
-
-@media (max-width: 34rem) {
-  .pilot { padding: 1.5rem 1.25rem; }
-}
-</style>
-{% endblock %}
+{% block main_class %} dg-page--home{% endblock %}
 
 {% block main %}
+{%- set r = home.regression %}
+{%- set s = r.scale %}
 
-<h1 class="lede">Regression testing for LLM applications</h1>
-<p class="sub">with the baseline in your repository, not on someone&rsquo;s server.</p>
-<p class="newcomer">New to LLM regression? <a href="{{ base_url }}/start/">Start here</a>.</p>
+<section class="hero" aria-labelledby="hero-h">
+  <div class="part__inner">
+    <div>
+      <p class="hero__status"><span>Open source, Apache-2.0</span><span>v{{ home.version }}{% if home.pre_1_0 %}, pre-1.0{% endif %}</span></p>
+      <h1 class="hero__title" id="hero-h">You changed one prompt.<span class="hero__quiet">What else got worse?</span></h1>
+      <p class="hero__lede">A new prompt, a model version, a library upgrade. The app still runs, and one answer your client relied on is now wrong. digline tells you which case, by how much, and whether the drop is bigger than the judge&rsquo;s own noise.</p>
+      <div class="install" data-copy>
+        <code class="install__cmd">pip install digline</code>
+      </div>
+      <p class="hero__links">
+        <a href="{{ base_url }}/start/">Start here</a>
+        <a class="hero__link--quiet" href="{{ base_url }}/why/">Why a reference in the repo</a>
+      </p>
+      <ul class="facts">
+        <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg>Quickstart needs no API key</li>
+        <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg>No server, no telemetry</li>
+        <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg>Exit code for CI</li>
+      </ul>
+    </div>
 
-<figure class="figure">
-  <svg viewBox="0 0 640 170" role="img" aria-labelledby="fig-t fig-d">
-    <title id="fig-t">A run below the reference and above the threshold</title>
-    <desc id="fig-d">The approved reference sits at 0.91. A dashed threshold sits
-    at 0.70. The latest run leaves the reference, falls to 0.74, comes back up and
-    settles at 0.78 — under the reference, still over the threshold.</desc>
+    <figure class="verdict" aria-labelledby="verdict-h">
+      <div class="verdict__head"><span id="verdict-h">digline compare</span><span class="mono">{% if r.suite %}{{ r.suite }} · {% endif %}exit {{ r.exit }}</span></div>
+      <div class="verdict__body">
+        <p class="verdict__case"><span class="verdict__name">{{ r.first_case.id }}</span><span class="verdict__pill">got worse</span></p>
+        <div class="scale" aria-hidden="true" style="--ref: {{ s.ref_pos }}; --run: {{ s.run_pos }}">
+          <div class="scale__axis"></div>
+          <div class="scale__tick scale__tick--ref"><span class="scale__label scale__label--{{ s.ref_anchor }}">ref {{ s.ref }}</span></div>
+          <div class="scale__tick scale__tick--run"><span class="scale__label scale__label--{{ s.run_anchor }}">run {{ s.run }}</span></div>
+          <div class="scale__ends"><span>{{ s.lo }}</span><span>{{ s.hi }}</span></div>
+        </div>
+        <dl class="verdict__rows">
+          {%- for check in r.first_case.checks %}
+          <dt>{{ check.assertion }}</dt><dd>{{ check.before }} → {{ check.after }}</dd>
+          {%- endfor %}
+          {%- if r.other_cases %}
+          <dt>Also worse</dt><dd>{{ r.other_cases | join(", ") }}</dd>
+          {%- endif %}
+        </dl>
+        {%- if r.diff %}
+        <div class="diff">
+          <div class="diff__head">{{ r.diff.path }} · +{{ r.diff.added }} −{{ r.diff.removed }} lines, changed since the reference</div>
+          <pre>{% for line in r.diff.changes %}<span class="diff__{{ line.kind }}">{{ line.text }}</span>{% if not loop.last %}
+{% endif %}{% endfor %}</pre>
+        </div>
+        {%- endif %}
+        <p class="verdict__exit"><span>{{ r.regressed_count }} checks got worse. CI stops here.</span><b>exit {{ r.exit }}</b></p>
+      </div>
+      <figcaption class="verdict__caption">Canned model and judge{% if r.samples %}, {{ r.samples }} sample{% if r.samples != 1 %}s{% endif %} per case{% endif %}: judge noise is not measured in this demo. Captured with digline {{ home.version }}, run <span class="mono" title="{{ r.run_id }}">{{ r.run_short }}…</span> · <a href="{{ base_url }}/product/assets/home/home.json">home.json</a></figcaption>
+    </figure>
+  </div>
+</section>
 
-    <line class="fig-ref" x1="40" y1="46" x2="620" y2="46"/>
-    <text class="fig-label" x="620" y="36" text-anchor="end">reference</text>
-    <text class="fig-value" x="40" y="34">0.91</text>
+<section class="part" aria-labelledby="problem-h">
+  <div class="part__inner">
+    <p class="part__kicker">The problem</p>
+    <h2 class="part__title" id="problem-h">An LLM app can get worse without anything breaking.</h2>
+    <p class="part__intro">The tests pass, the app answers, the demo works. Then a prompt edit, a model version or a library upgrade changes one answer your client depended on, and nothing in the pipeline says so.</p>
+    <div class="contrast">
+      <div class="panel">
+        <h3 class="panel__head">How it usually goes</h3>
+        <ul class="contrast__list contrast__list--no">
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg><span>Re-run the evals and look at the average</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg><span>No way to tell a real drop from the judge having a bad day</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg><span>What was approved, and when, lives in someone&rsquo;s notebook</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg><span>The client finds the regression first</span></li>
+        </ul>
+      </div>
+      <div class="panel panel--good">
+        <h3 class="panel__head">With an approved reference in the repo</h3>
+        <ul class="contrast__list contrast__list--yes">
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg><span>Every change is compared case by case</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg><span>The judge&rsquo;s noise is measured before a drop is called</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg><span>The reference is a file in a PR, with a commit and a name on it</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg><span>CI stops before the release does</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <line class="fig-thr" x1="40" y1="130" x2="620" y2="130"/>
-    <text class="fig-label" x="620" y="150" text-anchor="end">threshold 0.70</text>
+<section class="part" aria-labelledby="fits-h">
+  <div class="part__inner">
+    <p class="part__kicker">How it fits</p>
+    <h2 class="part__title" id="fits-h">It lives in your repo, not on a server.</h2>
+    <p class="part__intro">Nothing to sign up for and nothing to host. The reference is a file, and the tool is a package.</p>
+    <div class="tiles">
+      <div class="tile">
+        <div class="tile__icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 8.5v7M18 11.5c0 3-3 4-9.5 5"/></svg></div>
+        <h3 class="tile__title">The reference is a file in your repo</h3>
+        <p class="tile__text">Scores, prompt and model config, committed next to the code. It changes through a PR, so there is a commit and a name on every approval.</p>
+      </div>
+      <div class="tile">
+        <div class="tile__icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8"/></svg></div>
+        <h3 class="tile__title">{{ home.dependencies.heading }}, no provider SDK</h3>
+        <p class="tile__text">digline installs {% for name in home.dependencies.names %}<span class="mono">{{ name }}</span>{% if not loop.last %}, {% endif %}{% endfor %} and nothing else of its own. No server, no telemetry, nothing hosted. In CI the exit code is the whole interface.</p>
+      </div>
+    </div>
 
-    <path class="fig-run" d="M60 46 H180 L280 114 L380 90 L460 98 H580"/>
+    <div class="stack">
+      <div class="stack__row">
+        <span class="stack__label"><a href="{{ base_url }}/product/declarative/#type-provider">Providers</a></span>
+        <div class="chips"><span class="chip">Anthropic</span><span class="chip">OpenAI-compatible</span><span class="chip">Amazon Bedrock</span></div>
+      </div>
+      <div class="stack__row">
+        <span class="stack__label">Worked examples</span>
+        <div class="chips"><a class="chip" href="{{ base_url }}/product/examples/langchain/">LangChain</a><a class="chip" href="{{ base_url }}/product/examples/llamaindex/">LlamaIndex</a><a class="chip" href="{{ base_url }}/product/examples/langgraph/">LangGraph</a><a class="chip" href="{{ base_url }}/product/examples/langchain4j/">LangChain4j</a></div>
+      </div>
+      <div class="stack__row">
+        <span class="stack__label">Other ways to run it</span>
+        <div class="chips"><a class="chip" href="{{ base_url }}/product/docker/">Docker image</a><a class="chip" href="{{ base_url }}/product/mcp/">MCP server</a></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <g class="fig-late">
-      <circle class="fig-dot" cx="580" cy="98" r="6"/>
-      <text class="fig-value fig-fell" x="580" y="80" text-anchor="end">0.78</text>
-    </g>
-  </svg>
-  <figcaption>was <b>0.91</b>, now <b>0.78</b>, still above the threshold</figcaption>
-</figure>
+<section class="part" aria-labelledby="readings-h">
+  <div class="part__inner">
+    <p class="part__kicker">Without a reference, and with one</p>
+    <h2 class="part__title" id="readings-h">The same eval run, read two ways.</h2>
+    <p class="part__intro">One line of the prompt changed between two runs. On the left, the scores you get without a reference. On the right, what digline prints against the approved one.</p>
+    <div class="readings">
+      <div class="panel">
+        <h3 class="panel__head">The new run on its own <span>no reference</span></h3>
+        <pre><span class="quiet">{{ r.table.header }}</span>
+{% for row in r.table.rows %}{{ row }}
+{% endfor %}
+<span class="quiet">Were these {% if r.before_common %}{{ r.before_common }}{% else %}better{% endif %} yesterday? Did anything change?
+Nothing here says.</span></pre>
+        <div class="tags"><span>no baseline</span><span>no change on record</span><span>no exit code</span></div>
+      </div>
+      <div class="readings__arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="panel panel--good">
+        <h3 class="panel__head">digline compare <span>against the reference</span></h3>
+        <pre>{% for line in r.compare_lines %}{% if line.kind == "worse" %}<span class="worse">{{ line.text }}</span>{% elif line.kind in ("head", "more") %}<span class="quiet">{{ line.text }}</span>{% else %}{{ line.text }}{% endif %}
+{% endfor %}
+<span class="worse">exit {{ r.exit }}</span></pre>
+        <div class="tags"><span>each check named</span><span>prompt change detected</span><span>exit {{ r.exit }}</span></div>
+      </div>
+    </div>
+    <p class="part__note">Both columns come from the same captured run, digline {{ home.version }}. The left one shows only the new scores; the right one is the compare output, shortened where marked.</p>
+  </div>
+</section>
 
-<div class="block">
-  <pre id="install">uv init &amp;&amp; uv add digline</pre>
-  <p class="req">Requires Python 3.12+. Or with pip in an existing environment: <code>pip install digline</code>.</p>
-</div>
+<section class="part" aria-labelledby="try-h">
+  <div class="part__inner">
+    <p class="part__kicker">Try it</p>
+    <h2 class="part__title" id="try-h">The quickstart runs without an API key.</h2>
+    <p class="part__intro">The model call in the guide is canned, so you can see the whole loop before wiring a real provider.</p>
+    <ol class="steps">
+      <li><code>digline run</code><p>Runs the suite and writes a run file.</p></li>
+      <li><code>digline promote</code><p>A person approves that run as the reference.</p></li>
+      <li><code>digline compare</code><p>Every later run is checked against it.</p></li>
+    </ol>
+    <div class="term">
+      <div class="term__pane">
+        <div class="term__bar">you type</div>
+        <pre><span class="term__prompt">$</span> {{ home.pinned_install }}
+{% for c in home.quickstart.commands %}<span class="term__prompt">$</span> {{ c.cmd }}
+{% for _ in c.stdout[1:] %}
+{% endfor %}{% if not loop.last %}
+{% endif %}{% endfor %}</pre>
+      </div>
+      <div class="term__pane">
+        <div class="term__bar">digline prints</div>
+        <pre><span class="term__comment"># stdout</span>
+{% for c in home.quickstart.commands %}{% for line in c.stdout %}{{ line }}
+{% endfor %}{% if not loop.last %}
+{% endif %}{% endfor %}</pre>
+      </div>
+    </div>
+    <p class="part__note">Output captured from digline {{ home.version }}, run <span class="mono" title="{{ home.quickstart.run_id }}">{{ home.quickstart.run_short }}…</span>. <a href="{{ base_url }}/product/guide/">Full guide</a></p>
+  </div>
+</section>
 
-<section class="shot" aria-labelledby="shot-h">
-  <h2 id="shot-h">What it looks like</h2>
-
+<section class="part" aria-labelledby="flow-h">
+  <div class="part__inner">
+    <p class="part__kicker">In an agentic flow</p>
+    <h2 class="part__title" id="flow-h">Where the check sits when an agent is making the changes.</h2>
+    <p class="part__intro">The agent edits, digline decides whether the edit can go further.</p>
   {#- Copied from digline/docs/assets/flow/, where a private generator writes
       them: replace them from there, do not edit them here. -#}
   <div class="flow">
@@ -269,50 +203,14 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
          width="960" height="540" loading="lazy" decoding="async"
          alt="Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent reaches for promote, the server answers that no such tool exists.">
   </div>
-
-  {#- Printed by digline 0.2.0, not written for the page: one check down, and
-      the parameter that moved named beside it. The lines are spans rather than
-      newlines so that a long sentence wraps under itself; see .shot in the
-      stylesheet above. -#}
-  <div class="console">
-    <pre><span class="p">$ digline compare --suite support.py --run latest</span><span class="head">1 check got worse compared with the reference. Every case could be judged. No case is suspended. The suite is unchanged from the reference. The system under test answered under a different configuration: temperature 0.3 → 0.7.</span><span class="cfg">system · temperature 0.3 → 0.7</span><span class="worse">where-is-my-order · llm_rubric · Score fell from 1.000000 to 0.700000. This drop coincides with temperature 0.3 → 0.7.</span></pre>
   </div>
-
-  <p class="shot__links">
-    <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
-    <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
-    <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
-    <a href="{{ base_url }}/comparison/">how it differs from the tools you know &rarr;</a>
-  </p>
 </section>
 
-<div class="dg-cols">
-  <section class="reveal">
-    <h2>The failure has no error message</h2>
-    <p>Your prompt worked on Tuesday. On Thursday it works a little less, not
-    enough to break, enough for a user to notice in two weeks. No ordinary test
-    catches it: there is no correct output to compare against, only a better or
-    a worse one.</p>
-  </section>
+<div class="words">
+  <div class="part__inner">
+<p class="newcomer">New to LLM regression? <a href="{{ base_url }}/start/">Start here</a>.</p>
 
-  <section class="reveal">
-    <h2>An approved reference, and the distance from it</h2>
-    <p>digline gives you an approved reference, the baseline, and on every
-    change tells you whether you are below it: which case, which check, by how
-    much.</p>
-  </section>
-
-  <section class="reveal">
-    <h2>The baseline is a file you own</h2>
-    <p>The baseline is a JSON file in your repository, so it goes through code
-    review and it rolls back with <code>git</code>. No server, no account, no
-    network call you have not configured yourself. The same verdict reaches a
-    pull request, a pytest report and an agent over MCP &mdash; and none of them
-    can move the baseline.</p>
-  </section>
-</div>
-
-<section class="ahead reveal" aria-labelledby="ahead-h">
+<section class="ahead" aria-labelledby="ahead-h">
   <p class="ahead__eyebrow">Roadmap</p>
   <h2 id="ahead-h">Where it&rsquo;s headed</h2>
   <p><b>Shipped &mdash; verdict credibility:</b> a drop is a regression only when
@@ -325,7 +223,7 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
   roadmap, tracks and gates rather than dates &rarr;</a></p>
 </section>
 
-<section class="pilot reveal" aria-labelledby="pilot-h">
+<section class="pilot" aria-labelledby="pilot-h">
   <p class="pilot__eyebrow">Pilots</p>
   <h2 id="pilot-h">Building LLM features for clients?</h2>
   <p class="pilot__body">I&rsquo;m looking for a few pilot teams to run digline on
@@ -339,40 +237,41 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
     <a href="https://github.com/digline/digline/issues">or open a GitHub issue</a>
   </p>
 </section>
+  </div>
+</div>
+
+<section class="closing" aria-labelledby="closing-h">
+  <div class="part__inner">
+    <div>
+      <h2 class="part__title" id="closing-h">Start with one suite and one approved run.</h2>
+      <p>The guide needs no key.</p>
+    </div>
+    <div class="install" data-copy>
+      <code class="install__cmd">pip install digline</code>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block script %}
 <script>
-/* Two enhancements, and the page is whole without either: the command stays
-   selectable with no button, and the three columns are visible because the
-   class that hides them is added here, not in the stylesheet. */
+/* One enhancement, and the page is whole without it: a Copy button beside each
+   install command, where the clipboard is there to write to. */
 (function () {
-  var pre = document.getElementById("install");
-  if (pre && navigator.clipboard) {
+  if (!navigator.clipboard) return;
+  document.querySelectorAll(".install[data-copy]").forEach(function (box) {
+    var cmd = box.querySelector(".install__cmd");
     var b = document.createElement("button");
-    b.className = "copy";
+    b.className = "install__copy";
     b.type = "button";
     b.textContent = "Copy";
     b.addEventListener("click", function () {
-      navigator.clipboard.writeText(pre.textContent.trim()).then(function () {
+      navigator.clipboard.writeText(cmd.textContent.trim()).then(function () {
         b.textContent = "Copied";
         setTimeout(function () { b.textContent = "Copy"; }, 1500);
       });
     });
-    pre.parentNode.appendChild(b);
-  }
-})();
-
-(function () {
-  if (!("IntersectionObserver" in window)) return;
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var seen = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add("in"); seen.unobserve(e.target); }
-    });
-  }, { rootMargin: "0px 0px -12% 0px" });
-  document.querySelectorAll(".reveal").forEach(function (el) {
-    el.classList.add("armed"); seen.observe(el);
+    box.appendChild(b);
   });
 })();
 </script>

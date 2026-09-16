@@ -38,7 +38,9 @@
 
 {% include "partials/header.html" %}
 
-<main class="dg-page">
+{#- `main_class` adds to .dg-page rather than replacing it: the home widens
+    itself with it, and every other page leaves it empty. -#}
+<main class="dg-page{% block main_class %}{% endblock %}">
 {% block main %}{% endblock %}
 </main>
 

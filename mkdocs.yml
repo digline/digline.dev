@@ -80,6 +80,10 @@ hooks:
   # from the nav below and written into site/ after the build; a page in the
   # nav that nobody has described fails the build. See the file's docstring.
   - tools/hooks/llms.py
+  # The home's numbers: docs/product/assets/home/home.json, captured by digline's
+  # tools/home_capture.py, refused when it does not support the page and turned
+  # into the values overrides/home.html prints. See the file's docstring.
+  - tools/hooks/home.py
 
 markdown_extensions:
   - abbr
