@@ -39,3 +39,7 @@ Use **Opik** when you need tracing and want one platform across the lifecycle: t
 Use **digline** when the question is regression against an approved reference, and the answer has to live in the client's repository, survive an audit and gate a CI job — with nothing to deploy.
 
 Using both is coherent: they answer different questions, and neither reads the other's storage. Opik watching what the application does, digline holding the line on what it is allowed to become.
+
+---
+
+**The other comparisons:** [promptfoo](promptfoo.md) · [DeepEval](deepeval.md) · [Braintrust](braintrust.md) · [LangSmith](langsmith.md) · [Langfuse](langfuse.md) · [Inspect AI](inspect-ai.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.

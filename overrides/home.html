@@ -177,8 +177,11 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
 }
 
 /* Where to go once you have read it: the argument behind the line, and the
-   same line on your own suite. Two links, not two buttons — nothing here is
-   the page's call to action, which is at the foot. */
+   same line on your own suite. Four links, not four buttons — nothing here is
+   the page's call to action, which is at the foot. They are the four questions
+   a reader has just after the console: why not a hash, how do I run it, what
+   may an agent do, and how is this different from the tool I already use. The
+   row is flex-wrap, so a fifth would cost nothing but a line. */
 .shot__links {
   display: flex; flex-wrap: wrap; gap: .375rem 1.5rem;
   margin: .875rem 0 0; font-size: .9375rem;
@@ -279,6 +282,7 @@ body { background-image: linear-gradient(var(--wash), var(--wash)); }
     <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
     <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
     <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
+    <a href="{{ base_url }}/comparison/">how it differs from the tools you know &rarr;</a>
   </p>
 </section>
 

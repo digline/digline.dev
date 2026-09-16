@@ -41,3 +41,7 @@ Use **Braintrust** when more than one person needs to look at the results: a pla
 Use **digline** when the answer has to be a file: a client's repository, an audit six months later, a CI job that gates on an exit code, and no infrastructure to run or budget. Use it when the noise floor of an LLM judge is the thing making your comparisons unreadable, or when the approval must be out of an agent's reach.
 
 Together they have a seam the other pairs on this list do not, because autoevals is a shared vocabulary: the same scorer can score a Braintrust experiment and, through `FromAutoevals`, a digline check. Braintrust for exploring and watching, digline for the gate whose record stays in the repository.
+
+---
+
+**The other comparisons:** [promptfoo](promptfoo.md) · [DeepEval](deepeval.md) · [LangSmith](langsmith.md) · [Langfuse](langfuse.md) · [Inspect AI](inspect-ai.md) · [Opik](opik.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.

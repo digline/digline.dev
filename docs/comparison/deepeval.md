@@ -43,3 +43,7 @@ Use **DeepEval** when the work is *measuring*: you need a metric for faithfulnes
 Use **digline** when the work is *holding a line*: the reference is approved by a person, lives in the repository, and the comparison on every change knows how much each check moves on its own. Use it when the record has to be auditable without an account, or when the approval must not be reachable by an agent.
 
 Together they work, and the seam is the one place the two shapes meet: a DeepEval metric produces a score with a reason, and a digline assertion turns a score into a verdict against a threshold and a tolerance. digline ships an adapter for [`autoevals`](../product/metrics.md#fromautoevals) scorers and none for DeepEval metrics, so combining them today is either two runs in one CI job, or a DeepEval metric wrapped in a custom assertion. The second is a handful of lines, and it is not something digline documents.
+
+---
+
+**The other comparisons:** [promptfoo](promptfoo.md) · [Braintrust](braintrust.md) · [LangSmith](langsmith.md) · [Langfuse](langfuse.md) · [Inspect AI](inspect-ai.md) · [Opik](opik.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.
