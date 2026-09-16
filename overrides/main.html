@@ -45,9 +45,9 @@
   The long form of the same invitation closes the home page.
 -#}
 {#-
-  The opening band, on the four documentation pages tools/hooks/opening.py
-  names in DOCS: the page's first <h1> and first paragraph, taken out of its
-  content by the hook, in the same partial the reading pages use. It goes in
+  The opening band, on every documentation page: the page's first <h1>, and the
+  paragraph right after it when there is one, taken out of its content by
+  tools/hooks/opening.py, in the same partial the reading pages use. It goes in
   `hero`, which Material renders across the width of the page above the
   sidebars, and `body` — the rest of the content — goes where page.content
   would. The includes round it are Material's partials/content.html, less the

@@ -8,6 +8,17 @@ One branch per change, merged into `main` with `--no-ff` (`Merge branch '<name>'
 
 The diff is read before the commit, not after.
 
+## One session, one worktree
+
+Several sessions — people, agents — may work on this repository at once, and they share one checkout. So a session does not change branch in that checkout. It works in a worktree of its own, on a branch from `origin/main`:
+
+    git fetch
+    git worktree add ../digline.dev-<branch> -b <branch> origin/main
+
+and removes it when its work is merged or abandoned: `git worktree remove ../digline.dev-<branch>`.
+
+Why: on 16 September a branch change made outside the session moved the shared checkout back to `main` mid-task, and the next commit landed on local `main` instead of on the branch it was written for.
+
 ## A page the site did not have
 
 Every page in the nav needs a description, or the build fails:

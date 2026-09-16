@@ -519,8 +519,17 @@ a.chip:hover { border-color: var(--fine); }
    the hero's style (.opening__title shares .hero__title's rule above) and the
    first paragraph as the lede (.hero__lede's) — then the text in a reading
    column. tools/hooks/opening.py splits the title and the first paragraph out
-   of the page; the Markdown is unchanged. */
-.dg-page--reading { max-width: none; padding: 0; }
+   of the page; the Markdown is unchanged.
+
+   The ground is the home's, laid the home's way: one flat layer of --wash on
+   <main>, over the --bg of <body>, edge to edge at any width because <main>
+   is. The bands keep their place against it by being one layer deeper — the
+   opening lays a second --wash over the ground, the closing a flat --wash
+   under its --fine-wash fade — and by a hairline rule. */
+.dg-page--reading {
+  max-width: none; padding: 0;
+  background-image: linear-gradient(var(--wash), var(--wash));
+}
 .reading__inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
 
 .opening {
@@ -543,6 +552,11 @@ a.chip:hover { border-color: var(--fine); }
   gap: 1.25rem; align-items: start;
 }
 .dg-page--reading .closing .install { min-width: 0; }
+.dg-page--reading .closing {
+  background-image:
+    linear-gradient(var(--fine-wash), transparent 70%),
+    linear-gradient(var(--wash), var(--wash));
+}
 
 /* ── .essay: Why and Start here ──────────────────────────────────────────
    Long-form reading: a narrower measure than the landing, and a rule between

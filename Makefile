@@ -28,7 +28,7 @@ source:          ## refuse a build made from an unreleased sync
 home:            ## the home's hook against its fixtures, refusals included — needs no build
 	uv run tools/hooks/home.py --selftest
 
-opening:         ## the opening band's hook: the split, the pages it names, its refusals — needs no build
+opening:         ## the opening band's hook: title and lede, title alone, no title — needs no build
 	uv run tools/hooks/opening.py --selftest
 
 glyphs:          ## the glyph check against its own four-page site, refusals included — needs no build
