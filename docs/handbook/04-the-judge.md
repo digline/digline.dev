@@ -83,7 +83,3 @@ Two smaller habits. First, keep the instruction before the output in the judge's
 5. Move the judge's prompt into a file next to the system's, and record both with every run.
 
 The next chapter is about what to do once the numbers are stable: the run you approve, and why it should be the median of several and not the first green one.
-
----
-
-*Previous: [3. Checks: deterministic first, judge last](03-checks.md) · Next: [5. The reference](05-the-reference.md)*

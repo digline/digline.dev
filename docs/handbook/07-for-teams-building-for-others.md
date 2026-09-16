@@ -78,7 +78,3 @@ That closes the loop that chapter 2 asked for by hand: *one failure seen, one ca
 ---
 
 That is the handbook. If you have read it end to end, you know more about keeping an LLM feature under control than most teams shipping one. The tool built around these seven chapters is [digline](../index.md); the project all the numbers came from is [public](https://github.com/digline/brief). Neither is required to start — the twenty cases are.
-
----
-
-*Previous: [6. Maintenance](06-maintenance.md)*

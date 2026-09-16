@@ -80,7 +80,3 @@ Three slow failures that no trigger catches, because each step is too small to a
 4. The next time the comparison is red and you did not change anything, do not touch the tolerance. Read the diff. It is empty. That is the provider, and now you know what that looks like.
 
 The last chapter is for teams that build LLM features for someone else — where the same suite becomes the answer to a question the customer will ask, and where some of what it contains must never leave their perimeter.
-
----
-
-*Previous: [5. The reference](05-the-reference.md) · Next: [7. For teams building for others](07-for-teams-building-for-others.md)*

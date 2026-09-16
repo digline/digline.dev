@@ -90,7 +90,3 @@ Five or six checks on twenty cases. It runs in a minute, costs cents, and it is 
 4. If a judged check fails on a case, look at the reason before you look at the prompt. Half the time the case was mislabelled.
 
 The next chapter is about that one judged check: how much it wobbles, how to measure the wobble, and how to keep it from turning every Tuesday into a false alarm.
-
----
-
-*Previous: [2. Cases: the asset nobody builds](02-cases.md) · Next: [4. The judge](04-the-judge.md)*
