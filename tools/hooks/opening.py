@@ -33,6 +33,15 @@ them, and they are held to different rules:
     tools/sync-docs.sh copies out of digline/digline, the message says the fix
     belongs there, since anything changed here is overwritten on the next sync.
 
+The title is set in the gradient the home's section titles use, all of it by
+default. A page written in this repository may name the part that should be,
+with `accent:` in its front matter: that text, exactly as it appears in the
+title, is the gradient and the rest stays --ink; a title that does not contain
+it fails the build. A page copied from digline/digline has no front matter of
+this repository's to carry one, and its title is in the gradient whole. The
+text of the title and its id do not change: ``title_html`` wraps what is
+there in a span.
+
 Material's own 404 page is not a page to mkdocs and reaches no hook: its band is
 set in overrides/404.html.
 
@@ -45,6 +54,7 @@ import os
 import re
 import sys
 import unicodedata
+from html import escape as html_escape
 
 from mkdocs.exceptions import PluginError
 
@@ -81,6 +91,39 @@ def split(content: str, source: str) -> tuple[dict, str]:
         "title_id": _title_id(match.group("attrs")),
         "lede": match.group("lede"),
     }, match.group("body")
+
+
+_HEADERLINK = re.compile(r'(?P<text>.*?)(?P<link>\s*<a class="headerlink"[^>]*>.*?</a>)?\s*\Z', re.S)
+
+
+def title_html(title: str, accent: str | None, source: str) -> str:
+    """The title with the gradient on it: a span round all of its text, or,
+    with an accent, round that text alone. The permalink Markdown puts at the
+    end of a heading stays outside the span. The accent has to appear in the
+    title's HTML exactly as written, outside any tag, or the build fails."""
+    match = _HEADERLINK.match(title)
+    text, link = match.group("text"), match.group("link") or ""
+    if not accent:
+        return f'<span class="grad-text">{text}</span>{link}'
+    literal = html_escape(accent, quote=False)
+    start = text.find(literal)
+    while start != -1 and text.count("<", 0, start) != text.count(">", 0, start):
+        start = text.find(literal, start + 1)
+    if start == -1 or "<" in literal:
+        plain = re.sub(r"<[^>]*>", "", text)
+        raise PluginError(
+            f"opening: {source} has accent: {accent!r}, and its title, {plain!r}, does not "
+            "contain it as written. The accent is the part of the title in the gradient: "
+            "copy it from the title."
+        )
+    end = start + len(literal)
+    return f'{text[:start]}<span class="grad-text">{text[start:end]}</span>{text[end:]}{link}'
+
+
+def accent_for(meta: dict, src_uri: str, native: set[str]) -> str | None:
+    """A page's accent: its front matter's, on a page written here; none on a
+    page copied from digline, whose title is in the gradient whole."""
+    return None if upstream(src_uri, native) else meta.get("accent")
 
 
 def upstream(src_uri: str, native: set[str]) -> str | None:
@@ -151,12 +194,15 @@ def native_pages() -> set[str]:
 
 def on_page_context(context, page, config, nav, **kwargs):
     template = page.meta.get("template")
+    native = native_pages()
     if template in READING:
         opening, body = split(page.content or "", page.file.src_uri)
     elif not template:
-        opening, body = split_docs(page.content or "", page.file.src_uri, native_pages())
+        opening, body = split_docs(page.content or "", page.file.src_uri, native)
     else:
         return context
+    accent = accent_for(page.meta, page.file.src_uri, native)
+    opening["title_html"] = title_html(opening["title"], accent, page.file.src_uri)
     opening["kicker"] = page.meta.get("kicker")
     context["opening"] = opening
     context["body"] = body
@@ -254,6 +300,36 @@ def selftest() -> int:
             lambda: split_docs(no_h1, "handbook/index.md", native),
             "has no `# Title`", absent="digline/digline")
 
+    # 4. The title in the gradient: whole by default, the permalink kept out of
+    #    the span; an accent that is in the title, wrapped alone; one that is
+    #    not, or that runs across markup, refused.
+    expect("whole title", title_html(title, None, "why.md"),
+           '<span class="grad-text">How digline compares</span><a class="headerlink" '
+           'href="#how-digline-compares" title="Link to this section">&para;</a>')
+    expect("accent", title_html(title, "compares", "comparison/index.md"),
+           'How digline <span class="grad-text">compares</span><a class="headerlink" '
+           'href="#how-digline-compares" title="Link to this section">&para;</a>')
+    expect("accent with an ampersand, as the title's HTML writes it",
+           title_html("Cases &amp; checks", "& checks", "handbook/02-cases.md"),
+           'Cases <span class="grad-text">&amp; checks</span>')
+    expect("accent not matched inside a tag's attributes, only in text",
+           title_html('<code class="x">x</code> and x', "x", "a.md"),
+           '<code class="x"><span class="grad-text">x</span></code> and x')
+    expect("a title with no permalink", title_html("404 - Not found", None, "404"),
+           '<span class="grad-text">404 - Not found</span>')
+    expect("an accent on a page written here", accent_for({"accent": "compares"},
+           "comparison/index.md", native), "compares")
+    expect("an accent on a product page written here", accent_for({"accent": "loop"},
+           "product/operator.md", native), "loop")
+    expect("no accent on a page copied from digline", accent_for({"accent": "photograph"},
+           "product/guide.md", native), None)
+    refused("an accent the title does not contain",
+            lambda: title_html(title, "contrasts", "comparison/index.md"),
+            "does not contain it as written")
+    refused("an accent that runs across markup",
+            lambda: title_html("The <code>diff</code> report", "diff report", "a.md"),
+            "does not contain it as written")
+
     # The product pages written here are the ones pages/product/ holds today.
     found = native_pages()
     if not found:
@@ -263,8 +339,8 @@ def selftest() -> int:
         print(f"opening selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print("opening selftest: title and lede, title alone, a lone <code> kept out of the band "
-          "and no title split or refused as they "
+    print("opening selftest: title and lede, title alone, a lone <code> kept out of the band, "
+          "the title's gradient whole or on its accent, and no title split or refused as they "
           f"must, on both kinds of page; {len(found)} product pages written here")
     return 0
 

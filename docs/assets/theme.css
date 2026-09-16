@@ -367,6 +367,23 @@ body {
   color: var(--ink);
   text-wrap: balance;
 }
+/* The title in the gradient, as pages.css sets it for the presentation pages
+   (tools/hooks/opening.py puts the span round the whole title, or round its
+   `accent:`): a solid colour where background-clip is missing, ink under
+   forced colours. */
+.md-container > .opening .grad-text {
+  color: var(--grad-mid);
+  background-image: var(--grad);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .md-container > .opening .grad-text { color: transparent; }
+}
+@media (forced-colors: active) {
+  .md-container > .opening .grad-text { color: CanvasText; background-image: none; }
+}
+
 /* The reading pages hide the permalink beside a title; so does the band here.
    The id stays on the <h1>, so a link to it still lands. */
 .md-container > .opening .headerlink { display: none; }
