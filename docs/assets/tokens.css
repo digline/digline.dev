@@ -113,6 +113,13 @@
   --rule-fine:   #9fd1b1;
   --wash-worse:  #fbecec;
   --rule-worse:  #efc4c4;
+  /* Two more hues for the home's groups of commands and kinds of check,
+     beside the gradient's green (--grad-start) and blue (--grad-end): a
+     violet and an amber, each at least 6:1 on --bg and 4.9:1 on the glow a
+     tile lays under its own colour at --tile-glow. */
+  --violet:      #6b3d8c;
+  --amber:       #8a5412;
+  --tile-glow:   16%;
 }
 
 /* ── 2. dark, by system preference ────────────────────────────────────── */
@@ -167,6 +174,9 @@
     --rule-fine:   rgba(127, 211, 154, .45);
     --wash-worse:  rgba(240, 154, 154, .09);
     --rule-worse:  rgba(240, 154, 154, .40);
+    --violet:      #c4a5e3;
+    --amber:       #dcb47c;
+    --tile-glow:   10%;
   }
 }
 
@@ -218,6 +228,9 @@
   --rule-fine:   rgba(127, 211, 154, .45);
   --wash-worse:  rgba(240, 154, 154, .09);
   --rule-worse:  rgba(240, 154, 154, .40);
+  --violet:      #c4a5e3;
+  --amber:       #dcb47c;
+  --tile-glow:   10%;
 }
 
 /* ── 3b. light, by choice ─────────────────────────────────────────────── */
@@ -271,4 +284,7 @@
   --rule-fine:   #9fd1b1;
   --wash-worse:  #fbecec;
   --rule-worse:  #efc4c4;
+  --violet:      #6b3d8c;
+  --amber:       #8a5412;
+  --tile-glow:   16%;
 }
