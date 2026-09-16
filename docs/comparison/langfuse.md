@@ -41,3 +41,7 @@ Use **Langfuse** when you need to see what the application did: traces of real r
 Use **digline** when the question is narrower and the answer has to be a file: did this change make it worse than the run someone approved, which case, by how much, and is that drop larger than what that check does on its own. Use it when there is to be nothing to deploy.
 
 Using both is the ordinary shape, and the two do not touch: Langfuse watches production and holds the prompt library, digline gates the pull request and keeps the approved reference in the repository next to the code it describes.
+
+---
+
+**The other comparisons:** [promptfoo](promptfoo.md) · [DeepEval](deepeval.md) · [Braintrust](braintrust.md) · [LangSmith](langsmith.md) · [Inspect AI](inspect-ai.md) · [Opik](opik.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.

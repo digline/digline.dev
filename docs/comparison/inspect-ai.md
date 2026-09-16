@@ -39,3 +39,7 @@ Use **Inspect AI** when the subject is a model or a capability: benchmarks, comp
 Use **digline** when the subject is your application and the question is regression: this prompt, this retrieval, this configuration, against the state a person approved — with the approval in the repository and the answer an exit code in CI.
 
 Together they are complementary rather than overlapping, because they answer at different altitudes: Inspect to decide whether a model is good enough for the job, digline to notice the morning it stopped being.
+
+---
+
+**The other comparisons:** [promptfoo](promptfoo.md) · [DeepEval](deepeval.md) · [Braintrust](braintrust.md) · [LangSmith](langsmith.md) · [Langfuse](langfuse.md) · [Opik](opik.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.

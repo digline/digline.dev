@@ -43,3 +43,7 @@ Use **promptfoo** when you are choosing: comparing prompts, models or configurat
 Use **digline** when the choice is made and the job is to keep it: a reference approved by a named person, in the repository, and a comparison on every change that separates a real drop from the judge's own variance. Use it when the answer has to survive an audit, or when the decision about what "acceptable" means must not be reachable by an agent.
 
 Using both is coherent, and they do not collide: promptfoo reads `promptfooconfig.yaml` and writes its own results, digline reads a `suite.py` and writes `.digline/`. A common arrangement is promptfoo while a change is being explored, digline as the gate on the pull request once it has been chosen.
+
+---
+
+**The other comparisons:** [DeepEval](deepeval.md) · [Braintrust](braintrust.md) · [LangSmith](langsmith.md) · [Langfuse](langfuse.md) · [Inspect AI](inspect-ai.md) · [Opik](opik.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.

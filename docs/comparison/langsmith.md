@@ -41,3 +41,7 @@ Use **LangSmith** for everything that happens after deploy, and for the loop bac
 Use **digline** for the check before the deploy, when the record has to be in the repository rather than in a system: a reference approved by a named person, a comparison that knows each check's own variance, and an exit code that stops the pipeline. Use it when there is no budget or appetite for infrastructure, or when the prompts and outputs cannot leave the perimeter at all.
 
 They stack without overlapping, and this is the ordinary arrangement: digline as the gate on the pull request, LangSmith watching what happens after the deploy and turning what it finds there into the next case in the suite.
+
+---
+
+**The other comparisons:** [promptfoo](promptfoo.md) · [DeepEval](deepeval.md) · [Braintrust](braintrust.md) · [Langfuse](langfuse.md) · [Inspect AI](inspect-ai.md) · [Opik](opik.md) — or [the index](index.md), which asks which question each family of tools answers rather than each tool.
