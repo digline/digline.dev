@@ -39,6 +39,8 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 - The sync checks the first half of that itself: it refuses a digline checkout with uncommitted changes under what it copies (`docs/`, `examples/`, `docker/`, the changelog and roadmap), or one ahead of `origin/main`, or behind it — except a detached HEAD exactly on the latest `v*` tag `origin/main` contains, the release tag CI builds a dispatch from; an older tag, or an untagged commit, is refused. To look at a page that is not on digline main yet, `make preview` (`SYNC_UNRELEASED=1`): it builds with a banner and leaves `.sync-preview`, and `tools/check-source.sh`, in `make build` and in the workflow, refuses to ship that build.
 - The commit message names the digline commit it was built against and the URL count.
 
+Not a gate, a tool: when a page's look changed, `uv run tools/screenshots.py --out <dir> --page <path> --widths 1280,390 --themes light,dark` photographs it from `site/` (or `--base https://digline.dev`) and fails if a `<pre>` scrolls sideways; its docstring has the rest.
+
 A red build caused by something outside the change (a nav entry whose file is not on digline main, for instance) is fixed on `main` first, in its own commit, and the change is verified against the fixed `main`, never committed on top of a red one.
 
 ## After the push
