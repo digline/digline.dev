@@ -1,0 +1,41 @@
+/* The faces, for every page on the site — the presentation pages through
+ * _shell.html, the documentation through extra_css in mkdocs.yml.
+ *
+ * IBM Plex, from this site and nobody else's: each weight the pages use, cut
+ * down by tools/subset-fonts.py — which says how to run it again — to a fixed
+ * repertoire (tools/plex.py, BASE and RANGES) and every character the built
+ * pages show in that family. From IBM's own packages, under the OFL beside them
+ * in fonts/. Sans has 400 to 700; Mono has 400 and 500 and nothing heavier, so
+ * no rule asks Mono for more than 500. `swap`, so text is never held back
+ * waiting for a face.
+ *
+ * Nothing here says where a face is used. That is --sans-page and --mono-page
+ * in tokens.css: .dg-page reads them in pages.css, Material's two font
+ * variables in theme.css. The bar and the band read --sans and keep the system
+ * faces their breakpoints were measured in.
+ */
+
+@font-face {
+  font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("fonts/ibm-plex-sans-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("fonts/ibm-plex-sans-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: swap;
+  src: url("fonts/ibm-plex-sans-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("fonts/ibm-plex-sans-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("fonts/ibm-plex-mono-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("fonts/ibm-plex-mono-500.woff2") format("woff2");
+}

@@ -1,8 +1,8 @@
 /* The palette and the type, for every page on the site — the presentation
  * pages and the documentation alike. Values come from digline's own report
  * stylesheet (src/digline/report/render.py), so the site, the HTML report and
- * `digline view` are visibly one product. System faces only: nothing here is
- * fetched from anywhere.
+ * `digline view` are visibly one product. Nothing here is fetched from
+ * anywhere: the Plex faces are this site's own, in fonts.css.
  *
  * Three states, in this order:
  *
@@ -20,10 +20,13 @@
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* The body of the presentation pages, and nothing else: IBM Plex, served from
-     docs/assets/fonts/ by the @font-face rules in pages.css, over the system
-     faces above as the fallback. The bar, the band and the documentation keep
-     --sans and --mono — the bar's breakpoints were measured in those. */
+  /* The text of every page but the bar and the band: IBM Plex, served from
+     docs/assets/fonts/ by the @font-face rules in fonts.css, over the system
+     faces above as the fallback — which is also where a character Plex has no
+     glyph for is drawn. .dg-page reads these in pages.css, and Material's
+     --md-text-font-family and --md-code-font-family are set to them in
+     theme.css. The bar and the band keep --sans: their breakpoints were
+     measured in it. */
   --sans-page: "IBM Plex Sans", var(--sans);
   --mono-page: "IBM Plex Mono", var(--mono);
 }
@@ -60,6 +63,28 @@
   /* The one marked shadow, under the home's verdict card: dark in both
      states, never a tint of --ink, which is light in the dark. */
   --shadow-card: rgba(22, 24, 29, .35);
+
+  /* Every other box that is lifted off the ground — the home's panels, the
+     quotes and the video on the reading pages, the quotes in the
+     documentation: close to the box and faint. In the dark it does not read —
+     tried down to --band-bg, the darkest token, it was not there on the page —
+     so it is none there, rather than traded for a lighter border. */
+  --shadow-soft:
+    0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent),
+    0 6px 16px -8px color-mix(in srgb, var(--ink) 14%, transparent);
+
+  /* Code, in the documentation's highlighted blocks (theme.css maps
+     Material's --md-code-hl-* onto these). Every one is at least 4.5:1 on
+     --surface, the ground of a code block. Green is a string, as a check that
+     held is green in the report; red is kept for what is an error or was
+     removed, and for nothing else — a number is not bad news. */
+  --code-keyword:  #2f4f7a;   /* 7.71:1 on --surface */
+  --code-string:   #17552e;   /* 8.18:1 */
+  --code-number:   #6b3d8c;   /* 7.27:1 — numbers and constants */
+  --code-function: #1d5d6b;   /* 6.86:1 — functions, classes, modules */
+  --code-special:  #7a4b12;   /* 6.83:1 — escapes, interpolation, regex */
+  --code-comment:  #5b6270;   /* 5.67:1 — comments, operators, prompts */
+  --code-error:    #8a1c1c;   /* 8.58:1 — errors, tracebacks, deletions */
 }
 
 /* ── 2. dark, by system preference ────────────────────────────────────── */
@@ -91,6 +116,15 @@
 
     /* Black, not --ink: a light shadow reads as a glow. */
     --shadow-card: rgba(0, 0, 0, .6);
+    --shadow-soft: none;
+
+    --code-keyword:  #93b4dd;   /* 7.64:1 on --surface */
+    --code-string:   #8fc7a6;   /* 8.47:1 */
+    --code-number:   #c4a5e3;   /* 7.65:1 */
+    --code-function: #7fc3cf;   /* 8.25:1 */
+    --code-special:  #dcb47c;   /* 8.45:1 */
+    --code-comment:  #98a0ad;   /* 6.20:1 */
+    --code-error:    #e29a9a;   /* 7.25:1 */
   }
 }
 
@@ -119,6 +153,15 @@
   --band-muted: #98a0ad;
   --band-rule:  #23272f;
   --shadow-card: rgba(0, 0, 0, .6);
+  --shadow-soft: none;
+
+  --code-keyword:  #93b4dd;
+  --code-string:   #8fc7a6;
+  --code-number:   #c4a5e3;
+  --code-function: #7fc3cf;
+  --code-special:  #dcb47c;
+  --code-comment:  #98a0ad;
+  --code-error:    #e29a9a;
 }
 
 /* ── 3b. light, by choice ─────────────────────────────────────────────── */
@@ -146,4 +189,15 @@
   --band-muted: #98a0ad;
   --band-rule:  #2c313a;
   --shadow-card: rgba(22, 24, 29, .35);
+  --shadow-soft:
+    0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent),
+    0 6px 16px -8px color-mix(in srgb, var(--ink) 14%, transparent);
+
+  --code-keyword:  #2f4f7a;
+  --code-string:   #17552e;
+  --code-number:   #6b3d8c;
+  --code-function: #1d5d6b;
+  --code-special:  #7a4b12;
+  --code-comment:  #5b6270;
+  --code-error:    #8a1c1c;
 }

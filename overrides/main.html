@@ -44,8 +44,33 @@
 
   The long form of the same invitation closes the home page.
 -#}
+{#-
+  The opening band, on the four documentation pages tools/hooks/opening.py
+  names in DOCS: the page's first <h1> and first paragraph, taken out of its
+  content by the hook, in the same partial the reading pages use. It goes in
+  `hero`, which Material renders across the width of the page above the
+  sidebars, and `body` — the rest of the content — goes where page.content
+  would. The includes round it are Material's partials/content.html, less the
+  <h1> that file adds to a page whose content has none: this one has its h1,
+  in the band.
+-#}
+{% block hero %}
+  {%- if opening %}
+  {% include "partials/opening.html" %}
+  {%- endif %}
+{% endblock %}
+
 {% block content %}
+  {%- if opening %}
+  {% include "partials/tags.html" %}
+  {% include "partials/actions.html" %}
+  {{ body }}
+  {% include "partials/source-file.html" %}
+  {% include "partials/feedback.html" %}
+  {% include "partials/comments.html" %}
+  {%- else %}
   {{ super() }}
+  {%- endif %}
   {%- if page and page.file and page.file.src_uri == "product/roadmap.md" %}
   <aside class="dg-pilot">
     <p>Want to be one of those pilots? <a href="https://github.com/digline/digline/issues">Open
