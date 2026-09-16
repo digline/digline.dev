@@ -56,6 +56,10 @@
   --band-ink:   #e6e9ee;
   --band-muted: #98a0ad;
   --band-rule:  #2c313a;
+
+  /* The one marked shadow, under the home's verdict card: dark in both
+     states, never a tint of --ink, which is light in the dark. */
+  --shadow-card: rgba(22, 24, 29, .35);
 }
 
 /* ── 2. dark, by system preference ────────────────────────────────────── */
@@ -84,6 +88,9 @@
     --band-ink:   #e6e9ee;
     --band-muted: #98a0ad;
     --band-rule:  #23272f;
+
+    /* Black, not --ink: a light shadow reads as a glow. */
+    --shadow-card: rgba(0, 0, 0, .6);
   }
 }
 
@@ -111,6 +118,7 @@
   --band-ink:   #e6e9ee;
   --band-muted: #98a0ad;
   --band-rule:  #23272f;
+  --shadow-card: rgba(0, 0, 0, .6);
 }
 
 /* ── 3b. light, by choice ─────────────────────────────────────────────── */
@@ -137,4 +145,5 @@
   --band-ink:   #e6e9ee;
   --band-muted: #98a0ad;
   --band-rule:  #2c313a;
+  --shadow-card: rgba(22, 24, 29, .35);
 }

@@ -5,15 +5,17 @@ name = "digline-dev"
 version = "0"
 description = "The site behind digline.dev"
 requires-python = ">=3.12"
-# tinycss2 is not for the build — mkdocs never sees it. tools/check-css.py
-# parses the stylesheets before the build runs, and the home's selftest reads
-# pages.css to know which text is drawn in which face. fonttools is not for the
-# build either: that selftest reads the cmap of each Plex subset, and
-# tools/subset-fonts.py writes them.
+# None of the three below is for the build — mkdocs never sees them.
+# tinycss2: tools/check-css.py parses the stylesheets before the build, and
+# tools/plex.py reads pages.css to know which text is drawn in which face.
+# fonttools: tools/check-glyphs.py reads the cmap of each Plex subset, and
+# tools/subset-fonts.py writes them. websockets: tools/screenshots.py talks to
+# chrome-headless-shell over the DevTools protocol; it is a tool, not a gate.
 dependencies = [
     "fonttools[woff]>=4.65.0",
     "mkdocs-material>=9.6",
     "tinycss2>=1.4",
+    "websockets>=15",
 ]
 
 [tool.uv]

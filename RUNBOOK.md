@@ -39,13 +39,17 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 - The sync checks the first half of that itself: it refuses a digline checkout with uncommitted changes under what it copies (`docs/`, `examples/`, `docker/`, the changelog and roadmap), or one ahead of `origin/main`, or behind it — except a detached HEAD exactly on the latest `v*` tag `origin/main` contains, the release tag CI builds a dispatch from; an older tag, or an untagged commit, is refused. To look at a page that is not on digline main yet, `make preview` (`SYNC_UNRELEASED=1`): it builds with a banner and leaves `.sync-preview`, and `tools/check-source.sh`, in `make build` and in the workflow, refuses to ship that build.
 - The commit message names the digline commit it was built against and the URL count.
 
+Not a gate, a tool: when a page's look changed, `uv run tools/screenshots.py --out <dir> --page <path> --widths 1280,390 --themes light,dark` photographs it from `site/` (or `--base https://digline.dev`) and fails if a `<pre>` scrolls sideways; its docstring has the rest.
+
 A red build caused by something outside the change (a nav entry whose file is not on digline main, for instance) is fixed on `main` first, in its own commit, and the change is verified against the fixed `main`, never committed on top of a red one.
 
 ## After the push
 
 1. The `docs` workflow run for the pushed commit: Build and Deploy both succeed (`gh run watch <id> --exit-status`).
-2. On the live site, with a cache-busting query:
-   - every new or changed page answers 200, with the expected `<title>` and `<meta name="description">`;
-   - its internal links answer 200, and its external links too;
-   - a new nav, bar or footer entry is present on a presentation page and on a documentation page;
-   - `llms.txt` lists the new page, and a page that should not be there yet (an ADR still on its branch) answers 404.
+2. On the live site, with a cache-busting query, every check in two halves: the positive one, and a negative one built to fail — a check that cannot fail has verified nothing. A 200 from a server that answers 200 to anything, or a string search on a page that was never going to contain the string, passes whether the change is live or not. The report gives both halves, each with what it got.
+   - every new or changed page answers 200, with the expected `<title>` and `<meta name="description">` — and a path next to it that does not exist (`/no-such-page-<random>/`) answers 404;
+   - the text the change added is on the page — and the text it replaced, or a string that must not be there (an old version, a removed figure), is found 0 times;
+   - its internal links answer 200, and its external links too — and one of them with a character changed answers 404;
+   - a new nav, bar or footer entry is present on a presentation page and on a documentation page — and absent from a page that should not carry it;
+   - `llms.txt` lists the new page and `sitemap.xml` has the expected URL count — and a page that should not be there yet (an ADR still on its branch) answers 404 and is in neither;
+   - a version on a package index answers 200 — and a version that does not exist answers 404. Ask the JSON API for this, not the project page: `https://pypi.org/project/<pkg>/<version>/` answers 200 for any version, real or not, while `https://pypi.org/pypi/<pkg>/<version>/json` answers 200 for a released version and 404 for any other.
