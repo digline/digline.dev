@@ -77,9 +77,6 @@ h1 { font-size: 2rem; line-height: 1.18; letter-spacing: -.025em; font-weight: 6
 h2 { font-size: 1.125rem; line-height: 1.35; margin: 2.5rem 0 .75rem; }
 h2:first-child { margin-top: 0; }
 
-.prose { max-width: 46rem; }
-.prose p { margin: 0 0 1rem; color: var(--muted); }
-.prose p:last-child { margin-bottom: 0; }
 code {
   font-family: var(--mono-page);
   font-size: .875em;
@@ -102,6 +99,14 @@ pre {
 /* These pages are read straight through: the anchor link Markdown puts beside
    every heading belongs in the documentation, not here. */
 .dg-page .headerlink { display: none; }
+/* A thematic break is a hairline in the page's own rule colour, in both
+   themes, and nothing the browser would draw on its own: no inset, no bevel,
+   no height. */
+.dg-page hr {
+  height: 0; margin: 2.25rem 0;
+  border: 0; border-top: 1px solid var(--rule-soft);
+  color: inherit; background: none;
+}
 
 @media (max-width: 34rem) {
   .dg-page { padding: 2.25rem 1rem 3rem; }
@@ -182,7 +187,8 @@ pre {
   font-size: .875rem; color: var(--muted);
 }
 .hero__status span + span { padding-left: .875rem; border-left: 1px solid var(--rule); }
-.hero__title {
+.hero__title,
+.opening__title {
   margin: 0 0 1.375rem;
   font-size: clamp(2.25rem, 4.2vw, 3rem);
   line-height: 1.06; letter-spacing: -.035em; font-weight: 700;
@@ -191,7 +197,8 @@ pre {
   text-wrap: balance;
 }
 .hero__quiet { display: block; color: var(--muted); font-weight: 500; }
-.hero__lede {
+.hero__lede,
+.opening__lede {
   margin: 0 0 1.875rem; max-width: 34em;
   font-size: 1.1875rem; line-height: 1.55; color: var(--muted);
 }
@@ -554,6 +561,113 @@ a.chip:hover { border-color: var(--fine); }
 .closing__links a { text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
 .closing__links a:hover { border-bottom-color: currentColor; }
 
+/* ══ the reading pages ══════════════════════════════════════════════════
+   Why, Start here, About and Contact: overrides/{why,start,about,contact}.html.
+   They open the way the home does — a band on the home's ground, the title in
+   the hero's style (.opening__title shares .hero__title's rule above) and the
+   first paragraph as the lede (.hero__lede's) — then the text in a reading
+   column. tools/hooks/opening.py splits the title and the first paragraph out
+   of the page; the Markdown is unchanged. */
+.dg-page--reading { max-width: none; padding: 0; }
+.reading__inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
+
+.opening {
+  padding: 4rem 0 3rem;
+  background-image: linear-gradient(var(--wash), var(--wash));
+  border-bottom: 1px solid var(--rule-soft);
+}
+.opening__title { margin-bottom: 1rem; }
+.opening__lede { margin: 0; max-width: 40rem; }
+.opening__lede a { color: var(--link); }
+.opening__lede code { font-size: .875em; }
+
+.reading { padding: 3rem 0 4.5rem; }
+/* The closing band is the home's partial. On a reading page it is one column:
+   title, line, install and links stacked on the text column's left edge, and
+   nothing wider than the column (40rem). The home keeps its two. */
+.dg-page--reading .closing .part__inner {
+  max-width: 52rem; padding: 0 1.25rem;
+  grid-template-columns: minmax(0, 40rem); justify-content: start;
+  gap: 1.25rem; align-items: start;
+}
+.dg-page--reading .closing .install { min-width: 0; }
+
+/* ── .essay: Why and Start here ──────────────────────────────────────────
+   Long-form reading: a narrower measure than the landing, and a rule between
+   the sections so each one is a stop rather than a paragraph break. The
+   section titles are the home's, at a reading scale. */
+.essay { max-width: 40rem; }
+.essay h2 {
+  margin: 0 0 .875rem;
+  font-size: 1.5rem; line-height: 1.2; letter-spacing: -.02em; font-weight: 700;
+  color: var(--ink);
+}
+.essay h2 + p { margin-top: 0; }
+/* The body of the text is --ink; --muted is kept for the opening's lede and
+   for captions. */
+.essay p { margin: 0 0 1rem; color: var(--ink); }
+.essay p:last-child { margin-bottom: 0; }
+.essay strong { color: var(--ink); font-weight: 600; }
+.essay em { font-style: italic; }
+.essay a { color: var(--link); }
+.essay > h2 {
+  padding-top: 2.25rem;
+  margin-top: 2.25rem;
+  border-top: 1px solid var(--rule-soft);
+}
+.essay > h2:first-child { padding-top: 0; margin-top: 0; border-top: 0; }
+.essay code { font-family: var(--mono-page); font-size: .875em; color: var(--ink); }
+
+/* Lists, quotes and the video: only Start here reaches for them, and without
+   these rules the browser's defaults would be the design on that page. */
+.essay ul {
+  margin: 0 0 1rem;
+  padding-left: 1.125rem;
+  color: var(--ink);
+}
+.essay li { margin: 0 0 .5rem; padding-left: .25rem; }
+.essay li:last-child { margin-bottom: 0; }
+.essay li::marker { color: var(--faint); }
+
+/* The two headlines digline prints: quoted because they are the product's own
+   words, and set as the home sets output — a panel with no heading, in Plex
+   Mono. */
+.essay blockquote {
+  margin: 0 0 1rem;
+  padding: 1rem 1.125rem;
+  background: var(--bg);
+  border: 1px solid var(--rule); border-radius: .875rem;
+  box-shadow: var(--shadow-soft);
+}
+.essay blockquote p {
+  margin: 0;
+  font-family: var(--mono-page);
+  font-size: .84375rem; line-height: 1.7;
+  color: var(--ink);
+}
+
+/* The video carries its own width, ratio and ground inline, in docs/start.md,
+   so it is correct under any stylesheet. What is left here is the frame the
+   home's panels have, and the line under it set as the home's notes. */
+.essay video {
+  display: block; margin: 0;
+  border: 1px solid var(--rule); border-radius: .875rem;
+  box-shadow: var(--shadow-soft);
+}
+.essay video + p {
+  margin: .875rem 0 1rem;
+  font-size: .875rem;
+  color: var(--muted);
+}
+
+/* ── .plain: About and Contact ───────────────────────────────────────────
+   Three lines, a short measure. */
+.plain { max-width: 36rem; }
+.plain p { margin: 0 0 1rem; color: var(--ink); }
+.plain p:last-child { margin-bottom: 0; }
+.plain a { color: var(--link); }
+.plain code { font-family: var(--mono-page); font-size: .875em; color: var(--ink); }
+
 /* ── narrow ──────────────────────────────────────────────────────────────
    One column below 900px, and a phone's gutter below 34rem. */
 @media (max-width: 900px) {
@@ -581,7 +695,12 @@ a.chip:hover { border-color: var(--fine); }
   .closing .install { min-width: 0; }
 }
 @media (max-width: 34rem) {
-  .part__inner { padding: 0 1rem; }
+  .part__inner,
+  .reading__inner,
+  .dg-page--reading .closing .part__inner { padding: 0 1rem; }
+  .opening { padding: 2.75rem 0 2.25rem; }
+  .reading { padding: 2.25rem 0 3rem; }
+  .essay h2 { font-size: 1.3125rem; }
   .tiles { grid-template-columns: minmax(0, 1fr); }
   .tile { padding: 1.375rem; }
 }
