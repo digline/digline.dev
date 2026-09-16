@@ -5,8 +5,15 @@ name: docs
 # rebuilt when this repository changes, and again on every release of digline —
 # publish.yml over there sends the dispatch once the version is on PyPI, so the
 # documentation on the site is the documentation of what you can install.
+#
+# A pull request into main runs the same build and every gate, and stops there:
+# the artifact is not uploaded and the Deploy job does not run. Deploying is for
+# a push to main and a release dispatch, and for nothing else — see the `if:` on
+# the Deploy job, which is what enforces it rather than this comment.
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   repository_dispatch:
     types: [digline-release]
@@ -17,9 +24,14 @@ permissions:
 
 # One deploy at a time, and never cancel one halfway: the site would be left
 # with whatever the interrupted run had uploaded.
+#
+# Pull requests get a group of their own, one per PR. In the shared group a PR
+# run would queue behind a deploy, and — since a group keeps one pending run
+# and cancels the older — could cancel a pending deploy outright. A PR run is
+# only a check, so a newer push to the same PR does cancel it.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -89,13 +101,22 @@ jobs:
         # stops being listed fails nothing else.
         run: tools/check-llms.py site
 
+      # Not for a pull request: nothing will deploy it, and an artifact named
+      # github-pages from a PR is one mistake away from being deployed.
       - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
         with:
           path: site
 
   deploy:
     name: Deploy
     needs: build
+    # A push to main, or a digline release. Not a pull request, and not a manual
+    # workflow_dispatch either: that one builds and checks, and to publish by
+    # hand you push to main or re-send the release dispatch.
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'repository_dispatch' && github.event.action == 'digline-release')
     runs-on: ubuntu-latest
     permissions:
       pages: write

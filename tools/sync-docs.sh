@@ -39,11 +39,14 @@ out="$here/docs/product"
 #
 # A checkout *behind* `origin/main` is refused as well — it would date and
 # describe the pages by a history that has moved on — with one exception: a
-# detached HEAD that `origin/main` already contains. That is a deliberately
-# pinned ref, and it is the shape CI is in on a release dispatch, where
-# `_digline` is checked out at the tag that was published rather than at the
-# tip of the branch. Ahead is refused in every shape there is: those are the
-# commits nobody else has.
+# detached HEAD sitting exactly on the latest `v*` tag `origin/main` contains.
+# That is the shape CI is in on a release dispatch, where `_digline` is checked
+# out at the tag that was just published rather than at the tip of the branch.
+# Not any tag, and not any commit main contains: an older release would put the
+# documentation of a version nobody installs any more on the site, and a
+# commit with no tag is documentation of nothing that was released at all.
+# Ahead is refused in every shape there is: those are the commits nobody else
+# has.
 #
 # SYNC_UNRELEASED=1 turns all of it off, for a local look at a page that is not
 # released yet. It leaves a marker behind, and tools/check-source.sh — in
@@ -151,9 +154,6 @@ else
   fi
 
   if [ "$behind" -gt 0 ]; then
-    # A detached HEAD that origin/main contains is a ref somebody pinned on
-    # purpose — the release tag CI builds a dispatch from. A branch that has
-    # simply fallen behind is not.
     if git -C "$src" symbolic-ref -q HEAD >/dev/null; then
       refuse "$src is $behind commit(s) behind origin/main" \
              "HEAD        $head_sha  ($(git -C "$src" rev-parse --abbrev-ref HEAD))" \
@@ -162,7 +162,46 @@ else
              "Pull it. The pages would otherwise be dated and described by a" \
              "history that has moved on."
     fi
-    echo "sync: $src is a pinned ref, $head_sha, $behind commit(s) behind origin/main ($main_sha)" >&2
+
+    # Detached and behind: only the release that is current. The tags are
+    # fetched here and not earlier because this is the only case that reads
+    # them, and a clone made before the release has not got the tag yet.
+    git -C "$src" fetch --quiet --tags origin 2>/dev/null ||
+      refuse "cannot fetch the tags of origin in $src" \
+             "A detached HEAD passes only on the latest release tag, and the" \
+             "tags have to be the ones origin has now to say which that is."
+
+    tag="$(git -C "$src" describe --exact-match --tags --match 'v*' HEAD 2>/dev/null || true)"
+    latest="$(git -C "$src" tag --merged "$main_sha" --list 'v*' --sort=-v:refname | head -1)"
+    if [ -n "$latest" ]; then
+      latest_sha="$(git -C "$src" rev-parse --short "$latest^{commit}")"
+      latest_desc="$latest ($latest_sha)"
+    else
+      latest_sha=""
+      latest_desc="none — origin/main contains no v* tag"
+    fi
+
+    if [ -z "$tag" ]; then
+      refuse "$src is detached at $head_sha, $behind commit(s) behind origin/main, on no release tag" \
+             "HEAD                 $head_sha  (no v* tag on this commit)" \
+             "origin/main          $main_sha" \
+             "latest release tag   $latest_desc" \
+             "" \
+             "A detached checkout passes only on the latest release. A commit" \
+             "that was never tagged is documentation of nothing anyone installed."
+    fi
+
+    if [ "$(git -C "$src" rev-parse --short HEAD)" != "$latest_sha" ]; then
+      refuse "$src is detached at $tag, which is not the latest release" \
+             "HEAD                 $head_sha  ($tag)" \
+             "origin/main          $main_sha" \
+             "latest release tag   $latest_desc" \
+             "" \
+             "The site documents the version people install. Check out $latest," \
+             "or origin/main, and sync again."
+    fi
+
+    echo "sync: $src is the latest release, $tag ($head_sha), $behind commit(s) behind origin/main ($main_sha)" >&2
   else
     echo "sync: $src is level with origin/main, $head_sha" >&2
   fi
