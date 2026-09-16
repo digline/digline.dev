@@ -1,0 +1,566 @@
+"""The numbers on the home page, read out of what digline printed.
+
+The home used to carry a console block typed into the template: the output of
+digline 0.2.0, three minors after it stopped being true. Everything the home now
+shows about the tool — the version, the run ids, every line of output, the
+checks that got worse, the dependency list — comes from one file:
+
+    docs/product/assets/home/home.json
+
+written in digline/digline by ``tools/home_capture.py``, which runs the CLI and
+records each command's stdout, stderr and exit code, and copied here by
+``tools/sync-docs.sh`` with the rest of ``docs/``.
+
+This hook reads that file, refuses it when it cannot stand behind it, and works
+out in Python every value the template prints. Jinja formats nothing and counts
+nothing: a template that does arithmetic is a template whose numbers nobody
+reviews.
+
+── what fails the build ─────────────────────────────────────────────────────
+Each of these is a claim the home would make that the file does not support:
+
+  * the file is missing;
+  * its ``digline_version`` is not the version at the top of the changelog —
+    the first heading that is exactly ``## X.Y.Z — YYYY-MM-DD``, skipping
+    ``## Unreleased`` and the plugins' own headings — or there is no such
+    heading at all;
+  * a quickstart command did not exit 0;
+  * a ``digline compare`` in the regression did not exit 1;
+  * ``compare_json`` does not say ``worse: true`` and ``artifacts_changed:
+    true``;
+  * ``runtime_dependencies`` is missing;
+  * ``requires_python`` is missing, or carries no ``specifier``.
+
+The characters the home shows in IBM Plex are checked after the build, on the
+HTML, with the other presentation pages: tools/check-glyphs.py.
+
+── what the template gets ───────────────────────────────────────────────────
+One variable, ``home``, and only on the page whose source is ``index.md``. See
+``compute()`` for its shape.
+
+    usage: tools/hooks/home.py --selftest
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import sys
+from typing import Any
+
+from mkdocs.exceptions import PluginError
+
+# Where sync-docs.sh puts the two files, under docs_dir.
+HOME_JSON = "product/assets/home/home.json"
+CHANGELOG = "product/changelog.md"
+
+# The core's release headings. Exact on purpose: "## Unreleased" and
+# "## digline-openai 0.5.0 — 2026-09-15" must not match, and neither must a
+# hyphen where the changelog writes an em dash.
+_RELEASE = re.compile(r"^## (\d+\.\d+\.\d+) — \d{4}-\d{2}-\d{2}$")
+
+# "absent: samples=1" — how many samples each case had in the capture.
+_SAMPLES = re.compile(r"samples=(\d+)")
+
+# "digline compare --suite support.py --run latest" — the suite's name.
+_SUITE = re.compile(r"--suite\s+(\S+?)\.(?:py|toml)\b")
+
+# The run key down to its microseconds: what the page prints before an ellipsis.
+_RUN_SHORT = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{6}")
+
+# A score is a number in [0, 1]; the scale on the card is drawn over that range.
+SCORE_LO = 0.0
+SCORE_HI = 1.0
+
+_WORDS = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
+          7: "Seven", 8: "Eight", 9: "Nine"}
+
+
+def _fail(problem: str) -> PluginError:
+    return PluginError(
+        f"home: {problem}\n"
+        "  home.json is written by tools/home_capture.py in digline/digline. Run\n"
+        "  `uv run python tools/home_capture.py` there, commit the file, and sync\n"
+        "  again — the home prints nothing that script did not capture."
+    )
+
+
+# ── reading ──────────────────────────────────────────────────────────────────
+
+
+def changelog_version(text: str) -> str:
+    """The version of the newest core release in the changelog."""
+    for line in text.splitlines():
+        match = _RELEASE.match(line)
+        if match:
+            return match.group(1)
+    raise _fail(
+        "the changelog has no heading of the form `## X.Y.Z — YYYY-MM-DD`, so "
+        "there is no released version to hold home.json to."
+    )
+
+
+def _commands(scenario: dict, name: str) -> list[dict]:
+    commands = scenario.get("commands")
+    if not isinstance(commands, list) or not commands:
+        raise _fail(f"scenario {name!r} has no commands.")
+    return commands
+
+
+def validate(data: dict, changelog_text: str) -> None:
+    """Raise PluginError on the first claim the file does not support."""
+    captured = data.get("digline_version")
+    released = changelog_version(changelog_text)
+    if captured != released:
+        raise _fail(
+            f"digline_version is {captured!r}, but the newest release in the "
+            f"changelog is {released!r}. The capture is from another version."
+        )
+
+    scenarios = data.get("scenarios") or {}
+    quickstart = scenarios.get("quickstart")
+    regression = scenarios.get("prompt_regression")
+    if not isinstance(quickstart, dict) or not isinstance(regression, dict):
+        raise _fail("scenarios.quickstart or scenarios.prompt_regression is missing.")
+
+    for command in _commands(quickstart, "quickstart"):
+        if command.get("exit") != 0:
+            raise _fail(
+                f"quickstart: `{command.get('cmd')}` exited "
+                f"{command.get('exit')!r}, not 0. The home says the quickstart runs."
+            )
+
+    compares = [
+        c for c in _commands(regression, "prompt_regression")
+        if str(c.get("cmd", "")).startswith("digline compare")
+    ]
+    if not compares:
+        raise _fail("prompt_regression has no `digline compare` command.")
+    for command in compares:
+        if command.get("exit") != 1:
+            raise _fail(
+                f"prompt_regression: `{command.get('cmd')}` exited "
+                f"{command.get('exit')!r}, not 1. The home shows a regression "
+                "that stops CI."
+            )
+
+    compare_json = regression.get("compare_json")
+    if not isinstance(compare_json, dict):
+        raise _fail("prompt_regression.compare_json is missing.")
+    for key in ("worse", "artifacts_changed"):
+        if compare_json.get(key) is not True:
+            raise _fail(
+                f"compare_json.{key} is {compare_json.get(key)!r}, not true. "
+                "The home says a changed prompt made things worse."
+            )
+
+    dependencies = data.get("runtime_dependencies")
+    if not isinstance(dependencies, dict) or not isinstance(
+        dependencies.get("names"), list
+    ):
+        raise _fail("runtime_dependencies is missing, or has no list of names.")
+
+    requires = data.get("requires_python")
+    specifier = requires.get("specifier") if isinstance(requires, dict) else None
+    if not isinstance(specifier, str) or not specifier.strip():
+        raise _fail(
+            "requires_python is missing, or has no specifier. The home says which "
+            "Python digline needs, and only digline's own metadata can say it."
+        )
+
+
+# ── computing ────────────────────────────────────────────────────────────────
+
+
+def _score(value: float) -> str:
+    return f"{value:.2f}"
+
+
+def _position(value: float) -> str:
+    """Where a score sits on the card's scale, as a CSS percentage."""
+    clamped = min(max(value, SCORE_LO), SCORE_HI)
+    return f"{(clamped - SCORE_LO) / (SCORE_HI - SCORE_LO) * 100:.1f}%"
+
+
+def _anchor(value: float) -> str:
+    """Which way a label on the scale hangs, so it never leaves the card."""
+    fraction = (value - SCORE_LO) / (SCORE_HI - SCORE_LO)
+    if fraction >= 0.85:
+        return "end"
+    if fraction <= 0.15:
+        return "start"
+    return "middle"
+
+
+def _python_range(specifier: str) -> str:
+    """">=3.12" as "3.12 or newer"; any other range as digline declares it."""
+    match = re.fullmatch(r">=\s*(\d+\.\d+(?:\.\d+)?)", specifier.strip())
+    return f"{match.group(1)} or newer" if match else specifier.strip()
+
+
+def _short_run(run_id: str) -> str:
+    match = _RUN_SHORT.match(run_id)
+    return match.group(0) if match else run_id
+
+
+def command_groups(cmd: str) -> list[str]:
+    """A command cut where a line may break: each word on its own, except a
+    flag and the value after it, which stay one group (`--suite support.py`).
+    The groups joined with a space are the command, character for character."""
+    words = cmd.split(" ")
+    groups: list[str] = []
+    i = 0
+    while i < len(words):
+        word = words[i]
+        if (word.startswith("-") and "=" not in word and i + 1 < len(words)
+                and words[i + 1] and not words[i + 1].startswith("-")):
+            groups.append(f"{word} {words[i + 1]}")
+            i += 2
+        else:
+            groups.append(word)
+            i += 1
+    return groups
+
+
+def _stdout_lines(command: dict) -> list[str]:
+    return str(command.get("stdout", "")).rstrip("\n").split("\n")
+
+
+def compute(data: dict) -> dict[str, Any]:
+    """Everything the home prints about digline, formatted and counted here."""
+    version = data["digline_version"]
+    scenarios = data["scenarios"]
+    quickstart = scenarios["quickstart"]
+    regression = scenarios["prompt_regression"]
+    compare_json = regression["compare_json"]
+
+    # The checks that got worse, grouped by case in the order digline gave them.
+    regressed: dict[str, list[dict]] = {}
+    for delta in compare_json.get("deltas", []):
+        if delta.get("outcome") != "regressed":
+            continue
+        regressed.setdefault(delta["case_id"], []).append(delta)
+    if not regressed:
+        raise _fail("compare_json.deltas has no regressed check.")
+
+    case_ids = list(regressed)
+    first_id = case_ids[0]
+    first_checks = [
+        {
+            "assertion": d["assertion"],
+            "before": _score(d["before"]),
+            "after": _score(d["after"]),
+        }
+        for d in regressed[first_id]
+    ]
+    shown = regressed[first_id][0]
+    regressed_count = sum(len(checks) for checks in regressed.values())
+
+    befores = {_score(d["before"]) for checks in regressed.values() for d in checks}
+    before_common = befores.pop() if len(befores) == 1 else None
+
+    # The one changed file, and its diff with the header lines kept apart.
+    files = (regression.get("change") or {}).get("files") or []
+    diff = None
+    if files:
+        changed = files[0]
+        lines = []
+        for raw in changed.get("diff", []):
+            if raw.startswith(("---", "+++", "@@")):
+                kind = "meta"
+            elif raw.startswith("-"):
+                kind = "del"
+            elif raw.startswith("+"):
+                kind = "add"
+            else:
+                kind = "ctx"
+            lines.append({"kind": kind, "text": raw})
+        diff = {
+            "path": changed.get("path"),
+            "lines": lines,
+            "changes": [l for l in lines if l["kind"] in ("del", "add")],
+            "added": sum(1 for l in lines if l["kind"] == "add"),
+            "removed": sum(1 for l in lines if l["kind"] == "del"),
+        }
+
+    # The left panel: the new run's scores for the checks that got worse, as a
+    # table of cases by check, laid out here so the columns line up.
+    columns: list[str] = []
+    for checks in regressed.values():
+        for d in checks:
+            if d["assertion"] not in columns:
+                columns.append(d["assertion"])
+    header = ["case"] + columns
+    rows = []
+    for case_id, checks in regressed.items():
+        after = {d["assertion"]: _score(d["after"]) for d in checks}
+        rows.append([case_id] + [after.get(c, "—") for c in columns])
+    widths = [max(len(r[i]) for r in [header] + rows) for i in range(len(header))]
+
+    def _row(cells: list[str]) -> str:
+        return "  ".join(cell.ljust(widths[i]) for i, cell in enumerate(cells)).rstrip()
+
+    table = {"header": _row(header), "rows": [_row(r) for r in rows]}
+
+    # The right panel: compare's stdout down to the first case's lines, and a
+    # count of what was left out.
+    compare = next(
+        c for c in regression["commands"]
+        if c["cmd"].startswith("digline compare") and "--json" not in c["cmd"]
+    )
+    out_lines = _stdout_lines(compare)
+    prefix = f"{first_id} · "
+    shortened: list[dict] = []
+    omitted = 0
+    for line in out_lines:
+        is_case_line = " · " in line and not line.startswith(" ")
+        if is_case_line and not line.startswith(prefix):
+            omitted += 1
+            continue
+        if is_case_line:
+            kind = "worse"
+        elif not line.strip():
+            kind = "blank"
+        elif line.startswith(" "):
+            kind = "file"
+        else:
+            kind = "head"
+        shortened.append({"kind": kind, "text": line})
+    if omitted:
+        shortened.append({"kind": "more", "text": f"… {omitted} more lines"})
+
+    suite_match = _SUITE.search(compare["cmd"])
+    samples_match = _SAMPLES.search(str(regression.get("band", "")))
+
+    run_id = regression["run_ids"][-1]
+    quickstart_run = quickstart["run_ids"][0]
+
+    names = list(data["runtime_dependencies"]["names"])
+    count = len(names)
+    dependency_word = _WORDS.get(count, str(count))
+
+    major = int(version.split(".")[0])
+
+    return {
+        "version": version,
+        "pre_1_0": major == 0,
+        "pinned_install": f"pip install digline=={version}",
+        "pinned_install_groups": command_groups(f"pip install digline=={version}"),
+        "requires_python": _python_range(data["requires_python"]["specifier"]),
+        "dependencies": {
+            "names": names,
+            "count": count,
+            "heading": f"{dependency_word} {'dependency' if count == 1 else 'dependencies'}",
+        },
+        "regression": {
+            "suite": suite_match.group(1) if suite_match else None,
+            "exit": compare["exit"],
+            "samples": int(samples_match.group(1)) if samples_match else None,
+            "run_id": run_id,
+            "run_short": _short_run(run_id),
+            "first_case": {"id": first_id, "checks": first_checks},
+            "other_cases": case_ids[1:],
+            "regressed_count": regressed_count,
+            "before_common": before_common,
+            "scale": {
+                "assertion": shown["assertion"],
+                "lo": _score(SCORE_LO),
+                "hi": _score(SCORE_HI),
+                "ref": _score(shown["before"]),
+                "run": _score(shown["after"]),
+                "ref_pos": _position(shown["before"]),
+                "run_pos": _position(shown["after"]),
+                "ref_anchor": _anchor(shown["before"]),
+                "run_anchor": _anchor(shown["after"]),
+            },
+            "diff": diff,
+            "table": table,
+            "compare_lines": shortened,
+        },
+        "quickstart": {
+            "run_id": quickstart_run,
+            "run_short": _short_run(quickstart_run),
+            "commands": [
+                {"cmd": c["cmd"], "groups": command_groups(c["cmd"]),
+                 "stdout": _stdout_lines(c), "exit": c["exit"]}
+                for c in quickstart["commands"]
+            ],
+        },
+    }
+
+
+def load(json_path: str, changelog_path: str) -> dict[str, Any]:
+    """Read both files, refuse what they do not support, and compute."""
+    if not os.path.isfile(json_path):
+        raise _fail(f"{json_path} does not exist.")
+    with open(json_path, encoding="utf-8") as fh:
+        try:
+            data = json.load(fh)
+        except json.JSONDecodeError as error:
+            raise _fail(f"{json_path} is not JSON: {error}.") from None
+    if not os.path.isfile(changelog_path):
+        raise _fail(f"{changelog_path} does not exist, so there is no version to check.")
+    with open(changelog_path, encoding="utf-8") as fh:
+        changelog_text = fh.read()
+    validate(data, changelog_text)
+    return compute(data)
+
+
+# ── the hooks mkdocs calls ───────────────────────────────────────────────────
+
+_home: dict[str, Any] | None = None
+
+
+def on_pre_build(config, **kwargs):
+    """Before anything renders: a home that cannot be built stops the build."""
+    global _home
+    docs = config["docs_dir"]
+    _home = load(os.path.join(docs, HOME_JSON), os.path.join(docs, CHANGELOG))
+
+
+def on_page_context(context, page, config, nav, **kwargs):
+    """The values reach the home and no other page."""
+    if page.file.src_uri == "index.md":
+        context["home"] = _home
+    return context
+
+
+# ── the selftest ─────────────────────────────────────────────────────────────
+
+
+def selftest() -> int:
+    """The hook against the fixtures in tools/testdata/home/: the capture as it
+    was committed must compute to what the home shows, every way the file can
+    stop supporting the home must fail the build, naming why."""
+    import copy
+    import tempfile
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fixtures = os.path.join(here, "..", "testdata", "home")
+    good_json = os.path.join(fixtures, "home.json")
+    good_changelog = os.path.join(fixtures, "changelog.md")
+
+    failures: list[str] = []
+
+    def expect(label: str, actual, wanted) -> None:
+        if actual != wanted:
+            failures.append(f"{label}: got {actual!r}, wanted {wanted!r}")
+
+    # 1. The good fixture computes to what the page is built on.
+    try:
+        home = load(good_json, good_changelog)
+    except PluginError as error:
+        print(f"selftest: the good fixture was refused —\n{error}", file=sys.stderr)
+        return 1
+    r = home["regression"]
+    expect("version", home["version"], "0.13.1")
+    expect("pre_1_0", home["pre_1_0"], True)
+    expect("first case", r["first_case"]["id"], "how-do-i-return")
+    expect("first checks", r["first_case"]["checks"], [
+        {"assertion": "llm_rubric", "before": "1.00", "after": "0.40"},
+        {"assertion": "contains", "before": "1.00", "after": "0.00"},
+    ])
+    expect("other cases", r["other_cases"], ["is-it-waterproof", "where-is-my-order"])
+    expect("regressed count", r["regressed_count"], 6)
+    expect("scale", (r["scale"]["ref"], r["scale"]["run"], r["scale"]["run_pos"]),
+           ("1.00", "0.40", "40.0%"))
+    expect("diff counts", (r["diff"]["added"], r["diff"]["removed"]), (1, 1))
+    expect("table header", r["table"]["header"], "case               llm_rubric  contains")
+    expect("more line", r["compare_lines"][-1], {"kind": "more", "text": "… 4 more lines"})
+    expect("worse lines", sum(1 for l in r["compare_lines"] if l["kind"] == "worse"), 2)
+    expect("suite", r["suite"], "support")
+    expect("exit", r["exit"], 1)
+    expect("samples", r["samples"], 1)
+    expect("dependencies", home["dependencies"]["names"], ["jsonschema"])
+    expect("dependency heading", home["dependencies"]["heading"], "One dependency")
+    expect("quickstart commands", len(home["quickstart"]["commands"]), 3)
+    expect("command groups", home["quickstart"]["commands"][2]["groups"],
+           ["digline", "compare", "--suite support.py", "--run latest"])
+    for c in home["quickstart"]["commands"]:
+        expect(f"groups rejoin to {c['cmd']!r}", " ".join(c["groups"]), c["cmd"])
+    expect("a flag with no value stays alone", command_groups("digline compare --json --run latest"),
+           ["digline", "compare", "--json", "--run latest"])
+    expect("requires python", home["requires_python"], "3.12 or newer")
+    expect("python range kept as declared", _python_range(">=3.12,<3.15"), ">=3.12,<3.15")
+
+    # 2. Every refusal, on a modified copy.
+    with open(good_json, encoding="utf-8") as fh:
+        base = json.load(fh)
+    with open(good_changelog, encoding="utf-8") as fh:
+        base_changelog = fh.read()
+
+    def quickstart_exit(d):
+        d["scenarios"]["quickstart"]["commands"][2]["exit"] = 1
+
+    def compare_exit(d):
+        for c in d["scenarios"]["prompt_regression"]["commands"]:
+            if c["cmd"] == "digline compare --suite support.py --run latest":
+                c["exit"] = 0
+
+    cases = [
+        ("missing file", None, None, "does not exist"),
+        ("version changed", lambda d: d.update(digline_version="0.13.0"), None,
+         "digline_version is '0.13.0'"),
+        ("no release heading", None,
+         "# Changelog\n\n## Unreleased\n\n## digline-openai 0.5.0 — 2026-09-15\n",
+         "no heading of the form"),
+        ("hyphen, not em dash", None, "# Changelog\n\n## 0.13.1 - 2026-09-15\n",
+         "no heading of the form"),
+        ("quickstart exit", quickstart_exit, None, "not 0"),
+        ("compare exit", compare_exit, None, "not 1"),
+        ("worse false",
+         lambda d: d["scenarios"]["prompt_regression"]["compare_json"].update(worse=False),
+         None, "compare_json.worse"),
+        ("artifacts unchanged",
+         lambda d: d["scenarios"]["prompt_regression"]["compare_json"].update(
+             artifacts_changed=False), None, "compare_json.artifacts_changed"),
+        ("no runtime_dependencies", lambda d: d.pop("runtime_dependencies"), None,
+         "runtime_dependencies is missing"),
+        ("no requires_python", lambda d: d.pop("requires_python"), None,
+         "requires_python is missing"),
+        ("requires_python without a specifier",
+         lambda d: d["requires_python"].pop("specifier"), None,
+         "requires_python is missing, or has no specifier"),
+    ]
+
+    with tempfile.TemporaryDirectory() as tmp:
+        for label, mutate, changelog_text, needle in cases:
+            json_path = os.path.join(tmp, f"{label}.json")
+            changelog_path = os.path.join(tmp, f"{label}.md")
+            if label != "missing file":
+                data = copy.deepcopy(base)
+                if mutate:
+                    mutate(data)
+                with open(json_path, "w", encoding="utf-8") as fh:
+                    json.dump(data, fh)
+            with open(changelog_path, "w", encoding="utf-8") as fh:
+                fh.write(changelog_text if changelog_text is not None else base_changelog)
+            try:
+                load(json_path, changelog_path)
+            except PluginError as error:
+                message = str(error)
+                if needle not in message:
+                    failures.append(f"{label}: refused, but not for this: {message}")
+                elif "tools/home_capture.py" not in message:
+                    failures.append(f"{label}: refused without naming tools/home_capture.py")
+                else:
+                    print(f"selftest: refused, as it must — {label}: "
+                          f"{message.splitlines()[0]}")
+                continue
+            failures.append(f"{label}: accepted, which it exists to refuse")
+
+    for failure in failures:
+        print(f"selftest: {failure}", file=sys.stderr)
+    if failures:
+        return 1
+    print(f"selftest: home.json fixture computes as expected, "
+          f"{len(cases)} refusals refused")
+    return 0
+
+
+if __name__ == "__main__":
+    if sys.argv[1:] == ["--selftest"]:
+        raise SystemExit(selftest())
+    print(__doc__.strip().splitlines()[-1].strip(), file=sys.stderr)
+    raise SystemExit(2)

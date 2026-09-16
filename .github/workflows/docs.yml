@@ -82,6 +82,13 @@ jobs:
           uv run tools/check-css.py --selftest
           uv run tools/check-css.py docs/assets
 
+      - name: Check the home's hook
+        # tools/hooks/home.py against tools/testdata/home/: the capture it was
+        # written for computes to what the page shows, and every way home.json
+        # can stop supporting the page is refused. Before the build, so a hook
+        # that stopped refusing is caught before it is trusted with the real file.
+        run: uv run tools/hooks/home.py --selftest
+
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
         # reaching the site. sitemap.xml and robots.txt come out of this step
@@ -100,6 +107,15 @@ jobs:
         # the build, and every page in the build listed. A page that quietly
         # stops being listed fails nothing else.
         run: tools/check-llms.py site
+
+      - name: Check the Plex glyphs
+        # The fonts are subsets, and a browser draws a character a subset
+        # lacks in the system face without a word. Every page whose <main> is
+        # a .dg-page: the text each Plex face draws there, against the cmap of
+        # each woff2. --selftest first: a clean page passes, a planted ✱ fails.
+        run: |
+          uv run tools/check-glyphs.py --selftest
+          uv run tools/check-glyphs.py site
 
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.

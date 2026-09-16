@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source build check clean
+.PHONY: docs preview serve css source home glyphs build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -25,14 +25,22 @@ css:             ## parse docs/assets/*.css — needs no build, so run it first
 source:          ## refuse a build made from an unreleased sync
 	tools/check-source.sh
 
-build: docs css source  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read or an unreleased source fails it
+home:            ## the home's hook against its fixtures, refusals included — needs no build
+	uv run tools/hooks/home.py --selftest
+
+glyphs:          ## the glyph check against its own two-page site, a refusal included — needs no build
+	uv run tools/check-glyphs.py --selftest
+
+build: docs css source home glyphs  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind or a character with no Plex glyph fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
+	uv run tools/check-glyphs.py site
 
-check: css source  ## the stylesheets, the source, and the two generated indexes against an existing site/
+check: css source  ## the stylesheets, the source, the two generated indexes and the glyphs against an existing site/
 	tools/check-sitemap.py site
 	tools/check-llms.py site
+	uv run tools/check-glyphs.py site
 
 clean:
 	rm -rf site docs/product .sync-preview

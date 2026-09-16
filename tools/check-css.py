@@ -45,7 +45,7 @@ import tinycss2
 # number in the commit that removes the rule.
 FLOORS = {
     "chrome.css": 56,
-    "pages.css": 32,
+    "pages.css": 176,  # the home moved in from an inline <style>
     "theme.css": 27,
     "tokens.css": 6,
 }

@@ -19,6 +19,13 @@
 
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* The body of the presentation pages, and nothing else: IBM Plex, served from
+     docs/assets/fonts/ by the @font-face rules in pages.css, over the system
+     faces above as the fallback. The bar, the band and the documentation keep
+     --sans and --mono — the bar's breakpoints were measured in those. */
+  --sans-page: "IBM Plex Sans", var(--sans);
+  --mono-page: "IBM Plex Mono", var(--mono);
 }
 
 /* ── 1. light ─────────────────────────────────────────────────────────── */
@@ -35,6 +42,13 @@
   --link:      #2f4f7a;
   --btn-bg:    #ffffff;
   --btn-rule:  #c3c9d3;
+
+  /* Grounds for a verdict: the backgrounds render.py gives a removed and an
+     added line of a diff, spent here on "got worse" and on what held. */
+  --worse-wash: #fceceb;
+  --fine-wash:  #e6f4ea;
+  /* The home's ground: a flat tint of the mark's green, #7BD88F. */
+  --wash:       rgba(123, 216, 143, .055);
 
   /* The band at the foot of every page is dark in both states — only how dark
      changes, so that it still parts from the page behind it. */
@@ -61,6 +75,11 @@
     --btn-bg:    #1c2027;
     --btn-rule:  #3a414c;
 
+    /* render.py has no dark palette: these are --worse and --fine at low alpha. */
+    --worse-wash: rgba(226, 154, 154, .12);
+    --fine-wash:  rgba(143, 199, 166, .12);
+    --wash:       rgba(123, 216, 143, .03);
+
     --band-bg:    #0f1115;
     --band-ink:   #e6e9ee;
     --band-muted: #98a0ad;
@@ -84,6 +103,9 @@
   --link:      #93b4dd;
   --btn-bg:    #1c2027;
   --btn-rule:  #3a414c;
+  --worse-wash: rgba(226, 154, 154, .12);
+  --fine-wash:  rgba(143, 199, 166, .12);
+  --wash:       rgba(123, 216, 143, .03);
 
   --band-bg:    #0f1115;
   --band-ink:   #e6e9ee;
@@ -107,6 +129,9 @@
   --link:      #2f4f7a;
   --btn-bg:    #ffffff;
   --btn-rule:  #c3c9d3;
+  --worse-wash: #fceceb;
+  --fine-wash:  #e6f4ea;
+  --wash:       rgba(123, 216, 143, .055);
 
   --band-bg:    #16181d;
   --band-ink:   #e6e9ee;
