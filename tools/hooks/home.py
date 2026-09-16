@@ -38,7 +38,11 @@ Each of these is a claim the home would make that the file does not support:
     or in a Reference page that names it, and is not written in the guide's
     text either (see ``command_link()`` for the order they are tried in);
   * a check's ``kind`` is not one of CHECK_KINDS, or its ``anchor`` is not an
-    id on product/metrics/.
+    id on product/metrics/;
+  * the stack band under "How it fits" cannot find what it prints (see
+    ``stack()``): a provider's package in the synced documentation, an
+    example's page or its title, the image name on product/docker/ or the
+    package name on product/mcp/.
 
 The pages and anchors are looked for twice: in the rendered Markdown, before
 the home is rendered, to build its links; and in site/ after the build, to
@@ -113,6 +117,27 @@ CHECK_KINDS = (
     ("budget", "Budgets", "A ceiling on cost or latency, scored graded rather than pass/fail."),
     ("aggregate", "Aggregates", "One verdict over the whole run."),
     ("wrapper", "Wrappers", "Takes the nature of the check it wraps."),
+)
+
+# The stack band under "How it fits": which providers, examples and other ways
+# to run digline the home shows, in its order, with the name each row carries.
+# Everything else a row prints is read from the build by ``stack()``: the
+# package a provider is installed as, the question an example's page asks, the
+# image and the package name the Docker and MCP pages open on.
+STACK_PROVIDERS = (
+    ("Anthropic", "digline-anthropic"),
+    ("OpenAI-compatible", "digline-openai"),
+    ("Amazon Bedrock", "digline-bedrock"),
+)
+STACK_EXAMPLES = (
+    ("LangChain", "product/examples/langchain.md"),
+    ("LlamaIndex", "product/examples/llamaindex.md"),
+    ("LangGraph", "product/examples/langgraph.md"),
+    ("LangChain4j", "product/examples/langchain4j.md"),
+)
+STACK_RUN = (
+    ("Docker image", "product/docker.md"),
+    ("MCP server", "product/mcp.md"),
 )
 
 # Where a command without a page of its own is written about, and where the
@@ -634,6 +659,72 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
     }
 
 
+# ── the stack band ───────────────────────────────────────────────────────────
+
+_H1_TEXT = re.compile(r"<h1\b[^>]*>(.*?)</h1>", re.I | re.S)
+_FIRST_P = re.compile(r"<p\b[^>]*>(.*?)</p>", re.I | re.S)
+
+
+def page_question(page_html: str, source: str) -> str:
+    """The question an example's page asks: its title after the colon
+    ("My pipeline is LangChain: what changed when I upgraded it?"), or the
+    whole title when it has none."""
+    match = _H1_TEXT.search(page_html)
+    title = _plain(re.sub(r'<a class="headerlink".*?</a>', "", match.group(1), flags=re.S)).strip() if match else ""
+    if not title:
+        raise _fail_site(f"the stack band reads its question from the title of {source}, which has none.")
+    _, colon, after = title.partition(":")
+    return after.strip() if colon and after.strip() else title
+
+
+def opening_code(page_html: str, source: str) -> str:
+    """The first thing in code in the first paragraph under a page's title:
+    `ghcr.io/digline/digline` on the Docker page, `digline-mcp` on the MCP
+    page."""
+    heading = _H1_TEXT.search(page_html)
+    rest = page_html[heading.end():] if heading else page_html
+    paragraph = _FIRST_P.search(rest)
+    code = _CODE.search(paragraph.group(1)) if paragraph else None
+    if not code or not _plain(code.group(1)).strip():
+        raise _fail_site(
+            f"the stack band reads a name in code from the first paragraph of {source}, "
+            "and there is none."
+        )
+    return _plain(code.group(1)).strip()
+
+
+def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str, Any]:
+    """The three blocks of the stack band, every name and line checked here.
+
+    pages      the source paths the build has
+    rendered   source path → rendered content, for the example, Docker and
+               MCP pages
+    docs_text  the synced documentation under product/, as Markdown, in
+               which every provider's package name must be written
+    """
+    providers = []
+    for name, package in STACK_PROVIDERS:
+        if not re.search(rf"(?<![\w-]){re.escape(package)}(?![\w-])", docs_text):
+            raise _fail_site(
+                f"the stack band shows {name} as `{package}`, and no page under product/ "
+                "writes that package name."
+            )
+        providers.append({"name": name, "package": package})
+
+    def page(source: str) -> str:
+        if source not in pages or source not in rendered:
+            raise _fail_site(f"the stack band links to {source}, which the build does not have.")
+        return rendered[source]
+
+    examples = [{"name": name, "question": page_question(page(source), source),
+                 "href": source[: -len(".md")] + "/"}
+                for name, source in STACK_EXAMPLES]
+    run = [{"name": name, "code": opening_code(page(source), source),
+            "href": source[: -len(".md")] + "/"}
+           for name, source in STACK_RUN]
+    return {"providers": providers, "examples": examples, "run": run}
+
+
 def load(json_path: str, changelog_path: str) -> dict[str, Any]:
     """Read both files, refuse what they do not support, and compute."""
     if not os.path.isfile(json_path):
@@ -700,10 +791,30 @@ def on_nav(nav, config, files, **kwargs):
     return nav
 
 
+_STACK_PAGES = {source for _, source in STACK_EXAMPLES + STACK_RUN}
+
+
 def on_page_content(html, page, config, files, **kwargs):
-    if page.file.src_uri in (GUIDE, METRICS) or page.file.src_uri in _reference:
+    if (page.file.src_uri in (GUIDE, METRICS) or page.file.src_uri in _reference
+            or page.file.src_uri in _STACK_PAGES):
         _rendered[page.file.src_uri] = html
     return html
+
+
+def _docs_text(docs_dir: str) -> str:
+    """Every Markdown file under product/, joined: where a package name must be
+    written for the stack band to show it."""
+    parts = []
+    for folder, _, names in os.walk(os.path.join(docs_dir, "product")):
+        for name in sorted(names):
+            if name.endswith(".md"):
+                with open(os.path.join(folder, name), encoding="utf-8") as fh:
+                    parts.append(fh.read())
+    return "\n".join(parts)
+
+
+def _built_stack(config) -> dict[str, Any]:
+    return stack(_pages, _rendered, _docs_text(config["docs_dir"]))
 
 
 def _built_grids(data: dict) -> dict[str, Any]:
@@ -718,6 +829,7 @@ def on_page_context(context, page, config, nav, **kwargs):
         with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
             data = json.load(fh)
         home.update(_built_grids(data))
+        home["stack"] = _built_stack(config)
         context["home"] = home
     return context
 
@@ -731,6 +843,14 @@ def on_post_build(config, **kwargs):
     built = _built_grids(data)
     hrefs = [c["href"] for g in built["commands"]["groups"] for c in g["commands"]]
     hrefs += [c["href"] for k in built["checks"]["kinds"] for c in k["checks"]]
+    band = _built_stack(config)
+    hrefs += [row["href"] for row in band["examples"] + band["run"]]
+    # The questions, read again off the pages as they were written into site/.
+    for (name, source), row in zip(STACK_EXAMPLES, band["examples"]):
+        written = os.path.join(site, source[: -len(".md")], "index.html")
+        with open(written, encoding="utf-8") as fh:
+            if page_question(fh.read(), source) != row["question"]:
+                raise _fail_site(f"the {name} question on the home is not the title of {written}.")
     cache: dict[str, set[str]] = {}
     for href in hrefs:
         path, _, anchor = href.partition("#")
@@ -892,6 +1012,61 @@ def selftest() -> int:
     expect("first mention above every heading", first_mention("<p>digline run</p><h2 id='x'>X</h2>", "run"), "")
     expect("a longer name is not the command", first_mention('<h2 id="a">A</h2><p>digline list-runs</p>', "list"), None)
 
+    # 1c. The stack band, against pages of the shape the build has: a title with
+    #     a colon, one without, the Docker and MCP pages' first paragraphs.
+    stack_pages = {source for _, source in STACK_EXAMPLES + STACK_RUN}
+    headerlink = '<a class="headerlink" href="#t" title="Link to this section">&para;</a>'
+    stack_rendered = {
+        "product/examples/langchain.md": f'<h1 id="t">My pipeline is LangChain: what changed when I upgraded it?{headerlink}</h1><p>Body.</p>',
+        "product/examples/llamaindex.md": '<h1 id="t">My RAG is LlamaIndex: is it still answering from the right page?</h1>',
+        "product/examples/langgraph.md": f'<h1 id="t">My agent calls the right tools, but with the right arguments?{headerlink}</h1>',
+        "product/examples/langchain4j.md": '<h1 id="t">My app is <code>LangChain4j</code>: what do I put in my repo?</h1>',
+        "product/docker.md": '<h1 id="t">The official digline image</h1>\n<p><code>ghcr.io/digline/digline</code></p><p>The <code>other</code>.</p>',
+        "product/mcp.md": '<h1 id="t">digline over MCP</h1>\n<p><code>digline-mcp</code> is the <a href="x">MCP</a> server.</p>',
+    }
+    docs_text = "uv add digline-anthropic, or digline-openai; digline-bedrock (Converse API)."
+    band = stack(stack_pages, stack_rendered, docs_text)
+    expect("providers", [(p["name"], p["package"]) for p in band["providers"]],
+           [("Anthropic", "digline-anthropic"), ("OpenAI-compatible", "digline-openai"),
+            ("Amazon Bedrock", "digline-bedrock")])
+    expect("questions: after the colon, or the whole title",
+           [e["question"] for e in band["examples"]],
+           ["what changed when I upgraded it?", "is it still answering from the right page?",
+            "My agent calls the right tools, but with the right arguments?",
+            "what do I put in my repo?"])
+    expect("example links", band["examples"][0]["href"], "product/examples/langchain/")
+    expect("run rows", [(r["name"], r["code"], r["href"]) for r in band["run"]],
+           [("Docker image", "ghcr.io/digline/digline", "product/docker/"),
+            ("MCP server", "digline-mcp", "product/mcp/")])
+
+    stack_refusals = [
+        ("a provider package no page writes",
+         lambda p, r, t: (p, r, t.replace("digline-bedrock", "digline-aws")),
+         "writes that package name"),
+        ("a longer name is not the package",
+         lambda p, r, t: (p, r, t.replace("digline-openai", "digline-openai-extra")),
+         "`digline-openai`, and no page under product/"),
+        ("an example page the build does not have",
+         lambda p, r, t: (p - {"product/examples/langgraph.md"}, r, t),
+         "product/examples/langgraph.md, which the build does not have"),
+        ("an example page with no title",
+         lambda p, r, t: (p, {**r, "product/examples/llamaindex.md": "<p>No title.</p>"}, t),
+         "from the title of product/examples/llamaindex.md"),
+        ("a Docker page whose first paragraph has no code",
+         lambda p, r, t: (p, {**r, "product/docker.md": "<h1>Image</h1><p>No name here.</p><p><code>late</code></p>"}, t),
+         "first paragraph of product/docker.md"),
+    ]
+    for label, mutate, needle in stack_refusals:
+        try:
+            stack(*mutate(set(stack_pages), dict(stack_rendered), docs_text))
+        except PluginError as error:
+            if needle not in str(error):
+                failures.append(f"{label}: refused, but not for this: {error}")
+            else:
+                print(f"selftest: refused, as it must — {label}: {str(error).splitlines()[0]}")
+            continue
+        failures.append(f"{label}: accepted, which it exists to refuse")
+
     grid_refusals = [
         ("a command with no group",
          lambda d, p, h, m: d["cli_commands"]["items"].append({"name": "doctor", "help": "x"}),
@@ -1001,8 +1176,8 @@ def selftest() -> int:
         print(f"selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print(f"selftest: home.json fixture computes as expected, grids included; "
-          f"{len(cases) + len(grid_refusals)} refusals refused")
+    print(f"selftest: home.json fixture computes as expected, grids and stack band included; "
+          f"{len(cases) + len(grid_refusals) + len(stack_refusals)} refusals refused")
     return 0
 
 

@@ -104,7 +104,7 @@ pre {
    dark. */
 .contrast .panel,
 .tiles,
-.stack,
+.stackcol,
 .readings .panel,
 .term { box-shadow: var(--shadow-soft); }
 
@@ -421,26 +421,75 @@ pre {
 .tile__title { margin: 0 0 .375rem; font-size: 1.0625rem; line-height: 1.3; letter-spacing: -.01em; }
 .tile__text { margin: 0; font-size: .9375rem; color: var(--muted); }
 
-.stack {
+/* The stack band: providers, worked examples and the other ways to run it, as
+   three blocks side by side, the examples a little wider for their questions.
+   A block is its group's colour — --c: blue, green, violet — as a line along
+   its top and a glow under it (--tile-glow, as the Commands tiles), with the
+   gradient on its icon. Rows that lead somewhere are links, the whole row, with
+   an arrow that moves on hover; a provider's row is only a name and a package. */
+.stackcol--providers { --c: var(--grad-end); }
+.stackcol--examples { --c: var(--grad-start); }
+.stackcol--run { --c: var(--violet); }
+
+.stacks {
+  display: grid; gap: 1.125rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr);
   margin: 1.375rem 0 0;
+}
+.stackcol {
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; min-width: 0;
   background: var(--bg);
-  border: 1px solid var(--rule); border-radius: .875rem;
+  border: 1px solid var(--rule); border-radius: 1.125rem;
+  overflow: hidden;
 }
-.stack__row {
-  display: grid; grid-template-columns: 10.625rem minmax(0, 1fr);
-  gap: 1.125rem; align-items: center;
-  padding: .875rem 1.375rem;
+.stackcol::before {
+  content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0;
+  height: 3px; background: var(--c);
 }
-.stack__row + .stack__row { border-top: 1px solid var(--rule); }
-.stack__label { font-size: .875rem; color: var(--muted); }
-.stack__label a { color: inherit; }
-.chips { display: flex; flex-wrap: wrap; gap: .5rem; }
-.chip {
-  font-size: .875rem; font-weight: 500; color: var(--ink); text-decoration: none;
-  padding: .3125rem .75rem;
-  border: 1px solid var(--rule); border-radius: 999px; background: var(--surface);
+.stackcol::after {
+  content: ""; position: absolute; z-index: -1; inset: 0;
+  background-image: radial-gradient(90% 40% at 20% 0%,
+    color-mix(in srgb, var(--c) var(--tile-glow), transparent), transparent 70%);
 }
-a.chip:hover { border-color: var(--fine); }
+.stackcol__head { display: flex; gap: .875rem; align-items: center; padding: 1.375rem 1.375rem .375rem; }
+.stackcol__icon {
+  flex: none; display: grid; place-items: center;
+  width: 2.625rem; height: 2.625rem; border-radius: .75rem;
+  color: var(--on-grad); background-image: var(--grad);
+}
+.stackcol__title { margin: 0; font-size: 1.0625rem; line-height: 1.3; letter-spacing: -.01em; }
+.stackcol__text { margin: .125rem 0 0; font-size: .875rem; line-height: 1.45; color: var(--muted); }
+.stackcol__rows { list-style: none; margin: .625rem 0 0; padding: 0 .625rem .75rem; }
+.stackrow {
+  display: block;
+  padding: .6875rem .75rem;
+}
+.stackcol__rows li + li .stackrow { border-top: 1px solid var(--rule-soft); }
+.stackrow__name { display: block; font-size: .96875rem; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.stackrow__sub { display: block; margin-top: .0625rem; font-size: .84375rem; line-height: 1.45; color: var(--muted); }
+.stackrow__sub--mono { font-family: var(--mono-page); font-size: .78125rem; }
+/* The question is the page's title after its colon, as written there; its
+   first letter is capitalised here, the text is not touched. */
+.stackrow__sub--question::first-letter { text-transform: uppercase; }
+.stackrow--link {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .75rem;
+  border-radius: .75rem; text-decoration: none; color: inherit;
+}
+.stackrow__arrow { color: var(--muted); transition: transform .15s, color .15s; }
+.stackrow--link:hover { background: var(--surface); }
+.stackcol__rows li + li .stackrow--link:hover { border-top-color: transparent; }
+.stackrow--link:hover .stackrow__arrow { color: var(--c); transform: translateX(3px); }
+.stackrow--link:focus-visible { outline-offset: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .stackrow__arrow { transition: none; }
+}
+/* Side by side while every example's question takes two lines at most; at
+   730px LangGraph's takes three, measured in Chrome, so from there down the
+   blocks stack. */
+@media (max-width: 730px) {
+  .stacks { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* Commands and Checks: every command in the groups tools/hooks/home.py
    declares, and every check by the kind it declares. A group, or a kind, is a
@@ -817,7 +866,6 @@ a.chip:hover { border-color: var(--fine); }
   .term__cmd:has(+ .term__out:empty) { padding-bottom: .875rem; }
   .steps { grid-template-columns: minmax(0, 1fr); gap: 1.625rem; }
   .steps li::after { display: none; }
-  .stack__row { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
   .closing .install { min-width: 0; }
 }
 @media (max-width: 34rem) {
