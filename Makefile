@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening glyphs build check clean
+.PHONY: docs preview serve css source home opening glyphs assets build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -31,19 +31,24 @@ home:            ## the home's hook against its fixtures, refusals included — 
 opening:         ## the opening band's hook: title and lede, title alone, no title — needs no build
 	uv run tools/hooks/opening.py --selftest
 
+assets:          ## the asset-hash check against its own small site, refusals included — needs no build
+	uv run tools/check-assets.py --selftest
+
 glyphs:          ## the glyph check against its own four-page site, refusals included — needs no build
 	uv run tools/check-glyphs.py --selftest
 
-build: docs css source home opening glyphs  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind or a character with no Plex glyph fails it
+build: docs css source home opening glyphs assets  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind or a character with no Plex glyph fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
+	uv run tools/check-assets.py site
 
 check: css source  ## the stylesheets, the source, the two generated indexes and the glyphs against an existing site/
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
+	uv run tools/check-assets.py site
 
 clean:
 	rm -rf site docs/product .sync-preview

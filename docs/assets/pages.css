@@ -641,11 +641,15 @@ a.chip:hover { border-color: var(--fine); }
 /* ── the closing band ────────────────────────────────────────────────────── */
 .closing {
   padding: 4.5rem 0;
-  border-top: 1px solid var(--rule-soft);
-  /* The glow the hero has behind its card, across the band. */
+  /* The glow the hero has behind its card, across the band, over one more
+     layer of --wash than the body it closes. That layer rises out of the body
+     over --band-fade, so there is no line where the band begins. The glow is
+     85% of the hero's here: over the deeper tint, that keeps --muted and the
+     gradient's teal at 4.6:1 where the glow is strongest, in both themes. */
   background-image:
-    radial-gradient(40% 70% at 55% 43%, var(--glow-fine), transparent 70%),
-    radial-gradient(35% 63% at 80% 64%, var(--glow-link), transparent 70%);
+    radial-gradient(40% 70% at 55% 43%, color-mix(in srgb, var(--glow-fine) 85%, transparent), transparent 70%),
+    radial-gradient(35% 63% at 80% 64%, color-mix(in srgb, var(--glow-link) 85%, transparent), transparent 70%),
+    linear-gradient(transparent, var(--wash) var(--band-fade));
 }
 .closing .part__inner {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
@@ -679,8 +683,9 @@ a.chip:hover { border-color: var(--fine); }
    The ground is the home's, laid the home's way: one flat layer of --wash on
    <main>, over the --bg of <body>, edge to edge at any width because <main>
    is. The opening keeps its place against it by being one layer deeper — a
-   second --wash over the ground — and by a hairline rule; the closing band is
-   the home's, glow and all. */
+   second --wash over the ground, which fades into it at the band's foot
+   rather than stopping at a rule; the closing band is the home's, glow and
+   all. */
 .dg-page--reading {
   max-width: none; padding: 0;
   background-image: linear-gradient(var(--wash), var(--wash));
@@ -688,16 +693,21 @@ a.chip:hover { border-color: var(--fine); }
 .reading__inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
 
 .opening {
-  padding: calc(4rem + var(--bar-room)) 0 3rem;
-  background-image: linear-gradient(var(--wash), var(--wash));
-  border-bottom: 1px solid var(--rule-soft);
+  padding: calc(4rem + var(--bar-room)) 0 var(--band-gap);
+  /* One layer of --wash deeper than the body, down to the band's foot, where
+     it thins out into the body's tint across the last --band-gap: the fade
+     sits in the band's own bottom space, with no rule and no step. */
+  background-image: linear-gradient(var(--wash) calc(100% - var(--band-gap)), transparent);
 }
 .opening__title { margin-bottom: 1rem; }
+/* A band with a title and no lede ends on the title: its margin would add to
+   --band-gap. */
+.opening__title:last-child { margin-bottom: 0; }
 .opening__lede { margin: 0; max-width: 40rem; }
 .opening__lede a { color: var(--link); }
 .opening__lede code { font-size: .875em; }
 
-.reading { padding: 3rem 0 4.5rem; }
+.reading { padding: var(--band-gap) 0 4.5rem; }
 /* The closing band is the home's partial. On a reading page it is one column:
    title, line, install and links stacked on the text column's left edge, and
    nothing wider than the column (40rem). The home keeps its two. */
@@ -814,8 +824,8 @@ a.chip:hover { border-color: var(--fine); }
   .part__inner,
   .reading__inner,
   .dg-page--reading .closing .part__inner { padding: 0 1rem; }
-  .opening { padding: calc(2.75rem + var(--bar-room)) 0 2.25rem; }
-  .reading { padding: 2.25rem 0 3rem; }
+  .opening { padding: calc(2.75rem + var(--bar-room)) 0 var(--band-gap); }
+  .reading { padding: var(--band-gap) 0 3rem; }
   .essay h2 { font-size: 1.3125rem; }
   .tiles { grid-template-columns: minmax(0, 1fr); }
   .tile { padding: 1.375rem; }

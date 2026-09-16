@@ -29,6 +29,19 @@
      measured in it. */
   --sans-page: "IBM Plex Sans", var(--sans);
   --mono-page: "IBM Plex Mono", var(--mono);
+
+  /* The space between an opening band's last line and the page's first:
+     --band-gap at the band's foot and --band-gap again at the top of the
+     content, 72px in all (54px on a phone). The band's deeper tint fades into
+     the body's across its half of that space, so the fade adds nothing to it.
+     A closing band's tint rises out of the body over its first --band-fade.
+     No rule is drawn between a band and the body. */
+  --band-gap: 36px;
+  --band-fade: 96px;
+}
+
+@media (max-width: 34rem) {
+  :root { --band-gap: 27px; }
 }
 
 /* ── 1. light ─────────────────────────────────────────────────────────── */
