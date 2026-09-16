@@ -498,15 +498,18 @@ def _plain(fragment: str) -> str:
     return html_unescape(re.sub(r"<[^>]*>", "", fragment))
 
 
-def heading_naming(page_html: str, name: str, in_text: bool) -> str | None:
+def heading_naming(page_html: str, name: str, in_text: bool,
+                   bare_name: bool = True) -> str | None:
     """The id of the first h2–h4 in a page that names the command: a <code>
-    in it holding the name as a word of its own (`compare`, `digline compare`,
-    not `Case.compare` or `compare-all`), or — with in_text — its text writing
-    `digline <name>`. None when no heading does."""
+    in it holding `digline <name>`, or — with bare_name — the name alone as a
+    word of its own (`compare`, not `Case.compare` or `compare-all`); or, with
+    in_text, its text writing `digline <name>`. None when no heading does."""
+    command = re.compile(rf"\bdigline\s+{re.escape(name)}(?![\w\-])")
     word = re.compile(rf"(?<![\w.\-]){re.escape(name)}(?![\w\-])")
+    code_match = word if bare_name else command
     for match in _HEADING_BLOCK.finditer(page_html):
         inner = match.group(3)
-        if any(word.search(_plain(code)) for code in _CODE.findall(inner)):
+        if any(code_match.search(_plain(code)) for code in _CODE.findall(inner)):
             return match.group(2)
         if in_text and re.search(rf"\bdigline\s+{re.escape(name)}(?![\w\-])", _plain(inner)):
             return match.group(2)
@@ -526,7 +529,9 @@ def command_link(name: str, pages: set[str], guide_html: str,
       2. the first h2–h4 in the guide that writes `digline <name>`, or the
          name in code;
       3. the first h2–h4 in a Reference page, in the order of the nav, with
-         the name in code;
+         `digline <name>` in code — the name alone does not count there, where
+         a heading like "What `run` costs" on the MCP page is about a tool of
+         the same name, not the command;
       4. the heading above the first place the guide's text writes
          `digline <name>`.
 
@@ -537,7 +542,7 @@ def command_link(name: str, pages: set[str], guide_html: str,
     if anchor:
         return f"{_url(GUIDE)}#{anchor}", "guide heading"
     for src_uri, page_html in reference:
-        anchor = heading_naming(page_html, name, in_text=False)
+        anchor = heading_naming(page_html, name, in_text=False, bare_name=False)
         if anchor:
             return f"{_url(src_uri)}#{anchor}", "reference heading"
     anchor = first_mention(guide_html, name)
@@ -820,10 +825,13 @@ def selftest() -> int:
     reference = [
         ("product/api.md",
          '<h2 id="suite">Suite</h2><h3 id="case-compare"><code>Case.compare</code></h3>'
-         '<h3 id="compare-all"><code>compare-all</code></h3>'
-         '<h3 id="compare">The <code>compare</code> function</h3>'
-         '<h3 id="promote-api"><code>promote</code></h3>'),
-        ("product/mcp.md", '<h2 id="what-compare-costs">What <code>compare</code> costs</h2>'),
+         '<h3 id="compare-all"><code>digline compare-all</code></h3>'
+         '<h3 id="compare-function">The <code>compare</code> function</h3>'
+         '<h3 id="compare">Reading <code>digline compare</code></h3>'
+         '<h3 id="promote-api"><code>digline promote</code></h3>'),
+        ("product/mcp.md",
+         '<h2 id="what-run-costs">What <code>run</code> costs</h2>'
+         '<h2 id="what-compare-costs">What <code>digline compare</code> costs</h2>'),
     ]
     metrics_ids = {c["anchor"] for c in grid_data["checks"]["items"]}
     g = grids(grid_data, pages, guide_html, metrics_ids, reference)
@@ -838,8 +846,13 @@ def selftest() -> int:
            links["promote"], "product/guide/#approving")
     expect("2. a guide heading writing `digline <name>`, over the text", links["list"],
            "product/guide/#the-list")
-    expect("3. a Reference heading, the first in nav order, name as a word of its own",
+    expect("3. a Reference heading with `digline <name>` in code, the first in nav order",
            links["compare"], "product/api/#compare")
+    expect("3. a Reference heading with the name alone in code does not win: run falls to 4",
+           links["run"], "product/guide/#one")
+    expect("the name alone in a Reference heading is not enough",
+           heading_naming('<h2 id="what-run-costs">What <code>run</code> costs</h2>', "run",
+                          in_text=False, bare_name=False), None)
     expect("4. the guide's text, on a highlighted line", links["run"], "product/guide/#one")
     expect("4. the guide's text, inline (an h5 does not count)", links["report"], "product/guide/#two")
     places = {c["name"]: c["place"] for grp in g["commands"]["groups"] for c in grp["commands"]}
