@@ -28,7 +28,7 @@ Why: `tools/sync-docs.sh` copies from digline's main, and `--strict` refuses a n
 The procedure, the one ADR 0009 and ADR 0022 followed:
 
 1. Branch `adr-NNNN-site` from `main`. Write all three entries; the descriptions are written from the record's content, not copied from it.
-2. Build against the digline branch or worktree that has the file: `make build DIGLINE=<path>`. It must be green, with one URL more than `main`.
+2. Build against the digline branch or worktree that has the file: `make preview DIGLINE=<path>` — `make build` refuses a checkout ahead of `origin/main`, which that branch is. It must be green, with one URL more than `main`.
 3. Commit, saying which digline branch and commit it was built against, the URL count, and that the branch waits for the record. Do not merge.
 4. When the record is on digline main: update `../digline`, rebase or merge the branch, `make build` green, merge, push, check live.
 
@@ -36,6 +36,7 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 
 - `make css` whenever `docs/assets/*.css` changed. It needs no build.
 - `make build` against `../digline` level with `origin/main`: sync, the CSS check, `mkdocs build --strict`, then `check-sitemap.py` and `check-llms.py`. All green.
+- The sync checks the first half of that itself: it refuses a digline checkout with uncommitted changes under what it copies (`docs/`, `examples/`, `docker/`, the changelog and roadmap), or one ahead of `origin/main`, or behind it on a branch — a detached ref `origin/main` already contains, like the release tag CI builds a dispatch from, passes. To look at a page that is not on digline main yet, `make preview` (`SYNC_UNRELEASED=1`): it builds with a banner and leaves `.sync-preview`, and `tools/check-source.sh`, in `make build` and in the workflow, refuses to ship that build.
 - The commit message names the digline commit it was built against and the URL count.
 
 A red build caused by something outside the change (a nav entry whose file is not on digline main, for instance) is fixed on `main` first, in its own commit, and the change is verified against the fixed `main`, never committed on top of a red one.

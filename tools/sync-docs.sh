@@ -6,7 +6,12 @@
 # rewrites at the bottom exist because the files are written to be read on
 # GitHub, where they sit one directory deeper than they do on the site.
 #
+# Before it copies anything it checks that the checkout it is copying from is
+# published — committed, and level with origin/main. See "the source has to be
+# what everyone else can see" below for why, and for the one way out.
+#
 #   usage: tools/sync-docs.sh [path-to-digline-checkout]
+#          SYNC_UNRELEASED=1 tools/sync-docs.sh [path]   # preview, never shipped
 set -euo pipefail
 
 src="${1:-../digline}"
@@ -14,6 +19,154 @@ here="$(cd "$(dirname "$0")/.." && pwd)"
 out="$here/docs/product"
 
 [ -d "$src/docs" ] || { echo "no docs/ in $src — is that a digline checkout?" >&2; exit 1; }
+
+# ── the source has to be what everyone else can see ──────────────────────────
+#
+# Everything below copies files out of `$src` into a build that ships. A file
+# that exists only in somebody's working tree — uncommitted, or committed and
+# never pushed — builds green here and red for everyone else, and the way that
+# gets found out is a nav entry whose page digline main does not have, stopping
+# every release of the site including the ones digline dispatches itself.
+#
+# It happened. `docs/log.md` and `docs/register.md` were copied out of a
+# checkout five commits ahead of `origin/main`; the three entries written
+# against them were green locally and had to come back out of `main`.
+#
+# So, before a single file is copied, two questions about `$src`:
+#
+#   1. is everything this script reads committed?
+#   2. is HEAD level with `origin/main`, freshly fetched?
+#
+# A checkout *behind* `origin/main` is refused as well — it would date and
+# describe the pages by a history that has moved on — with one exception: a
+# detached HEAD that `origin/main` already contains. That is a deliberately
+# pinned ref, and it is the shape CI is in on a release dispatch, where
+# `_digline` is checked out at the tag that was published rather than at the
+# tip of the branch. Ahead is refused in every shape there is: those are the
+# commits nobody else has.
+#
+# SYNC_UNRELEASED=1 turns all of it off, for a local look at a page that is not
+# released yet. It leaves a marker behind, and tools/check-source.sh — in
+# `make build` and in the workflow — refuses to ship a build that has one.
+
+marker="$here/.sync-preview"
+
+# An argument may itself be several lines — a `git log`, a `git status` — so the
+# indent is put on at the end, over the whole message, rather than by the loop.
+# Otherwise only the first line of such an argument lines up with the rest.
+refuse() {
+  {
+    echo
+    echo "sync refused — $1"
+    echo
+    shift
+    for line in "$@"; do echo "$line"; done
+    echo
+    echo "How to proceed:"
+    echo
+    echo "  · build against a clone pinned to what everyone else can see:"
+    echo "      git clone https://github.com/digline/digline /tmp/digline"
+    echo "      make build DIGLINE=/tmp/digline"
+    echo
+    echo "  · or, to look at a page that is not released yet — locally only:"
+    echo "      make preview                  # or SYNC_UNRELEASED=1 make serve"
+    echo "    That build carries a marker and the deploy gate refuses it."
+    echo
+  } | sed 's/^./  &/' >&2
+  exit 1
+}
+
+if [ -n "${SYNC_UNRELEASED:-}" ]; then
+  head_sha="$(git -C "$src" rev-parse --short HEAD 2>/dev/null || echo 'not a git checkout')"
+  {
+    echo
+    echo "  ############################################################"
+    echo "  ##  UNRELEASED SYNC — THIS BUILD MUST NOT BE DEPLOYED      ##"
+    echo "  ############################################################"
+    echo
+    echo "  SYNC_UNRELEASED=1: docs/product/ is being copied out of"
+    echo "    $src (at $head_sha)"
+    echo "  without checking that digline main has any of it."
+    echo
+    echo "  Pages that are not on digline main may appear. tools/check-source.sh"
+    echo "  refuses this build, so \`make build\` and the workflow will not ship it."
+    echo
+  } >&2
+  {
+    echo "This build is an unreleased preview and must not be deployed."
+    echo "source: $src"
+    echo "head:   $head_sha"
+    echo "made:   $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  } > "$marker"
+else
+  rm -f "$marker"
+
+  git -C "$src" rev-parse --git-dir >/dev/null 2>&1 ||
+    refuse "$src is not a git checkout" \
+           "There is no history to check it against, so nothing here can tell" \
+           "whether what it holds is published."
+
+  # 1. Everything this script reads, committed. Only those paths: digline is a
+  #    workspace and its src/ changes constantly, which is none of our business.
+  dirty="$(git -C "$src" status --porcelain -- docs examples docker CHANGELOG.md ROADMAP.md)"
+  if [ -n "$dirty" ]; then
+    refuse "uncommitted changes in $src, under what this script copies" \
+           "$(echo "$dirty" | sed 's/^/    /')" \
+           "" \
+           "Those files would reach the site from a working tree and nowhere else."
+  fi
+
+  # 2. Level with origin/main, and fetched rather than remembered.
+  #
+  #    `fetch origin main` rather than `fetch origin`: it sets FETCH_HEAD even
+  #    where refs/remotes/origin/main is not how the checkout is arranged, which
+  #    is the case in more CI checkouts than one would like to bet on. The
+  #    remote-tracking ref is used when it is there and FETCH_HEAD when it is
+  #    not; both are the same commit.
+  git -C "$src" fetch --quiet origin main 2>/dev/null ||
+    refuse "cannot fetch origin/main in $src" \
+           "The check needs origin/main as it is now, not as it was last" \
+           "fetched. Check the network, or the remote named origin."
+
+  main_sha="$(git -C "$src" rev-parse --verify --quiet origin/main ||
+              git -C "$src" rev-parse --verify --quiet FETCH_HEAD || true)"
+  [ -n "$main_sha" ] ||
+    refuse "no origin/main in $src" \
+           "Nothing to compare HEAD with."
+
+  ahead="$(git -C "$src" rev-list --count "$main_sha..HEAD")"
+  behind="$(git -C "$src" rev-list --count "HEAD..$main_sha")"
+  head_sha="$(git -C "$src" rev-parse --short HEAD)"
+  main_sha="$(git -C "$src" rev-parse --short "$main_sha")"
+
+  if [ "$ahead" -gt 0 ]; then
+    refuse "$src is $ahead commit(s) ahead of origin/main" \
+           "HEAD        $head_sha" \
+           "origin/main $main_sha" \
+           "" \
+           "$(git -C "$src" log --oneline "$main_sha..HEAD" | sed 's/^/    /')" \
+           "" \
+           "Those commits are on nobody else's clock. A page that arrives with" \
+           "them builds green here and is missing from every other build."
+  fi
+
+  if [ "$behind" -gt 0 ]; then
+    # A detached HEAD that origin/main contains is a ref somebody pinned on
+    # purpose — the release tag CI builds a dispatch from. A branch that has
+    # simply fallen behind is not.
+    if git -C "$src" symbolic-ref -q HEAD >/dev/null; then
+      refuse "$src is $behind commit(s) behind origin/main" \
+             "HEAD        $head_sha  ($(git -C "$src" rev-parse --abbrev-ref HEAD))" \
+             "origin/main $main_sha" \
+             "" \
+             "Pull it. The pages would otherwise be dated and described by a" \
+             "history that has moved on."
+    fi
+    echo "sync: $src is a pinned ref, $head_sha, $behind commit(s) behind origin/main ($main_sha)" >&2
+  else
+    echo "sync: $src is level with origin/main, $head_sha" >&2
+  fi
+fi
 
 rm -rf "$out"
 mkdir -p "$out/examples"

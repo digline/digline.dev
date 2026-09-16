@@ -53,6 +53,14 @@ jobs:
         # read back by tools/hooks/seo.py while the sitemap is being written.
         run: tools/sync-docs.sh _digline
 
+      - name: Refuse an unreleased source
+        # sync-docs.sh above has already refused a _digline that is dirty or
+        # ahead of origin/main. This is the other half of the same gate: it
+        # fails if that check was skipped — SYNC_UNRELEASED=1 in the
+        # environment, a .sync-preview left behind — so a preview cannot reach
+        # the artifact even by accident.
+        run: tools/check-source.sh
+
       - name: Check the stylesheets
         # Before the build, because it reads docs/assets/ and not site/, and
         # because a stylesheet that a browser only half-parses is not something
