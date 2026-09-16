@@ -443,6 +443,14 @@ DESCRIPTIONS: dict[str, str] = {
         "`config_hash`, rates withheld at a named endpoint as a declared latch, "
         "and `promote --target` so a multi-target suite names what it signs"
     ),
+    "product/adr/0024-the-judge-as-an-instrument.md": (
+        "How the judge is measured rather than trusted: read the rendered judge "
+        "prompt before re-running anything, a calibration case with a written "
+        "answer whose score outside its declared band exits 2 with no baseline, "
+        "`judge_samples` never reported without that result, the share of "
+        "judged scores at exactly 0 or 1, and the run-to-run range, the last "
+        "two printed without thresholds until data sizes them"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

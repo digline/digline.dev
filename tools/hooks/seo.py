@@ -417,6 +417,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "per-million rates that enter the suite's identity because a price is "
         "the ruler a cost budget reads on, withheld at a named endpoint.",
     ),
+    "product/adr/0024-the-judge-as-an-instrument.md": (
+        "ADR 0024: The judge as an instrument",
+        "Why the judge gets measurements of its own: a calibration case whose "
+        "known partial answer must score inside a band, repeatability beside "
+        "it, and the suite's shape and spread.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "

@@ -243,6 +243,7 @@ nav:
           - ADR 0020 — The reading across runs: product/adr/0020-the-reading-across-runs.md
           - ADR 0021 — The register: product/adr/0021-the-register.md
           - ADR 0022 — The declared price: product/adr/0022-the-declared-price.md
+          - ADR 0024 — The judge as an instrument: product/adr/0024-the-judge-as-an-instrument.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Roadmap: product/roadmap.md
