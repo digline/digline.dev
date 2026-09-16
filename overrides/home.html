@@ -50,7 +50,7 @@
           <dt>{{ check.assertion }}</dt><dd>{{ check.before }} → {{ check.after }}</dd>
           {%- endfor %}
           {%- if r.other_cases %}
-          <dt>Also worse</dt><dd>{{ r.other_cases | join(", ") }}</dd>
+          <dt>Also worse</dt><dd>{% for case in r.other_cases %}<span class="verdict__case-id">{{ case }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
           {%- endif %}
         </dl>
         {%- if r.diff %}

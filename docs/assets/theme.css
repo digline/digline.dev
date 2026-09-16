@@ -146,7 +146,11 @@ body {
    scroll-padding-top; Material's own scroll margin on :target, 3.6rem to clear
    its header, would add to that, so it is the bar's gap instead. */
 @media screen and (min-width: 76.25em) {
-  .md-sidebar { top: var(--bar-room) !important; }
+  .md-sidebar {
+    /* !important, for the sidebar and the TOC alike: Material writes their
+       top inline as the header's height, without the pill's margin above it. */
+    top: var(--bar-room) !important;
+  }
 }
 .md-typeset :target { --md-scroll-margin: var(--bar-gap); }
 

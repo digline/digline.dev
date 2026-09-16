@@ -238,7 +238,10 @@ pre {
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
   gap: .5rem .75rem; margin: 0 0 1rem;
 }
-.verdict__name { font-family: var(--mono-page); font-size: .9375rem; font-weight: 500; }
+/* A case id is one token: it never breaks inside itself, only between one id
+   and the next (the ", " in "Also worse"), wherever the card is narrow. */
+.verdict__name { font-family: var(--mono-page); font-size: .9375rem; font-weight: 500; white-space: nowrap; }
+.verdict__case-id { white-space: nowrap; }
 .verdict__pill {
   font-size: .8125rem; font-weight: 600;
   color: var(--worse); background: var(--worse-wash);
