@@ -23,6 +23,7 @@
       <div class="install" data-copy>
         <code class="install__cmd">pip install digline</code>
       </div>
+      <p class="install__req">Requires Python {{ home.requires_python }}</p>
       <p class="hero__links">
         <a href="{{ base_url }}/start/">Start here</a>
         <a class="hero__link--quiet" href="{{ base_url }}/why/">Why a reference in the repo</a>
@@ -161,7 +162,7 @@ Nothing here says.</span></pre>
   <div class="part__inner">
     <p class="part__kicker">Try it</p>
     <h2 class="part__title" id="try-h">The quickstart runs without an API key.</h2>
-    <p class="part__intro">The model call in the guide is canned, so you can see the whole loop before wiring a real provider.</p>
+    <p class="part__intro">You need Python {{ home.requires_python }}. The model call in the guide is canned, so you can see the whole loop before wiring a real provider.</p>
     <ol class="steps">
       <li><code>digline run</code><p>Runs the suite and writes a run file.</p></li>
       <li><code>digline promote</code><p>A person approves that run as the reference.</p></li>
@@ -249,6 +250,12 @@ Nothing here says.</span></pre>
     <div class="install" data-copy>
       <code class="install__cmd">pip install digline</code>
     </div>
+    <p class="closing__links">
+      <a href="{{ base_url }}/why/">why a hash wasn&rsquo;t enough &rarr;</a>
+      <a href="{{ base_url }}/product/guide/">see it on your own suite &rarr;</a>
+      <a href="{{ base_url }}/agents/">what an agent can and cannot do &rarr;</a>
+      <a href="{{ base_url }}/comparison/">how it differs from the tools you know &rarr;</a>
+    </p>
   </div>
 </section>
 {% endblock %}
