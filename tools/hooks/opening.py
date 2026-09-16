@@ -25,9 +25,11 @@ them, and they are held to different rules:
     the band in Material's `hero` block above the sidebars and the body where
     page.content would be. These are written to be read on GitHub as well, and
     many do not open on a paragraph (an ADR opens on its status list): when the
-    <h1> is followed at once by a <p>, that is the lede; otherwise the band
-    shows the title alone and the body keeps everything after it. The build
-    fails only when there is no <h1> at all — and when the page is one
+    <h1> is followed at once by a <p>, that is the lede — unless the <p> holds
+    nothing but one <code> (an image name under a title, say), which labels the
+    page rather than opening it; otherwise the band shows the title alone and
+    the body keeps everything after it. The build fails only when there is no
+    <h1> at all — and when the page is one
     tools/sync-docs.sh copies out of digline/digline, the message says the fix
     belongs there, since anything changed here is overwritten on the next sync.
 
@@ -42,6 +44,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+import unicodedata
 
 from mkdocs.exceptions import PluginError
 
@@ -57,6 +60,7 @@ _READING = re.compile(
 _H1 = re.compile(r"<h1(?P<attrs>[^>]*)>(?P<title>.*?)</h1>", re.S)
 _LEDE = re.compile(r"\A\s*<p>(?P<lede>.*?)</p>", re.S)
 _ID = re.compile(r'\bid="([^"]*)"')
+_ONLY_CODE = re.compile(r"\A(?P<before>[^<]*)<code\b[^>]*>(?P<code>.*?)</code>(?P<after>[^<]*)\Z", re.S)
 
 
 def _title_id(attrs: str) -> str | None:
@@ -101,9 +105,20 @@ def upstream(src_uri: str, native: set[str]) -> str | None:
     return f"docs/{rest}"
 
 
+def only_code(paragraph: str) -> bool:
+    """Whether a paragraph is a single <code> and, around it, nothing but
+    spaces and punctuation: `ghcr.io/digline/digline` under a title."""
+    match = _ONLY_CODE.match(paragraph.strip())
+    if not match or "<code" in match.group("code"):
+        return False
+    around = match.group("before") + match.group("after")
+    return all(ch.isspace() or unicodedata.category(ch).startswith("P") for ch in around)
+
+
 def split_docs(content: str, source: str, native: set[str]) -> tuple[dict, str]:
     """A documentation page: the first <h1> is the title, and the <p> right
-    after it, if there is one, the lede. No <h1> fails the build."""
+    after it, if there is one and it is more than a lone <code>, the lede. No
+    <h1> fails the build."""
     match = _H1.search(content)
     if not match:
         origin = upstream(source, native)
@@ -116,6 +131,8 @@ def split_docs(content: str, source: str, native: set[str]) -> tuple[dict, str]:
         )
     before, after = content[:match.start()], content[match.end():]
     lede = _LEDE.match(after)
+    if lede and only_code(lede.group("lede")):
+        lede = None
     body = before + (after[lede.end():] if lede else after)
     return {
         "title": match.group("title"),
@@ -201,6 +218,23 @@ def selftest() -> int:
     refused("title only, on a reading page", lambda: split(adr, "start.md"),
             "must start with `# Title` and a first paragraph")
 
+    # 2b. A title and a paragraph that is only code — the Docker page's image
+    #     name: not a lede, and the paragraph stays at the top of the body. A
+    #     paragraph with code and words round it is still a lede.
+    docker = ('<h1 id="the-official-digline-image">The official digline image</h1>\n'
+              '<p><code>ghcr.io/digline/digline</code></p>\n<p>The official image runs any suite.</p>')
+    opening, body = split_docs(docker, "product/docker.md", native)
+    expect("only code: lede", opening["lede"], None)
+    expect("only code: body", body,
+           '\n<p><code>ghcr.io/digline/digline</code></p>\n<p>The official image runs any suite.</p>')
+    for paragraph in ("<code>pip install digline</code>.", " <code>a</code> — ", "(<code>x</code>)"):
+        expect(f"only code: {paragraph!r}", only_code(paragraph), True)
+    for paragraph in ("Run <code>digline</code> first.", "<code>a</code> and <code>b</code>",
+                      "<code>a</code><em>b</em>", "No code at all."):
+        expect(f"not only code: {paragraph!r}", only_code(paragraph), False)
+    opening, _ = split_docs(h1 + "<p>Run <code>digline run</code> first.</p>", "product/guide.md", native)
+    expect("code among words: lede", opening["lede"], "Run <code>digline run</code> first.")
+
     # 3. No <h1>: refused; a page copied from digline says where to fix it, and
     #    a page written here does not send anyone to digline.
     no_h1 = "<p>Only a paragraph.</p>\n<h2>A</h2>"
@@ -229,7 +263,8 @@ def selftest() -> int:
         print(f"opening selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print("opening selftest: title and lede, title alone and no title split or refused as they "
+    print("opening selftest: title and lede, title alone, a lone <code> kept out of the band "
+          "and no title split or refused as they "
           f"must, on both kinds of page; {len(found)} product pages written here")
     return 0
 
