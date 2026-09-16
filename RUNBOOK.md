@@ -46,8 +46,10 @@ A red build caused by something outside the change (a nav entry whose file is no
 ## After the push
 
 1. The `docs` workflow run for the pushed commit: Build and Deploy both succeed (`gh run watch <id> --exit-status`).
-2. On the live site, with a cache-busting query:
-   - every new or changed page answers 200, with the expected `<title>` and `<meta name="description">`;
-   - its internal links answer 200, and its external links too;
-   - a new nav, bar or footer entry is present on a presentation page and on a documentation page;
-   - `llms.txt` lists the new page, and a page that should not be there yet (an ADR still on its branch) answers 404.
+2. On the live site, with a cache-busting query, every check in two halves: the positive one, and a negative one built to fail — a check that cannot fail has verified nothing. A 200 from a server that answers 200 to anything, or a string search on a page that was never going to contain the string, passes whether the change is live or not. The report gives both halves, each with what it got.
+   - every new or changed page answers 200, with the expected `<title>` and `<meta name="description">` — and a path next to it that does not exist (`/no-such-page-<random>/`) answers 404;
+   - the text the change added is on the page — and the text it replaced, or a string that must not be there (an old version, a removed figure), is found 0 times;
+   - its internal links answer 200, and its external links too — and one of them with a character changed answers 404;
+   - a new nav, bar or footer entry is present on a presentation page and on a documentation page — and absent from a page that should not carry it;
+   - `llms.txt` lists the new page and `sitemap.xml` has the expected URL count — and a page that should not be there yet (an ADR still on its branch) answers 404 and is in neither;
+   - a version on a package index answers 200 — and a version that does not exist answers 404. Ask the JSON API for this, not the project page: `https://pypi.org/project/<pkg>/<version>/` answers 200 for any version, real or not, while `https://pypi.org/pypi/<pkg>/<version>/json` answers 200 for a released version and 404 for any other.
