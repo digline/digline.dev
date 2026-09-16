@@ -33,6 +33,26 @@
 
 html { scroll-padding-top: var(--bar-room); }
 
+/* ══ focus ═════════════════════════════════════════════════════════════
+
+   One ring for every control on the site — the bar, the page, the band, the
+   documentation — and only when the browser says focus should be seen: a
+   keyboard, not a click. :focus-visible is that answer; a focus that is not
+   visible draws nothing, where browsers would otherwise draw their own ring on
+   some clicks. Material's script adds a .focus-visible class for the same
+   question and its rules read it; they meet this one without a conflict.
+
+   A text field is the exception browsers make on purpose: clicking into one
+   matches :focus-visible too, because the caret is about to be used. The
+   documentation's search field is drawn as a pill in the bar, and there focus
+   shows as its border taking --link (theme.css), not as a ring round it. */
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+.dg-foot :focus-visible { outline-color: var(--band-ink); }
+
 .dg-bar {
   position: sticky;
   top: var(--bar-gap);

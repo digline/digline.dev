@@ -131,6 +131,10 @@ body {
   border-radius: 999px;
 }
 .dg-bar .md-search__form:hover { background-color: var(--surface); }
+/* Focus in the field is its border, by mouse or keyboard alike (chrome.css,
+   "focus"); the field itself draws no ring. */
+.dg-bar .md-search__form:focus-within { border-color: var(--link); }
+.dg-bar .md-search__input:focus-visible { outline: none; }
 .dg-bar .md-search__input { font-family: var(--sans); }
 .dg-bar .md-search__input::placeholder { color: var(--faint); }
 

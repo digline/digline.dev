@@ -31,13 +31,6 @@ body {
   font-family: var(--sans-page);
 }
 
-/* A keyboard always sees where it is. */
-.dg-page :focus-visible {
-  outline: 2px solid var(--link);
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
 a { color: var(--link); }
 
 h1 { font-size: 2rem; line-height: 1.18; letter-spacing: -.025em; font-weight: 600; margin: 0 0 1.5rem; }
