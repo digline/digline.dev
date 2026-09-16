@@ -91,7 +91,3 @@ That is why the boring work is the only work worth doing first. Six months in, t
 5. From now on: one failure seen, one case written, the same day.
 
 The next chapter is about what to check on each of them — and why the checks that need no model at all come first.
-
----
-
-*Previous: [1. What you are actually shipping](01-what-you-are-shipping.md) · Next: [3. Checks: deterministic first, judge last](03-checks.md)*

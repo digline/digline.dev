@@ -87,7 +87,3 @@ It can be **shown**. When a customer — or an auditor, or your own team six mon
 4. Make one small change to the prompt. Run. Compare. Read the diff of the prompt next to the diff of the scores. That view is the reason for everything in this chapter.
 
 The next chapter is about keeping this alive: when to run, what should make you look, and what to do on the morning the comparison is red and you changed nothing.
-
----
-
-*Previous: [4. The judge](04-the-judge.md) · Next: [6. Maintenance](06-maintenance.md)*

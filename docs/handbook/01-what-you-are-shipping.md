@@ -55,7 +55,3 @@ If you build software for someone else, there is a fifth thing — what you can 
 Open the project where you have an LLM call. Find the input you tested it with when you built it. Send it again, now, five times.
 
 If all five answers are the same, good — you have a low-noise task, and you will find the rest of this handbook easy. If they differ, you have just seen the thing this chapter is about, on your own system, in a minute. Either way you now know something you did not know before you ran it, which is the whole idea.
-
----
-
-*Next: [2. Cases: the asset nobody builds](02-cases.md)*
