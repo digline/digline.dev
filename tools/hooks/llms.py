@@ -44,7 +44,7 @@ import re
 from mkdocs.exceptions import PluginError
 
 # The pages that are not in any nav section: Home, Start here, Why, digline for
-# agents, the comparison, About and Contact. They need a heading of their own
+# agents, About and Contact. They need a heading of their own
 # because llms.txt has no nesting — every section is an H2 — and "the ones that
 # are not the documentation" is what they have in common.
 #
@@ -103,10 +103,53 @@ DESCRIPTIONS: dict[str, str] = {
         "loop, pytest, the Action — and why none of them lets it promote a "
         "baseline"
     ),
-    "comparison.md": (
+    "comparison/index.md": (
         "Which question each family of tools answers — snapshot testing, "
-        "observability, exploration frameworks, Opik — and which one digline "
-        "answers: did it get worse than what I approved?"
+        "observability, exploration frameworks — and which one digline "
+        "answers: did it get worse than what I approved? Links to a page per "
+        "tool underneath"
+    ),
+    "comparison/promptfoo.md": (
+        "What promptfoo does well — the prompt and provider matrix, its "
+        "assertion library, `promptfoo redteam` — and where digline "
+        "differs: a committed reference rather than a threshold, a noise floor "
+        "measured per case, and a three-state verdict as the exit code"
+    ),
+    "comparison/deepeval.md": (
+        "What DeepEval does well — its metric library, `assert_test` "
+        "inside pytest, `Synthesizer`, DeepTeam — and where digline "
+        "differs: the approved run is a committed file rather than an official "
+        "run on Confident AI"
+    ),
+    "comparison/braintrust.md": (
+        "What Braintrust does well — `Eval()`, experiments against a "
+        "persistent baseline, Loop, hybrid self-hosting — and where "
+        "digline differs: the same comparison, with the reference in git and "
+        "no platform to run"
+    ),
+    "comparison/langsmith.md": (
+        "What LangSmith does well — tracing, datasets and experiments, "
+        "`evaluate()`, annotation queues, online evaluation — and where "
+        "digline differs: one pre-deploy question, a committed reference and "
+        "an exit code"
+    ),
+    "comparison/langfuse.md": (
+        "What Langfuse does well — OpenTelemetry tracing, prompt "
+        "management, batch evaluation over past traces, an MIT self-hosted "
+        "core — and where digline differs: no platform at all, and the "
+        "approval kept in git"
+    ),
+    "comparison/inspect-ai.md": (
+        "What Inspect AI does well — `Task`, solvers and scorers, "
+        "sandboxed execution, epochs and reducers — and where digline "
+        "differs: an approved reference to regress against rather than a "
+        "benchmark to score"
+    ),
+    "comparison/opik.md": (
+        "What Opik does well — Apache-2.0 tracing, experiments, "
+        "guardrails, the Agent Optimizer, a self-hostable platform — and "
+        "where digline differs: a file in your repository instead of a backend "
+        "to deploy"
     ),
     "about.md": "Who builds digline, under which licence, and where the code is",
     "contact.md": (

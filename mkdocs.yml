@@ -131,7 +131,20 @@ nav:
 
   # Positioning, written here: which question each family of tools answers,
   # and which one digline answers. Prose, deliberately: no us-vs-them table.
-  - How digline compares: comparison.md
+  # The index is the families; under it, one page per tool, each of which
+  # says what that tool does well before it says what digline does
+  # instead. Anything asserted about another tool is checked against that
+  # tool's own documentation first: an error about a competitor costs
+  # more than a dozen accurate sentences about digline buy.
+  - How digline compares:
+      - comparison/index.md
+      - promptfoo: comparison/promptfoo.md
+      - DeepEval: comparison/deepeval.md
+      - Braintrust: comparison/braintrust.md
+      - LangSmith: comparison/langsmith.md
+      - Langfuse: comparison/langfuse.md
+      - Inspect AI: comparison/inspect-ai.md
+      - Opik: comparison/opik.md
 
   # Written here, not in digline/digline: these seven chapters are about the
   # problem, not about the tool, and they do not move with a release.

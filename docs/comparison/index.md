@@ -10,7 +10,7 @@ description: >-
 
 # How digline compares
 
-The space around "testing LLM applications" is crowded, and most tools in it are good at what they do. The useful question is not which tool is best, but which question each tool answers. There are three.
+The space around "testing LLM applications" is crowded. The useful question is not which tool to rank first, but which question each tool answers. There are three.
 
 ## "Did the output change?" — snapshot and replay testing
 
@@ -31,23 +31,25 @@ digline answers the pre-deploy question, and takes the statistics of LLM outputs
 - Your cases and assertions live in a suite.py; scores come from checks and, where judgment is needed, an LLM judge.
 - When results are good, you promote them: the approved scores — together with the prompt and the commit that produced them — become a versioned baseline in your repo. Not a hash: numbers, with tolerances.
 - On every change, digline compare tells you which case got worse, and by how much. "Was 0.91, now 0.78, still above threshold" is a first-class verdict — not a passed check, not a wall of diff.
-- Because an LLM judge is itself noisy (in our measurements, a judge flips its verdict on roughly 1 case in 20), digline is built to separate signal from noise: sampled runs, aggregate scores, tolerances — so a flip doesn't fail your build and a real degradation doesn't hide in the variance.
+- Because an LLM judge is itself noisy (a judge flips its verdict on roughly 1 case in 20, measured on two suites), digline is built to separate signal from noise: sampled runs, aggregate scores, tolerances — so a flip doesn't fail your build and a real degradation doesn't hide in the variance.
 
 Two things digline will never do, by design: no hosted service that receives your payloads, and no data collection. The baseline lives in your repo; the runs happen on your machines. For teams whose prompts and outputs cannot leave their perimeter, this is not a feature toggle — it is the architecture.
 
 ## Frameworks like promptfoo and DeepEval
 
-promptfoo and DeepEval are excellent at exploration: comparing prompts, models and configurations side by side, with rich metric libraries. digline is deliberately narrower — it doesn't help you find the best configuration; it guards the one you approved. Many teams will use an exploration framework to choose, and digline to hold the line afterwards.
+[promptfoo](promptfoo.md) and [DeepEval](deepeval.md) are built for exploration: comparing prompts, models and configurations side by side, with rich metric libraries. digline is deliberately narrower — it doesn't help you find the best configuration; it guards the one you approved. Many teams will use an exploration framework to choose, and digline to hold the line afterwards.
 
-## Opik
+## How digline compares to specific tools
 
-Opik is Comet's open-source platform for the whole LLM lifecycle: tracing and observability with full trace trees for agent runs, datasets and experiments, LLM-as-judge metrics, production monitoring with online evaluation, prompt management. It is Apache-2.0 and genuinely self-hostable — the whole platform, backend included. If you want to see what your LLM application is doing, every call and every trace, it is a strong choice, and its self-hosted story is real.
+One page per tool. Each one says what that tool does well, in its own vocabulary and with its own feature names, before it says what digline does instead — and what is written there about another tool is checked against that tool's documentation first.
 
-Where the theories diverge is where the truth lives. Opik's unit of record is the experiment, and the experiment lives in a platform: you deploy a backend — docker compose, a database, a UI — and the results live there. digline's unit of record is a file in your repository: the baseline goes through code review, rolls back with git, and carries who approved it and under which commit. One answers "what is happening?"; the other answers "did it get worse than what we approved — and who approved it?".
-
-The difference you feel day to day is operational. Opik's minimal unit is a running platform; digline's is uv add digline, or a docker run, and there is no server anywhere — not even yours. Scores over time on a dashboard, against a three-state verdict with an exit code that gates a pipeline.
-
-Choose Opik when you need tracing, and want one platform across the lifecycle. Choose digline when the question is regression against an approved reference, and the answer has to live in the client's repository, survive an audit and gate a CI job. Using both is coherent: they answer different questions.
+- [promptfoo](promptfoo.md) — the prompt and provider matrix, the assertion library, `promptfoo redteam`
+- [DeepEval](deepeval.md) — the metric library, `assert_test` in pytest, DeepTeam, the official run on Confident AI
+- [Braintrust](braintrust.md) — `Eval()`, experiments against a persistent baseline, Loop, autoevals
+- [LangSmith](langsmith.md) — tracing, datasets and experiments, `evaluate()`, annotation queues, online evaluation
+- [Langfuse](langfuse.md) — OpenTelemetry tracing, prompt management, batch evaluation, an MIT self-hosted core
+- [Inspect AI](inspect-ai.md) — `Task`, solvers and scorers, sandboxing, epochs and reducers
+- [Opik](opik.md) — Apache-2.0 tracing, experiments, guardrails, the Agent Optimizer
 
 ## Using them together
 
