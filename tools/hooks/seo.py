@@ -402,7 +402,7 @@ PRODUCT: dict[str, tuple[str, str]] = {
     "product/adr/0020-the-reading-across-runs.md": (
         "ADR 0020: The reading across runs",
         "Why digline reads which model answered down the stored runs: a roll "
-        "declared by the record and never deduced from scores, six absences "
+        "declared by the record and never deduced from scores, seven absences "
         "named rather than collapsed, and a replay that is never a sighting.",
     ),
     "product/adr/0021-the-register.md": (

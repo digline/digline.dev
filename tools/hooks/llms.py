@@ -426,7 +426,7 @@ DESCRIPTIONS: dict[str, str] = {
     "product/adr/0020-the-reading-across-runs.md": (
         "How `digline log` reads the story of an alias down a suite's stored "
         "runs: a roll is only the same sent model answering as a different "
-        "recorded one, six absences each with its own sentence, a replay that "
+        "recorded one, seven absences each with its own sentence, a replay that "
         "asked the target nothing, a row with no score by type, and the MCP "
         "surface growing once to eight tools with `explain` beside it"
     ),
