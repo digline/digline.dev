@@ -1,0 +1,137 @@
+name: translate
+
+# The translating agent, run by hand and, for now, only as a dry run: it
+# translates what has changed of the presentation pages and the catalog into
+# the languages asked for, checks every translation against its original in a
+# built copy of the site, reads each page again for errors of meaning, and
+# writes the translations, the report and the bill to an artifact. Nothing is
+# written to docs/ or i18n/, and no pull request is opened.
+# tools/translate.py has the rest.
+#
+# The Claude API is reached with no key: the job asks GitHub for OIDC tokens and
+# tools/translate.py exchanges them at Anthropic (Workload Identity Federation),
+# again whenever the token in hand is close to expiring. The federation rule
+# accepts refs/heads/main of this repository and a job with no environment, so
+# a run dispatched from any other ref is refused at the exchange.
+#
+# A run starts from the translations of the last successful run on main, its
+# artifact: what that run translated and has not changed since is skipped, and
+# costs nothing.
+on:
+  workflow_dispatch:
+    inputs:
+      langs:
+        description: "Languages, comma-separated: it, de, es"
+        type: string
+        default: "it,de,es"
+      pages:
+        description: "Pages, comma-separated: index, start, why, about, contact"
+        type: string
+        default: "index,start,why,about,contact"
+      dry_run:
+        description: "Dry run: write to the artifact only (the only mode for now)"
+        type: boolean
+        default: true
+
+permissions:
+  id-token: write
+  contents: read
+  # To read the artifact of the last successful run.
+  actions: read
+
+concurrency:
+  group: translate
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    name: Translate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Refuse anything but a dry run
+        if: ${{ !inputs.dry_run }}
+        run: |
+          echo "Only dry runs for now: the translations are not published yet."
+          exit 1
+
+      # fetch-depth: 0 — a translation records the commit of its original, and
+      # its notice is dated by it: the copy the checks build needs the history.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Check out digline/digline
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          repository: digline/digline
+          path: _digline
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          enable-cache: true
+
+      - name: Copy the product documentation in
+        run: tools/sync-docs.sh _digline
+
+      - name: Find the last successful run's translations
+        id: previous
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner, repo: context.repo.repo,
+              workflow_id: 'translate.yml', branch: 'main', status: 'success', per_page: 20,
+            });
+            for (const run of runs.data.workflow_runs) {
+              if (run.id === context.runId) continue;
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner, repo: context.repo.repo, run_id: run.id,
+              });
+              if (artifacts.data.artifacts.some(a => a.name === 'translation' && !a.expired)) {
+                core.info(`Starting from run ${run.id} (${run.html_url})`);
+                core.setOutput('run_id', String(run.id));
+                return;
+              }
+            }
+            core.info('No earlier successful run with translations: starting from the repository');
+
+      - name: Download them
+        if: steps.previous.outputs.run_id != ''
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: translation
+          path: ${{ runner.temp }}/previous
+          run-id: ${{ steps.previous.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Translate
+        env:
+          LANGS: ${{ inputs.langs }}
+          PAGES: ${{ inputs.pages }}
+          ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORG_ID }}
+          ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+        run: |
+          set -euo pipefail
+          existing=()
+          if [ -d "$RUNNER_TEMP/previous" ]; then existing=(--existing "$RUNNER_TEMP/previous"); fi
+          uv run tools/translate.py --langs "$LANGS" --pages "$PAGES" --dry-run \
+            --out "$RUNNER_TEMP/translation" --max-cost 5 "${existing[@]}"
+
+      - name: Report
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/translation/report.md" ]; then
+            cat "$RUNNER_TEMP/translation/report.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Keep the translations, the report and the bill
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: translation
+          path: ${{ runner.temp }}/translation
+          if-no-files-found: warn

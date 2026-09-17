@@ -417,6 +417,8 @@ def _copy_site(into: str) -> None:
         if os.path.isfile(overlay):
             with open(overlay, encoding="utf-8") as fh:
                 _merge(words, yaml.safe_load(fh))
+        # What the fake catalog was translated from: every English key, as now.
+        words[translation.KEYS_FIELD] = translation.nested(translation.catalog_hashes(into))
         with open(os.path.join(ROOT, "i18n", f"{lang}.yml"), encoding="utf-8") as fh:
             fixed = fh.read()
         with open(os.path.join(into, "i18n", f"{lang}.yml"), "w", encoding="utf-8") as fh:

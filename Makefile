@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening indexes glyphs assets translate i18n translations translation-checks build check clean
+.PHONY: docs preview serve css source home opening indexes glyphs assets translate i18n translations translation-checks agent build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -52,7 +52,10 @@ translations: docs  ## the fake translations in tools/testdata/translations buil
 translation-checks: docs  ## every translation against its original: the fake ones pass, a failure planted for each check refused, a changed original reported
 	uv run tools/check-translations.py --selftest
 
-build: docs css source home opening indexes glyphs assets translate i18n translations translation-checks  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
+agent: docs      ## the translating agent with a fake model — prompts, skipping, the fixed section, retries, the spending limit, the report, a real build — no network
+	uv run tools/translate.py --selftest
+
+build: docs css source home opening indexes glyphs assets translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site

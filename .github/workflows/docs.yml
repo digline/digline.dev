@@ -114,6 +114,16 @@ jobs:
         # After the sync, which it needs; none of it is in docs/.
         run: uv run tools/hooks/translations.py --selftest
 
+      - name: Check the translating agent
+        # tools/translate.py with a fake model and no network: the prompts, the
+        # renewal of the federated token, the pages and catalog keys that have
+        # not changed skipped, the do_not_translate section never sent and
+        # written back as it was, a second attempt with the checks' problems,
+        # the spending limit, the report; and a fake Italian catalog and Why
+        # built and checked for real, and refused for real when a decimal point
+        # becomes a comma. The agent itself runs only in translate.yml.
+        run: uv run tools/translate.py --selftest
+
       - name: Check the indexes' hook
         # tools/hooks/indexes.py: the Decisions table from records of every
         # shape the real ones have, the Examples tiles and their external line,

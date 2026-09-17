@@ -16,8 +16,11 @@ A translation's front matter records the original it was made from:
 tools/hooks/assets.py versions the stylesheets with — of the original's
 Markdown after its front matter, exactly as written, then a newline, then its
 ``description:``. The home's words are not in its Markdown but in the catalog,
-so a translation of index.md also records ``source_keys:``, the same digest of
-every key of i18n/en.yml (a plural's ``one``, a newline, its ``other``).
+and the catalog records what it was translated from: i18n/<lang>.yml carries
+``source_keys:``, the same digest of every key of i18n/en.yml when it was
+translated (a plural's ``one``, a newline, its ``other``), nested the way the
+keys are — ``source_keys: {home: {hero: {lede: 1a2b3c4d5e6f}}}``. The status
+of a translation of index.md reads them there.
 
 ``status()`` compares those with the originals as they are now: an original
 that changed since its translation is reported, and never refused — the
@@ -131,14 +134,33 @@ def fixed_digest(root: str) -> str:
     return digest("\n".join(lines).encode("utf-8"))
 
 
+def nested(flat: dict[str, str]) -> dict:
+    """``{"home.hero.lede": x}`` as ``{"home": {"hero": {"lede": x}}}``."""
+    tree: dict = {}
+    for key, value in flat.items():
+        *path, last = key.split(".")
+        node = tree
+        for segment in path:
+            node = node.setdefault(segment, {})
+        node[last] = value
+    return tree
+
+
+def catalog_source_keys(root: str, lang: str) -> dict[str, str]:
+    """The digests a language's catalog records, by English key; {} when it has none."""
+    path = os.path.join(root, "i18n", f"{lang}.yml")
+    if not os.path.isfile(path):
+        return {}
+    prefix = KEYS_FIELD + "."
+    return {key[len(prefix):]: value for key, value in catalog.Catalog(path).entries.items()
+            if key.startswith(prefix) and isinstance(value, str)}
+
+
 def stamp(meta: dict, root: str, model: str, commit: str | None = None) -> dict:
     """``meta`` with what its translation was made from, as the originals are now."""
     page = meta["translation_of"]
-    stamped = dict(meta, source=page, source_sha=source_sha(root, page),
-                   source_commit=commit or source_commit(root, page) or "0000000", model=model)
-    if page == HOME:
-        stamped[KEYS_FIELD] = catalog_hashes(root)
-    return stamped
+    return dict(meta, source=page, source_sha=source_sha(root, page),
+                source_commit=commit or source_commit(root, page) or "0000000", model=model)
 
 
 def status(meta: dict, root: str) -> list[str]:
@@ -151,7 +173,7 @@ def status(meta: dict, root: str) -> list[str]:
     if meta.get("source_sha") != now:
         changes.append(f"{page} source_sha {meta.get('source_sha')} → {now}")
     if page == HOME:
-        recorded = meta.get(KEYS_FIELD) or {}
+        recorded = catalog_source_keys(root, str(meta.get("lang")))
         current = catalog_hashes(root)
         changed = sorted(k for k in current if k in recorded and recorded[k] != current[k])
         new = sorted(set(current) - set(recorded))
