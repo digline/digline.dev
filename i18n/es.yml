@@ -1,8 +1,464 @@
 # The words the site writes itself, in Spanish.
 #
-# The translation of i18n/en.yml, key for key, arrives with the translations:
-# for now this file holds only the section below. The format is described at
-# the top of tools/catalog.py.
+# Translated from i18n/en.yml by tools/translate.py. source_keys records the English
+# each key was translated from; the format is described at the top of tools/catalog.py.
+
+numbers:
+  '1': uno
+  '2': dos
+  '3': tres
+  '4': cuatro
+  '5': cinco
+  '6': seis
+  '7': siete
+  '8': ocho
+  '9': nueve
+  '10': diez
+  '11': once
+  '12': doce
+  '13': trece
+  '14': catorce
+  '15': quince
+  '16': dieciséis
+  '17': diecisiete
+  '18': dieciocho
+  '19': diecinueve
+  '20': veinte
+bar:
+  drawer_title: Navegación
+  sections_label: Secciones
+  start: Empieza aquí
+  why: Por qué
+  agents: Agentes
+  handbook: Manual
+  docs: Documentación
+  writing: Escritos
+  search_title: Buscar
+  github: digline en GitHub
+  palette: Cambiar entre claro y oscuro
+  language: 'Idioma: {language}'
+footer:
+  columns:
+    product: Producto
+    docs: Documentación
+    contact: Contacto
+  links:
+    install: Instalación
+    changelog: Registro de cambios
+    why: Por qué
+    comparison: Comparación
+    agents: Para agentes
+    guide: Guía
+    metrics: Métricas
+    reference: Referencia
+    examples: Ejemplos
+    writing: Escritos
+  line: Apache-2.0 · Hecho en Italia, mantenido en abierto
+  meta:
+    label: Este sitio
+    about: Acerca de
+    contact: Contacto
+closing:
+  title: Empieza con una suite y
+  title_accent: un run aprobado.
+  lede: La guía no requiere ninguna clave.
+  links:
+    why: por qué un hash no era suficiente &rarr;
+    guide: míralo en tu propia suite &rarr;
+    agents: qué puede y qué no puede hacer un agente &rarr;
+    comparison: en qué se diferencia de las herramientas que conoces &rarr;
+  copy: Copiar
+  copied: Copiado
+not_found:
+  title: 404 - No encontrado
+home:
+  hero:
+    license: Código abierto, Apache-2.0
+    version: v{version}
+    version_pre_1_0: v{version}, previa a 1.0
+    title: Cambiaste un&nbsp;prompt.
+    title_quiet: ¿Qué más empeoró?
+    lede: Un prompt nuevo, una versión de modelo, la actualización de una biblioteca. La aplicación sigue funcionando y una respuesta de la que dependía tu cliente ahora es incorrecta. digline te dice qué caso, en cuánto y si la caída es mayor que el propio ruido del juez.
+    requires: Requiere Python {python}
+    start: Empieza aquí
+    why: Por qué una referencia en el repositorio
+    facts:
+      no_key: El inicio rápido no necesita clave de API
+      no_server: Sin servidor, sin telemetría
+      exit_code: Código de salida para CI
+  python:
+    or_newer: '{version} o posterior'
+  verdict:
+    got_worse: empeoró
+    scale_ref: ref {score}
+    scale_run: run {score}
+    also_worse: También peor
+    diff_head: '{path} · +{added} −{removed} líneas, modificadas respecto a la referencia'
+    exit:
+      one: '{count} check empeoró. CI se detiene aquí.'
+      other: '{count} checks empeoraron. CI se detiene aquí.'
+    caption:
+      one: 'Modelo y juez predefinidos, {count} muestra por caso: en esta demostración no se mide el ruido del juez. Capturado con digline {version}, run {run} · {source}'
+      other: 'Modelo y juez predefinidos, {count} muestras por caso: en esta demostración no se mide el ruido del juez. Capturado con digline {version}, run {run} · {source}'
+    caption_unsampled: 'Modelo y juez predefinidos: en esta demostración no se mide el ruido del juez. Capturado con digline {version}, run {run} · {source}'
+  problem:
+    kicker: El problema
+    title: Una aplicación LLM puede empeorar
+    title_accent: sin que nada se rompa.
+    intro: Las pruebas pasan, la aplicación responde, la demostración funciona. Luego un cambio en un prompt, una versión de modelo o la actualización de una biblioteca modifica una respuesta de la que dependía tu cliente, y nada en el pipeline lo indica.
+    usually: Cómo suele ocurrir
+    usually_items:
+      average: Volver a ejecutar las evaluaciones y mirar la media
+      bad_day: No hay forma de distinguir una caída real de un mal día del juez
+      notebook: Lo que se aprobó, y cuándo, vive en el cuaderno de alguien
+      client: El cliente descubre la regresión primero
+    with_reference: Con una referencia aprobada en el repositorio
+    with_reference_items:
+      compared: Cada cambio se compara caso por caso
+      noise: Se mide el ruido del juez antes de declarar una caída
+      file: La referencia es un archivo en un PR, con un commit y un nombre
+      ci: CI se detiene antes que el lanzamiento
+  fits:
+    kicker: Cómo encaja
+    title: Vive en tu repositorio,
+    title_accent: no en un servidor.
+    intro: No hay que registrarse en nada ni alojar nada. La referencia es un archivo y la herramienta, un paquete.
+    reference_title: La referencia es un archivo de tu repositorio
+    reference_text: Puntuaciones, prompt y configuración del modelo, versionados junto al código. Cambia mediante un PR, así que cada aprobación lleva un commit y un nombre.
+    dependencies:
+      one: '{Number} dependencia'
+      other: '{Number} dependencias'
+    dependencies_title: '{dependencies}, sin SDK de proveedor'
+    dependencies_text: digline instala {names} y nada más propio. Sin servidor, sin telemetría, nada alojado. En CI el código de salida es toda la interfaz.
+  stack:
+    providers_title: Proveedores
+    providers_text: Un plugin para cada uno, que se instala solo si lo usas.
+    openai_compatible: y cualquier endpoint compatible con OpenAI
+    examples_title: Ejemplos resueltos
+    examples_text: Una aplicación real en cada framework, con su suite.
+    run_title: Otras formas de ejecutarlo
+    run_text: En un contenedor, o para un agente.
+    docker: Imagen de Docker
+    mcp: Servidor MCP
+  commands:
+    kicker: Comandos
+    count:
+      one: '{Number} comando'
+      other: '{Number} comandos'
+    title: '{commands},'
+    title_accent: una tarea cada uno.
+    intro: Cada comando tiene su propia página o un lugar en la guía.
+    groups:
+      record: Registrar y aprobar
+      compare: Comparar
+      history: Historial
+      maintenance: Mantenimiento
+  checks:
+    kicker: Checks
+    title: Primero lo determinista,
+    title_accent: el juez al final.
+    count:
+      one: '{count} check'
+      other: '{count} checks'
+    kind_count:
+      one: '{number} tipo'
+      other: '{number} tipos'
+    intro: '{checks} hoy, en {kinds}. La lista crece; los tipos se mantienen.'
+    kinds:
+      deterministic:
+        label: Deterministas
+        description: No interviene ningún modelo. La misma salida, el mismo veredicto.
+      judged:
+        label: Con juez
+        description: Un segundo modelo puntúa la respuesta y se mide su ruido.
+      budget:
+        label: Presupuestos
+        description: Un techo de coste o de latencia, puntuado de forma graduada en lugar de pasa/no pasa.
+      aggregate:
+        label: Agregados
+        description: Un único veredicto sobre todo el run.
+      wrapper:
+        label: Envoltorios
+        description: Adopta la naturaleza del check que envuelve.
+  readings:
+    kicker: Sin referencia y con ella
+    title: El mismo run de evaluación,
+    title_accent: leído de dos maneras.
+    intro: Una línea del prompt cambió entre dos runs. A la izquierda, las puntuaciones que obtienes sin referencia. A la derecha, lo que imprime digline frente a la referencia aprobada.
+    alone_head: El run nuevo por sí solo
+    alone_tag: sin referencia
+    were_these_score: ¿Eran {score} ayer? ¿Cambió algo?
+    were_these_better: ¿Eran mejores ayer? ¿Cambió algo?
+    nothing_says: Nada aquí lo dice.
+    alone_tags:
+      no_baseline: sin baseline
+      no_change: ningún cambio registrado
+      no_exit: sin código de salida
+    compare_tag: frente a la referencia
+    compare_tags:
+      named: cada check con su nombre
+      prompt: cambio de prompt detectado
+    more_lines:
+      one: … {count} línea más
+      other: … {count} líneas más
+    note: Las dos columnas provienen del mismo run capturado, digline {version}. La de la izquierda muestra solo las puntuaciones nuevas; la de la derecha es la salida de la comparación, abreviada donde se indica.
+  try:
+    kicker: Pruébalo
+    title: El inicio rápido funciona
+    title_accent: sin clave de API.
+    intro: Necesitas Python {python}. La llamada al modelo de la guía es predefinida, así que puedes ver todo el ciclo antes de conectar un proveedor real.
+    steps:
+      run: Ejecuta la suite y escribe un archivo de run.
+      promote: Una persona aprueba ese run como referencia.
+      compare: Cada run posterior se comprueba contra ella.
+    you_type: escribes
+    digline_prints: digline imprime
+    note: Salida capturada de digline {version}, run {run}. {guide}
+    full_guide: Guía completa
+  flow:
+    kicker: En un flujo con agentes
+    title: Dónde se sitúa el check
+    title_accent: cuando un agente hace los cambios.
+    intro: El agente edita; digline decide si la edición puede seguir adelante.
+    alt: 'Diagrama animado de digline en un flujo con agentes: la salida de un agente pasa por digline, un gate dentro de tu repositorio, que la mide frente a un noise floor y al baseline aprobado. La deriva que se mantiene dentro del noise floor se absorbe en silencio; una deriva real llega a una persona en forma de dossier, y solo la firma de esa persona actualiza el baseline. Cuando el agente intenta recurrir a promote, el servidor responde que esa herramienta no existe.'
+  roadmap:
+    kicker: Hoja de ruta
+    title: Hacia dónde
+    title_accent: va
+    shipped_label: 'Entregado &mdash; credibilidad del veredicto:'
+    shipped_text: una caída es una regresión solo cuando sale del intervalo que el baseline midió entre sus propias muestras, y el trabajo pendiente ahora es la adopción.
+    never_label: Dos cosas nunca estarán en la hoja de ruta.
+    never_text: Un servicio alojado que reciba tus payloads &mdash; prompts, salidas y el juez se quedan en tu perímetro. Y la recopilación de datos de uso, nunca.
+    more: toda la hoja de ruta, con vías y gates en lugar de fechas &rarr;
+  pilots:
+    kicker: Pilotos
+    title: ¿Desarrollas funciones con LLM
+    title_accent: para clientes?
+    body: Busco unos pocos equipos piloto que usen digline en proyectos reales &mdash; sobre todo equipos que construyen y mantienen soluciones de IA para terceros. A cambio obtienes soporte directo y voz en lo que se construya después.
+    write_me: 'Escríbeme:'
+    issue: o abre una issue en GitHub
+
+source_keys:
+  bar:
+    agents: 279b44d2ab4b
+    docs: 7af023c43013
+    drawer_title: 3db65f8c2a7d
+    github: 21dc59760b94
+    handbook: aba68d704930
+    language: c09c83fed7aa
+    palette: 19d8d295e681
+    search_title: 49c266baaaa7
+    sections_label: 9bae918add9a
+    start: 2adc964c0847
+    why: d3ae14a50bfe
+    writing: a8bfae3eee94
+  closing:
+    copied: 8d525e5f158b
+    copy: e21f935f11d7
+    lede: 5642af9bf4d4
+    links:
+      agents: abc92814caf7
+      comparison: 927d040d3dda
+      guide: cf0b986e8064
+      why: ed4527bd7271
+    title: bcc8aba1b9af
+    title_accent: bd9f05d7c1ff
+  footer:
+    columns:
+      contact: 2b5c3d26721a
+      docs: 7af023c43013
+      product: fb9ef894175c
+    line: 3f6f938caf22
+    links:
+      agents: 04acce351310
+      changelog: ead07c84baac
+      comparison: 571527339d0e
+      examples: e68ee04dff59
+      guide: 8dd65d0952ed
+      install: 569ca49f4aaf
+      metrics: a58da793c725
+      reference: 71bf90935fc2
+      why: d3ae14a50bfe
+      writing: a8bfae3eee94
+    meta:
+      about: 4efca0d10c5f
+      contact: 2b5c3d26721a
+      label: e487482d00f6
+  home:
+    checks:
+      count: c5547b32a0c4
+      intro: 41bbea994662
+      kicker: de07d0720955
+      kind_count: d9a0cf460241
+      kinds:
+        aggregate:
+          description: 14cefea3c710
+          label: 475dd515ce1d
+        budget:
+          description: 4b510efcee4d
+          label: a1a06e046b0b
+        deterministic:
+          description: fadb563e23ba
+          label: ec6b656e17f0
+        judged:
+          description: 51c69e87c947
+          label: 2c58aa30fd78
+        wrapper:
+          description: 4d1ea81e1ea3
+          label: 514b6b44a43b
+      title: 7278ca32da8e
+      title_accent: f30e6e81d891
+    commands:
+      count: 1bd725b48897
+      groups:
+        compare: e888155d8c7d
+        history: 0e7696009337
+        maintenance: 17ccfa5b681e
+        record: 46d054c91b00
+      intro: 1c59e5e40b2e
+      kicker: b269dc4e81a5
+      title: ef5162438554
+      title_accent: 67110764da90
+    fits:
+      dependencies: 688176f27369
+      dependencies_text: 1746d0c5acb8
+      dependencies_title: 3139ddf442b9
+      intro: 222c841abac7
+      kicker: e343d230c956
+      reference_text: 3d29a39c2d9e
+      reference_title: ca1cc1dfdd55
+      title: f5c04e5b9def
+      title_accent: dd712cf62d1a
+    flow:
+      alt: f455175d70a3
+      intro: 164b5787998c
+      kicker: 173d98ef1236
+      title: 643212005eca
+      title_accent: 715190aecf13
+    hero:
+      facts:
+        exit_code: 2b1739c50e37
+        no_key: ff65c9ef70d1
+        no_server: 04230bb3d69e
+      lede: f67b1ad59e06
+      license: 2a43a93eceec
+      requires: 1763678e27ee
+      start: 2adc964c0847
+      title: 296493ef0115
+      title_quiet: 656a3e23385e
+      version: da95c4621978
+      version_pre_1_0: dc5c77e014f4
+      why: 054a1f39a740
+    pilots:
+      body: 29b15d6c20a8
+      issue: 3106669dcd65
+      kicker: d3d4d03a81f9
+      title: 8994e049047e
+      title_accent: 7417db1fabf8
+      write_me: cf0fa77a62bb
+    problem:
+      intro: 5a1c5304bbd3
+      kicker: e01d77b4a0bd
+      title: 85f74bafa4bf
+      title_accent: 6189e2f53760
+      usually: d75eeff66f0a
+      usually_items:
+        average: 470b8d6e36cb
+        bad_day: 0715c79452c9
+        client: aaab2e20790a
+        notebook: a0db7be7d898
+      with_reference: f310ef47822a
+      with_reference_items:
+        ci: a3b241cea305
+        compared: d7f22d7416d0
+        file: 9268df605542
+        noise: 19a7fa5dbeb6
+    python:
+      or_newer: 57613e146b4f
+    readings:
+      alone_head: 1846e948b39c
+      alone_tag: 28dcce55f46b
+      alone_tags:
+        no_baseline: 66e7dd59209e
+        no_change: 28bfedef1ee1
+        no_exit: 9445b01bab55
+      compare_tag: f2b4f82048b8
+      compare_tags:
+        named: 12fe14379b00
+        prompt: f75f7cf48857
+      intro: cdd1ef9345ec
+      kicker: 8650e5adb11b
+      more_lines: 42d60fe51386
+      note: f80e09cc6069
+      nothing_says: d3b6ca1bf8cc
+      title: 66fc7de21cc1
+      title_accent: b078b8d4a2d0
+      were_these_better: fd3aa25df797
+      were_these_score: 0f273f723deb
+    roadmap:
+      kicker: 92375f997ffe
+      more: 6b46556662b6
+      never_label: 7d28fb40af98
+      never_text: 33f7bcb41643
+      shipped_label: bb070b8e3da5
+      shipped_text: 98e46d4af20f
+      title: 87ab0cab1a67
+      title_accent: 3aada874b683
+    stack:
+      docker: 74c08568b7d2
+      examples_text: df62c6ce232d
+      examples_title: 936698aa1941
+      mcp: d938c8168e3a
+      openai_compatible: 2b6834dd6a7e
+      providers_text: 94c9fedb11ec
+      providers_title: 996c32b35f21
+      run_text: a05244958e06
+      run_title: 22fe6c73119a
+    try:
+      digline_prints: 49ec85ad555a
+      full_guide: 800c497de8ba
+      intro: 00e5966a4b34
+      kicker: fe6951113784
+      note: 4179237417b8
+      steps:
+        compare: 0377e3b4322c
+        promote: e037ac2caf74
+        run: 8cd21b0fa786
+      title: d6b58bd094bd
+      title_accent: 5886a3455596
+      you_type: f9f5fc63ff66
+    verdict:
+      also_worse: 3f04469d3f9b
+      caption: 713dd2a3426f
+      caption_unsampled: d084abde98f0
+      diff_head: a5d014623bd1
+      exit: 497660dffb5f
+      got_worse: ca5b318393bf
+      scale_ref: 5ae084af93a4
+      scale_run: 5537e3975c73
+  not_found:
+    title: 53c6279bf75b
+  numbers:
+    '1': 7692c3ad3540
+    '10': e4432baa9081
+    '11': e979074ebd56
+    '12': d1a749ad879b
+    '13': 9ecc81f0a4b6
+    '14': fef8f41cdcd2
+    '15': c463967e5708
+    '16': f2ce341fdaa6
+    '17': 2c5abdef2a0e
+    '18': 34357b18abdd
+    '19': cde4e100efd2
+    '2': 3fc4ccfe7458
+    '20': 7c2c4df740f7
+    '3': 8b5b9db0c13d
+    '4': 04efaf080f5a
+    '5': 222b0bd51fce
+    '6': 44778d82365e
+    '7': 3ba8d02b16fd
+    '8': c195d2d87562
+    '9': edcd8e701a2d
 
 # ── DO NOT TRANSLATE ─────────────────────────────────────────────────────────
 # Written by hand, and never by the translating agent: the notice a translated
