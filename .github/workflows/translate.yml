@@ -1,10 +1,18 @@
 name: translate
 
-# The translating agent, run by hand: it translates what has changed of the
-# presentation pages and the catalog into the languages asked for, checks every
+# The translating agent: it translates what has changed of the presentation
+# pages and the catalog into the languages asked for, checks every
 # translation against its original in a built copy of the site, reads each page
 # again for errors of meaning, and writes the translations, the report and the
 # bill to an artifact. tools/translate.py has the rest.
+#
+# It runs on its own after a push to main that touches what it translates —
+# the five English pages, i18n/en.yml, the templates that write catalog words —
+# as a real run of every language and page; and by hand (workflow_dispatch),
+# as a dry run or a real one. A push's run, or a real run by hand, first asks
+# tools/translate.py --plan what there is to translate on main as it is now: when
+# nothing, no job runs, no token is exchanged, no pull request is opened or
+# touched. RUNBOOK.md has the procedure around it.
 #
 # A dry run stops there. A real run (dry_run false) also commits the
 # translations to the fixed branch i18n/auto, as the GitHub App, on top of main,
@@ -13,6 +21,12 @@ name: translate
 # token, not GITHUB_TOKEN: what GITHUB_TOKEN pushes or opens starts no workflow,
 # and the pull request has to run docs.yml like any other. Nothing reaches main
 # but through that pull request.
+#
+# When no page of the report needs attention, the run enables auto-merge (a
+# merge commit) on the pull request: the ruleset on main requires the Build
+# check, so it merges itself once docs.yml is green. When one does, auto-merge
+# is turned off, the pull request carries the label "translation: needs
+# attention", and the report in its description says what and where.
 #
 # The Claude API is reached with no key: the job asks GitHub for OIDC tokens and
 # tools/translate.py exchanges them at Anthropic (Workload Identity Federation),
@@ -27,6 +41,22 @@ name: translate
 # an artifact. Before the first call the log has what the run is expected to
 # cost, and the most it could; it stops once max_cost is spent.
 on:
+  push:
+    branches: [main]
+    paths:
+      - docs/index.md
+      - docs/start.md
+      - docs/why.md
+      - docs/about.md
+      - docs/contact.md
+      - i18n/en.yml
+      # The templates that write words of the catalog ({{ "key" | t }}).
+      - overrides/home.html
+      - overrides/404.html
+      - overrides/partials/header.html
+      - overrides/partials/footer.html
+      - overrides/partials/opening.html
+      - overrides/partials/closing.html
   workflow_dispatch:
     inputs:
       langs:
@@ -54,13 +84,57 @@ permissions:
   # To read the artifact of the last successful run.
   actions: read
 
+# One run at a time, pushes and dispatches alike. A run in progress is never
+# cancelled — it may be halfway through a paid call, or a push to i18n/auto.
+# A group holds one pending run besides it: a newer one cancels the pending
+# one, which loses nothing, since each run translates main as it is when it
+# starts.
 concurrency:
   group: translate
   cancel-in-progress: false
 
 jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      work: ${{ steps.plan.outputs.work }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          enable-cache: true
+
+      # A dry run always runs: it starts from an earlier run's artifact, which
+      # the plan does not see.
+      - name: What is there to translate?
+        id: plan
+        env:
+          LANGS: ${{ inputs.langs || 'it,de,es' }}
+          PAGES: ${{ inputs.pages || 'index,start,why,about,contact' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          plan=$(uv run tools/translate.py --plan --langs "$LANGS" --pages "$PAGES")
+          echo "$plan"
+          work=$(jq -r .work <<<"$plan")
+          if [ "$DRY_RUN" = "true" ]; then work=true; fi
+          if [ "$work" != "true" ]; then
+            echo "Nothing to translate on main: no run." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "work=$work" >> "$GITHUB_OUTPUT"
+
   translate:
     name: Translate
+    needs: plan
+    if: needs.plan.outputs.work == 'true'
     runs-on: ubuntu-latest
     # Three languages of five pages and a catalog, each built and checked after
     # every answer: the first run took four and a half minutes for one page.
@@ -70,8 +144,11 @@ jobs:
       # its notice is dated by it: the copy the checks build needs the history.
       # persist-credentials: false — git would otherwise send GITHUB_TOKEN with
       # the push, whatever token its URL carries.
+      # ref: main — main as it is when the run starts, not as it was when a
+      # pending run was queued.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
+          ref: main
           fetch-depth: 0
           persist-credentials: false
 
@@ -91,7 +168,7 @@ jobs:
 
       - name: Find the last successful run's translations
         id: previous
-        if: inputs.dry_run
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -123,10 +200,11 @@ jobs:
 
       - name: Translate
         env:
-          LANGS: ${{ inputs.langs }}
-          PAGES: ${{ inputs.pages }}
-          MAX_COST: ${{ inputs.max_cost }}
-          DRY_RUN: ${{ inputs.dry_run }}
+          LANGS: ${{ inputs.langs || 'it,de,es' }}
+          PAGES: ${{ inputs.pages || 'index,start,why,about,contact' }}
+          # The spending limit of a run: the input by hand, 12 USD after a push.
+          MAX_COST: ${{ inputs.max_cost || 12 }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
           ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORG_ID }}
           ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
           ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
@@ -151,7 +229,7 @@ jobs:
       # page is not written, and the report says so. The job still fails.
       - name: Anything to publish?
         id: written
-        if: ${{ !inputs.dry_run && !cancelled() }}
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) && !cancelled() }}
         run: |
           if [ -f "$RUNNER_TEMP/translation/pr-body.md" ]; then
             echo "report=true" >> "$GITHUB_OUTPUT"
@@ -171,6 +249,7 @@ jobs:
           permission-pull-requests: write
 
       - name: Commit to i18n/auto and open the pull request
+        id: pr
         if: ${{ !cancelled() && steps.app.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
@@ -204,7 +283,31 @@ jobs:
           else
             url=$(gh pr create --repo "$REPOSITORY" --base main --head i18n/auto \
               --title "Translations: the presentation pages and the catalog" --body-file "$body")
+            number=${url##*/}
             echo "Opened ${url}" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "number=${number}" >> "$GITHUB_OUTPUT"
+
+      # summary.json's needs_attention: the pages whose reading of meaning
+      # still found an error after the correction.
+      - name: Merge by itself, or wait for a person
+        if: ${{ !cancelled() && steps.pr.outputs.number != '' }}
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          REPOSITORY: ${{ github.repository }}
+          NUMBER: ${{ steps.pr.outputs.number }}
+          LABEL: "translation: needs attention"
+        run: |
+          set -euo pipefail
+          attention=$(jq -r .needs_attention "$RUNNER_TEMP/translation/summary.json")
+          if [ "$attention" = "0" ]; then
+            gh pr edit "$NUMBER" --repo "$REPOSITORY" --remove-label "$LABEL" >/dev/null 2>&1 || true
+            gh pr merge "$NUMBER" --repo "$REPOSITORY" --auto --merge
+            echo "No page needs attention: #${NUMBER} merges itself once Build is green." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            gh pr merge "$NUMBER" --repo "$REPOSITORY" --disable-auto >/dev/null 2>&1 || true
+            gh pr edit "$NUMBER" --repo "$REPOSITORY" --add-label "$LABEL"
+            echo "${attention} page(s) need attention: #${NUMBER} waits for a person." | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Keep the translations, the report and the bill
