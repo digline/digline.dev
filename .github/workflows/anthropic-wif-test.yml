@@ -1,0 +1,124 @@
+name: anthropic-wif-test
+
+# A manual check of the connection to the Claude API, with no API key anywhere:
+# the job asks GitHub for an OIDC token, exchanges it at Anthropic for an access
+# token that lives a few minutes (Workload Identity Federation), and makes one
+# small call with it.
+#
+# Who may exchange is decided on Anthropic's side, by the federation rule: this
+# repository, refs/heads/main, this organization. So the job has no environment
+# — the sub claim it presents is repo:digline/digline.dev:ref:refs/heads/main —
+# and dispatched from any other ref the exchange is refused with a 401. That is
+# the negative half of the check, and it is worth running now and then.
+#
+# The four identifiers are repository variables, not secrets: none of them
+# grants anything without a token GitHub signed for this repository and ref.
+#
+# Neither token is ever printed. Both are masked the moment they exist, handed
+# between steps through files in $RUNNER_TEMP (emptied when the job ends), and
+# the log shows only outcomes: HTTP statuses, expiry, scope, the reply's text.
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  check:
+    name: Exchange and call
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Get a GitHub OIDC token
+        # Pinned to the commit of v9.0.0. The audience must equal the rule's
+        # match.audience exactly.
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const jwt = await core.getIDToken('https://api.anthropic.com');
+            core.setSecret(jwt);
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'gha-jwt'), jwt, { mode: 0o600 });
+            // The claims are not secret, and they are what the rule is matched
+            // against: the sub is the first thing to read when step 2 says 401.
+            const claims = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64url').toString());
+            core.info(`OIDC token issued: sub=${claims.sub} aud=${claims.aud} expires ${new Date(claims.exp * 1000).toISOString()}`);
+
+      - name: Exchange it for an Anthropic token
+        env:
+          ORG_ID: ${{ vars.ANTHROPIC_ORG_ID }}
+          RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+        run: |
+          set -euo pipefail
+          # The body is built by jq from the file, so the JWT never appears on
+          # a command line.
+          jq -n --rawfile jwt "$RUNNER_TEMP/gha-jwt" \
+            --arg rule "$RULE_ID" --arg org "$ORG_ID" \
+            --arg sa "$SERVICE_ACCOUNT_ID" --arg ws "$WORKSPACE_ID" \
+            '{grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+              assertion: ($jwt | rtrimstr("\n")),
+              federation_rule_id: $rule, organization_id: $org,
+              service_account_id: $sa, workspace_id: $ws}' \
+            > "$RUNNER_TEMP/exchange-request.json"
+          rm -f "$RUNNER_TEMP/gha-jwt"
+
+          status=$(curl -sS -o "$RUNNER_TEMP/exchange-response.json" -w '%{http_code}' \
+            https://api.anthropic.com/v1/oauth/token \
+            -H 'content-type: application/json' \
+            --data-binary @"$RUNNER_TEMP/exchange-request.json")
+          rm -f "$RUNNER_TEMP/exchange-request.json"
+          echo "Exchange: HTTP $status"
+
+          if [ "$status" != 200 ]; then
+            # An error body carries no token; print its type and message only.
+            jq -r '"Refused: \(.error.type // "?"): \(.error.message // "?") (request_id \(.request_id // "none"))"' \
+              "$RUNNER_TEMP/exchange-response.json" || true
+            rm -f "$RUNNER_TEMP/exchange-response.json"
+            exit 1
+          fi
+
+          token=$(jq -r '.access_token // empty' "$RUNNER_TEMP/exchange-response.json")
+          if [ -z "$token" ]; then
+            echo "Refused: HTTP 200 without an access_token"
+            rm -f "$RUNNER_TEMP/exchange-response.json"
+            exit 1
+          fi
+          echo "::add-mask::$token"
+          ( umask 077; printf '%s' "$token" > "$RUNNER_TEMP/anthropic-token" )
+          jq -r '"Token issued: type \(.token_type), scope \(.scope), expires in \(.expires_in)s"' \
+            "$RUNNER_TEMP/exchange-response.json"
+          case "$token" in
+            sk-ant-oat01-*) echo "Token format: sk-ant-oat01- (as documented)" ;;
+            *) echo "Token format: unexpected prefix" ;;
+          esac
+          rm -f "$RUNNER_TEMP/exchange-response.json"
+
+      - name: Call the Messages API with it
+        # A federated token goes in Authorization: Bearer, not x-api-key
+        # (platform.claude.com/docs/en/manage-claude/wif-reference, "Token
+        # exchange response").
+        run: |
+          set -euo pipefail
+          token=$(cat "$RUNNER_TEMP/anthropic-token")
+          rm -f "$RUNNER_TEMP/anthropic-token"
+
+          status=$(curl -sS -o "$RUNNER_TEMP/messages-response.json" -w '%{http_code}' \
+            https://api.anthropic.com/v1/messages \
+            -H "authorization: Bearer $token" \
+            -H 'anthropic-version: 2023-06-01' \
+            -H 'content-type: application/json' \
+            -d '{"model": "claude-haiku-4-5", "max_tokens": 16,
+                 "messages": [{"role": "user", "content": "Reply with OK"}]}')
+          echo "Messages API: HTTP $status"
+
+          if [ "$status" != 200 ]; then
+            jq -r '"Error: \(.error.type // "?"): \(.error.message // "?") (request_id \(.request_id // "none"))"' \
+              "$RUNNER_TEMP/messages-response.json" || true
+            exit 1
+          fi
+          jq -r '"Reply: \([.content[] | select(.type == "text") | .text] | join(""))"' \
+            "$RUNNER_TEMP/messages-response.json"
