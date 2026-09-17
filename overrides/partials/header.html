@@ -13,6 +13,8 @@
   the latest release, from the reader's browser and on every page load, and this
   site asks that of no one. The counter in `partials/analytics.html` is the only
   outside request there is.
+
+  Its words are keys in i18n/en.yml, under `bar`, printed with the `t` filter.
 -#}
 {% set docs = not plain_page %}
 {% set here = page.file.src_uri if page and page.file else "" %}
@@ -33,7 +35,7 @@
   <div class="md-header__inner dg-bar__in">
 
     {% if docs %}
-    <label class="md-header__button md-icon dg-burger" for="__drawer" title="Navigation">
+    <label class="md-header__button md-icon dg-burger" for="__drawer" title="{{ 'bar.drawer_title' | t }}">
       {% include ".icons/material/menu.svg" %}
     </label>
     {% endif %}
@@ -54,40 +56,40 @@
     </div>
     {% endif %}
 
-    <nav class="dg-nav" aria-label="Sections">
-      <a href="{{ base_url }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>Start here</a>
+    <nav class="dg-nav" aria-label="{{ 'bar.sections_label' | t }}">
+      <a href="{{ base_url }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>{{ "bar.start" | t }}</a>
       {#- The entry that yields when the bar runs out of room: Why is reachable
           from Start here, which is the entry beside it, and from the landing.
           Hidden by .dg-nav__optional: under 500px in chrome.css, and on the
           documentation pages under 670px in theme.css. -#}
-      <a class="dg-nav__optional" href="{{ base_url }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>Why</a>
+      <a class="dg-nav__optional" href="{{ base_url }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>{{ "bar.why" | t }}</a>
       {#- Yields with Why: the footer carries it in the Docs column, beside Why. -#}
-      <a class="dg-nav__optional" href="{{ base_url }}/agents/"{% if here == "agents.md" %} aria-current="page"{% endif %}>Agents</a>
-      <a href="{{ base_url }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>Handbook</a>
-      <a href="{{ base_url }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>Docs</a>
+      <a class="dg-nav__optional" href="{{ base_url }}/agents/"{% if here == "agents.md" %} aria-current="page"{% endif %}>{{ "bar.agents" | t }}</a>
+      <a href="{{ base_url }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>{{ "bar.handbook" | t }}</a>
+      <a href="{{ base_url }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>{{ "bar.docs" | t }}</a>
       {#- The second entry that yields when the bar runs out of room, and it
           yields for the same reason Why does: the footer carries it in the
           Docs column, so losing it on a narrow phone costs a scroll, not a
           destination. -#}
-      <a class="dg-nav__optional" href="{{ base_url }}/blog/"{% if here.startswith("blog/") %} aria-current="true"{% endif %}>Writing</a>
+      <a class="dg-nav__optional" href="{{ base_url }}/blog/"{% if here.startswith("blog/") %} aria-current="true"{% endif %}>{{ "bar.writing" | t }}</a>
     </nav>
 
     <div class="dg-actions">
       {% if docs and "material/search" in config.plugins %}
         {% set search = config.plugins["material/search"] | attr("config") %}
         {% if search.enabled %}
-          <label class="md-header__button md-icon" for="__search" title="Search">
+          <label class="md-header__button md-icon" for="__search" title="{{ 'bar.search_title' | t }}">
             {% include ".icons/material/magnify.svg" %}
           </label>
           {% include "partials/search.html" %}
         {% endif %}
       {% endif %}
 
-      <a class="dg-icon" href="{{ config.repo_url }}" title="digline on GitHub" aria-label="digline on GitHub">
+      <a class="dg-icon" href="{{ config.repo_url }}" title="{{ 'bar.github' | t }}" aria-label="{{ 'bar.github' | t }}">
         {% include ".icons/fontawesome/brands/github.svg" %}
       </a>
 
-      <button class="dg-icon" type="button" id="__dg_palette" title="Switch between light and dark" aria-label="Switch between light and dark" hidden>
+      <button class="dg-icon" type="button" id="__dg_palette" title="{{ 'bar.palette' | t }}" aria-label="{{ 'bar.palette' | t }}" hidden>
         <span class="dg-moon">{% include ".icons/material/weather-night.svg" %}</span>
         <span class="dg-sun">{% include ".icons/material/weather-sunny.svg" %}</span>
       </button>

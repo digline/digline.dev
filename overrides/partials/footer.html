@@ -4,6 +4,9 @@
   Material includes `partials/footer.html` from its own base.html, and
   _shell.html includes the same file, so the foot of the landing and the foot of
   the guide are the same three columns and the same last line.
+
+  Its words are keys in i18n/en.yml, under `footer`, printed with the `t`
+  filter. GitHub, PyPI and the two addresses are names, and stay as written.
 -#}
 {%- set here = page.file.src_uri if page and page.file else "" %}
 <footer class="dg-foot">
@@ -12,31 +15,31 @@
     <div class="dg-foot__cols">
 
       <section>
-        <h2>Product</h2>
+        <h2>{{ "footer.columns.product" | t }}</h2>
         <ul>
-          <li><a href="{{ base_url }}/#install">Install</a></li>
-          <li><a href="{{ base_url }}/product/changelog/">Changelog</a></li>
+          <li><a href="{{ base_url }}/#install">{{ "footer.links.install" | t }}</a></li>
+          <li><a href="{{ base_url }}/product/changelog/">{{ "footer.links.changelog" | t }}</a></li>
           <li><a href="{{ config.repo_url }}">GitHub</a></li>
           <li><a href="https://pypi.org/project/digline/">PyPI</a></li>
         </ul>
       </section>
 
       <section>
-        <h2>Docs</h2>
+        <h2>{{ "footer.columns.docs" | t }}</h2>
         <ul>
-          <li><a href="{{ base_url }}/why/">Why</a></li>
-          <li><a href="{{ base_url }}/comparison/">Comparison</a></li>
-          <li><a href="{{ base_url }}/agents/">For agents</a></li>
-          <li><a href="{{ base_url }}/product/guide/">Guide</a></li>
-          <li><a href="{{ base_url }}/product/metrics/">Metrics</a></li>
-          <li><a href="{{ base_url }}/product/api/">Reference</a></li>
-          <li><a href="{{ base_url }}/product/examples/">Examples</a></li>
-          <li><a href="{{ base_url }}/blog/">Writing</a></li>
+          <li><a href="{{ base_url }}/why/">{{ "footer.links.why" | t }}</a></li>
+          <li><a href="{{ base_url }}/comparison/">{{ "footer.links.comparison" | t }}</a></li>
+          <li><a href="{{ base_url }}/agents/">{{ "footer.links.agents" | t }}</a></li>
+          <li><a href="{{ base_url }}/product/guide/">{{ "footer.links.guide" | t }}</a></li>
+          <li><a href="{{ base_url }}/product/metrics/">{{ "footer.links.metrics" | t }}</a></li>
+          <li><a href="{{ base_url }}/product/api/">{{ "footer.links.reference" | t }}</a></li>
+          <li><a href="{{ base_url }}/product/examples/">{{ "footer.links.examples" | t }}</a></li>
+          <li><a href="{{ base_url }}/blog/">{{ "footer.links.writing" | t }}</a></li>
         </ul>
       </section>
 
       <section>
-        <h2>Contact</h2>
+        <h2>{{ "footer.columns.contact" | t }}</h2>
         <ul>
           <li><a href="mailto:hello@digline.dev">hello@digline.dev</a></li>
           <li><a href="https://github.com/digline">github.com/digline</a></li>
@@ -45,12 +48,12 @@
 
     </div>
     <div class="dg-foot__line">
-      <p>Apache-2.0 · Made in Italy, maintained in the open</p>
+      <p>{{ "footer.line" | t }}</p>
       {# The two pages that are about us rather than about the product. They
          belong here, not in the sections at the top. #}
-      <nav class="dg-foot__meta" aria-label="This site">
-        <a href="{{ base_url }}/about/"{% if here == "about.md" %} aria-current="page"{% endif %}>About</a>
-        <a href="{{ base_url }}/contact/"{% if here == "contact.md" %} aria-current="page"{% endif %}>Contact</a>
+      <nav class="dg-foot__meta" aria-label="{{ 'footer.meta.label' | t }}">
+        <a href="{{ base_url }}/about/"{% if here == "about.md" %} aria-current="page"{% endif %}>{{ "footer.meta.about" | t }}</a>
+        <a href="{{ base_url }}/contact/"{% if here == "contact.md" %} aria-current="page"{% endif %}>{{ "footer.meta.contact" | t }}</a>
       </nav>
     </div>
   </div>
