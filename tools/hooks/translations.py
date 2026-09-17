@@ -262,6 +262,10 @@ def on_post_build(config, **kwargs):
 # ── the selftest ─────────────────────────────────────────────────────────────
 
 FIXTURE = os.path.join(ROOT, "tools", "testdata", "translations", "docs")
+
+# When the fixture's English site is committed: a day in the past, which the
+# fake translations' notices must show.
+ENGLISH_DATE = "2026-01-15T12:00:00Z"
 SITE_URL = "https://digline.dev/"
 
 
@@ -302,12 +306,15 @@ def _copy_site(into: str) -> None:
     import translation  # tools/translation.py
 
     # The English site first, committed, so that each translation is stamped
-    # with a commit the copy has — its notice is dated by it.
+    # with a commit the copy has — its notice is dated by it. On a fixed day in
+    # the past, so that a notice dated today is not mistaken for one dated by
+    # its original's commit.
     git = ["git", "-C", into, "-c", "user.name=selftest", "-c", "user.email=selftest@invalid",
            "-c", "commit.gpgsign=false"]
     subprocess.run(git[:3] + ["init", "-q"], check=True)
     subprocess.run(git + ["add", "-A"], check=True)
-    subprocess.run(git + ["commit", "-q", "-m", "selftest: the English site"], check=True)
+    past = dict(os.environ, GIT_AUTHOR_DATE=ENGLISH_DATE, GIT_COMMITTER_DATE=ENGLISH_DATE)
+    subprocess.run(git + ["commit", "-q", "-m", "selftest: the English site"], check=True, env=past)
     for lang in sorted(os.listdir(FIXTURE)):
         os.makedirs(os.path.join(into, "docs", lang))
         for name in sorted(os.listdir(os.path.join(FIXTURE, lang))):

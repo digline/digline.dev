@@ -38,7 +38,7 @@
       <p class="hero__status"><span>{{ "home.hero.license" | t }}</span><span>{% if home.pre_1_0 %}{{ "home.hero.version_pre_1_0" | t(version=home.version) }}{% else %}{{ "home.hero.version" | t(version=home.version) }}{% endif %}</span>
         {%- if notice %}<span class="hero__notice{% if notice.stale %} hero__notice--stale{% endif %}" data-translation-notice>
           {%- if notice.stale %}{{ "do_not_translate.stale" | t }}{% else %}{{ "do_not_translate.notice" | t }}{% endif %}
-          <a href="{{ base_url }}/{{ notice.original }}" hreflang="en" lang="en">{{ "do_not_translate.original" | t(date=notice.date) }}</a></span>
+          <a href="{{ base_url }}/{{ notice.original }}" hreflang="en">{{ "do_not_translate.original" | t(date=notice.date) }}</a></span>
         {%- endif %}</p>
       <h1 class="hero__title" id="hero-h">{{ "home.hero.title" | t }}<span class="hero__quiet">{{ "home.hero.title_quiet" | t }}</span></h1>
       <p class="hero__lede">{{ "home.hero.lede" | t }}</p>

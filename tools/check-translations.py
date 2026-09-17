@@ -29,8 +29,9 @@ of its English original as they were built, and fails when
      source_commit, model, and for the home source_keys; or its page does not
      carry exactly one notice (DISCLAIMER_REQUIRED) that it was translated by
      a model — the fixed words of its language, the stale ones once the
-     original has changed, and a link to the original, hreflang and lang
-     "en", named with the day of source_commit;
+     original has changed, and a link to the original, hreflang "en",
+     named with the day of source_commit. The link's words are the page's
+     language, so it carries no lang of its own;
   g) the fixed words themselves — every language's do_not_translate section —
      are not the ones FIXED_TEXTS_DIGEST pins. The translating agent never
      changes them; a person who means to changes the digest with them.
@@ -57,6 +58,7 @@ change is reported, with exit status 0.
 
 from __future__ import annotations
 
+import datetime
 import importlib.util
 import os
 import re
@@ -303,12 +305,12 @@ def notice_problems(page: "Main", here: str, src_uri: str, meta: dict, lang: str
     if len(links) != 1:
         problems.append(f"{here}: the notice has {len(links)} links, and it has one, to the original")
     else:
-        href, hreflang, link_lang = links[0]
+        href, hreflang, _ = links[0]
         resolved = urlsplit(urljoin("https://site.invalid/" + languages.page_url(src_uri), href)).path
         if resolved != original_url:
             problems.append(f"{here}: the notice links to {resolved}, and the original is {original_url}")
-        if hreflang != "en" or link_lang != "en":
-            problems.append(f"{here}: the notice's link is hreflang={hreflang!r} lang={link_lang!r}, not \"en\"")
+        if hreflang != "en":
+            problems.append(f"{here}: the notice's link is hreflang={hreflang!r}, not \"en\"")
     return problems
 
 
@@ -581,27 +583,31 @@ def selftest() -> int:
 
         # f) the notice: on every translation, once, dated by source_commit,
         # linking to its original in English.
+        # The English site is committed on a day in the past (the hook's
+        # ENGLISH_DATE), so a notice dated today is told apart from one dated
+        # by its original's commit.
+        git_day = hook.ENGLISH_DATE[:10]
         date = translation.commit_date(root, translation.read_page(os.path.join(root, "docs", "it", "why.md"))[0]["source_commit"])
-        git_day = subprocess.run(["git", "-C", root, "log", "-1", "--format=%cs", "--", "docs/why.md"],
-                                 capture_output=True, text=True).stdout.strip()
-        if counted["notices"] != counted["translations"] or not date or date != git_day:
+        today = datetime.date.today().isoformat()
+        if counted["notices"] != counted["translations"] or date != git_day or git_day == today:
             failures.append(f"f) the fixture's notices: {counted['notices']} for {counted['translations']} translations, "
-                            f"dated {date}, the original's commit {git_day}")
+                            f"dated {date}, the original's commit {git_day}, today {today}")
         it_why = read_main(os.path.join(site, "it", "why", "index.html"))
         expected = ("Tradotto dall'inglese con un modello AI. Originale in inglese del " + git_day,
-                    [("../../why/", "en", "en")])
+                    [("../../why/", "en", None)])
         got = (" ".join("".join(it_why.notice_text).split()), it_why.notice_links)
         if got != expected:
             failures.append(f"f) the Italian Why's notice: {got}, wanted {expected}")
         home = read_main(os.path.join(site, "it", "index.html"))
-        if home.notice_links != [("../", "en", "en")] or "hero__notice" not in home.notice_class:
+        if home.notice_links != [("../", "en", None)] or "hero__notice" not in home.notice_class:
             failures.append(f"f) the Italian home's notice: {home.notice_class} {home.notice_links}")
         english = read_main(os.path.join(site, "why", "index.html"))
         if english.notice:
             failures.append("f) the English Why carries a notice")
         if not failures:
             print(f"translations selftest: a notice on each of the {counted['translations']} translations, dated "
-                  f"{git_day}, linking to its original with hreflang and lang en; none on English Why")
+                  f"{git_day} by the original's commit and not today, linking to its original with hreflang en; "
+                  "none on English Why")
 
         notice_planted = [
             ("f) a translation without its notice", "site/it/about/index.html",
