@@ -46,6 +46,9 @@ bar:
   search_title: "Search"
   github: "digline on GitHub"
   palette: "Switch between light and dark"
+  # The language menu's name, on a page with translations: {language} is the
+  # page's language by its own name (tools/languages.py, NAMES).
+  language: "Language: {language}"
 
 # overrides/partials/footer.html — the band at the foot of every page.
 footer:

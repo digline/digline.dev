@@ -15,11 +15,17 @@
   outside request there is.
 
   Its words are keys in i18n/en.yml, under `bar`, printed with the `t` filter.
+
+  The language menu, before GitHub, only on a page with translations — the
+  English page and each translation: page.meta.language_switch, which
+  tools/hooks/translations.py builds from the page's hreflang links. A
+  <details>, whole without a script; the script after the bar adds Esc and a
+  click outside to close it. Nothing of it is written on any other page.
 -#}
 {% set docs = not plain_page %}
 {#- The page the bar is on, as its English source: a translation is where its
     original is (translation_of), so /it/why/ marks Why as current. #}
-{% set here = (page.meta.translation_of or page.file.src_uri) if page and page.file else "" %}
+{% set here = (page.meta.translation_of or page.file.src_uri) if page and page.file else "" %}{% set switch = page.meta.language_switch if page and page.meta else none %}
 
 {%- set palette_options = [] %}
 {%- for option in config.theme.palette %}
@@ -87,7 +93,18 @@
         {% endif %}
       {% endif %}
 
-      <a class="dg-icon" href="{{ config.repo_url }}" title="{{ 'bar.github' | t }}" aria-label="{{ 'bar.github' | t }}">
+      {% if switch %}<details class="dg-lang">
+        <summary class="dg-icon dg-lang__summary" title="{{ 'bar.language' | t(language=switch.current.name) }}" aria-label="{{ 'bar.language' | t(language=switch.current.name) }}">
+          {{- switch.current.code -}}
+        </summary>
+        <ul class="dg-lang__menu">
+          {%- for item in switch["items"] %}
+          <li><a class="dg-lang__item" href="{{ base_url }}/{{ item.path }}" lang="{{ item.lang }}" hreflang="{{ item.lang }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.name }}</a></li>
+          {%- endfor %}
+        </ul>
+      </details>
+
+      {% endif %}<a class="dg-icon" href="{{ config.repo_url }}" title="{{ 'bar.github' | t }}" aria-label="{{ 'bar.github' | t }}">
         {% include ".icons/fontawesome/brands/github.svg" %}
       </a>
 
@@ -141,4 +158,23 @@
     __md_set("__palette", next);
   });
 })();
-</script>
+</script>{% if switch %}
+<script>
+/* The language menu is a <details>, and opens and closes on its summary without
+   this. With it, Esc closes the menu and gives the focus back to the summary,
+   and a click anywhere outside the menu closes it. */
+(function () {
+  var menu = document.querySelector("details.dg-lang");
+  if (!menu) return;
+  var summary = menu.querySelector("summary");
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && menu.open) {
+      menu.open = false;
+      summary.focus();
+    }
+  });
+  document.addEventListener("click", function (event) {
+    if (menu.open && !menu.contains(event.target)) menu.open = false;
+  });
+})();
+</script>{% endif %}

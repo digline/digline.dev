@@ -30,6 +30,11 @@ ORIGINAL = "en"
 # hreflang links are written.
 LANGUAGES = ("it", "de", "es")
 
+# Each language by its own name, as the language menu lists it: a reader looks
+# for their language in their language. Not in the catalogs, which say things
+# in one language; these say the same thing in every page.
+NAMES = {"en": "English", "it": "Italiano", "de": "Deutsch", "es": "Español"}
+
 # The pages that may be translated: the five presentation pages, by their
 # source path under docs/.
 PAGES = ("index.md", "start.md", "why.md", "about.md", "contact.md")

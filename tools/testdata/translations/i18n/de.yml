@@ -1,0 +1,13 @@
+# Plausible German words for the bar, for the fixture only: laid over a copy of
+# i18n/en.yml to make the fake German catalog, so that the bar of /de/why/ is as
+# wide as a German bar will be, and its breakpoints are measured on it
+# (docs/assets/chrome.css). Not a translation to publish: the German catalog
+# arrives with the translations, and the bar is measured again then.
+bar:
+  start: "Erste Schritte"
+  why: "Warum"
+  agents: "Agenten"
+  handbook: "Handbuch"
+  docs: "Doku"
+  writing: "Artikel"
+  language: "Sprache: {language}"
