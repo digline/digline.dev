@@ -100,8 +100,9 @@ hooks:
   - tools/hooks/i18n.py
   # The translations of the presentation pages, docs/<lang>/: refused unless
   # each is one of the five, in its folder's language, at its original's path,
-  # with its own description and out of search; and the hreflang links on an
-  # English page with translations and on the translations, checked again in
+  # with its own description and out of search; the hreflang links on an
+  # English page with translations and on the translations; and a translation's
+  # links sent to the pages translated into its language, all checked again in
   # site/ after the build. See the file's docstring, and tools/languages.py.
   - tools/hooks/translations.py
   - tools/hooks/seo.py
