@@ -283,7 +283,7 @@ PRODUCT: dict[str, tuple[str, str]] = {
     "product/adr/index.md": (
         "Decisions",
         "Why digline is shaped the way it is: one architecture decision record "
-        "per decision, in the order they were taken, superseded ones kept and "
+        "per decision, in the order they were numbered, superseded ones kept and "
         "marked.",
     ),
     "product/adr/0001-verdict-not-score.md": (

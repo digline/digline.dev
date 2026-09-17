@@ -516,14 +516,20 @@ def _source(page) -> str | None:
 
 
 def _sections(items, title: str) -> list[tuple[str, list]]:
-    """[(heading, pages)] for one level of the nav, then for each of its groups.
+    """[(heading, pages)] for one level of the nav and each of its groups, in
+    the nav's order.
 
-    The pages sitting directly in a level come out under that level's own
-    heading, and every group inside it becomes a heading of its own after it —
-    which is how the Docs groups (Essentials, the three command groups,
-    Running it, Reference, Examples, Decisions) reach llms.txt as H2s in a
-    format that has no H3s to give them. A group holding only groups, like
-    Commands, has no pages of its own and no heading.
+    Every group inside a level becomes a heading of its own — which is how the
+    Docs groups (Essentials, the three command groups, Running it, Reference,
+    Examples, Decisions) reach llms.txt as H2s in a format that has no H3s to
+    give them. The pages sitting directly in a level come out under that
+    level's own heading, where the first of them stands among its groups: Docs
+    lists its groups first and ends on Changelog and Roadmap, so "## Docs"
+    comes after Decisions; the root opens on Home, so "## Overview" comes
+    first. One heading per level: the root's About and Contact, which close the
+    nav, stay under that first "## Overview" rather than open a second one. A
+    group holding only groups, like Commands, has no pages of its own and no
+    heading.
 
     Nav entries that are neither — the one external link, to digline/brief —
     fall through: this file is an index of this site, and every URL in it has
@@ -531,10 +537,10 @@ def _sections(items, title: str) -> list[tuple[str, list]]:
     """
     out: list[tuple[str, list]] = []
     pages = [item for item in items if item.is_page]
-    if pages:
-        out.append((title, pages))
     for item in items:
-        if item.is_section:
+        if item.is_page and item is pages[0]:
+            out.append((title, pages))
+        elif item.is_section:
             out.extend(_sections(item.children, item.title))
     return out
 

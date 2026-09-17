@@ -668,14 +668,20 @@ _H1_TEXT = re.compile(r"<h1\b[^>]*>(.*?)</h1>", re.I | re.S)
 _FIRST_P = re.compile(r"<p\b[^>]*>(.*?)</p>", re.I | re.S)
 
 
-def page_question(page_html: str, source: str) -> str:
-    """The question an example's page asks: its title after the colon
-    ("My pipeline is LangChain: what changed when I upgraded it?"), or the
-    whole title when it has none."""
+def page_title(page_html: str, source: str) -> str:
+    """An example's page title, as plain text, without its permalink."""
     match = _H1_TEXT.search(page_html)
     title = _plain(re.sub(r'<a class="headerlink".*?</a>', "", match.group(1), flags=re.S)).strip() if match else ""
     if not title:
         raise _fail_site(f"the stack band reads its question from the title of {source}, which has none.")
+    return title
+
+
+def page_question(page_html: str, source: str) -> str:
+    """The question an example's page asks: its title after the colon
+    ("My pipeline is LangChain: what changed when I upgraded it?"), or the
+    whole title when it has none."""
+    title = page_title(page_html, source)
     _, colon, after = title.partition(":")
     return after.strip() if colon and after.strip() else title
 

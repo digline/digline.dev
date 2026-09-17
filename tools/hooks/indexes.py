@@ -7,7 +7,10 @@ naming this file, and this hook replaces it in the page's Markdown:
     tools/sync-docs.sh. One tile per page in the nav's ``Examples`` group, in
     the nav's order: the page's label in the nav as its name, and under it the
     question its title asks, by the home's rule (``page_question`` in home.py:
-    the title after its colon, or the whole title when it has none). A link in
+    the title after its colon, or the whole title when it has none). A title
+    with no colon that is not a question either ("I'm writing a prompt and have
+    no application yet") says what the name already says, and its tile has no
+    second line. A link in
     the group that leads off this site — digline/brief — is a line of its own
     under the tiles, marked as external.
   * ``product/adr/`` — written by tools/sync-docs.sh. A table of every record
@@ -58,7 +61,7 @@ from mkdocs.exceptions import PluginError
 
 # home.py sits beside this file, and mkdocs puts a hook's folder on sys.path
 # while it loads it: the rule for a question is written once, there.
-from home import page_question
+from home import page_question, page_title
 
 EXAMPLES_INDEX = "product/examples/index.md"
 DECISIONS_INDEX = "product/adr/index.md"
@@ -158,6 +161,16 @@ def title_html(text: str, src_uri: str) -> str:
     return _markdown.markdown("# " + match.group(1))
 
 
+def tile_question(page_html: str, source: str) -> str | None:
+    """The second line of an example's tile: the question its title asks, or
+    None when the title has no colon and does not end on a question mark —
+    the whole title, which would only say again what the name says."""
+    title = page_title(page_html, source)
+    if ":" not in title and not title.endswith("?"):
+        return None
+    return page_question(page_html, source)
+
+
 def examples_html(pages: list[dict], links: list[dict]) -> str:
     """The tiles, then the external lines.
 
@@ -170,11 +183,12 @@ def examples_html(pages: list[dict], links: list[dict]) -> str:
                     "to show.")
     tiles = []
     for p in pages:
-        question = page_question(p["html"], p["href"])
+        question = tile_question(p["html"], p["href"])
+        second = "" if question is None else f'<span class="dg-example__question">{escape(question)}</span>'
         tiles.append(
             f'<li><a class="dg-example" href="{escape(p["href"])}">'
             f'<span class="dg-example__text"><span class="dg-example__name">{escape(p["name"])}</span>'
-            f'<span class="dg-example__question">{escape(question)}</span></span>'
+            f'{second}</span>'
             f'<span class="dg-example__arrow" aria-hidden="true">&rarr;</span></a></li>')
     out = ['<ul class="dg-examples">', *tiles, "</ul>"]
     for link in links:
@@ -189,7 +203,7 @@ def examples_html(pages: list[dict], links: list[dict]) -> str:
 _examples: list = []   # the pages of the Examples group, in nav order
 _external: list = []   # its links off the site
 _records: list = []    # the records' Files
-_tiles: list = []      # (src_uri, question) of each tile, for on_post_build
+_tiles: list = []      # (src_uri, question or None) of each tile, for on_post_build
 
 
 def on_files(files, config, **kwargs):
@@ -234,7 +248,7 @@ def on_page_markdown(markdown, page, config, files, **kwargs):
             href = posixpath.relpath(child.file.src_uri[: -len(".md")], here) + "/"
             pages.append({"name": child.title, "href": href, "html": html,
                           "src": child.file.src_uri})
-        _tiles[:] = [(p["src"], page_question(p["html"], p["src"])) for p in pages]
+        _tiles[:] = [(p["src"], tile_question(p["html"], p["src"])) for p in pages]
         links = [{"name": link.title, "url": link.url} for link in _external]
         return fill(markdown, _EXAMPLES_SLOT, examples_html(pages, links), src, "examples")
     return markdown
@@ -242,14 +256,14 @@ def on_page_markdown(markdown, page, config, files, **kwargs):
 
 def on_post_build(config, **kwargs):
     """Each tile against the page as it was written: there, and asking the
-    question the tile says it asks."""
+    question the tile says it asks, or none where the tile has no second line."""
     site = config["site_dir"]
     for src, question in _tiles:
         written = os.path.join(site, src[: -len(".md")], "index.html")
         if not os.path.isfile(written):
             raise _fail(f"the Examples index links to {src}, and {written} was not written.")
         with open(written, encoding="utf-8") as fh:
-            if page_question(fh.read(), src) != question:
+            if tile_question(fh.read(), src) != question:
                 raise _fail(f"the Examples index asks {question!r} for {src}, which is not "
                             f"what the title of {written} asks.")
 
@@ -344,8 +358,9 @@ def selftest() -> int:
     refused("no placeholder", lambda: fill("# Decisions\n", _DECISIONS_SLOT, "T", DECISIONS_INDEX, "decisions"),
             "has no placeholder for its list — an HTML comment opening `<!-- decisions:`")
 
-    # 3. The Examples tiles: a title with a colon, one without, code in a
-    #    title, a name that needs escaping, and the external line.
+    # 3. The Examples tiles: a title with a colon, a question without one, a
+    #    statement without one (no second line), code in a title, a name that
+    #    needs escaping, and the external line.
     pages = [
         {"name": "A LangChain pipeline", "href": "langchain/",
          "html": title_html("# My pipeline is LangChain: what changed when I upgraded it?\n\nBody.",
@@ -353,21 +368,35 @@ def selftest() -> int:
         {"name": "A LangGraph agent", "href": "langgraph/",
          "html": title_html("\n# My agent calls the right tools, but with the right arguments?\n",
                             "product/examples/langgraph.md")},
+        {"name": "A prompt, no application yet", "href": "prompt-first/",
+         "html": title_html("# I'm writing a prompt and have no application yet\n",
+                            "product/examples/prompt-first.md")},
         {"name": "A <LangChain4j> service", "href": "langchain4j/",
          "html": title_html("# My app is `LangChain4j`: what do I put in my repo?",
                             "product/examples/langchain4j.md")},
     ]
     html = examples_html(pages, [{"name": "A whole product (digline/brief)",
                                   "url": "https://github.com/digline/brief"}])
-    expect("questions: after the colon, or the whole title",
+    expect("questions: after the colon, or the whole title when it asks one",
            re.findall(r'dg-example__question">(.*?)<', html),
            ["what changed when I upgraded it?",
             "My agent calls the right tools, but with the right arguments?",
             "what do I put in my repo?"])
     expect("names, escaped", re.findall(r'dg-example__name">(.*?)<', html),
-           ["A LangChain pipeline", "A LangGraph agent", "A &lt;LangChain4j&gt; service"])
+           ["A LangChain pipeline", "A LangGraph agent", "A prompt, no application yet",
+            "A &lt;LangChain4j&gt; service"])
+    expect("a statement with no colon: the name, and no second line",
+           [t for t in html.split("\n") if 'href="prompt-first/"' in t],
+           ['<li><a class="dg-example" href="prompt-first/"><span class="dg-example__text">'
+            '<span class="dg-example__name">A prompt, no application yet</span></span>'
+            '<span class="dg-example__arrow" aria-hidden="true">&rarr;</span></a></li>'])
+    expect("tile_question: none for a statement, the question otherwise",
+           [tile_question(p["html"], p["href"]) for p in pages],
+           ["what changed when I upgraded it?",
+            "My agent calls the right tools, but with the right arguments?",
+            None, "what do I put in my repo?"])
     expect("links", re.findall(r'href="([^"]*)"', html),
-           ["langchain/", "langgraph/", "langchain4j/", "https://github.com/digline/brief"])
+           ["langchain/", "langgraph/", "prompt-first/", "langchain4j/", "https://github.com/digline/brief"])
     expect("the external line comes after the tiles, marked",
            html.split("\n")[-1],
            '<p class="dg-examples__external"><span class="dg-examples__tag">External</span> '
