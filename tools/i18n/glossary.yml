@@ -10,7 +10,6 @@
 keep:
   - run
   - baseline
-  - compare
   - check
   - gate
   - noise floor
@@ -18,8 +17,12 @@ keep:
 # forbidden: per language, translations of the terms above that a translation
 # must not use, matched whole and whatever their case, in its text outside
 # code. Only words that translate a kept term and little else: "controllo" or
-# "Prüfung" for check, "esecuzione" for run, "confronto" for compare, are
-# everyday words these pages need, and are not here.
+# "Prüfung" for check, "esecuzione" for run, are everyday words these pages
+# need, and are not here.
+#
+# compare is not kept as a word: "fare il compare" is not Italian. The command
+# stays as written wherever it is one — `digline compare`, from the data, and
+# in code.
 forbidden:
   it:
     - linea di base

@@ -16,7 +16,8 @@ name: translate
 #
 # A run starts from the translations of the last successful run on main, its
 # artifact: what that run translated and has not changed since is skipped, and
-# costs nothing.
+# costs nothing. Before the first call the log has what the run is expected to
+# cost, and the most it could; it stops once max_cost is spent.
 on:
   workflow_dispatch:
     inputs:
@@ -32,6 +33,10 @@ on:
         description: "Dry run: write to the artifact only (the only mode for now)"
         type: boolean
         default: true
+      max_cost:
+        description: "Most this run may spend, in USD; the estimate is in the log before the first call"
+        type: number
+        default: 12
 
 permissions:
   id-token: write
@@ -110,6 +115,7 @@ jobs:
         env:
           LANGS: ${{ inputs.langs }}
           PAGES: ${{ inputs.pages }}
+          MAX_COST: ${{ inputs.max_cost }}
           ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORG_ID }}
           ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
           ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
@@ -119,7 +125,7 @@ jobs:
           existing=()
           if [ -d "$RUNNER_TEMP/previous" ]; then existing=(--existing "$RUNNER_TEMP/previous"); fi
           uv run tools/translate.py --langs "$LANGS" --pages "$PAGES" --dry-run \
-            --out "$RUNNER_TEMP/translation" --max-cost 5 "${existing[@]}"
+            --out "$RUNNER_TEMP/translation" --max-cost "$MAX_COST" "${existing[@]}"
 
       - name: Report
         if: always()
