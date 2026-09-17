@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening indexes glyphs assets translate i18n translations build check clean
+.PHONY: docs preview serve css source home opening indexes glyphs assets translate i18n translations translation-checks build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -49,13 +49,17 @@ i18n:            ## the catalog's check and t() against their own catalog, templ
 translations: docs  ## the fake translations in tools/testdata/translations built in a copy of the site, hreflang and refusals included
 	uv run tools/hooks/translations.py --selftest
 
-build: docs css source home opening indexes glyphs assets translate i18n translations  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together fails it
+translation-checks: docs  ## every translation against its original: the fake ones pass, a failure planted for each check refused, a changed original reported
+	uv run tools/check-translations.py --selftest
+
+build: docs css source home opening indexes glyphs assets translate i18n translations translation-checks  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
 	uv run tools/check-translate.py site
+	uv run tools/check-translations.py site
 
 check: css source  ## the stylesheets, the source, the two generated indexes and the glyphs against an existing site/
 	tools/check-sitemap.py site
@@ -63,6 +67,7 @@ check: css source  ## the stylesheets, the source, the two generated indexes and
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
 	uv run tools/check-translate.py site
+	uv run tools/check-translations.py site
 
 clean:
 	rm -rf site docs/product .sync-preview

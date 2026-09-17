@@ -1,0 +1,43 @@
+# The words a translation keeps, and the translations of them it must not use.
+# Read by tools/check-translations.py (tools/translation.py, glossary()).
+#
+# keep: a term here that the original page shows, anywhere inside <main>, must
+# be in the translation too, as it is — matched whole, whatever its case. Not
+# written here, and kept the same way, read from the site's data: every
+# command as `digline <name>` (a name alone — list, log, view — is an ordinary
+# word too), every check's name, the packages and the frameworks the home
+# names (tools/translation.py, data_terms()); those match in their own case.
+keep:
+  - run
+  - baseline
+  - compare
+  - check
+  - gate
+  - noise floor
+
+# forbidden: per language, translations of the terms above that a translation
+# must not use, matched whole and whatever their case, in its text outside
+# code. Only words that translate a kept term and little else: "controllo" or
+# "Prüfung" for check, "esecuzione" for run, "confronto" for compare, are
+# everyday words these pages need, and are not here.
+forbidden:
+  it:
+    - linea di base
+    - linea base
+    - rumore di fondo
+    - soglia di rumore
+    - cancello
+  de:
+    - Basislinie
+    - Grundlinie
+    - Grundrauschen
+    - Rauschboden
+    - Rauschuntergrenze
+    - Schranke
+  es:
+    - línea base
+    - línea de base
+    - ruido de fondo
+    - piso de ruido
+    - umbral de ruido
+    - compuerta

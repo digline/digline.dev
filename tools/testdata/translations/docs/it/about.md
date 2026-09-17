@@ -9,8 +9,7 @@ search:
   exclude: true
 ---
 
-# Chi siamo
-
-Una riga finta, che la fascia d'apertura prende come lede.
-
-Un'altra riga finta.
+<!--
+  The text is not written here: tools/translation.py, fake_translation(),
+  makes it from the English page as it is when a selftest runs.
+-->
