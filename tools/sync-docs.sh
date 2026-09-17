@@ -249,10 +249,10 @@ done
   echo "Why digline is shaped the way it is. One record per decision, in the"
   echo "order they were taken; superseded ones stay, marked."
   echo
-  for adr in "$out"/adr/[0-9]*.md; do
-    title="$(sed -n 's/^# //p' "$adr" | head -1)"
-    echo "- [$title]($(basename "$adr"))"
-  done
+  # The table — number, title, status, date — is filled at build time by
+  # tools/hooks/indexes.py, which reads each record and fails the build on one
+  # that does not say all four.
+  echo "<!-- decisions: the table is filled by tools/hooks/indexes.py, from the records. -->"
 } > "$out/adr/index.md"
 
 # Links that are correct in the repository and wrong on the site.
@@ -287,9 +287,13 @@ perl -pi -e 's{\]\(docs/}{](}g'                                                 
 # This is also what keeps docs/product/ entirely generated, which is the whole
 # reason the `rm -rf` above and `make clean` can be as blunt as they are.
 native="$here/pages/product"
-for page in "$native"/*.md; do
-  [ -e "$page" ] || continue
-  cp "$page" "$out/"
+#
+# Folders are kept: pages/product/examples/index.md becomes product/examples/,
+# the index of the pages copied in above.
+find "$native" -name '*.md' -type f | while read -r page; do
+  rel="${page#"$native"/}"
+  mkdir -p "$out/$(dirname "$rel")"
+  cp "$page" "$out/$rel"
 done
 
 # The dates the sitemap needs.
@@ -341,11 +345,11 @@ fi
 # overrides/ for the pages written here, and pages/ is neither — so their dates
 # have to arrive the same way the copied ones do.
 if git -C "$here" rev-parse --git-dir >/dev/null 2>&1; then
-  for page in "$native"/*.md; do
-    [ -e "$page" ] || continue
-    date="$(git -C "$here" log -1 --format=%cs -- "pages/product/$(basename "$page")")"
+  find "$native" -name '*.md' -type f | while read -r page; do
+    rel="${page#"$native"/}"
+    date="$(git -C "$here" log -1 --format=%cs -- "pages/product/$rel")"
     if [ -n "$date" ]; then
-      printf 'product/%s\t%s\n' "$(basename "$page")" "$date" >> "$manifest"
+      printf 'product/%s\t%s\n' "$rel" "$date" >> "$manifest"
     fi
   done
 fi

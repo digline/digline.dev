@@ -423,6 +423,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "known partial answer must score inside a band, repeatability beside "
         "it, and the suite's shape and spread.",
     ),
+    "product/examples/index.md": (
+        "Examples",
+        "Worked examples of digline, each named by the question it answers \u2014 "
+        "from a prompt with no application yet to a suite watched on a schedule "
+        "\u2014 with the suite, the committed baseline and the CI job behind it.",
+    ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
         "A prompt, five cases and two checks: enough to tell whether an edit "

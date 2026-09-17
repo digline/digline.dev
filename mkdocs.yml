@@ -36,7 +36,9 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
-    - navigation.sections
+    # No navigation.sections: with it every group in the sidebar is drawn open,
+    # always. Without it a group is a title that opens on a click, and the one
+    # holding the page you are on is open already.
     - navigation.indexes   # a section with an index page is itself a link
     - navigation.tabs      # the sidebar shows the section you are in, only
     - navigation.footer    # previous / next at the foot of every page
@@ -94,6 +96,10 @@ hooks:
   # so a changed file is a new URL and no cache serves the old one. See the
   # file's docstring; tools/check-assets.py checks the result.
   - tools/hooks/assets.py
+  # The two indexes under Docs: the Examples tiles, each an example's name and
+  # the question its page asks, and the Decisions table, number, title, status
+  # and date read out of every record. See the file's docstring.
+  - tools/hooks/indexes.py
 
 markdown_extensions:
   - abbr
@@ -179,32 +185,44 @@ nav:
       - 7. For teams building for others: handbook/07-for-teams-building-for-others.md
 
   # One section, so that the sidebar of a documentation page is the
-  # documentation and nothing else.
+  # documentation and nothing else. Its groups are closed except the one the
+  # page you are on belongs to: `navigation.sections` is off, above.
   - Docs:
-      - Guide: product/guide.md
-      - Metrics: product/metrics.md
-      - Suites as data: product/declarative.md
-      - Reference:
-          - "digline API": product/api.md
+      - Essentials:
+          - Guide: product/guide.md
+          - Metrics: product/metrics.md
+          - Suites as data: product/declarative.md
+      # Flat here, grouped on the page: tools/hooks/home.py splits this list
+      # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
+      # grouping the home shows, and fails the build for a command page that
+      # no group names. One line per page, ending in its path, because
+      # digline's tests look for exactly that (tests/_site.py, nav_lists).
+      - Commands:
           - "digline diff": product/diff.md
           - "digline explain": product/explain.md
           - "digline log": product/log.md
           - "digline register": product/register.md
-          - "digline rejudge": product/rejudge.md
           - "digline view": product/view.md
+          - "digline rejudge": product/rejudge.md
           - "digline migrate": product/migrate.md
+      - Running it:
           - The Docker image: product/docker.md
           - digline over MCP: product/mcp.md
           - digline in pytest: product/pytest.md
-          # Not a command surface like the six above it: the design of
-          # the loop that drives them on a schedule. It sits here
-          # because it follows the MCP surface it is built on.
+          # Not a surface like the three above it: the design of the loop
+          # that drives them on a schedule. It follows the MCP surface it is
+          # built on.
           - The operator loop: product/operator.md
-          # Nor is this one. It is about digline rather than about using
-          # it, and it sits at the end of the surfaces because it is the
-          # page that describes all of them at once.
+      - Reference:
+          - "digline API": product/api.md
+          # About digline rather than about using it: the page that
+          # describes every surface at once.
           - Security: product/security.md
+      # Closed unless you are in it, like every group here, and a link of its
+      # own: the index is pages/product/examples/index.md, its tiles filled by
+      # tools/hooks/indexes.py from the pages below and their titles.
       - Examples:
+          - product/examples/index.md
           - A prompt, no application yet: product/examples/prompt-first.md
           - A classifier: product/examples/classifier.md
           - A RAG: product/examples/rag.md
@@ -223,6 +241,8 @@ nav:
       # --strict refuses the line and no release of the site goes out.
       # RUNBOOK.md, "An ADR".
       - Decisions:
+          # The index is written by tools/sync-docs.sh and its table filled by
+          # tools/hooks/indexes.py, from the records themselves.
           - product/adr/index.md
           - ADR 0001 — Verdict, not score: product/adr/0001-verdict-not-score.md
           - ADR 0002 — Three worlds: product/adr/0002-three-worlds-and-where-the-data-lives.md
@@ -249,8 +269,8 @@ nav:
           - ADR 0024 — The judge as an instrument: product/adr/0024-the-judge-as-an-instrument.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
-      - Roadmap: product/roadmap.md
       - Changelog: product/changelog.md
+      - Roadmap: product/roadmap.md
 
   # Written here, and the only part of the site that is dated: a post is tied
   # to the week it was written in a way a documentation page is not. The

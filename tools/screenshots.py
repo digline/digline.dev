@@ -31,6 +31,11 @@ What it does, for every page × width × theme:
     is not a blank box and an animated mark is where it settles;
   * measures scrollWidth and clientWidth of every <pre> inside <main> and prints
     both — a <pre> whose scrollWidth is larger scrolls sideways inside itself;
+  * measures the page itself the same way, and a page wider than its window
+    — one that scrolls sideways — counts as a <pre> that does;
+  * with --click, clicks the first element each CSS selector matches, in the
+    order given, and waits for what the click set moving: the drawer's menu
+    button on a phone, say. Fails if a selector matches nothing;
   * with --scroll-to, scrolls the first element the CSS selector matches to
     the top of the window, the way a link to it would — under the sticky bar,
     by the page's own scroll-padding — and fails if nothing matches; with
@@ -50,7 +55,7 @@ replaces the file name, without .png, and may use {page}, {width} and {theme}:
 with more than one page, width or theme it must use the ones that vary, or
 the pictures overwrite each other, which is refused.
 
-Exit status: 0 when every <pre> fits, 1 when one scrolls (the screenshots are
+Exit status: 0 when every <pre> and every page fits, 1 when one scrolls (the screenshots are
 still written), 2 on a usage or browser error or an interruption, 3 on the
 timeout.
 
@@ -129,6 +134,27 @@ new Promise(done => {
     done(Math.round(scrollY));
   }));
 })
+"""
+
+
+# The first match of a selector, clicked; then two frames and every transition
+# or animation the click started, finished. Returns false when nothing matches.
+CLICK = """
+new Promise(done => {
+  const el = document.querySelector(%s);
+  if (!el) return done(false);
+  el.click();
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    Promise.all(document.getAnimations()
+      .filter(a => a.effect && a.effect.getComputedTiming().endTime !== Infinity)
+      .map(a => a.finished.catch(() => null)))
+    .then(() => done(true))));
+})
+"""
+
+MEASURE_PAGE = """
+JSON.stringify({ scrollWidth: document.documentElement.scrollWidth,
+                 clientWidth: document.documentElement.clientWidth })
 """
 
 
@@ -271,6 +297,8 @@ def main(argv: list[str]) -> int:
                         help="photograph the window, --height tall, not the full page")
     parser.add_argument("--scrollbars", action="store_true",
                         help="draw scrollbars, the page's and every scrolling box's; hidden by default")
+    parser.add_argument("--click", action="append", default=[], metavar="SELECTOR",
+                        help="click the first element matching this CSS selector first; repeatable")
     parser.add_argument("--scroll-to", metavar="SELECTOR",
                         help="scroll the first element matching this CSS selector into the window first")
     parser.add_argument("--scroll-y", type=int, metavar="PX",
@@ -336,6 +364,10 @@ def main(argv: list[str]) -> int:
             if failed:
                 print(f"screenshots: {path} {width}px: images that did not load: {failed}",
                       file=sys.stderr)
+            for selector in args.click:
+                if not browser.evaluate(CLICK % json.dumps(selector)):
+                    raise RuntimeError(f"{path}: nothing matches --click {selector!r}")
+                print(f"click {path} {width}px {theme}  {selector!r}")
             if args.scroll_to:
                 top = browser.evaluate(SCROLL_TO % (json.dumps(args.scroll_to),
                                                     json.dumps(args.scroll_block)))
@@ -347,6 +379,11 @@ def main(argv: list[str]) -> int:
                     f"new Promise(done => {{ window.scrollBy(0, {int(args.scroll_y)}); "
                     "requestAnimationFrame(() => requestAnimationFrame(() => done(Math.round(scrollY)))); })")
                 print(f"scroll {path} {width}px {theme}  by {args.scroll_y}px, at y={top}")
+            page = json.loads(browser.evaluate(MEASURE_PAGE))
+            scrolls = page["scrollWidth"] > page["clientWidth"]
+            overflowing += scrolls
+            print(f"page {path} {width}px {theme}  scrollWidth={page['scrollWidth']} "
+                  f"clientWidth={page['clientWidth']}{'  SCROLLS' if scrolls else ''}")
             for pre in json.loads(browser.evaluate(MEASURE_PRE)):
                 scrolls = pre["scrollWidth"] > pre["clientWidth"]
                 overflowing += scrolls

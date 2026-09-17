@@ -279,6 +279,11 @@ DESCRIPTIONS: dict[str, str] = {
         "\u2014 and the attestations, pins and Scorecard run you can check"
     ),
     # Examples
+    "product/examples/index.md": (
+        "Every worked example by the question it answers, each a directory with "
+        "its suite, its committed baseline and its CI job, and a whole product "
+        "built on digline"
+    ),
     "product/examples/prompt-first.md": (
         "How to tell whether an edit to a prompt made the answers better or "
         "only different, when there is no application around it yet"
@@ -480,19 +485,27 @@ _FRONT_MATTER = re.compile(r"\A---\r?\n.*?\r?\n---[ \t]*\r?\n", re.S)
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.S)
 
 
-def _source(path: str) -> str | None:
+def _source(page) -> str | None:
     """The page's Markdown with the front matter off, or None if it has none.
+
+    The Markdown the page was rendered from, as the hooks left it — which for
+    every page but two is the file without its front matter. The two are the
+    indexes tools/hooks/indexes.py fills, whose files hold a placeholder where
+    the copy should hold the list.
 
     None happens once, and it is the landing: docs/index.md is a stub whose
     words live in overrides/home.html. Copying it out would publish a file with
     a comment in it and link an agent at nothing, so that one page is listed by
     its rendered URL instead.
     """
-    try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
-    except OSError:
-        return None
+    if page.markdown is not None:
+        text = page.markdown
+    else:
+        try:
+            with open(page.file.abs_src_path, encoding="utf-8") as fh:
+                text = fh.read()
+        except OSError:
+            return None
     body = _FRONT_MATTER.sub("", text).lstrip()
     if not _HTML_COMMENT.sub("", body).strip():
         return None
@@ -507,8 +520,10 @@ def _sections(items, title: str) -> list[tuple[str, list]]:
 
     The pages sitting directly in a level come out under that level's own
     heading, and every group inside it becomes a heading of its own after it —
-    which is how the four Docs sub-sections (Reference, Examples, Decisions)
-    reach llms.txt as H2s in a format that has no H3s to give them.
+    which is how the Docs groups (Essentials, the three command groups,
+    Running it, Reference, Examples, Decisions) reach llms.txt as H2s in a
+    format that has no H3s to give them. A group holding only groups, like
+    Commands, has no pages of its own and no heading.
 
     Nav entries that are neither — the one external link, to digline/brief —
     fall through: this file is an index of this site, and every URL in it has
@@ -573,7 +588,7 @@ def on_post_build(config, **kwargs):
         out += [f"## {heading}", ""]
         for page in pages:
             src_uri = page.file.src_uri
-            body = _source(page.file.abs_src_path)
+            body = _source(page)
             if body is None:
                 url = site_url + page.url
             else:
