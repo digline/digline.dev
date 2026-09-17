@@ -21,8 +21,17 @@ Nested mappings, grouped by where the words are shown (``bar``, ``footer``,
     — ``one`` when count is 1, ``other`` otherwise, the rule English, Italian,
     German and Spanish share for whole numbers.
 
+── languages ────────────────────────────────────────────────────────────────
+One file per language, i18n/<lang>.yml; en is the original, and the only one
+the check below reads. ``t`` takes ``lang=`` (en when it is not given); the
+templates' filter passes the language of the page it renders —
+``page_language()``: the page's ``lang:`` front matter, else the theme's
+language. A caller that must not follow the page names its language itself:
+home.py's split_commands() labels the documentation's sidebar in English
+whatever page it is rendered on.
+
 A value may name placeholders, ``{name}``, filled from the arguments ``t`` is
-given. With ``count`` three more are there to use: ``{count}`` in digits,
+given (``lang`` is not one). With ``count`` three more are there to use: ``{count}`` in digits,
 ``{number}`` in words and ``{Number}`` the same with a capital, the words from
 the ``numbers`` section (one to twenty; digits past it).
 
@@ -46,7 +55,9 @@ import yaml
 from mkdocs.exceptions import PluginError
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CATALOG = os.path.join(ROOT, "i18n", "en.yml")
+# i18n/<lang>.yml; read at each load, so a selftest may point it elsewhere.
+DIRECTORY = os.path.join(ROOT, "i18n")
+ORIGINAL = "en"
 
 # Where the keys are named: every template in overrides/ and every hook.
 TEMPLATES = os.path.join(ROOT, "overrides")
@@ -89,7 +100,7 @@ def placeholders(value: str | dict) -> set[str]:
 class Catalog:
     """One catalog file, flattened: dotted key → string or {one, other}."""
 
-    def __init__(self, path: str = CATALOG):
+    def __init__(self, path: str):
         self.path = path
         try:
             with open(path, encoding="utf-8") as fh:
@@ -157,13 +168,34 @@ class Catalog:
 
 
 @functools.lru_cache(maxsize=None)
-def default() -> Catalog:
-    return Catalog(CATALOG)
+def default(lang: str = ORIGINAL) -> Catalog:
+    """The catalog of one language, read once."""
+    return Catalog(os.path.join(DIRECTORY, f"{lang}.yml"))
 
 
-def t(key: str, count: int | None = None, **values) -> str:
-    """The words for ``key`` in the site's catalog. See the module docstring."""
-    return default().t(key, count=count, **values)
+def t(key: str, count: int | None = None, lang: str = ORIGINAL, **values) -> str:
+    """The words for ``key`` in the catalog of ``lang``. See the module docstring."""
+    return default(lang).t(key, count=count, **values)
+
+
+def page_language(page, config) -> str:
+    """The language a page is written in: its ``lang:`` front matter, else the
+    theme's. No page — Material's 404 — is the theme's."""
+    meta = getattr(page, "meta", None) or {}
+    theme = config["theme"] if config else None
+    return meta.get("lang") or (theme["language"] if theme else None) or ORIGINAL
+
+
+def template_filter():
+    """The `t` filter: ``t`` in the language of the page being rendered."""
+    from jinja2 import pass_context
+
+    @pass_context
+    def translate(context, key, count=None, **values):
+        lang = page_language(context.get("page"), context.get("config"))
+        return default(lang).t(key, count=count, **values)
+
+    return translate
 
 
 def number_word(n: int) -> str:
@@ -199,7 +231,7 @@ def template_uses(path: str, source: str) -> list[Use]:
             continue
         names = None if (node.args or node.dyn_args or node.dyn_kwargs) else {k.key for k in node.kwargs}
         counted = any(k.key == "count" for k in node.kwargs)
-        uses.append(Use(where, node.node.value, counted, None if names is None else names - {"count"}))
+        uses.append(Use(where, node.node.value, counted, None if names is None else names - {"count", "lang"}))
     return uses
 
 
@@ -221,7 +253,7 @@ def python_uses(path: str, source: str) -> list[Use]:
         shown = len(node.args) == 1 and all(k.arg is not None for k in node.keywords)
         names = {k.arg for k in node.keywords if k.arg} if shown else None
         counted = any(k.arg == "count" for k in node.keywords)
-        uses.append(Use(where, first.value, counted, None if names is None else names - {"count"}))
+        uses.append(Use(where, first.value, counted, None if names is None else names - {"count", "lang"}))
     return uses
 
 

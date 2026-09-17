@@ -6,8 +6,8 @@ value is written. This hook does two things with it:
 
   * ``on_env`` gives the templates the filter, ``{{ "home.hero.lede" | t }}``,
     with its arguments by name: ``| t(count=n)`` for a plural,
-    ``| t(version=home.version)`` for a placeholder. It is ``catalog.t``
-    itself, the function the hooks call.
+    ``| t(version=home.version)`` for a placeholder. It is ``catalog.t`` in
+    the language of the page being rendered (``catalog.page_language``).
   * ``on_config``, before anything renders, reads every template and every
     hook and fails the build on what the catalog and the source disagree about:
 
@@ -57,7 +57,7 @@ def on_config(config, **kwargs):
 
 
 def on_env(env, config, files, **kwargs):
-    env.filters["t"] = catalog.t
+    env.filters["t"] = catalog.template_filter()
     return env
 
 

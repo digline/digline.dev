@@ -68,6 +68,12 @@ i18n/en.yml, read with ``t()`` from tools/catalog.py, the function the
 templates' `t` filter is. Nothing here spells a word of the page or decides a
 plural: the catalog does.
 
+The home is worded in the language of its page (``catalog.page_language``):
+``compute()``, ``grids()`` and ``stack()`` take ``lang``. The documentation's
+sidebar is not: ``split_commands()`` labels the command groups in
+NAV_LANGUAGE, English, whatever page the nav is drawn on, because the
+documentation is English only.
+
     usage: tools/hooks/home.py --selftest
 """
 
@@ -83,7 +89,7 @@ from typing import Any
 from mkdocs.exceptions import PluginError
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from catalog import t  # noqa: E402  the site's words: i18n/en.yml
+from catalog import ORIGINAL, page_language, t  # noqa: E402  the site's words: i18n/<lang>.yml
 
 # Where sync-docs.sh puts the two files, under docs_dir.
 HOME_JSON = "product/assets/home/home.json"
@@ -111,24 +117,49 @@ SCORE_HI = 1.0
 # something digline declares. Every command home.json lists must be in exactly
 # one group, and every name here must be a command home.json lists, so a
 # command added or removed in digline stops the build here until it is placed.
-# The label is the legend on the home and the group's title under Commands in
-# the documentation's sidebar (split_commands).
+# Each group's label, command_group_labels(), is the legend on the home and the
+# group's title under Commands in the documentation's sidebar (split_commands).
 COMMAND_GROUPS = (
-    ("record", t("home.commands.groups.record"), ("run", "promote")),
-    ("compare", t("home.commands.groups.compare"), ("compare", "diff", "explain", "report")),
-    ("history", t("home.commands.groups.history"), ("list", "log", "register", "view")),
-    ("maintenance", t("home.commands.groups.maintenance"), ("rejudge", "migrate")),
+    ("record", ("run", "promote")),
+    ("compare", ("compare", "diff", "explain", "report")),
+    ("history", ("list", "log", "register", "view")),
+    ("maintenance", ("rejudge", "migrate")),
 )
 
+# The language the documentation's sidebar is labelled in, on every page: the
+# documentation is written in English only, whatever language the page around
+# the sidebar is in.
+NAV_LANGUAGE = "en"
+
+
+def command_group_labels(lang: str) -> dict[str, str]:
+    """COMMAND_GROUPS' labels in ``lang``, by group key."""
+    return {
+        "record": t("home.commands.groups.record", lang=lang),
+        "compare": t("home.commands.groups.compare", lang=lang),
+        "history": t("home.commands.groups.history", lang=lang),
+        "maintenance": t("home.commands.groups.maintenance", lang=lang),
+    }
+
 # The kinds a check declares (digline's `KIND`), in the order the home shows
-# them, with the words it shows them with. An unknown kind stops the build.
-CHECK_KINDS = (
-    ("deterministic", t("home.checks.kinds.deterministic.label"), t("home.checks.kinds.deterministic.description")),
-    ("judged", t("home.checks.kinds.judged.label"), t("home.checks.kinds.judged.description")),
-    ("budget", t("home.checks.kinds.budget.label"), t("home.checks.kinds.budget.description")),
-    ("aggregate", t("home.checks.kinds.aggregate.label"), t("home.checks.kinds.aggregate.description")),
-    ("wrapper", t("home.checks.kinds.wrapper.label"), t("home.checks.kinds.wrapper.description")),
-)
+# them; their words are check_kind_words(). An unknown kind stops the build.
+CHECK_KINDS = ("deterministic", "judged", "budget", "aggregate", "wrapper")
+
+
+def check_kind_words(lang: str) -> dict[str, tuple[str, str]]:
+    """(label, description) of each of CHECK_KINDS in ``lang``, by kind."""
+    return {
+        "deterministic": (t("home.checks.kinds.deterministic.label", lang=lang),
+                          t("home.checks.kinds.deterministic.description", lang=lang)),
+        "judged": (t("home.checks.kinds.judged.label", lang=lang),
+                   t("home.checks.kinds.judged.description", lang=lang)),
+        "budget": (t("home.checks.kinds.budget.label", lang=lang),
+                   t("home.checks.kinds.budget.description", lang=lang)),
+        "aggregate": (t("home.checks.kinds.aggregate.label", lang=lang),
+                      t("home.checks.kinds.aggregate.description", lang=lang)),
+        "wrapper": (t("home.checks.kinds.wrapper.label", lang=lang),
+                    t("home.checks.kinds.wrapper.description", lang=lang)),
+    }
 
 # The stack band under "How it fits": which providers, examples and other ways
 # to run digline the home shows, in its order, with the name each row carries.
@@ -137,14 +168,15 @@ CHECK_KINDS = (
 # image and the package name the Docker and MCP pages open on.
 #
 # (name, package, endpoint): endpoint, where there is one, is (the parameter
-# that sets the address, the words after the package on its second line). The
+# that sets the address, the key in stack_words() of the words after the
+# package on its second line). The
 # row says the package reaches any compatible endpoint only while a sentence of
 # the synced docs names both the package and that parameter — today api.md's
 # "`digline-openai` takes a `base_url`, so a customer's own Azure deployment or
 # vLLM judges its own runs."
 STACK_PROVIDERS = (
     ("Anthropic", "digline-anthropic", None),
-    ("OpenAI", "digline-openai", ("base_url", t("home.stack.openai_compatible"))),
+    ("OpenAI", "digline-openai", ("base_url", "openai_compatible")),
     ("Amazon Bedrock", "digline-bedrock", None),
 )
 STACK_EXAMPLES = (
@@ -153,10 +185,20 @@ STACK_EXAMPLES = (
     ("LangGraph", "product/examples/langgraph.md"),
     ("LangChain4j", "product/examples/langchain4j.md"),
 )
+# (key in stack_words() of the row's name, page)
 STACK_RUN = (
-    (t("home.stack.docker"), "product/docker.md"),
-    (t("home.stack.mcp"), "product/mcp.md"),
+    ("docker", "product/docker.md"),
+    ("mcp", "product/mcp.md"),
 )
+
+
+def stack_words(lang: str) -> dict[str, str]:
+    """The stack band's words that are not read from the build, in ``lang``."""
+    return {
+        "openai_compatible": t("home.stack.openai_compatible", lang=lang),
+        "docker": t("home.stack.docker", lang=lang),
+        "mcp": t("home.stack.mcp", lang=lang),
+    }
 
 # Where a command without a page of its own is written about, and where the
 # checks' cards are: source paths under docs/, and their URLs on the site.
@@ -299,10 +341,10 @@ def _anchor(value: float) -> str:
     return "middle"
 
 
-def _python_range(specifier: str) -> str:
+def _python_range(specifier: str, lang: str = ORIGINAL) -> str:
     """">=3.12" as "3.12 or newer"; any other range as digline declares it."""
     match = re.fullmatch(r">=\s*(\d+\.\d+(?:\.\d+)?)", specifier.strip())
-    return t("home.python.or_newer", version=match.group(1)) if match else specifier.strip()
+    return t("home.python.or_newer", version=match.group(1), lang=lang) if match else specifier.strip()
 
 
 def _short_run(run_id: str) -> str:
@@ -333,8 +375,9 @@ def _stdout_lines(command: dict) -> list[str]:
     return str(command.get("stdout", "")).rstrip("\n").split("\n")
 
 
-def compute(data: dict) -> dict[str, Any]:
-    """Everything the home prints about digline, formatted and counted here."""
+def compute(data: dict, lang: str = ORIGINAL) -> dict[str, Any]:
+    """Everything the home prints about digline, formatted and counted here,
+    worded in ``lang``."""
     version = data["digline_version"]
     scenarios = data["scenarios"]
     quickstart = scenarios["quickstart"]
@@ -434,7 +477,7 @@ def compute(data: dict) -> dict[str, Any]:
             kind = "head"
         shortened.append({"kind": kind, "text": line})
     if omitted:
-        shortened.append({"kind": "more", "text": t("home.readings.more_lines", count=omitted)})
+        shortened.append({"kind": "more", "text": t("home.readings.more_lines", count=omitted, lang=lang)})
 
     suite_match = _SUITE.search(compare["cmd"])
     samples_match = _SAMPLES.search(str(regression.get("band", "")))
@@ -452,11 +495,11 @@ def compute(data: dict) -> dict[str, Any]:
         "pre_1_0": major == 0,
         "pinned_install": f"pip install digline=={version}",
         "pinned_install_groups": command_groups(f"pip install digline=={version}"),
-        "requires_python": _python_range(data["requires_python"]["specifier"]),
+        "requires_python": _python_range(data["requires_python"]["specifier"], lang),
         "dependencies": {
             "names": names,
             "count": count,
-            "heading": t("home.fits.dependencies", count=count),
+            "heading": t("home.fits.dependencies", count=count, lang=lang),
         },
         "regression": {
             "suite": suite_match.group(1) if suite_match else None,
@@ -594,8 +637,9 @@ def command_link(name: str, pages: set[str], guide_html: str,
 
 
 def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
-          reference: list[tuple[str, str]] = ()) -> dict[str, Any]:
-    """The Commands and Checks sections: grouped, linked and counted here.
+          reference: list[tuple[str, str]] = (), lang: str = ORIGINAL) -> dict[str, Any]:
+    """The Commands and Checks sections: grouped, linked and counted here,
+    worded in ``lang``.
 
     pages        the source paths the build has (``product/diff.md``, …)
     guide_html   the guide's rendered content
@@ -605,7 +649,7 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
     """
     commands = data["cli_commands"]["items"]
     names = [c["name"] for c in commands]
-    grouped = [name for _, _, members in COMMAND_GROUPS for name in members]
+    grouped = [name for _, members in COMMAND_GROUPS for name in members]
     ungrouped = [n for n in names if n not in grouped]
     if ungrouped:
         raise _fail_site(
@@ -619,8 +663,9 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
         )
     helps = {c["name"]: c["help"] for c in commands}
 
+    labels = command_group_labels(lang)
     groups = []
-    for key, label, members in COMMAND_GROUPS:
+    for key, members in COMMAND_GROUPS:
         items = []
         for name in members:
             found = command_link(name, pages, guide_html, list(reference))
@@ -635,11 +680,10 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
                 )
             href, place = found
             items.append({"name": name, "help": helps[name], "href": href, "place": place})
-        groups.append({"key": key, "label": label, "commands": items})
+        groups.append({"key": key, "label": labels[key], "commands": items})
 
     checks = data["checks"]["items"]
-    kinds = [k for k, _, _ in CHECK_KINDS]
-    strange = sorted({c["kind"] for c in checks} - set(kinds))
+    strange = sorted({c["kind"] for c in checks} - set(CHECK_KINDS))
     if strange:
         raise _fail_site(
             f"checks of a kind the home does not know: {', '.join(strange)}. "
@@ -651,8 +695,10 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
             f"no card on product/metrics/ for {', '.join(missing)}: the anchor in "
             "home.json is not an id on the page."
         )
+    words = check_kind_words(lang)
     kind_groups = []
-    for key, label, description in CHECK_KINDS:
+    for key in CHECK_KINDS:
+        label, description = words[key]
         # Alphabetical, without regard to case, rather than in digline's
         # declaration order, which a reader has no way to see.
         members = [{"name": c["name"], "href": f"product/metrics/#{c['anchor']}"}
@@ -665,12 +711,12 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
     return {
         "commands": {
             "count": count,
-            "heading": t("home.commands.count", count=count),
+            "heading": t("home.commands.count", count=count, lang=lang),
             "groups": groups,
         },
         "checks": {
             "total": len(checks),
-            "kinds_text": t("home.checks.kind_count", count=len(CHECK_KINDS)),
+            "kinds_text": t("home.checks.kind_count", count=len(CHECK_KINDS), lang=lang),
             "kinds": kind_groups,
         },
     }
@@ -716,8 +762,10 @@ def opening_code(page_html: str, source: str) -> str:
     return _plain(code.group(1)).strip()
 
 
-def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str, Any]:
-    """The three blocks of the stack band, every name and line checked here.
+def stack(pages: set[str], rendered: dict[str, str], docs_text: str,
+          lang: str = ORIGINAL) -> dict[str, Any]:
+    """The three blocks of the stack band, every name and line checked here,
+    worded in ``lang``.
 
     pages      the source paths the build has
     rendered   source path → rendered content, for the example, Docker and
@@ -725,6 +773,7 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str
     docs_text  the synced documentation under product/, as Markdown, in
                which every provider's package name must be written
     """
+    words = stack_words(lang)
     providers = []
     sentences = None
     for name, package, endpoint in STACK_PROVIDERS:
@@ -736,7 +785,8 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str
             )
         row = {"name": name, "package": package, "also": None}
         if endpoint:
-            parameter, also = endpoint
+            parameter, also_key = endpoint
+            also = words[also_key]
             if sentences is None:
                 sentences = re.split(r"(?<=[.!?])\s+|\n\s*\n", docs_text)
             if not any(re.search(written, s) and re.search(rf"(?<![\w-]){re.escape(parameter)}(?![\w-])", s)
@@ -762,9 +812,9 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str
     examples = [{"name": name, "question": page_question(page(source), source),
                  "href": source[: -len(".md")] + "/"}
                 for name, source in STACK_EXAMPLES]
-    run = [{"name": name, "code": opening_code(page(source), source),
+    run = [{"name": words[key], "code": opening_code(page(source), source),
             "href": source[: -len(".md")] + "/"}
-           for name, source in STACK_RUN]
+           for key, source in STACK_RUN]
     return {"providers": providers, "examples": examples, "run": run}
 
 
@@ -816,7 +866,8 @@ COMMANDS_SECTION = "Commands"
 
 def split_commands(entries: list, source: str = "mkdocs.yml") -> list:
     """The flat `Commands:` list of the nav, as one subgroup per COMMAND_GROUPS
-    entry that has a page in it, labelled as the home labels it.
+    entry that has a page in it, labelled as the home labels it — in
+    NAV_LANGUAGE, always, and never in the language of a page.
 
     Each entry is a one-key mapping, label to `product/<name>.md`. Groups and
     pages come out in COMMAND_GROUPS order, whatever order the list has; a
@@ -834,15 +885,16 @@ def split_commands(entries: list, source: str = "mkdocs.yml") -> list:
                 f"the `{COMMANDS_SECTION}:` group in {source} holds {entry!r}, which is not a "
                 "`label: product/<command>.md` line. Only command pages go there.")
         placed[match.group(1)] = (path, entry)
-    grouped = {name for _, _, names in COMMAND_GROUPS for name in names}
+    grouped = {name for _, names in COMMAND_GROUPS for name in names}
     loose = sorted(set(placed) - grouped)
     if loose:
         raise _fail_site(
             f"the `{COMMANDS_SECTION}:` group in {source} lists a page for "
             f"{', '.join(loose)}, which no group in COMMAND_GROUPS names, so the nav "
             "has nowhere to put it.")
-    return [{label: [placed[name][1] for name in names if name in placed]}
-            for _, label, names in COMMAND_GROUPS if any(name in placed for name in names)]
+    labels = command_group_labels(NAV_LANGUAGE)
+    return [{labels[key]: [placed[name][1] for name in names if name in placed]}
+            for key, names in COMMAND_GROUPS if any(name in placed for name in names)]
 
 
 def on_config(config, **kwargs):
@@ -916,23 +968,24 @@ def _docs_text(docs_dir: str) -> str:
     return "\n".join(parts)
 
 
-def _built_stack(config) -> dict[str, Any]:
-    return stack(_pages, _rendered, _docs_text(config["docs_dir"]))
+def _built_stack(config, lang: str = ORIGINAL) -> dict[str, Any]:
+    return stack(_pages, _rendered, _docs_text(config["docs_dir"]), lang)
 
 
-def _built_grids(data: dict) -> dict[str, Any]:
+def _built_grids(data: dict, lang: str = ORIGINAL) -> dict[str, Any]:
     return grids(data, _pages, _rendered.get(GUIDE, ""), ids_in(_rendered.get(METRICS, "")),
-                 [(uri, _rendered.get(uri, "")) for uri in _reference])
+                 [(uri, _rendered.get(uri, "")) for uri in _reference], lang)
 
 
 def on_page_context(context, page, config, nav, **kwargs):
-    """The values reach the home and no other page."""
+    """The values reach the home and no other page, in the page's language."""
     if page.file.src_uri == "index.md":
-        home = dict(_home)
+        lang = page_language(page, config)
         with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
             data = json.load(fh)
-        home.update(_built_grids(data))
-        home["stack"] = _built_stack(config)
+        home = compute(data, lang)
+        home.update(_built_grids(data, lang))
+        home["stack"] = _built_stack(config, lang)
         context["home"] = home
     return context
 
@@ -1147,6 +1200,48 @@ def selftest() -> int:
                 print(f"selftest: refused, as it must — {label}: {str(error).splitlines()[0]}")
             continue
         failures.append(f"{label}: accepted, which it exists to refuse")
+
+    # 1b''. The nav in English whatever language the page is in; the home in
+    #       its page's. A second catalog, it.yml, differs from en.yml in the
+    #       group labels: grids(lang="it") must print them, split_commands()
+    #       must not.
+    import catalog as _catalog
+    import shutil
+    import tempfile
+    real_directory = _catalog.DIRECTORY
+    with tempfile.TemporaryDirectory() as languages:
+        shutil.copy(os.path.join(real_directory, "en.yml"), os.path.join(languages, "en.yml"))
+        with open(os.path.join(real_directory, "en.yml"), encoding="utf-8") as fh:
+            italian = fh.read()
+        for english, translated in (('"Record and approve"', '"Registra e approva"'),
+                                    ('compare: "Compare"', 'compare: "Confronta"'),
+                                    ('"History"', '"Cronologia"'), ('"Maintenance"', '"Manutenzione"')):
+            assert italian.count(english) == 1, english
+            italian = italian.replace(english, translated)
+        with open(os.path.join(languages, "it.yml"), "w", encoding="utf-8") as fh:
+            fh.write(italian)
+        _catalog.DIRECTORY = languages
+        _catalog.default.cache_clear()
+        try:
+            expect("the nav's groups stay English on an Italian page",
+                   [next(iter(group)) for group in split_commands(flat)],
+                   ["Compare", "History", "Maintenance"])
+            expect("the home's legend follows its page into Italian",
+                   [group["label"] for group in grids(grid_data, pages, guide_html, metrics_ids, reference,
+                                                     lang="it")["commands"]["groups"]],
+                   ["Registra e approva", "Confronta", "Cronologia", "Manutenzione"])
+            expect("the home's legend in English on an English page",
+                   [group["label"] for group in grids(grid_data, pages, guide_html, metrics_ids, reference,
+                                                     lang="en")["commands"]["groups"]],
+                   ["Record and approve", "Compare", "History", "Maintenance"])
+            expect("a page's language: its lang:, else the theme's",
+                   [page_language(type("P", (), {"meta": {"lang": "it"}})(), {"theme": {"language": "en"}}),
+                    page_language(type("P", (), {"meta": {}})(), {"theme": {"language": "en"}}),
+                    page_language(None, {"theme": {"language": "en"}})],
+                   ["it", "en", "en"])
+        finally:
+            _catalog.DIRECTORY = real_directory
+            _catalog.default.cache_clear()
 
     # 1c. The stack band, against pages of the shape the build has: a title with
     #     a colon, one without, the Docker and MCP pages' first paragraphs.

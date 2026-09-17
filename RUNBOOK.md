@@ -19,15 +19,19 @@ and removes it when its work is merged or abandoned: `git worktree remove ../dig
 
 Why: on 16 September a branch change made outside the session moved the shared checkout back to `main` mid-task, and the next commit landed on local `main` instead of on the branch it was written for.
 
-At the end of the session, after the merge, the shared checkout's local `main` is brought level with `origin/main`: by fast-forward only, and only when the checkout is on `main`, has nothing uncommitted, and its `main` is an ancestor of `origin/main`. Otherwise it is left as it is, and the session says so.
+At the end of the session, after the merge, the local `main` of both shared checkouts — this repository's, `../digline.dev`, and digline's, `../digline`, which `make build` syncs from — is brought level with `origin/main`: by fast-forward only, and only when the checkout is on `main`, has nothing uncommitted, and its `main` is an ancestor of `origin/main`. Otherwise it is left as it is, and the session says which checkout, and which of the three conditions failed.
 
-    git -C ../digline.dev fetch
-    test "$(git -C ../digline.dev branch --show-current)" = main \
-      && test -z "$(git -C ../digline.dev status --porcelain)" \
-      && git -C ../digline.dev merge-base --is-ancestor main origin/main \
-      && git -C ../digline.dev merge --ff-only origin/main
+    for repo in ../digline.dev ../digline; do
+      git -C "$repo" fetch
+      test "$(git -C "$repo" branch --show-current)" = main \
+        && test -z "$(git -C "$repo" status --porcelain)" \
+        && git -C "$repo" merge-base --is-ancestor main origin/main \
+        && git -C "$repo" merge --ff-only origin/main
+    done
 
-Why: after PR #17 the shared checkout's `main` was five commits behind `origin/main`, so `git branch -d` refused a branch that was already merged, and whoever opened the checkout next was reading an old site.
+The same rule, for `../digline` alone, before a build: `make build` refuses a digline checkout behind `origin/main`, and bringing it level this way is the fix, not a clone somewhere else.
+
+Why: after PR #17 the shared checkout's `main` was five commits behind `origin/main`, so `git branch -d` refused a branch that was already merged, and whoever opened the checkout next was reading an old site. During PR #18, `../digline` fell five commits behind a digline merge, and the build stopped at the sync.
 
 ## A page the site did not have
 
