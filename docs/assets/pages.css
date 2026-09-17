@@ -875,6 +875,10 @@ pre {
 .agents-rule__quote code { font-family: var(--mono-page); font-size: .875em; }
 .agents-rule__source { margin: .625rem 0 0; font-size: .875rem; color: var(--muted); }
 .agents-rule__source a { color: var(--link); }
+/* Code inside a link — AGENTS.md, operating-digline — is the link: its colour,
+   in both themes, and on one line (.essay code would make it --ink, and a
+   hyphenated name would break across two). */
+.essay--agents a code { color: inherit; white-space: nowrap; }
 
 /* The video carries its own width, ratio and ground inline, in docs/start.md,
    so it is correct under any stylesheet. What is left here is the frame the
