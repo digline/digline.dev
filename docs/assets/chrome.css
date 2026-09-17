@@ -301,26 +301,29 @@ html { scroll-padding-top: var(--bar-room); }
    only ever on a page with translations, so these rules ask for it
    (:has(.dg-lang)) and leave every other page's bar as measured above.
 
-   Measured in Chrome on the pill, every width from 1100 down to 300, with the
-   English labels (/why/ in the translations fixture) and with German ones
-   (/de/why/: "Erste Schritte", "Warum", "Agenten", "Handbuch", "Doku",
-   "Artikel", the fixture's plausible labels until the German catalog arrives,
-   when the bar is measured again). Where the sections fit without scrolling
-   inside the pill:
+   Measured in Chrome on the pill, every width from 1100 down to 300. First
+   with the English labels (/why/ in the translations fixture) and with German
+   ones the fixture made up, which set the rules below; then again, on
+   2026-09-17, on /why/ and its three translations with the real catalogs
+   (German "Hier starten", "Warum", "Agenten", "Handbuch", "Doku", "Texte";
+   Italian and Spanish "Docs" for docs, since "Documentazione" and
+   "Documentación" fitted at no phone width). Where the sections fit without
+   scrolling inside the pill:
 
                           six entries     three entries
      no menu, English     519px and up    362px and up   (the rules above)
      menu, English        647px and up    404px and up   (before these rules)
-     menu, German         691px and up    427px and up   (before these rules)
-     with these rules     691px and up    334px (English), 357px (German)
+     menu, fixture German 691px and up    427px and up   (before these rules)
+     with these rules     647px (en), 673px (de), 624px (it), 682px (es) and up;
+                          334px (en), 346px (de), 315px (it), 335px (es) and up
 
    So: at 690px and under, the three optional entries go, as they do at 518px
    without the menu. At 426px and under, GitHub goes from the bar — the footer
    carries it in its Product column — and the sections close up to 10px. At
    376px and under, the bar's own gaps close up too, and the sections to 6px:
-   German's three entries fit from 357px, so a 360px phone reads them whole.
-   Under that they scroll inside the pill, as the bar without the menu does
-   under 362px. At no width does the page scroll sideways. */
+   every language's three entries fit from 346px, so a 360px phone reads them
+   whole. Under that they scroll inside the pill, as the bar without the menu
+   does under 362px. At no width does the page scroll sideways. */
 @media (max-width: 690px) {
   .dg-bar:has(.dg-lang) .dg-nav .dg-nav__optional { display: none; }
 }
