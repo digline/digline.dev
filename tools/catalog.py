@@ -40,7 +40,14 @@ At the call: a key the catalog does not have; a plural without ``count``, or a
 ``count`` for a key that is not one; a placeholder nothing fills; an argument no
 placeholder uses. Before the build: all of those that can be seen in the
 source, plus a key the source never names — see ``scan()``, which
-tools/hooks/i18n.py runs. The ``numbers`` section is named by no one: it is in
+tools/hooks/i18n.py runs.
+
+── the fixed section ────────────────────────────────────────────────────────
+``do_not_translate``, in each language's catalog and not in en.yml, holds the
+words a translated page shows about being a translation. They are written by
+hand, and the check reads them there: a key under it that the source names must
+be in every language's catalog, and each of those catalogs' keys under it must
+be named. tools/check-translations.py pins their text. The ``numbers`` section is named by no one: it is in
 use while a plural in use writes ``{number}`` or ``{Number}``.
 """
 
@@ -50,6 +57,7 @@ import ast
 import functools
 import os
 import re
+import sys
 
 import yaml
 from mkdocs.exceptions import PluginError
@@ -63,6 +71,7 @@ ORIGINAL = "en"
 TEMPLATES = os.path.join(ROOT, "overrides")
 PYTHON = (os.path.join(ROOT, "tools", "hooks"),)
 
+FIXED = "do_not_translate"
 PLURAL = ("one", "other")
 AUTOMATIC = ("count", "number", "Number")
 NUMBERS = "numbers"
@@ -271,8 +280,40 @@ def sources(templates: str = TEMPLATES, python=PYTHON) -> list[tuple[str, str]]:
     return found
 
 
-def scan(catalog: Catalog, files: list[tuple[str, str]], root: str = ROOT) -> tuple[list[str], dict]:
-    """The problems between a catalog and the source that names its keys."""
+def translation_catalogs() -> dict[str, Catalog]:
+    """The catalog of every language the site may be translated into that has one."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import languages
+
+    return {lang: Catalog(os.path.join(DIRECTORY, f"{lang}.yml")) for lang in languages.LANGUAGES
+            if os.path.isfile(os.path.join(DIRECTORY, f"{lang}.yml"))}
+
+
+def _check_use(use: "Use", entry, where: str) -> list[str]:
+    problems = []
+    plural = isinstance(entry, dict)
+    if plural and not use.count:
+        problems.append(f"{use.where}: {use.key} is a plural{where}, and no count= is passed")
+    if use.count and not plural:
+        problems.append(f"{use.where}: {use.key} is not a plural{where}, and count= is passed")
+    if use.names is not None:
+        wanted = placeholders(entry)
+        given = use.names | (set(AUTOMATIC) if use.count else set())
+        for name in sorted(wanted - given):
+            problems.append(f"{use.where}: {use.key} needs {{{name}}}{where}, and nothing passes it")
+        for name in sorted(use.names - wanted):
+            problems.append(f"{use.where}: {use.key} has no {{{name}}}{where}, and {name}= is passed")
+    return problems
+
+
+def scan(catalog: Catalog, files: list[tuple[str, str]], root: str = ROOT,
+         translations: dict[str, Catalog] | None = None) -> tuple[list[str], dict]:
+    """The problems between a catalog and the source that names its keys.
+
+    translations  the languages' catalogs, by language, for the keys under
+                  FIXED; none when not given
+    """
+    translations = translations or {}
     problems: list[str] = []
     uses: list[Use] = []
     for path, kind in files:
@@ -282,31 +323,38 @@ def scan(catalog: Catalog, files: list[tuple[str, str]], root: str = ROOT) -> tu
         uses += template_uses(rel, text) if kind == "template" else python_uses(rel, text)
 
     used: set[str] = set()
+    fixed_used: dict[str, set[str]] = {}
     for use in uses:
         if use.key is None:
             problems.append(f"{use.where}: a key that is not written out — name it as a literal "
                             "string, so this check can see it")
             continue
+        if use.key.startswith(FIXED + "."):
+            if not translations:
+                problems.append(f"{use.where}: {use.key!r} is fixed text, and no language has a catalog")
+            for lang, other in sorted(translations.items()):
+                if use.key not in other.entries:
+                    problems.append(f"{use.where}: {use.key!r} is not in i18n/{lang}.yml")
+                else:
+                    fixed_used.setdefault(lang, set()).add(use.key)
+                    problems += _check_use(use, other.entries[use.key], f" in i18n/{lang}.yml")
+            continue
         if use.key not in catalog.entries:
             problems.append(f"{use.where}: {use.key!r} is not in the catalog")
             continue
         used.add(use.key)
-        entry = catalog.entries[use.key]
-        plural = isinstance(entry, dict)
-        if plural and not use.count:
-            problems.append(f"{use.where}: {use.key} is a plural, and no count= is passed")
-        if use.count and not plural:
-            problems.append(f"{use.where}: {use.key} is not a plural, and count= is passed")
-        if use.names is not None:
-            wanted = placeholders(entry)
-            given = use.names | (set(AUTOMATIC) if use.count else set())
-            for name in sorted(wanted - given):
-                problems.append(f"{use.where}: {use.key} needs {{{name}}}, and nothing passes it")
-            for name in sorted(use.names - wanted):
-                problems.append(f"{use.where}: {use.key} has no {{{name}}}, and {name}= is passed")
+        problems += _check_use(use, catalog.entries[use.key], "")
 
     if any(name in placeholders(catalog.entries[key]) for key in used for name in ("number", "Number")):
         used.update(k for k in catalog.entries if k.startswith(NUMBERS + "."))
     for key in sorted(set(catalog.entries) - used):
-        problems.append(f"{os.path.relpath(catalog.path, root)}: {key} is in the catalog, and nothing uses it")
+        if key.startswith(FIXED + "."):
+            problems.append(f"{os.path.relpath(catalog.path, root)}: {key} is fixed text, which the original "
+                            "has no need of: it belongs in each language's catalog")
+        else:
+            problems.append(f"{os.path.relpath(catalog.path, root)}: {key} is in the catalog, and nothing uses it")
+    for lang, other in sorted(translations.items()):
+        for key in sorted(k for k in other.entries if k.startswith(FIXED + ".")):
+            if key not in fixed_used.get(lang, set()):
+                problems.append(f"i18n/{lang}.yml: {key} is fixed text, and nothing uses it")
     return problems, {"keys": len(catalog.entries), "uses": len(uses), "files": len(files)}

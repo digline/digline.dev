@@ -26,15 +26,21 @@ of its English original as they were built, and fails when
   f) the translation does not hold together: its original is not one of the
      five, its lang is not its folder's, it has no description, or it does not
      record what it was made from — source (its original), source_sha,
-     source_commit, model, and for the home source_keys. And, once
-     DISCLAIMER_REQUIRED is on, a page that does not carry the notice that it
-     was translated by a model.
+     source_commit, model, and for the home source_keys; or its page does not
+     carry exactly one notice (DISCLAIMER_REQUIRED) that it was translated by
+     a model — the fixed words of its language, the stale ones once the
+     original has changed, and a link to the original, hreflang and lang
+     "en", named with the day of source_commit;
+  g) the fixed words themselves — every language's do_not_translate section —
+     are not the ones FIXED_TEXTS_DIGEST pins. The translating agent never
+     changes them; a person who means to changes the digest with them.
 
 It also says, for every translation, whether its original has changed since it
 was translated (tools/translation.py, status()), and that is never a failure:
 the English site must stay free to change. The exit status is 0 then.
 
     usage: tools/check-translations.py site [--root DIR]
+           tools/check-translations.py --fixed-digest [--root DIR]
            tools/check-translations.py --selftest
 
 --root is the repository the site was built from (docs/, i18n/, tools/i18n/):
@@ -67,13 +73,19 @@ sys.path.insert(0, TOOLS)
 import languages  # noqa: E402  tools/languages.py
 import translation  # noqa: E402  tools/translation.py
 
-# The notice that a page was translated by a model arrives with the opening
-# band's disclaimer, the next change in the sequence. Until a page can carry it,
-# requiring it would refuse every translation there could be, so the check is
-# written and off. Turn it on with that change: a translation's <main> must
-# then hold an element with this attribute.
-DISCLAIMER_REQUIRED = False
+# Every translation carries the notice that a model translated it: the element
+# with this attribute, in the opening band (overrides/partials/opening.html) or
+# the home's status line.
+DISCLAIMER_REQUIRED = True
 DISCLAIMER_ATTRIBUTE = "data-translation-notice"
+
+# The fixed words, as approved: tools/translation.py's fixed_digest() of the
+# do_not_translate section of i18n/it.yml, de.yml and es.yml. A change to any of
+# them is refused until this changes too — the explicit step that says the
+# change is meant, and that no translating agent takes. To make it:
+#     uv run tools/check-translations.py --fixed-digest
+# and set this to what it prints, in the same commit, saying why.
+FIXED_TEXTS_DIGEST = "9b8530d40d1f"
 
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 BLOCK = {"p", "li", "ul", "ol", "dl", "dt", "dd", "div", "section", "header", "footer", "article", "aside",
@@ -90,7 +102,7 @@ class Main(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.depth = 0          # open elements inside <main>; 0 outside it
         self.done = False
-        self.stack: list[tuple[str, bool]] = []   # (tag, says translate="yes")
+        self.stack: list[tuple[str, bool, bool]] = []   # (tag, says translate="yes", is the notice)
         self.pre = 0
         self.code = 0
         self.yes = 0
@@ -103,6 +115,11 @@ class Main(HTMLParser):
         self.prose: list[str] = []
         self.everything: list[str] = []
         self.notice = False
+        self.notices = 0
+        self.in_notice = 0
+        self.notice_class = ""
+        self.notice_text: list[str] = []
+        self.notice_links: list[tuple[str, str | None, str | None]] = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -112,8 +129,21 @@ class Main(HTMLParser):
             if tag == "main":
                 self.depth = 1
             return
-        if DISCLAIMER_ATTRIBUTE in attrs:
+        # The notice is the site's, not the translation's: it is read on its
+        # own, and none of it — its date, its link — counts in a) to e).
+        is_notice = DISCLAIMER_ATTRIBUTE in attrs
+        if is_notice:
             self.notice = True
+            self.notices += 1
+            self.notice_class = attrs.get("class") or ""
+        if is_notice or self.in_notice:
+            if tag == "a" and "href" in attrs:
+                self.notice_links.append((attrs["href"], attrs.get("hreflang"), attrs.get("lang")))
+            if tag not in VOID:
+                self.stack.append((tag, False, is_notice))
+                self.depth += 1
+                self.in_notice += int(is_notice)
+            return
         # Every tag separates words for the glossary and the numbers: two
         # spans side by side are two words, not one ("LangChain" beside the
         # question under it).
@@ -131,7 +161,7 @@ class Main(HTMLParser):
             return
         value = attrs.get("translate", "no")
         yes = value is None or value.strip().lower() in ("", "yes")
-        self.stack.append((tag, yes))
+        self.stack.append((tag, yes, False))
         self.depth += 1
         if tag in ("script", "style"):
             self.skip += 1
@@ -149,11 +179,16 @@ class Main(HTMLParser):
     def handle_endtag(self, tag):
         if not self.depth or self.done or tag in VOID:
             return
-        if tag != "main" and all(open_tag != tag for open_tag, _ in self.stack):
+        if tag != "main" and all(entry[0] != tag for entry in self.stack):
             return  # an end tag with no start: nothing to close
         while self.stack:
-            open_tag, yes = self.stack.pop()
+            open_tag, yes, notice = self.stack.pop()
             self.depth -= 1
+            if self.in_notice:
+                self.in_notice -= int(notice)
+                if open_tag == tag:
+                    break
+                continue
             if yes:
                 self.yes -= 1
             if open_tag in ("script", "style"):
@@ -178,6 +213,9 @@ class Main(HTMLParser):
 
     def handle_data(self, data):
         if not self.depth or self.done or self.skip:
+            return
+        if self.in_notice:
+            self.notice_text.append(data)
             return
         self.everything.append(data)
         if (self.pre or self.code) and not self.yes:
@@ -233,6 +271,47 @@ def _sequence_problem(where: str, what: str, original: list, translated: list) -
             f"apart: {(translated if len(translated) > len(original) else original)[min(len(original), len(translated))]!r}")
 
 
+FIXED = "do_not_translate"
+NOTICE_KEYS = ("notice", "original", "stale")
+
+
+def notice_problems(page: "Main", here: str, src_uri: str, meta: dict, lang: str, stale: bool, root: str) -> list[str]:
+    """What is wrong with a translation's notice, if anything."""
+    if not page.notice:
+        return [f"{here}: no notice that the page was translated by a model ({DISCLAIMER_ATTRIBUTE})"]
+    problems = []
+    if page.notices != 1:
+        problems.append(f"{here}: {page.notices} notices, and a page carries one")
+    words = translation.fixed_texts(root).get(lang, {})
+    date = translation.commit_date(root, meta.get("source_commit"))
+    if date is None:
+        problems.append(f"{here}: the notice has no date — source_commit {meta.get('source_commit')!r} is not a "
+                        "commit this repository has")
+    state = f"{FIXED}.stale" if stale else f"{FIXED}.notice"
+    original_words = words.get(f"{FIXED}.original", "").replace("{date}", date or "?")
+    wanted = f"{words.get(state, '?')} {original_words}"
+    text = " ".join("".join(page.notice_text).split())
+    if text != wanted:
+        problems.append(f"{here}: the notice says {text!r}, and it should say {wanted!r}"
+                        + (" (the original has changed since the translation)" if stale else ""))
+    marked = any(c.endswith("--stale") for c in page.notice_class.split())
+    if marked != stale:
+        problems.append(f"{here}: the notice is {'' if marked else 'not '}marked stale, and the original has "
+                        f"{'' if stale else 'not '}changed")
+    original_url = "/" + languages.page_url(meta.get("translation_of") or "")
+    links = page.notice_links
+    if len(links) != 1:
+        problems.append(f"{here}: the notice has {len(links)} links, and it has one, to the original")
+    else:
+        href, hreflang, link_lang = links[0]
+        resolved = urlsplit(urljoin("https://site.invalid/" + languages.page_url(src_uri), href)).path
+        if resolved != original_url:
+            problems.append(f"{here}: the notice links to {resolved}, and the original is {original_url}")
+        if hreflang != "en" or link_lang != "en":
+            problems.append(f"{here}: the notice's link is hreflang={hreflang!r} lang={link_lang!r}, not \"en\"")
+    return problems
+
+
 def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
     """(problems, changed originals, what was counted) for every translation."""
     problems: list[str] = []
@@ -254,6 +333,20 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
             built += [os.path.relpath(os.path.join(folder, n), site).replace(os.sep, "/") for n in names if n == "index.html"]
     for path in sorted(set(built) - {site_path(s) for s in sources}):
         problems.append(f"{path}: a page under a language's folder, with no translation in docs/ it was built from")
+
+    # g) the fixed words
+    fixed = translation.fixed_texts(root)
+    for lang in languages.LANGUAGES:
+        wanted = {f"{FIXED}.{key}" for key in NOTICE_KEYS}
+        missing_keys = sorted(wanted - set(fixed.get(lang, {})))
+        if missing_keys:
+            problems.append(f"i18n/{lang}.yml: no fixed text for {', '.join(missing_keys)}")
+    if translation.fixed_digest(root) != FIXED_TEXTS_DIGEST:
+        problems.append("i18n/{" + ",".join(languages.LANGUAGES) + "}.yml: the fixed words (do_not_translate) are "
+                        f"not the approved ones — digest {translation.fixed_digest(root)}, approved "
+                        f"{FIXED_TEXTS_DIGEST}. A translation never changes them; if the change is meant, set "
+                        "FIXED_TEXTS_DIGEST in tools/check-translations.py to the new digest, with a reason.")
+    counted["fixed"] = sum(len(texts) for texts in fixed.values())
 
     for src_uri in sources:
         lang = languages.language_of(src_uri)
@@ -283,8 +376,10 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
             keys = meta.get(translation.KEYS_FIELD)
             if not isinstance(keys, dict) or not keys or not all(translation.SHA.match(str(v)) for v in keys.values()):
                 problems.append(f"{where}: the home records no source_keys, a digest per catalog key")
+        stale = False
         if not missing:
             for change in translation.status(meta, root):
+                stale = True
                 changed.append(f"{src_uri}: the original changed since it was translated — {change}")
 
         translated_path = os.path.join(site, site_path(src_uri))
@@ -294,8 +389,9 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
             continue
         page, english = read_main(translated_path), read_main(original_path)
         here = site_path(src_uri)
-        if DISCLAIMER_REQUIRED and not page.notice:
-            problems.append(f"{here}: no notice that the page was translated by a model ({DISCLAIMER_ATTRIBUTE})")
+        if DISCLAIMER_REQUIRED:
+            problems += notice_problems(page, here, src_uri, meta, lang, stale, root)
+            counted["notices"] += page.notices
 
         # a) code
         problem = _sequence_problem(here, "code", english.code_texts, page.code_texts)
@@ -349,6 +445,9 @@ def main(argv: list[str]) -> int:
         i = argv.index("--root")
         root = argv[i + 1]
         argv = argv[:i] + argv[i + 2:]
+    if argv == ["--fixed-digest"]:
+        print(translation.fixed_digest(root))
+        return 0
     if len(argv) != 1:
         print(__doc__.split("\n\n")[-3], file=sys.stderr)
         return 2
@@ -360,12 +459,13 @@ def main(argv: list[str]) -> int:
     if problems:
         return 1
     if not counted["translations"]:
-        print("translations: no translation in docs/, nothing to compare")
+        print(f"translations: no translation in docs/, nothing to compare; the {counted['fixed']} fixed "
+              "texts are the approved ones")
     else:
         print(f"translations: {counted['translations']} translation(s) against their originals — "
               f"{counted['code']} code, {counted['links']} links, {counted['numbers']} numbers, "
               f"{counted['headings']} headings, {counted['kept']} kept terms, the same; "
-              f"{len(changed)} original(s) changed since translated")
+              f"{counted['notices']} notice(s) right; {len(changed)} original(s) changed since translated")
     return 0
 
 
@@ -479,33 +579,72 @@ def selftest() -> int:
         else:
             print("translations selftest: passes, as it must — b) a link to the Italian home where Why links to the English one")
 
-        # f) the disclaimer: off, nothing asks for it; on, every translation is
-        # refused until it carries one, and one that does passes.
-        global DISCLAIMER_REQUIRED
-        DISCLAIMER_REQUIRED = True
-        try:
-            found, _, _ = check(site, root)
-            if sum("no notice that the page was translated" in p for p in found) != counted["translations"]:
-                failures.append(f"f) with the disclaimer required, every translation should be refused: {found}")
-            else:
-                print("translations selftest: refused, as it must — f) the disclaimer, once required, on every translation")
-            pages = [f"site/{hook.languages.page_url(p)}index.html" for p in ("it/why.md", "de/why.md", "it/about.md", "it/index.md")]
-            saved = [edit(p, first_in_main(r"(<main[^>]*>)", rf'\1<p {DISCLAIMER_ATTRIBUTE}="">x</p>')) for p in pages]
-            found, _, _ = check(site, root)
-            for p, before in zip(pages, saved):
-                restore(p, before)
-            if any("no notice" in p for p in found):
-                failures.append(f"f) translations that carry the notice were refused: {found}")
-        finally:
-            DISCLAIMER_REQUIRED = False
+        # f) the notice: on every translation, once, dated by source_commit,
+        # linking to its original in English.
+        date = translation.commit_date(root, translation.read_page(os.path.join(root, "docs", "it", "why.md"))[0]["source_commit"])
+        git_day = subprocess.run(["git", "-C", root, "log", "-1", "--format=%cs", "--", "docs/why.md"],
+                                 capture_output=True, text=True).stdout.strip()
+        if counted["notices"] != counted["translations"] or not date or date != git_day:
+            failures.append(f"f) the fixture's notices: {counted['notices']} for {counted['translations']} translations, "
+                            f"dated {date}, the original's commit {git_day}")
+        it_why = read_main(os.path.join(site, "it", "why", "index.html"))
+        expected = ("Tradotto dall'inglese con un modello AI. Originale in inglese del " + git_day,
+                    [("../../why/", "en", "en")])
+        got = (" ".join("".join(it_why.notice_text).split()), it_why.notice_links)
+        if got != expected:
+            failures.append(f"f) the Italian Why's notice: {got}, wanted {expected}")
+        home = read_main(os.path.join(site, "it", "index.html"))
+        if home.notice_links != [("../", "en", "en")] or "hero__notice" not in home.notice_class:
+            failures.append(f"f) the Italian home's notice: {home.notice_class} {home.notice_links}")
+        english = read_main(os.path.join(site, "why", "index.html"))
+        if english.notice:
+            failures.append("f) the English Why carries a notice")
+        if not failures:
+            print(f"translations selftest: a notice on each of the {counted['translations']} translations, dated "
+                  f"{git_day}, linking to its original with hreflang and lang en; none on English Why")
 
-        # The original changed: reported, with exit status 0.
+        notice_planted = [
+            ("f) a translation without its notice", "site/it/about/index.html",
+             first_in_main(r'<p class="opening__notice[^"]*" data-translation-notice>.*?</p>', ""), "no notice that the page"),
+            ("f) a notice with another date", "site/it/about/index.html",
+             first_in_main(r"(Originale in inglese del )\d{4}-\d{2}-\d{2}", r"\g<1>2020-01-01"), "the notice says"),
+            ("f) a notice linking elsewhere", why,
+             first_in_main(r'(data-translation-notice>.*?<a href=")\.\./\.\./why/', r"\1../../start/"), "the notice links to /start/"),
+            ("f) a notice link with no hreflang", "site/de/why/index.html",
+             first_in_main(r'(data-translation-notice>.*?<a [^>]*?) hreflang="en"', r"\1"), "hreflang=None"),
+            ("f) a notice marked stale on an original that has not changed", "site/it/index.html",
+             first_in_main(r'class="hero__notice"', 'class="hero__notice hero__notice--stale"'), "marked stale"),
+            ("f) a notice in words that are not the fixed ones", "site/it/index.html",
+             first_in_main(r"Tradotto dall'inglese con un modello AI\.", "Tradotto automaticamente."), "the notice says"),
+            ("g) a fixed text changed in a catalog", "i18n/es.yml",
+             lambda t: t.replace("con un modelo de IA.", "con inteligencia artificial.", 1), "the fixed words (do_not_translate) are not the approved ones"),
+            ("g) a fixed text gone from a catalog", "i18n/de.yml",
+             lambda t: re.sub(r"\n  stale:[^\n]*", "", t, count=1), "no fixed text for do_not_translate.stale"),
+        ]
+        for label, path, change, needle in notice_planted:
+            before = edit(path, change)
+            try:
+                found, _, _ = check(site, root)
+            finally:
+                restore(path, before)
+            if not any(needle in p for p in found):
+                failures.append(f"{label}: not refused ({found})")
+            else:
+                print(f"translations selftest: refused, as it must — {label}")
+
+        # The original changed, and the site built again: reported with exit
+        # status 0, and the notices of its translations say so, marked.
         before_why = edit("docs/why.md", lambda t: t.replace("# Why\n", "# Why\n\nOne sentence more.\n", 1))
         before_catalog = edit("i18n/en.yml", lambda t: t.replace('lede: "The guide needs no key."',
                                                                   'lede: "The guide needs no API key."', 1))
+        rebuilt = hook._build(root)
         run = subprocess.run([sys.executable, __file__, site, "--root", root], capture_output=True, text=True)
+        stale_pages = {path: read_main(os.path.join(site, *path.split("/")))
+                       for path in ("it/why/index.html", "de/why/index.html", "it/index.html", "it/about/index.html")}
         restore("docs/why.md", before_why)
         restore("i18n/en.yml", before_catalog)
+        if rebuilt.returncode:
+            failures.append(f"the site with a changed original did not build: {rebuilt.stdout[-1500:]}")
         if run.returncode != 0:
             failures.append(f"a changed original made the check fail: {run.returncode} {run.stderr[-1000:]}")
         for needle in ("it/why.md: the original changed since it was translated — why.md source_sha",
@@ -515,15 +654,28 @@ def selftest() -> int:
                 failures.append(f"a changed original was not reported: {needle!r} not in {run.stdout!r}")
         if "it/about.md: the original changed" in run.stdout:
             failures.append("an original that did not change was reported changed")
+        stale_words = {"it/why/index.html": "L'originale inglese è cambiato dopo questa traduzione.",
+                       "de/why/index.html": "Das englische Original wurde nach dieser Übersetzung geändert.",
+                       "it/index.html": "L'originale inglese è cambiato dopo questa traduzione."}
+        for path, parsed in stale_pages.items():
+            text = " ".join("".join(parsed.notice_text).split())
+            marked = any(c.endswith("--stale") for c in parsed.notice_class.split())
+            if path in stale_words:
+                if not (text.startswith(stale_words[path]) and marked and parsed.notice_links):
+                    failures.append(f"{path}: the notice of a changed original is {text!r}, marked {marked}")
+            elif marked or "cambiato" in text:
+                failures.append(f"{path}: the notice of an unchanged original is {text!r}, marked {marked}")
         if not failures:
-            print("translations selftest: a changed page and a changed catalog key reported, exit status 0")
+            print("translations selftest: a changed page and a changed catalog key reported, exit status 0; "
+                  "the three notices say so, marked, with their links; About's does not")
 
     for failure in failures:
         print(f"translations selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print(f"translations selftest: the fixture's {counted['translations']} translations pass; {len(planted)} planted "
-          "failures across a) to f) refused, and the disclaimer once required; a changed original reported, not refused")
+    print(f"translations selftest: the fixture's {counted['translations']} translations pass, each with its notice; "
+          f"{len(planted) + len(notice_planted)} planted failures across a) to g) refused; a changed original "
+          "reported, not refused, and shown stale on its translations")
     return 0
 
 

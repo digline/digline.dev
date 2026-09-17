@@ -48,7 +48,8 @@ from mkdocs.exceptions import PluginError  # noqa: E402
 
 def on_config(config, **kwargs):
     catalog.default.cache_clear()
-    problems, counted = catalog.scan(catalog.default(), catalog.sources())
+    problems, counted = catalog.scan(catalog.default(), catalog.sources(),
+                                     translations=catalog.translation_catalogs())
     if problems:
         raise PluginError(
             f"i18n: {len(problems)} disagreement(s) between i18n/en.yml and the source that "
@@ -156,6 +157,43 @@ def selftest() -> int:
                 problems = [str(error)]
             if not any(needle in p for p in problems):
                 failures.append(f"{label}: not refused ({problems})")
+            else:
+                print(f"i18n selftest: refused, as it must — {label}")
+
+        # The fixed section: in every language's catalog, not in en.yml.
+        fixed_template = TEMPLATE + '<p>{{ "do_not_translate.notice" | t }}</p>\n'
+        languages_dir = {}
+        for lang, text in (("it", 'do_not_translate:\n  notice: "Tradotto."\n'),
+                           ("de", 'do_not_translate:\n  notice: "Übersetzt."\n')):
+            path = os.path.join(tmp, f"{lang}.yml")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            languages_dir[lang] = path
+        write(template=fixed_template)
+        found, _ = catalog.scan(catalog.Catalog(paths["en.yml"]), files(), tmp,
+                                translations={lang: catalog.Catalog(path) for lang, path in languages_dir.items()})
+        if found:
+            failures.append(f"fixed text in every language's catalog, and used, was refused: {found}")
+        fixed_cases = [
+            ("fixed text one language's catalog lacks", fixed_template.replace("notice", "stale"),
+             {"it": 'do_not_translate:\n  notice: "Tradotto."\n  stale: "Cambiato."\n', "de": 'do_not_translate:\n  notice: "Übersetzt."\n'},
+             CATALOG, "'do_not_translate.stale' is not in i18n/de.yml"),
+            ("fixed text a language's catalog holds and nothing uses", fixed_template,
+             {"it": 'do_not_translate:\n  notice: "Tradotto."\n  stale: "Cambiato."\n', "de": 'do_not_translate:\n  notice: "Übersetzt."\n'},
+             CATALOG, "i18n/it.yml: do_not_translate.stale is fixed text, and nothing uses it"),
+            ("fixed text in en.yml", TEMPLATE,
+             {}, CATALOG + 'do_not_translate:\n  notice: "Translated."\n', "do_not_translate.notice is fixed text, which the original"),
+        ]
+        for label, template, texts, catalog_text, needle in fixed_cases:
+            write(catalog_text=catalog_text, template=template)
+            others = {}
+            for lang, text in texts.items():
+                with open(languages_dir[lang], "w", encoding="utf-8") as fh:
+                    fh.write(text)
+                others[lang] = catalog.Catalog(languages_dir[lang])
+            found, _ = catalog.scan(catalog.Catalog(paths["en.yml"]), files(), tmp, translations=others)
+            if not any(needle in p for p in found):
+                failures.append(f"{label}: not refused ({found})")
             else:
                 print(f"i18n selftest: refused, as it must — {label}")
 

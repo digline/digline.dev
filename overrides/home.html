@@ -25,6 +25,7 @@
 {% block main %}
 {%- set r = home.regression %}
 {%- set s = r.scale %}
+{%- set notice = page.meta.translation_notice %}
 {%- set run_html %}<span class="mono" title="{{ r.run_id }}" translate="no">{{ r.run_short }}…</span>{% endset %}
 {%- set home_json_html %}<a href="{{ base_url }}/product/assets/home/home.json">home.json</a>{% endset %}
 {%- set dependencies_html %}{% for name in home.dependencies.names %}<span class="mono" translate="no">{{ name }}</span>{% if not loop.last %}, {% endif %}{% endfor %}{% endset %}
@@ -34,7 +35,11 @@
 <section class="hero" aria-labelledby="hero-h">
   <div class="part__inner">
     <div>
-      <p class="hero__status"><span>{{ "home.hero.license" | t }}</span><span>{% if home.pre_1_0 %}{{ "home.hero.version_pre_1_0" | t(version=home.version) }}{% else %}{{ "home.hero.version" | t(version=home.version) }}{% endif %}</span></p>
+      <p class="hero__status"><span>{{ "home.hero.license" | t }}</span><span>{% if home.pre_1_0 %}{{ "home.hero.version_pre_1_0" | t(version=home.version) }}{% else %}{{ "home.hero.version" | t(version=home.version) }}{% endif %}</span>
+        {%- if notice %}<span class="hero__notice{% if notice.stale %} hero__notice--stale{% endif %}" data-translation-notice>
+          {%- if notice.stale %}{{ "do_not_translate.stale" | t }}{% else %}{{ "do_not_translate.notice" | t }}{% endif %}
+          <a href="{{ base_url }}/{{ notice.original }}" hreflang="en" lang="en">{{ "do_not_translate.original" | t(date=notice.date) }}</a></span>
+        {%- endif %}</p>
       <h1 class="hero__title" id="hero-h">{{ "home.hero.title" | t }}<span class="hero__quiet">{{ "home.hero.title_quiet" | t }}</span></h1>
       <p class="hero__lede">{{ "home.hero.lede" | t }}</p>
       <div class="install" data-copy>
