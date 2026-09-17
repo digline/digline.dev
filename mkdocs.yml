@@ -78,6 +78,12 @@ plugins:
 # about this repository specifically — where the product pages come from, and
 # which git history holds their dates. See the docstring at the top of the file.
 hooks:
+  # translate="no" on every <pre> and <code> of the rendered Markdown, so a
+  # browser translating the page leaves code as it is written. First, so every
+  # hook after it and every template sees the attribute already there; the
+  # templates put it on their own code. tools/check-translate.py checks the
+  # result. See the file's docstring.
+  - tools/hooks/notranslate.py
   - tools/hooks/seo.py
   # llms.txt at the root, and the Markdown source of every page beside its
   # rendered form — the machine-readable side of the site. Both are derived

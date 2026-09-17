@@ -6,7 +6,12 @@
     Every number, run id, line of output and dependency name below is `home`,
     which tools/hooks/home.py computes from docs/product/assets/home/home.json —
     what digline printed when tools/home_capture.py ran it. None is typed here,
-    and the build fails when the file stops supporting what the page says. -#}
+    and the build fails when the file stops supporting what the page says.
+
+    What a translator must leave as written carries translate="no": every <pre>
+    and <code>, the case ids, the check names, the packages, the image and the
+    run ids. tools/check-translate.py fails the build on a <pre> or <code>
+    without it. -#}
 
 {% block main_class %} dg-page--home{% endblock %}
 
@@ -21,7 +26,7 @@
       <h1 class="hero__title" id="hero-h">You changed one&nbsp;prompt.<span class="hero__quiet">What else got worse?</span></h1>
       <p class="hero__lede">A new prompt, a model version, a library upgrade. The app still runs, and one answer your client relied on is now wrong. digline tells you which case, by how much, and whether the drop is bigger than the judge&rsquo;s own noise.</p>
       <div class="install" data-copy>
-        <code class="install__cmd">pip install digline</code>
+        <code class="install__cmd" translate="no">pip install digline</code>
       </div>
       <p class="install__req">Requires Python {{ home.requires_python }}</p>
       <p class="hero__links">
@@ -36,9 +41,9 @@
     </div>
 
     <figure class="verdict" aria-labelledby="verdict-h">
-      <div class="verdict__head"><span id="verdict-h">digline compare</span><span class="mono">{% if r.suite %}{{ r.suite }} · {% endif %}exit {{ r.exit }}</span></div>
+      <div class="verdict__head"><span id="verdict-h" translate="no">digline compare</span><span class="mono" translate="no">{% if r.suite %}{{ r.suite }} · {% endif %}exit {{ r.exit }}</span></div>
       <div class="verdict__body">
-        <p class="verdict__case"><span class="verdict__name">{{ r.first_case.id }}</span><span class="verdict__pill">got worse</span></p>
+        <p class="verdict__case"><span class="verdict__name" translate="no">{{ r.first_case.id }}</span><span class="verdict__pill">got worse</span></p>
         <div class="scale" aria-hidden="true" style="--ref: {{ s.ref_pos }}; --run: {{ s.run_pos }}">
           <div class="scale__axis"></div>
           <div class="scale__tick scale__tick--ref"><span class="scale__label scale__label--{{ s.ref_anchor }}">ref {{ s.ref }}</span></div>
@@ -47,23 +52,23 @@
         </div>
         <dl class="verdict__rows">
           {%- for check in r.first_case.checks %}
-          <dt>{{ check.assertion }}</dt><dd>{{ check.before }} → {{ check.after }}</dd>
+          <dt translate="no">{{ check.assertion }}</dt><dd>{{ check.before }} → {{ check.after }}</dd>
           {%- endfor %}
           {%- if r.other_cases %}
-          <dt>Also worse</dt><dd>{% for case in r.other_cases %}<span class="verdict__case-id">{{ case }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+          <dt>Also worse</dt><dd>{% for case in r.other_cases %}<span class="verdict__case-id" translate="no">{{ case }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
           {%- endif %}
         </dl>
         {%- if r.diff %}
         <div class="diff">
           <div class="diff__head">{{ r.diff.path }} · +{{ r.diff.added }} −{{ r.diff.removed }} lines, changed since the reference</div>
-          <pre class="out">
+          <pre class="out" translate="no">
             {%- for line in r.diff.changes %}<span class="out__line diff__{{ line.kind }}">{{ line.text }}</span>{% endfor -%}
           </pre>
         </div>
         {%- endif %}
         <p class="verdict__exit"><span>{{ r.regressed_count }} checks got worse. CI stops here.</span><b>exit {{ r.exit }}</b></p>
       </div>
-      <figcaption class="verdict__caption">Canned model and judge{% if r.samples %}, {{ r.samples }} sample{% if r.samples != 1 %}s{% endif %} per case{% endif %}: judge noise is not measured in this demo. Captured with digline {{ home.version }}, run <span class="mono" title="{{ r.run_id }}">{{ r.run_short }}…</span> · <a href="{{ base_url }}/product/assets/home/home.json">home.json</a></figcaption>
+      <figcaption class="verdict__caption">Canned model and judge{% if r.samples %}, {{ r.samples }} sample{% if r.samples != 1 %}s{% endif %} per case{% endif %}: judge noise is not measured in this demo. Captured with digline {{ home.version }}, run <span class="mono" title="{{ r.run_id }}" translate="no">{{ r.run_short }}…</span> · <a href="{{ base_url }}/product/assets/home/home.json">home.json</a></figcaption>
     </figure>
   </div>
 </section>
@@ -110,7 +115,7 @@
       <div class="tile">
         <div class="tile__icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8"/></svg></div>
         <h3 class="tile__title">{{ home.dependencies.heading }}, no provider SDK</h3>
-        <p class="tile__text">digline installs {% for name in home.dependencies.names %}<span class="mono">{{ name }}</span>{% if not loop.last %}, {% endif %}{% endfor %} and nothing else of its own. No server, no telemetry, nothing hosted. In CI the exit code is the whole interface.</p>
+        <p class="tile__text">digline installs {% for name in home.dependencies.names %}<span class="mono" translate="no">{{ name }}</span>{% if not loop.last %}, {% endif %}{% endfor %} and nothing else of its own. No server, no telemetry, nothing hosted. In CI the exit code is the whole interface.</p>
       </div>
     </div>
 
@@ -127,7 +132,7 @@
         </div>
         <ul class="stackcol__rows">
           {%- for p in home.stack.providers %}
-          <li><div class="stackrow"><span class="stackrow__name">{{ p.name }}</span>{% if p.also %}<span class="stackrow__sub"><span class="stackrow__pkg">{{ p.package }}</span> {{ p.also_html }}</span>{% else %}<span class="stackrow__sub stackrow__sub--mono">{{ p.package }}</span>{% endif %}</div></li>
+          <li><div class="stackrow"><span class="stackrow__name">{{ p.name }}</span>{% if p.also %}<span class="stackrow__sub"><span class="stackrow__pkg" translate="no">{{ p.package }}</span> {{ p.also_html }}</span>{% else %}<span class="stackrow__sub stackrow__sub--mono" translate="no">{{ p.package }}</span>{% endif %}</div></li>
           {%- endfor %}
         </ul>
       </section>
@@ -149,7 +154,7 @@
         </div>
         <ul class="stackcol__rows">
           {%- for r in home.stack.run %}
-          <li><a class="stackrow stackrow--link" href="{{ base_url }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub stackrow__sub--mono">{{ r.code }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
+          <li><a class="stackrow stackrow--link" href="{{ base_url }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub stackrow__sub--mono" translate="no">{{ r.code }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
           {%- endfor %}
         </ul>
       </section>
@@ -191,7 +196,7 @@
       <li class="group--{{ group.key }}">
         <a class="cmd" href="{{ base_url }}/{{ c.href }}">
           <span class="cmd__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">{{ icons.get(c.name, '<circle cx="12" cy="12" r="3"/>') }}</svg></span>
-          <code class="cmd__name">digline {{ c.name }}</code>
+          <code class="cmd__name" translate="no">digline {{ c.name }}</code>
           <span class="cmd__help">{{ c.help }}</span>
         </a>
       </li>
@@ -215,7 +220,7 @@
         <p class="kind__text">{{ kind.description }}</p>
         <ul class="kind__checks">
           {%- for check in kind.checks %}
-          <li><a class="kind__check" href="{{ base_url }}/{{ check.href }}">{{ check.name }}</a></li>
+          <li><a class="kind__check" translate="no" href="{{ base_url }}/{{ check.href }}">{{ check.name }}</a></li>
           {%- endfor %}
         </ul>
       </li>
@@ -232,7 +237,7 @@
     <div class="readings">
       <div class="panel">
         <h3 class="panel__head">The new run on its own <span>no reference</span></h3>
-        <pre class="out"><span class="out__line quiet">{{ r.table.header }}</span>
+        <pre class="out" translate="no"><span class="out__line quiet">{{ r.table.header }}</span>
           {%- for row in r.table.rows %}<span class="out__line">{{ row }}</span>{% endfor -%}
           <span class="out__line"></span><span class="out__line quiet">Were these {% if r.before_common %}{{ r.before_common }}{% else %}better{% endif %} yesterday? Did anything change?</span><span class="out__line quiet">Nothing here says.</span></pre>
         <div class="tags"><span>no baseline</span><span>no change on record</span><span>no exit code</span></div>
@@ -240,7 +245,7 @@
       <div class="readings__arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="panel panel--good">
         <h3 class="panel__head">digline compare <span>against the reference</span></h3>
-        <pre class="out">
+        <pre class="out" translate="no">
           {%- for line in r.compare_lines %}<span class="out__line{% if line.kind == "worse" %} worse{% elif line.kind in ("head", "more") %} quiet{% endif %}">{{ line.text }}</span>{% endfor -%}
           <span class="out__line"></span><span class="out__line worse">exit {{ r.exit }}</span></pre>
         <div class="tags"><span>each check named</span><span>prompt change detected</span><span>exit {{ r.exit }}</span></div>
@@ -256,9 +261,9 @@
     <h2 class="part__title" id="try-h">The quickstart runs <span class="grad-text">without an API key.</span></h2>
     <p class="part__intro">You need Python {{ home.requires_python }}. The model call in the guide is canned, so you can see the whole loop before wiring a real provider.</p>
     <ol class="steps">
-      <li><code>digline run</code><p>Runs the suite and writes a run file.</p></li>
-      <li><code>digline promote</code><p>A person approves that run as the reference.</p></li>
-      <li><code>digline compare</code><p>Every later run is checked against it.</p></li>
+      <li><code translate="no">digline run</code><p>Runs the suite and writes a run file.</p></li>
+      <li><code translate="no">digline promote</code><p>A person approves that run as the reference.</p></li>
+      <li><code translate="no">digline compare</code><p>Every later run is checked against it.</p></li>
     </ol>
     {#- One row per command: what you type on the left, what digline printed on
         the right, so a pair stays level when either side wraps. A command
@@ -269,14 +274,14 @@
     <div class="term">
       <div class="term__bar">you type</div>
       <div class="term__bar">digline prints</div>
-      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{% for g in home.pinned_install_groups %}<span class="term__group">{{ g }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></pre>
-      <pre class="out term__out"></pre>
+      <pre class="out term__cmd" translate="no"><span class="out__line"><span class="term__prompt">$ </span>{% for g in home.pinned_install_groups %}<span class="term__group">{{ g }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></pre>
+      <pre class="out term__out" translate="no"></pre>
       {%- for c in home.quickstart.commands %}
-      <pre class="out term__cmd"><span class="out__line"><span class="term__prompt">$ </span>{% for g in c.groups %}<span class="term__group">{{ g }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></pre>
-      <pre class="out term__out">{% for line in c.stdout %}<span class="out__line">{{ line }}</span>{% endfor %}</pre>
+      <pre class="out term__cmd" translate="no"><span class="out__line"><span class="term__prompt">$ </span>{% for g in c.groups %}<span class="term__group">{{ g }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></pre>
+      <pre class="out term__out" translate="no">{% for line in c.stdout %}<span class="out__line">{{ line }}</span>{% endfor %}</pre>
       {%- endfor %}
     </div>
-    <p class="part__note">Output captured from digline {{ home.version }}, run <span class="mono" title="{{ home.quickstart.run_id }}">{{ home.quickstart.run_short }}…</span>. <a href="{{ base_url }}/product/guide/">Full guide</a></p>
+    <p class="part__note">Output captured from digline {{ home.version }}, run <span class="mono" title="{{ home.quickstart.run_id }}" translate="no">{{ home.quickstart.run_short }}…</span>. <a href="{{ base_url }}/product/guide/">Full guide</a></p>
   </div>
 </section>
 
