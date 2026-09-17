@@ -34,7 +34,7 @@ Five things, and none of them is a longer assertion list.
 
 **There is no server and no telemetry.** `uv add digline`, or the Docker image; no account, no backend, no hosted viewer, and nothing to deploy. promptfoo is local-first too, so this is a narrow difference rather than a wide one — but it is a real one: promptfoo sends command-level telemetry by default, which `PROMPTFOO_DISABLE_TELEMETRY=1` turns off (its documentation states that prompts, outputs, test cases and API keys are not among it), and `promptfoo share` uploads an eval when you ask it to. digline has neither switch because it has neither feature. For a team whose prompts and outputs cannot leave the perimeter, that is the architecture rather than a setting.
 
-**`promote` is absent from every surface an agent can reach.** None of the MCP server's tools writes a baseline; no flag in `pytest-digline` and no input in the GitHub Action does either. An agent can measure everything and approve nothing — not because it is refused, but because the call does not exist. [digline for agents](../agents.md) has the rest.
+**`promote` is absent from every surface an agent can reach.** The MCP server has tools and none of them writes a baseline; no flag in `pytest-digline` and no input in the GitHub Action does either. An agent can measure everything and approve nothing — not because it is refused, but because the call does not exist. [digline for agents](../agents.md) has the rest.
 
 ## When to use which
 

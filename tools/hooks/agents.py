@@ -23,7 +23,11 @@ and its text, whitespace normalized, must be rule 1's at the tag, rendered
 from its Markdown the same way. The build fails otherwise, and when
 .agents-rule.json is missing or has no rule or no tag. Only that element is
 read: a blockquote the Markdown writes, or anything else the page says, has no
-say in it.
+say in it. The caption under it is the template's too, printed from
+page.meta.agents_rule: it must name digline at the file's tag and link to
+AGENTS.md at that tag, and so must the quotation's cite — a tag typed into the
+template instead would fail as soon as the file moved to the next release
+(caption_problems).
 
 The search index is checked too, since the page left Material's template:
 search/search_index.json must hold /agents/ with its title and its opening in
@@ -139,6 +143,52 @@ def quotation_problems(page_html: str, rule: dict) -> list[str]:
     return []
 
 
+class _Caption(HTMLParser):
+    """The quotation's cite, and the caption's text and links."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.cites: list[str] = []
+        self.captions: list[list] = []
+        self._in = False
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        classes = (attrs.get("class") or "").split()
+        if tag == "blockquote" and QUOTE_CLASS in classes:
+            self.cites.append(attrs.get("cite") or "")
+        elif tag == "figcaption" and "agents-rule__source" in classes:
+            self._in = True
+            self.captions.append(["", []])
+        elif tag == "a" and self._in:
+            self.captions[-1][1].append(attrs.get("href") or "")
+
+    def handle_endtag(self, tag):
+        if tag == "figcaption":
+            self._in = False
+
+    def handle_data(self, data):
+        if self._in:
+            self.captions[-1][0] += data
+
+
+def caption_problems(page_html: str, rule: dict) -> list[str]:
+    parser = _Caption()
+    parser.feed(page_html)
+    url = LINKS[f"{REPOSITORY}/blob/main/AGENTS.md"].format(tag=rule["tag"])
+    if len(parser.captions) != 1:
+        return [f"agents/index.html: {len(parser.captions)} captions under the quotation, and it has one"]
+    text, links = " ".join(parser.captions[0][0].split()), parser.captions[0][1]
+    problems = []
+    if f"digline {rule['tag']}" not in text:
+        problems.append(f"agents/index.html: the caption reads {text!r}, and the quotation is from {rule['tag']}")
+    if links != [url]:
+        problems.append(f"agents/index.html: the caption links to {links}, and AGENTS.md at {rule['tag']} is {url}")
+    if parser.cites != [url]:
+        problems.append(f"agents/index.html: the quotation's cite is {parser.cites}, and it should be {url}")
+    return problems
+
+
 def search_problems(index: dict, page_html: str) -> list[str]:
     """/agents/ in the search index as a reader of the results would see it."""
     docs = index.get("docs", [])
@@ -188,7 +238,8 @@ def on_post_build(config, **kwargs):
         raise PluginError("agents: site/agents/index.html was not built")
     with open(path, encoding="utf-8") as fh:
         page_html = fh.read()
-    problems = quotation_problems(page_html, load(_rule_path(config)))
+    rule = load(_rule_path(config))
+    problems = quotation_problems(page_html, rule) + caption_problems(page_html, rule)
     with open(os.path.join(config["site_dir"], "search", "search_index.json"), encoding="utf-8") as fh:
         problems += search_problems(json.load(fh), page_html)
     if problems:
@@ -273,6 +324,18 @@ def selftest() -> int:
            "[`operating-digline`](https://github.com/digline/digline/tree/v0.15.0/.claude/skills/operating-digline)")
     refused("a page without the link to the skill", lambda: at_tag(markdown.split(" … ")[0], "v0.15.0", PAGE),
             "has no link to https://github.com/digline/digline/tree/main/.claude/skills/operating-digline")
+
+    # The caption: the tag and the link are the file's, not the template's.
+    caption = ('<figcaption class="agents-rule__source"><a href="https://github.com/digline/digline/blob/v0.15.0/AGENTS.md">'
+               '<code translate="no">AGENTS.md</code></a>, rule 1 — digline v0.15.0</figcaption>')
+    cited = page.replace('cite="x"', 'cite="https://github.com/digline/digline/blob/v0.15.0/AGENTS.md"') + caption
+    expect("the caption and the cite name the file's tag", caption_problems(cited, rule), [])
+    moved = dict(rule, tag="v0.16.0")
+    found = caption_problems(cited, moved)
+    expect("the file at another tag, the caption still at v0.15.0 (a tag typed into the template): refused",
+           (any("the quotation is from v0.16.0" in p for p in found), any("the caption links to" in p for p in found),
+            any("cite is" in p for p in found)), (True, True, True))
+    expect("no caption: refused", "0 captions" in caption_problems(page, rule)[0], True)
 
     # The search index.
     tiles_html = ('<div class="tile">\n<h3 id="the-mcp-server">The MCP server</h3>'
