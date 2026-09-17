@@ -693,13 +693,10 @@ pre {
 
 /* ── the closing band ────────────────────────────────────────────────────── */
 .closing {
+  /* Its ground — the band's glow over one more layer of --wash than the body
+     it closes, rising out of the body over --band-fade, so there is no line
+     where the band begins — is .closing in chrome.css. */
   padding: 4.5rem 0;
-  /* The band's glow (--band-glow, chrome.css) across the band, over one more
-     layer of --wash than the body it closes. That layer rises out of the body
-     over --band-fade, so there is no line where the band begins. */
-  background-image:
-    var(--band-glow),
-    linear-gradient(transparent, var(--wash) var(--band-fade));
 }
 .closing .part__inner {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;

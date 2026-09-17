@@ -8,33 +8,6 @@
 {%- set here = page.file.src_uri if page and page.file else "" %}
 <footer class="dg-foot">
 
-  {%- if not plain_page and "navigation.footer" in (config.theme.features or []) %}
-  {%- if page.previous_page or page.next_page %}
-  {# Material's own pagination, kept because it belongs to reading long
-     documentation, and moved inside the band so it shares its ground. #}
-  <nav class="md-footer__inner md-grid dg-foot__pager" aria-label="Footer">
-    {%- if page.previous_page %}
-    <a href="{{ page.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="Previous: {{ page.previous_page.title | e }}">
-      <div class="md-footer__button md-icon">{% include ".icons/material/arrow-left.svg" %}</div>
-      <div class="md-footer__title">
-        <span class="md-footer__direction">Previous</span>
-        <div class="md-ellipsis">{{ page.previous_page.title }}</div>
-      </div>
-    </a>
-    {%- endif %}
-    {%- if page.next_page %}
-    <a href="{{ page.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="Next: {{ page.next_page.title | e }}">
-      <div class="md-footer__title">
-        <span class="md-footer__direction">Next</span>
-        <div class="md-ellipsis">{{ page.next_page.title }}</div>
-      </div>
-      <div class="md-footer__button md-icon">{% include ".icons/material/arrow-right.svg" %}</div>
-    </a>
-    {%- endif %}
-  </nav>
-  {%- endif %}
-  {%- endif %}
-
   <div class="dg-foot__in">
     <div class="dg-foot__cols">
 

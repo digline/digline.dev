@@ -79,3 +79,47 @@
   </aside>
   {%- endif %}
 {% endblock %}
+
+{#-
+  The foot of every documentation page — the docs, the handbook, the
+  comparison, the blog, the indexes and the 404 — before the band at the
+  bottom: Material's previous / next, then an empty closing band.
+
+  The pager comes first, on the body's ground straight under the article, so
+  that it reads as the end of the page it belongs to. It used to sit at the top
+  of the dark band; the closing band would have come between it and the page.
+
+  The closing band is the presentation pages' closing band with nothing in it:
+  the same class, so the same ground and glow (chrome.css), faded into the body
+  at its top (theme.css). Decoration only, and hidden from assistive
+  technology. It spans the page under <main>, so the sidebars and the table of
+  contents, which are sticky inside <main>, end above it.
+-#}
+{% block footer %}
+  <div class="dg-docfoot">
+  {%- if page and (page.previous_page or page.next_page) and "navigation.footer" in (config.theme.features or []) %}
+    <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="Footer">
+      {%- if page.previous_page %}
+      <a href="{{ page.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="Previous: {{ page.previous_page.title | e }}">
+        <div class="md-footer__button md-icon">{% include ".icons/material/arrow-left.svg" %}</div>
+        <div class="md-footer__title">
+          <span class="md-footer__direction">Previous</span>
+          <div class="md-ellipsis">{{ page.previous_page.title }}</div>
+        </div>
+      </a>
+      {%- endif %}
+      {%- if page.next_page %}
+      <a href="{{ page.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="Next: {{ page.next_page.title | e }}">
+        <div class="md-footer__title">
+          <span class="md-footer__direction">Next</span>
+          <div class="md-ellipsis">{{ page.next_page.title }}</div>
+        </div>
+        <div class="md-footer__button md-icon">{% include ".icons/material/arrow-right.svg" %}</div>
+      </a>
+      {%- endif %}
+    </nav>
+  {%- endif %}
+    <div class="closing dg-docfoot__band" aria-hidden="true"></div>
+  </div>
+  {% include "partials/footer.html" %}
+{% endblock %}
