@@ -89,6 +89,20 @@
   that it reads as the end of the page it belongs to. It used to sit at the top
   of the dark band; the closing band would have come between it and the page.
 
+  It is drawn only on a page that is one of a sequence read in order, and this
+  is the one place that says which: a page under one of the nav's top-level
+  groups in `sequences` below, that is not the index of a group.
+    * with a pager: the Handbook's chapters, the comparison's tool pages, and
+      every page under Docs — Essentials, Commands, Running it, Reference,
+      the examples, the decisions, Changelog and Roadmap;
+    * without: digline for agents (a page on its own, in no group), the
+      indexes (Handbook, How digline compares, Writing, Examples, Decisions:
+      each lists its sequence rather than standing in it), the blog's posts
+      (Writing is not a sequence) and the 404 (no page).
+  The titles are the nav's, in mkdocs.yml: a group renamed there is renamed
+  here. Where there is no pager the band follows <main> directly, starting
+  where the pager would have started.
+
   The closing band is the presentation pages' closing band with nothing in it:
   the same class, so the same ground and glow (chrome.css), faded into the body
   at its top (theme.css). Decoration only, and hidden from assistive
@@ -96,8 +110,11 @@
   contents, which are sticky inside <main>, end above it.
 -#}
 {% block footer %}
+  {%- set sequences = ["Handbook", "How digline compares", "Docs"] %}
+  {%- set top = page.ancestors[-1].title if page and page.ancestors else none %}
+  {%- set in_sequence = page and top in sequences and not page.is_index %}
   <div class="dg-docfoot">
-  {%- if page and (page.previous_page or page.next_page) and "navigation.footer" in (config.theme.features or []) %}
+  {%- if in_sequence and (page.previous_page or page.next_page) and "navigation.footer" in (config.theme.features or []) %}
     <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="Footer">
       {%- if page.previous_page %}
       <a href="{{ page.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="Previous: {{ page.previous_page.title | e }}">
