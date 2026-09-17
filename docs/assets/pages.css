@@ -844,7 +844,8 @@ pre {
   color: var(--ink);
 }
 .essay--agents .tile p { font-size: .9375rem; }
-.essay--agents .tile p:last-child { color: var(--muted); }
+.essay--agents .tile p + p { color: var(--muted); }
+.essay--agents .tile p + p + p { margin-top: -.5rem; }
 .essay--agents .aside {
   padding: 1.5rem;
   background: var(--wash);
@@ -857,6 +858,7 @@ pre {
   color: var(--muted);
 }
 .agents-rule { max-width: 40rem; margin: 2.75rem 0 0; }
+.essay--agents .agents-rule + .aside { margin-top: 2.75rem; }
 .agents-rule__quote {
   margin: 0;
   padding: 1.25rem 1.5rem;
@@ -864,7 +866,12 @@ pre {
   border: 1px solid var(--rule); border-radius: .875rem;
   box-shadow: var(--shadow-soft);
 }
-.agents-rule__quote p { margin: 0; font-size: 1.0625rem; line-height: 1.6; color: var(--ink); }
+/* Inside .essay since it sits between the tiles and the .aside: its words are
+   prose, not digline's output, so not the monospace of .essay blockquote p. */
+.essay .agents-rule__quote p {
+  margin: 0; font-family: inherit;
+  font-size: 1.0625rem; line-height: 1.6; color: var(--ink);
+}
 .agents-rule__quote code { font-family: var(--mono-page); font-size: .875em; }
 .agents-rule__source { margin: .625rem 0 0; font-size: .875rem; color: var(--muted); }
 .agents-rule__source a { color: var(--link); }

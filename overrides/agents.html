@@ -3,7 +3,9 @@
 {#- digline for agents. Like why.html: the layout is here, the words are in
     docs/agents.md — the thesis as the opening band, the principle and the
     agent under test as blocks of their own (.principle, .aside), the four
-    surfaces as tiles (.tiles, the home's) — and the home's closing band.
+    surfaces as tiles (.tiles, the home's) — and the home's closing band. The
+    quotation below sits between the tiles and the .aside: tools/hooks/agents.py
+    splits the body there (body, agents_aside).
 
     One thing is here and not in the Markdown: the quotation of rule 1 of
     digline's AGENTS.md that closes the page. They are digline's words, so a
@@ -23,7 +25,6 @@
   <div class="reading__inner">
 <article class="essay essay--agents">
 {{ body }}
-</article>
 {%- set rule = page.meta.agents_rule %}
 <figure class="agents-rule">
   <blockquote class="agents-rule__quote" cite="{{ rule.url }}">
@@ -31,6 +32,8 @@
   </blockquote>
   <figcaption class="agents-rule__source"><a href="{{ rule.url }}"><code translate="no">AGENTS.md</code></a>, rule 1 — digline {{ rule.tag }}</figcaption>
 </figure>
+{{ agents_aside }}
+</article>
   </div>
 </div>
 {% include "partials/closing.html" %}

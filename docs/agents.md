@@ -28,9 +28,11 @@ On the MCP server `promote` does not exist: its tools read a result or measure a
 
 ### The MCP server
 
-Its tools list runs, read a run, a baseline or the log, compare, diff and explain, and run a suite.
+Its tools read what a run recorded and measure new runs.
 
-**Not there:** `promote`. [digline over MCP](product/mcp.md)
+**Not there:** `promote`.
+
+**Details:** [digline over MCP](product/mcp.md)
 
 </div>
 
@@ -38,9 +40,11 @@ Its tools list runs, read a run, a baseline or the log, compare, diff and explai
 
 ### The operator
 
-It watches a suite on a cadence, tells a draw from drift from a structural flip — several cases flipping together — and opens an issue in the repository when the answer needs a decision. Each cycle proves the wall: one write that must fail, `promote` called by name, beside one that must succeed.
+It watches a suite on a schedule and opens an issue when a result needs a decision. Each cycle checks that `promote` still fails.
 
-**Not there:** the remedy. Fixing the prompt belongs to an engineer or a coding agent, and the alert is the handover. [The operator loop](product/operator.md), and [its example](product/examples/operator.md)
+**Not there:** the remedy. Fixing the prompt belongs to an engineer or a coding agent, and the alert is the handover.
+
+**Details:** [the operator loop](product/operator.md), [its example](product/examples/operator.md)
 
 </div>
 

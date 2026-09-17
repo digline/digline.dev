@@ -232,6 +232,26 @@ def on_page_markdown(markdown, page, config, files, **kwargs):
     return at_tag(markdown, rule["tag"], page.file.src_uri)
 
 
+ASIDE = '<div class="aside">'
+
+
+def split_aside(body: str, source: str) -> tuple[str, str]:
+    """The page's body before its .aside, and the .aside to the end: the template
+    sets the quotation between the two. Refused unless there is exactly one."""
+    if body.count(ASIDE) != 1:
+        raise PluginError(f"agents: {source} has {body.count(ASIDE)} <div class=\"aside\" markdown>, and the "
+                          "quotation of rule 1 is set before the one block about the agent under test")
+    before, after = body.split(ASIDE, 1)
+    return before, ASIDE + after
+
+
+def on_page_context(context, page, config, nav, **kwargs):
+    # After opening.py, which puts the body in the context.
+    if _is_page(page) and "body" in context:
+        context["body"], context["agents_aside"] = split_aside(context["body"], page.file.src_uri)
+    return context
+
+
 def on_post_build(config, **kwargs):
     path = os.path.join(config["site_dir"], "agents", "index.html")
     if not os.path.isfile(path):
@@ -324,6 +344,13 @@ def selftest() -> int:
            "[`operating-digline`](https://github.com/digline/digline/tree/v0.15.0/.claude/skills/operating-digline)")
     refused("a page without the link to the skill", lambda: at_tag(markdown.split(" … ")[0], "v0.15.0", PAGE),
             "has no link to https://github.com/digline/digline/tree/main/.claude/skills/operating-digline")
+
+    # The body split at its one .aside, for the quotation to go between.
+    expect("the body split before its .aside",
+           split_aside('<h2>A</h2><div class="tiles"></div><div class="aside"><h2>B</h2></div>', PAGE),
+           ('<h2>A</h2><div class="tiles"></div>', '<div class="aside"><h2>B</h2></div>'))
+    refused("a body with no .aside", lambda: split_aside("<h2>A</h2>", PAGE), "has 0 <div")
+    refused("a body with two", lambda: split_aside('<div class="aside"></div><div class="aside"></div>', PAGE), "has 2 <div")
 
     # The caption: the tag and the link are the file's, not the template's.
     caption = ('<figcaption class="agents-rule__source"><a href="https://github.com/digline/digline/blob/v0.15.0/AGENTS.md">'
