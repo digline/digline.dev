@@ -40,8 +40,12 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 
 from mkdocs.exceptions import PluginError
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import languages  # noqa: E402  tools/languages.py
 
 # The pages that are not in any nav section: Home, Start here, Why, digline for
 # agents, About and Contact. They need a heading of their own
@@ -538,9 +542,15 @@ def _sections(items, title: str) -> list[tuple[str, list]]:
     Nav entries that are neither — the one external link, to digline/brief —
     fall through: this file is an index of this site, and every URL in it has
     to be a page that is in the build.
+
+    Translations are left out by name, whatever the nav says: this is the
+    index of the English site, the original, and a page under one of
+    languages.LANGUAGES' folders (docs/it/why.md) is never in it, nor is its
+    Markdown copied beside it.
     """
     out: list[tuple[str, list]] = []
-    pages = [item for item in items if item.is_page]
+    pages = [item for item in items
+             if item.is_page and not languages.is_translation(item.file.src_uri)]
     for item in items:
         if item.is_page and item is pages[0]:
             out.append((title, pages))

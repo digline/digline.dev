@@ -8,7 +8,8 @@
   Its words are keys in i18n/en.yml, under `footer`, printed with the `t`
   filter. GitHub, PyPI and the two addresses are names, and stay as written.
 -#}
-{%- set here = page.file.src_uri if page and page.file else "" %}
+{#- As in the bar: a translation is where its original is. #}
+{%- set here = (page.meta.translation_of or page.file.src_uri) if page and page.file else "" %}
 <footer class="dg-foot">
 
   <div class="dg-foot__in">

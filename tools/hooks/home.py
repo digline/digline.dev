@@ -978,8 +978,9 @@ def _built_grids(data: dict, lang: str = ORIGINAL) -> dict[str, Any]:
 
 
 def on_page_context(context, page, config, nav, **kwargs):
-    """The values reach the home and no other page, in the page's language."""
-    if page.file.src_uri == "index.md":
+    """The values reach the home and its translations and no other page, in
+    the page's language."""
+    if (page.meta.get("translation_of") or page.file.src_uri) == "index.md":
         lang = page_language(page, config)
         with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
             data = json.load(fh)

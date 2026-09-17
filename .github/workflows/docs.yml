@@ -104,6 +104,16 @@ jobs:
         # The real check runs inside the build, in on_config.
         run: uv run tools/hooks/i18n.py --selftest
 
+      - name: Check the translations' hook
+        # tools/hooks/translations.py: every way a translation's front matter
+        # can fail refused; then the fake translations of
+        # tools/testdata/translations built with --strict in a copy of the
+        # site — hreflang where it belongs and nowhere else, the translations'
+        # language, out of search and llms.txt — the built hreflang tampered
+        # with and refused, and a build with a broken translation refused.
+        # After the sync, which it needs; none of it is in docs/.
+        run: uv run tools/hooks/translations.py --selftest
+
       - name: Check the indexes' hook
         # tools/hooks/indexes.py: the Decisions table from records of every
         # shape the real ones have, the Examples tiles and their external line,

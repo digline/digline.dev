@@ -39,10 +39,11 @@ import os
 import re
 from html.parser import HTMLParser
 
-# Always in the subsets, whatever the pages say today: printable ASCII, and the
-# punctuation prose and digline's output reach for. A new sentence that uses
-# only these needs no new cut.
-BASE = {chr(c) for c in range(0x20, 0x7F)} | set("–—‘’“”…·→−×•")
+# Always in the subsets, whatever the pages say today: printable ASCII, the
+# punctuation prose and digline's output reach for, and ẞ (U+1E9E, the capital
+# sharp s), the one letter of German, Italian and Spanish outside Latin-1 and
+# the ranges below. A new sentence that uses only these needs no new cut.
+BASE = {chr(c) for c in range(0x20, 0x7F)} | set("–—‘’“”…·→−×•ẞ")
 
 
 def _span(first: int, last: int) -> set[str]:

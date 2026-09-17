@@ -22,6 +22,15 @@ edit_uri: ""
 docs_dir: docs
 site_dir: site
 
+# The translations of the presentation pages, docs/<lang>/, one folder per
+# language in tools/languages.py (LANGUAGES). They are in no nav — the nav is the
+# English site — and this keeps --strict from reading that as an omission.
+# tools/hooks/translations.py checks every file under them.
+not_in_nav: |
+  /it/
+  /de/
+  /es/
+
 theme:
   name: material
   custom_dir: overrides
@@ -89,6 +98,12 @@ hooks:
   # catalog lacks, or the catalog holds and nothing names. See the file's
   # docstring, and tools/catalog.py for how a value is written.
   - tools/hooks/i18n.py
+  # The translations of the presentation pages, docs/<lang>/: refused unless
+  # each is one of the five, in its folder's language, at its original's path,
+  # with its own description and out of search; and the hreflang links on an
+  # English page with translations and on the translations, checked again in
+  # site/ after the build. See the file's docstring, and tools/languages.py.
+  - tools/hooks/translations.py
   - tools/hooks/seo.py
   # llms.txt at the root, and the Markdown source of every page beside its
   # rendered form — the machine-readable side of the site. Both are derived

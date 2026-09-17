@@ -13,7 +13,9 @@ reads the build and fails when that is not what was written:
     — a line the site writes among lines digline printed, like the two
     questions under the scores on the home. A .out__note that says yes outside
     a <pre>, or inside a <code> alone, is refused too;
-  * a page whose <html> does not carry ``lang="en"``, or that has no <html>;
+  * a page whose <html> does not carry its language — ``lang="en"``, or on a
+    translation under docs/<lang>/ that ``lang`` (tools/languages.py) — or
+    that has no <html>;
   * a site with no page, no <pre> or no <code> at all, which cannot be right
     and would pass by counting nothing.
 
@@ -42,6 +44,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools", "hooks"))
 
 import notranslate  # noqa: E402  the hook, for the selftest's second page
+
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import languages  # noqa: E402  tools/languages.py
 
 LANG = "en"
 CODE_TAGS = ("pre", "code")
@@ -117,8 +122,9 @@ def check(site: str) -> tuple[list[str], dict[str, int]]:
             counted["notes"] += parser.notes
             if not parser.has_html:
                 problems.append(f"{rel}: no <html>")
-            elif parser.lang != LANG:
-                problems.append(f'{rel}: <html lang="{parser.lang}">, not lang="{LANG}"'
+            elif parser.lang != (languages.language_of(rel) or LANG):
+                expected = languages.language_of(rel) or LANG
+                problems.append(f'{rel}: <html lang="{parser.lang}">, not lang="{expected}"'
                                 if parser.lang is not None else f"{rel}: <html> without lang")
             if parser.wrong:
                 shown = sorted(set(parser.wrong))
@@ -208,6 +214,31 @@ def selftest() -> int:
                 failures.append(f"{label}: not refused ({problems})")
             else:
                 print(f"translate selftest: refused, as it must — {label}")
+
+        # A translation, under a language's folder (tools/languages.py): its own
+        # language passes, English there is refused, and so is an English page
+        # that says it is Italian beside it.
+        write()
+        italian = os.path.join(site, "it")
+        os.makedirs(italian)
+        for label, home_html, translated_html, needle in (
+            ("a translation in its own language", template, template.replace('lang="en"', 'lang="it"'), None),
+            ("a translation that says it is English", template, template, 'it/index.html: <html lang="en">, not lang="it"'),
+            ("an English page that says it is Italian", template.replace('lang="en"', 'lang="it"'),
+             template.replace('lang="en"', 'lang="it"'), 'index.html: <html lang="it">, not lang="en"'),
+        ):
+            write(home_html)
+            with open(os.path.join(italian, "index.html"), "w", encoding="utf-8") as fh:
+                fh.write(translated_html)
+            problems, _ = check(site)
+            if needle is None and problems:
+                failures.append(f"{label}: refused ({problems})")
+            elif needle is not None and not any(p.startswith(needle) for p in problems):
+                failures.append(f"{label}: not refused ({problems})")
+            elif needle is not None:
+                print(f"translate selftest: refused, as it must — {label}")
+        shutil.rmtree(italian)
+        write()
 
         shutil.rmtree(os.path.join(site, "product"))
         os.remove(home)

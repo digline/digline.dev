@@ -4,7 +4,9 @@
     own path under the site root ("why/", "" for the home), compared with each
     link's. The Copy script comes with it: it finds every .install[data-copy] on
     the page that is above it, the home's hero included, so a page includes
-    this partial once and at its end. Its words, the button's included, are
+    this partial once and at its end. On a translation the page compared is
+    its original (translation_of): /it/why/ leaves out Why too. Its words, the
+    button's included, are
     keys in i18n/en.yml under `closing`, printed with the `t` filter. -#}
 <section class="closing" aria-labelledby="closing-h">
   <div class="part__inner">
@@ -16,13 +18,15 @@
       <code class="install__cmd" translate="no">pip install digline</code>
     </div>
     <p class="closing__links">
+      {%- set original = page.meta.translation_of %}
+      {%- set here_url = (original[:-3] ~ "/" if original != "index.md" else "") if original else page.url %}
       {%- for path, label in [
         ("why/", "closing.links.why" | t),
         ("product/guide/", "closing.links.guide" | t),
         ("agents/", "closing.links.agents" | t),
         ("comparison/", "closing.links.comparison" | t),
       ] %}
-      {%- if path != page.url %}
+      {%- if path != here_url %}
       <a href="{{ base_url }}/{{ path }}">{{ label }}</a>
       {%- endif %}
       {%- endfor %}

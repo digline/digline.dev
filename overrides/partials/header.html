@@ -17,7 +17,9 @@
   Its words are keys in i18n/en.yml, under `bar`, printed with the `t` filter.
 -#}
 {% set docs = not plain_page %}
-{% set here = page.file.src_uri if page and page.file else "" %}
+{#- The page the bar is on, as its English source: a translation is where its
+    original is (translation_of), so /it/why/ marks Why as current. #}
+{% set here = (page.meta.translation_of or page.file.src_uri) if page and page.file else "" %}
 
 {%- set palette_options = [] %}
 {%- for option in config.theme.palette %}
