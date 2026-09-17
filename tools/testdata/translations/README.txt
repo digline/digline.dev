@@ -4,12 +4,12 @@ tools/check-translations.py only.
 Each file here is a translation's front matter and nothing else. A selftest
 copies the site into a temporary directory and writes each translation there
 with tools/translation.py, fake_translation(): this front matter, stamped with
-what the translation was made from (source, source_sha, source_commit, model,
-and for the home source_keys), over the text of the English page as it is at
+what the translation was made from (source, source_sha, source_commit, model),
+over the text of the English page as it is at
 that moment, pseudo-translated — code, links, numbers, headings and the terms
 to keep left as they are, every other word given a suffix (ẞ in German). Each
-language gets a catalog that is a copy of i18n/en.yml, and the site is built
-there.
+language gets a catalog that is a copy of i18n/en.yml, with source_keys for
+every key as it is, and the site is built there.
 
 So the fake translations follow the English pages wherever they go, and
 nothing here is a translation to publish. None of these files is ever in docs/.

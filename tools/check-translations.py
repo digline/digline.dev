@@ -26,7 +26,7 @@ of its English original as they were built, and fails when
   f) the translation does not hold together: its original is not one of the
      five, its lang is not its folder's, it has no description, or it does not
      record what it was made from — source (its original), source_sha,
-     source_commit, model, and for the home source_keys; or its page does not
+     source_commit, model, and for the home its catalog's source_keys; or its page does not
      carry exactly one notice (DISCLAIMER_REQUIRED) that it was translated by
      a model — the fixed words of its language, the stale ones once the
      original has changed, and a link to the original, hreflang "en",
@@ -375,9 +375,10 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
         if meta.get("source_commit") and not translation.COMMIT.match(str(meta["source_commit"])):
             problems.append(f"{where}: source_commit {meta['source_commit']!r} is not a commit")
         if original == translation.HOME:
-            keys = meta.get(translation.KEYS_FIELD)
-            if not isinstance(keys, dict) or not keys or not all(translation.SHA.match(str(v)) for v in keys.values()):
-                problems.append(f"{where}: the home records no source_keys, a digest per catalog key")
+            keys = translation.catalog_source_keys(root, lang)
+            if not keys or not all(translation.SHA.match(str(v)) for v in keys.values()):
+                problems.append(f"{where}: i18n/{lang}.yml records no source_keys, a digest per catalog key, "
+                                "so the home cannot say whether its words are behind English")
         stale = False
         if not missing:
             for change in translation.status(meta, root):
@@ -556,8 +557,8 @@ def selftest() -> int:
              "translation_of 'agents.md' is not the presentation page at its path"),
             ("f) no record of what it was made from", "docs/it/about.md",
              lambda t: re.sub(r"\nmodel:[^\n]*", "", t, count=1), "no model"),
-            ("f) the home without its catalog digests", "docs/it/index.md",
-             lambda t: re.sub(r"\nsource_keys:\n(  [^\n]*\n)*", "\n", t, count=1), "records no source_keys"),
+            ("f) the home without its catalog digests", "i18n/it.yml",
+             lambda t: re.sub(r"(?m)^source_keys:\n(?:[ ]+[^\n]*\n)*", "", t, count=1), "records no source_keys"),
         ]
         for label, path, change, needle in planted:
             before = edit(path, change)
