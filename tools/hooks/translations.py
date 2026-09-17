@@ -28,6 +28,11 @@ English first, then languages.LANGUAGES' order — and ``x-default``, the
 English page. overrides/partials/seo.html writes them into <head>. A page
 with no translation gets nothing, and its HTML is what it was.
 
+The same pages get ``page.meta.language_switch``, the language menu in the
+bar (overrides/partials/header.html): one entry per hreflang link but
+x-default — the same list, so the menu and the links cannot disagree — each
+language by its own name (languages.NAMES), the page's own marked current.
+
 ── after the build (on_post_build) ──────────────────────────────────────────
 Every page in site/ is read again, and the build fails when its hreflang
 links are not exactly the ones its group should have — none, for a page with
@@ -58,6 +63,8 @@ import subprocess
 import sys
 import tempfile
 from html.parser import HTMLParser
+
+from urllib.parse import urljoin, urlsplit
 
 import yaml
 from mkdocs.exceptions import PluginError
@@ -139,6 +146,17 @@ def hreflang(original: str, group: dict[str, str], site_url: str) -> list[dict[s
     return links
 
 
+def language_switch(links: list[dict[str, str]], lang: str, site_url: str) -> dict:
+    """The language menu of a page, from its hreflang links: every language the
+    page exists in, in their order, its path under the site, and the page's own
+    marked current."""
+    base = site_url.rstrip("/") + "/"
+    items = [{"lang": link["lang"], "name": languages.NAMES[link["lang"]], "code": link["lang"].upper(),
+              "path": link["href"][len(base):], "current": link["lang"] == lang}
+             for link in links if link["lang"] != X_DEFAULT]
+    return {"current": next(item for item in items if item["current"]), "items": items}
+
+
 # ── the hooks mkdocs calls ───────────────────────────────────────────────────
 
 # original → {language → translation}, for the originals that have any.
@@ -192,6 +210,9 @@ def on_page_context(context, page, config, nav, **kwargs):
     original = src_uri.split("/", 1)[1] if languages.is_translation(src_uri) else src_uri
     if original in _groups:
         page.meta["hreflang"] = hreflang(original, _groups[original], config["site_url"])
+        page.meta["language_switch"] = language_switch(page.meta["hreflang"],
+                                                       languages.language_of(src_uri) or languages.ORIGINAL,
+                                                       config["site_url"])
     if languages.is_translation(src_uri):
         repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
         page.meta["translation_notice"] = notice(page.meta, repo, original)
@@ -204,15 +225,45 @@ class _Head(HTMLParser):
         self.lang: str | None = None
         self.locale: str | None = None
         self.links: list[tuple[str, str]] = []
+        # The language menu: how many there are, its summary's words, and its
+        # entries as (lang, hreflang, href, text, aria-current).
+        self.switches = 0
+        self.summary: tuple[str, str] | None = None
+        self.entries: list[list] = []
+        self._in = None
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        classes = (attrs.get("class") or "").split()
+        if tag == "details" and "dg-lang" in classes:
+            self.switches += 1
+        elif tag == "summary" and "dg-lang__summary" in classes:
+            self.summary = [attrs.get("aria-label") or "", ""]
+            self._in = "summary"
+        elif tag == "a" and self.switches and self._in in (None, "menu") and "dg-lang__item" in classes:
+            self.entries.append([attrs.get("lang"), attrs.get("hreflang"), attrs.get("href"), "",
+                                 attrs.get("aria-current")])
+            self._in = "entry"
         if tag == "html" and self.lang is None:
             self.lang = attrs.get("lang")
         elif tag == "meta" and attrs.get("property") == "og:locale":
             self.locale = attrs.get("content")
         elif tag == "link" and "hreflang" in attrs:
             self.links.append((attrs["hreflang"], attrs.get("href") or ""))
+
+    def handle_endtag(self, tag):
+        if tag == "summary" and self._in == "summary":
+            self.summary = (self.summary[0], self.summary[1].strip())
+            self._in = None
+        elif tag == "a" and self._in == "entry":
+            self.entries[-1][3] = self.entries[-1][3].strip()
+            self._in = None
+
+    def handle_data(self, data):
+        if self._in == "summary":
+            self.summary[1] += data
+        elif self._in == "entry":
+            self.entries[-1][3] += data
 
     handle_startendtag = handle_starttag
 
@@ -222,14 +273,16 @@ def check_site(site: str, groups: dict[str, dict[str, str]], site_url: str) -> t
     language, as written into site/."""
     expected: dict[str, list[tuple[str, str]]] = {}
     language: dict[str, str] = {}
+    switches: dict[str, dict] = {}
     for original, group in groups.items():
-        links = [(link["lang"], link["href"]) for link in hreflang(original, group, site_url)]
+        links = hreflang(original, group, site_url)
         for src_uri in [original] + list(group.values()):
             path = languages.page_url(src_uri) + "index.html"
-            expected[path] = links
+            expected[path] = [(link["lang"], link["href"]) for link in links]
             language[path] = languages.language_of(src_uri) or languages.ORIGINAL
+            switches[path] = language_switch(links, language[path], site_url)
     problems: list[str] = []
-    counted = {"pages": 0, "links": 0}
+    counted = {"pages": 0, "links": 0, "menus": 0, "entries": 0}
     for folder, dirs, names in os.walk(site):
         dirs.sort()
         for name in sorted(n for n in names if n.endswith(".html")):
@@ -242,6 +295,9 @@ def check_site(site: str, groups: dict[str, dict[str, str]], site_url: str) -> t
             wanted = expected.get(path, [])
             if head.links != wanted:
                 problems.append(f"{path}: hreflang {head.links or 'none'}, wanted {wanted or 'none'}")
+            problems += _switch_problems(path, head, switches.get(path), site_url)
+            counted["menus"] += head.switches
+            counted["entries"] += len(head.entries)
             if path in language and languages.is_translation(path):
                 if head.lang != language[path]:
                     problems.append(f"{path}: <html lang={head.lang!r}>, and the page is {language[path]}")
@@ -253,6 +309,28 @@ def check_site(site: str, groups: dict[str, dict[str, str]], site_url: str) -> t
     return problems, counted
 
 
+def _switch_problems(path: str, head: "_Head", switch: dict | None, site_url: str) -> list[str]:
+    """A page's language menu against the one its hreflang group gives it: none
+    on a page without translations."""
+    if switch is None:
+        return [f"{path}: a language menu, and the page has no translation"] if head.switches else []
+    if head.switches != 1:
+        return [f"{path}: {head.switches} language menus, and a page with translations has one"]
+    problems = []
+    current = switch["current"]
+    if not head.summary or head.summary[1] != current["code"] or current["name"] not in head.summary[0]:
+        problems.append(f"{path}: the menu's summary is {head.summary}, and it should show {current['code']} "
+                        f"with a name that says {current['name']}")
+    page_url = "https://site.invalid/" + path[: -len("index.html")]
+    got = [(lang, hl, urlsplit(urljoin(page_url, href or "")).path, text, aria)
+           for lang, hl, href, text, aria in head.entries]
+    wanted = [(item["lang"], item["lang"], "/" + item["path"], item["name"], "page" if item["current"] else None)
+              for item in switch["items"]]
+    if got != wanted:
+        problems.append(f"{path}: the menu's entries are {got}, wanted {wanted}")
+    return problems
+
+
 def on_post_build(config, **kwargs):
     problems, _ = check_site(config["site_dir"], _groups, config["site_url"])
     if problems:
@@ -262,6 +340,15 @@ def on_post_build(config, **kwargs):
 # ── the selftest ─────────────────────────────────────────────────────────────
 
 FIXTURE = os.path.join(ROOT, "tools", "testdata", "translations", "docs")
+FIXTURE_CATALOGS = os.path.join(ROOT, "tools", "testdata", "translations", "i18n")
+
+
+def _merge(into: dict, overlay: dict) -> None:
+    for key, value in overlay.items():
+        if isinstance(value, dict) and isinstance(into.get(key), dict):
+            _merge(into[key], value)
+        else:
+            into[key] = value
 
 # When the fixture's English site is committed: a day in the past, which the
 # fake translations' notices must show.
@@ -321,13 +408,19 @@ def _copy_site(into: str) -> None:
             meta, _ = translation.read_page(os.path.join(FIXTURE, lang, name))
             with open(os.path.join(into, "docs", lang, name), "w", encoding="utf-8") as fh:
                 fh.write(translation.fake_translation(into, lang, meta))
-        # A fake catalog: the English words, and the language's own fixed section.
+        # A fake catalog: the English words, over them the fixture's own words
+        # for the language where it has any (the German bar), and the language's
+        # real fixed section.
         with open(os.path.join(ROOT, "i18n", "en.yml"), encoding="utf-8") as fh:
-            words = fh.read()
+            words = yaml.safe_load(fh)
+        overlay = os.path.join(FIXTURE_CATALOGS, f"{lang}.yml")
+        if os.path.isfile(overlay):
+            with open(overlay, encoding="utf-8") as fh:
+                _merge(words, yaml.safe_load(fh))
         with open(os.path.join(ROOT, "i18n", f"{lang}.yml"), encoding="utf-8") as fh:
             fixed = fh.read()
         with open(os.path.join(into, "i18n", f"{lang}.yml"), "w", encoding="utf-8") as fh:
-            fh.write(words + "\n" + fixed)
+            fh.write(yaml.safe_dump(words, allow_unicode=True, sort_keys=False, width=1000) + "\n" + fixed)
     subprocess.run(git + ["add", "-A"], check=True)
     subprocess.run(git + ["commit", "-q", "-m", "selftest: the translations"], check=True)
 
@@ -436,6 +529,28 @@ def selftest() -> int:
         expect("the post-build check on the built fixture", problems, [])
         expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2)
 
+        # The language menu: on the seven pages with alternatives, with the
+        # languages each exists in, and on no other page.
+        expect("language menus and their entries counted", (counted["menus"], counted["entries"]),
+               (7, 3 * 3 + 2 * 2 + 2 * 2))
+        de_why = links("de/why/index.html")
+        expect("the German Why's menu: its summary", tuple(de_why.summary), ("Sprache: Deutsch", "DE"))
+        expect("the German Why's menu: its entries", [tuple(e) for e in de_why.entries],
+               [("en", "en", "../../why/", "English", None), ("it", "it", "../../it/why/", "Italiano", None),
+                ("de", "de", "../../de/why/", "Deutsch", "page")])
+        why_en = links("why/index.html")
+        expect("English Why's menu", (tuple(why_en.summary), [tuple(e) for e in why_en.entries]),
+               (("Language: English", "EN"), [("en", "en", "../why/", "English", "page"),
+                                              ("it", "it", "../it/why/", "Italiano", None),
+                                              ("de", "de", "../de/why/", "Deutsch", None)]))
+        expect("the Italian home's menu", [tuple(e) for e in links("it/index.html").entries],
+               [("en", "en", "../", "English", None), ("it", "it", "../it/", "Italiano", "page")])
+        for path in ("start/index.html", "contact/index.html", "product/guide/index.html", "404.html"):
+            html = _read(site, path)
+            expect(f"no language menu, and no script for one, on {path}",
+                   (links(path).switches, "details.dg-lang" in html), (0, False))
+        expect("the menu's script on a page with the menu", 'querySelector("details.dg-lang")' in _read(site, "why/index.html"), True)
+
         # 3. The built site, tampered with.
         def tampered(path, change):
             original = _read(site, path)
@@ -462,6 +577,23 @@ def selftest() -> int:
             ("a translation whose og:locale is English", "it/about/index.html",
              lambda h: h.replace('property="og:locale" content="it"', 'property="og:locale" content="en"'),
              "og:locale 'en', and the page is it"),
+            ("a language menu with no current entry", "de/why/index.html",
+             lambda h: h.replace(' hreflang="de" aria-current="page">', ' hreflang="de">', 1), "the menu's entries are"),
+            ("a menu entry with no lang", "why/index.html",
+             lambda h: h.replace('class="dg-lang__item" href="../it/why/" lang="it"', 'class="dg-lang__item" href="../it/why/"', 1),
+             "the menu's entries are"),
+            ("a menu entry that leads elsewhere", "it/why/index.html",
+             lambda h: h.replace('href="../../de/why/" lang="de"', 'href="../../de/" lang="de"', 1), "the menu's entries are"),
+            ("a menu missing a language", "why/index.html",
+             lambda h: re.sub(r'\n\s*<li><a class="dg-lang__item" href="\.\./de/why/"[^\n]*', "", h, count=1),
+             "the menu's entries are"),
+            ("a menu whose summary shows another language", "it/about/index.html",
+             lambda h: re.sub(r'(<summary class="dg-icon dg-lang__summary"[^>]*>)IT', r"\1EN", h, count=1),
+             "the menu's summary is"),
+            ("a language menu on a page with no translation", "start/index.html",
+             lambda h: h.replace('<div class="dg-actions">',
+                                 '<div class="dg-actions"><details class="dg-lang"><summary class="dg-icon dg-lang__summary">EN</summary></details>', 1),
+             "start/index.html: a language menu, and the page has no translation"),
         ]
         for label, path, change, needle in tampering:
             found = tampered(path, change)
@@ -489,8 +621,9 @@ def selftest() -> int:
     print("translations selftest: 11 refusals on front matter; the fixture builds with --strict — hreflang on "
           "the three translated pages and their four translations and on nothing else, their languages, the "
           "bar, the footer and the closing band on a translation, out of search and llms.txt, in the sitemap, "
-          "and check-llms, check-translate, check-sitemap and check-glyphs pass on it; 6 tamperings refused; a "
-          "translation with no description stops the build")
+          "and check-llms, check-translate, check-sitemap and check-glyphs pass on it; the language menu on the "
+          "seven pages with alternatives, right, and on no other; 12 tamperings refused; a translation with no "
+          "description stops the build")
     return 0
 
 

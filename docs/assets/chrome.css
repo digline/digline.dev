@@ -248,6 +248,92 @@ html { scroll-padding-top: var(--bar-room); }
   .dg-nav .dg-nav__optional { display: none; }
 }
 
+/* ── the language menu ──────────────────────────────────────────────────
+   On a page with translations only (overrides/partials/header.html): a
+   <details> before GitHub. Its summary is one of the bar's round buttons,
+   showing the page's language as two letters; its menu hangs under it, right
+   edges aligned, on the bar's own ground and rule, one entry per language in
+   its own name, the page's own in bold. The menu is positioned against the
+   summary's <details>, which is inside the pill but not clipped by it: nothing
+   between them hides overflow, and the pill's blur is drawn by .dg-bar::before,
+   a layer behind the bar's contents, not by an ancestor of the menu. */
+.dg-lang { position: relative; flex: none; }
+.dg-lang__summary {
+  list-style: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1;
+}
+.dg-lang__summary::-webkit-details-marker { display: none; }
+.dg-lang[open] .dg-lang__summary { color: var(--ink); background: var(--surface); }
+.dg-lang__summary:focus:not(:focus-visible) { outline: none; }
+.dg-lang__menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 5;
+  min-width: 10rem;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+}
+.dg-lang__item {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dg-lang__item:hover { color: var(--ink); background: var(--surface); }
+.dg-lang__item[aria-current] { color: var(--ink); font-weight: 600; }
+.dg-lang__item:focus:not(:focus-visible) { outline: none; }
+
+/* The bar with the language menu in it: one round button more in .dg-actions,
+   38px and the 4px between the buttons, so the sections get 42px less. It is
+   only ever on a page with translations, so these rules ask for it
+   (:has(.dg-lang)) and leave every other page's bar as measured above.
+
+   Measured in Chrome on the pill, every width from 1100 down to 300, with the
+   English labels (/why/ in the translations fixture) and with German ones
+   (/de/why/: "Erste Schritte", "Warum", "Agenten", "Handbuch", "Doku",
+   "Artikel", the fixture's plausible labels until the German catalog arrives,
+   when the bar is measured again). Where the sections fit without scrolling
+   inside the pill:
+
+                          six entries     three entries
+     no menu, English     519px and up    362px and up   (the rules above)
+     menu, English        647px and up    404px and up   (before these rules)
+     menu, German         691px and up    427px and up   (before these rules)
+     with these rules     691px and up    334px (English), 357px (German)
+
+   So: at 690px and under, the three optional entries go, as they do at 518px
+   without the menu. At 426px and under, GitHub goes from the bar — the footer
+   carries it in its Product column — and the sections close up to 10px. At
+   376px and under, the bar's own gaps close up too, and the sections to 6px:
+   German's three entries fit from 357px, so a 360px phone reads them whole.
+   Under that they scroll inside the pill, as the bar without the menu does
+   under 362px. At no width does the page scroll sideways. */
+@media (max-width: 690px) {
+  .dg-bar:has(.dg-lang) .dg-nav .dg-nav__optional { display: none; }
+}
+@media (max-width: 426px) {
+  .dg-bar:has(.dg-lang) .dg-actions > a.dg-icon { display: none; }
+  .dg-bar:has(.dg-lang) .dg-nav { gap: 10px; }
+}
+@media (max-width: 376px) {
+  .dg-bar:has(.dg-lang) .dg-bar__in { gap: 8px; }
+  .dg-bar:has(.dg-lang) .dg-actions { padding-left: 4px; }
+  .dg-bar:has(.dg-lang) .dg-nav { gap: 6px; }
+}
+
 /* ══ the glow ══════════════════════════════════════════════════════════
 
    The green-and-blue glow of a band: every closing band — the presentation
