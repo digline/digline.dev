@@ -102,6 +102,35 @@ def source_commit(root: str, page: str) -> str:
     return out.stdout.strip() if out.returncode == 0 else ""
 
 
+def commit_date(root: str, commit) -> str | None:
+    """The day a commit was made, YYYY-MM-DD; None when the repository does not have it.
+    The date a translation's notice gives its original."""
+    if not commit or not COMMIT.match(str(commit)):
+        return None
+    out = subprocess.run(["git", "-C", root, "show", "-s", "--format=%cs", f"{commit}^{{commit}}"],
+                         capture_output=True, text=True)
+    return out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else None
+
+
+def fixed_texts(root: str) -> dict[str, dict[str, str]]:
+    """Each language's fixed section, key → text; a language with no catalog is absent."""
+    texts = {}
+    for lang in languages.LANGUAGES:
+        path = os.path.join(root, "i18n", f"{lang}.yml")
+        if os.path.isfile(path):
+            entries = catalog.Catalog(path).entries
+            texts[lang] = {key: value for key, value in sorted(entries.items())
+                           if key.startswith(catalog.FIXED + ".") and isinstance(value, str)}
+    return texts
+
+
+def fixed_digest(root: str) -> str:
+    """One digest of every language's fixed section: what check-translations pins."""
+    lines = [f"{lang}\t{key}\t{text}" for lang, texts in sorted(fixed_texts(root).items())
+             for key, text in texts.items()]
+    return digest("\n".join(lines).encode("utf-8"))
+
+
 def stamp(meta: dict, root: str, model: str, commit: str | None = None) -> dict:
     """``meta`` with what its translation was made from, as the originals are now."""
     page = meta["translation_of"]

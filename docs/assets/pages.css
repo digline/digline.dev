@@ -876,3 +876,25 @@ pre {
   .tiles { grid-template-columns: minmax(0, 1fr); }
   .tile { padding: 1.375rem; }
 }
+
+/* ══ the notice on a translation ════════════════════════════════════════
+   A translated page says that it is one: under the lede of a reading page
+   (.opening__notice, overrides/partials/opening.html) and as the third item
+   of the home's status line (.hero__notice). Plain text, the size of the
+   status line, with a link to the English original. When the original has
+   changed since the translation (--stale), the words say so and take the
+   amber of the tokens. Measured on the fixture at 1280, against the pixels
+   under the notice with its text made transparent: the amber 5.81:1 or more
+   in the light and 8.08:1 in the dark on a reading page's band, 6.03 and 8.61
+   on the home's; against the strongest point of the glow, where the notice
+   does not reach, still 4.67 and 6.60. --muted is 5.69 and 5.93 or more,
+   --link 7.30 or more. No English page carries either. */
+.opening__notice { margin: .875rem 0 0; max-width: 40rem; font-size: .875rem; line-height: 1.5; color: var(--muted); }
+/* On the home it is too long to share the status line: a line of its own under
+   it, with no separator in front of it. */
+.hero__status .hero__notice { flex-basis: 100%; padding-left: 0; border-left: 0; }
+/* The link is kept whole: a date broken at its hyphen reads as two. */
+.opening__notice a,
+.hero__notice a { color: var(--link); white-space: nowrap; }
+.opening__notice--stale,
+.hero__notice--stale { color: var(--amber); font-weight: 500; }

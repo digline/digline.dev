@@ -1,0 +1,20 @@
+# The words the site writes itself, in German.
+#
+# The translation of i18n/en.yml, key for key, arrives with the translations:
+# for now this file holds only the section below. The format is described at
+# the top of tools/catalog.py.
+
+# ── DO NOT TRANSLATE ─────────────────────────────────────────────────────────
+# Written by hand, and never by the translating agent: the notice a translated
+# page carries (overrides/partials/opening.html, the home's hero), that it was
+# translated by a model, with a link to the English original, and that the
+# original has changed since. English has no such section: an English page is
+# the original.
+#
+# tools/check-translations.py refuses any change to these texts, in any of the
+# three catalogs, unless FIXED_TEXTS_DIGEST there is changed with them.
+# {date} is the day of the translation's source_commit, as YYYY-MM-DD.
+do_not_translate:
+  notice: "Mit einem KI-Modell aus dem Englischen übersetzt."
+  original: "Englisches Original vom {date}"
+  stale: "Das englische Original wurde nach dieser Übersetzung geändert."

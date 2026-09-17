@@ -171,11 +171,30 @@ def on_files(files, config, **kwargs):
     return files
 
 
+def notice(meta: dict, repo: str, original: str) -> dict:
+    """What a translation's notice says: whether its original has changed since
+    — tools/translation.py's status(), the function tools/check-translations.py
+    reports with — the day of the commit it was made from, and where the
+    original is."""
+    import translation  # tools/translation.py
+
+    date = translation.commit_date(repo, meta.get("source_commit"))
+    if date is None:
+        raise PluginError(f"translations: {meta.get('lang')}/{original}: source_commit "
+                          f"{meta.get('source_commit')!r} is not a commit this repository has, so its notice "
+                          "has no date. The history must be whole (fetch-depth: 0).")
+    return {"stale": bool(translation.status(meta, repo)), "date": date,
+            "original": languages.page_url(original)}
+
+
 def on_page_context(context, page, config, nav, **kwargs):
     src_uri = page.file.src_uri
     original = src_uri.split("/", 1)[1] if languages.is_translation(src_uri) else src_uri
     if original in _groups:
         page.meta["hreflang"] = hreflang(original, _groups[original], config["site_url"])
+    if languages.is_translation(src_uri):
+        repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
+        page.meta["translation_notice"] = notice(page.meta, repo, original)
     return context
 
 
@@ -243,6 +262,10 @@ def on_post_build(config, **kwargs):
 # ── the selftest ─────────────────────────────────────────────────────────────
 
 FIXTURE = os.path.join(ROOT, "tools", "testdata", "translations", "docs")
+
+# When the fixture's English site is committed: a day in the past, which the
+# fake translations' notices must show.
+ENGLISH_DATE = "2026-01-15T12:00:00Z"
 SITE_URL = "https://digline.dev/"
 
 
@@ -282,18 +305,31 @@ def _copy_site(into: str) -> None:
         shutil.copytree(os.path.join(ROOT, name), os.path.join(into, name), ignore=ignore)
     import translation  # tools/translation.py
 
+    # The English site first, committed, so that each translation is stamped
+    # with a commit the copy has — its notice is dated by it. On a fixed day in
+    # the past, so that a notice dated today is not mistaken for one dated by
+    # its original's commit.
+    git = ["git", "-C", into, "-c", "user.name=selftest", "-c", "user.email=selftest@invalid",
+           "-c", "commit.gpgsign=false"]
+    subprocess.run(git[:3] + ["init", "-q"], check=True)
+    subprocess.run(git + ["add", "-A"], check=True)
+    past = dict(os.environ, GIT_AUTHOR_DATE=ENGLISH_DATE, GIT_COMMITTER_DATE=ENGLISH_DATE)
+    subprocess.run(git + ["commit", "-q", "-m", "selftest: the English site"], check=True, env=past)
     for lang in sorted(os.listdir(FIXTURE)):
         os.makedirs(os.path.join(into, "docs", lang))
         for name in sorted(os.listdir(os.path.join(FIXTURE, lang))):
             meta, _ = translation.read_page(os.path.join(FIXTURE, lang, name))
             with open(os.path.join(into, "docs", lang, name), "w", encoding="utf-8") as fh:
                 fh.write(translation.fake_translation(into, lang, meta))
-        shutil.copy(os.path.join(ROOT, "i18n", "en.yml"), os.path.join(into, "i18n", f"{lang}.yml"))
-    git = ["git", "-C", into, "-c", "user.name=selftest", "-c", "user.email=selftest@invalid",
-           "-c", "commit.gpgsign=false"]
-    subprocess.run(git[:3] + ["init", "-q"], check=True)
+        # A fake catalog: the English words, and the language's own fixed section.
+        with open(os.path.join(ROOT, "i18n", "en.yml"), encoding="utf-8") as fh:
+            words = fh.read()
+        with open(os.path.join(ROOT, "i18n", f"{lang}.yml"), encoding="utf-8") as fh:
+            fixed = fh.read()
+        with open(os.path.join(into, "i18n", f"{lang}.yml"), "w", encoding="utf-8") as fh:
+            fh.write(words + "\n" + fixed)
     subprocess.run(git + ["add", "-A"], check=True)
-    subprocess.run(git + ["commit", "-q", "-m", "selftest"], check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "selftest: the translations"], check=True)
 
 
 def _build(root: str) -> subprocess.CompletedProcess:
