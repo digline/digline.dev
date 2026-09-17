@@ -1,12 +1,18 @@
 name: translate
 
-# The translating agent, run by hand and, for now, only as a dry run: it
-# translates what has changed of the presentation pages and the catalog into
-# the languages asked for, checks every translation against its original in a
-# built copy of the site, reads each page again for errors of meaning, and
-# writes the translations, the report and the bill to an artifact. Nothing is
-# written to docs/ or i18n/, and no pull request is opened.
-# tools/translate.py has the rest.
+# The translating agent, run by hand: it translates what has changed of the
+# presentation pages and the catalog into the languages asked for, checks every
+# translation against its original in a built copy of the site, reads each page
+# again for errors of meaning, and writes the translations, the report and the
+# bill to an artifact. tools/translate.py has the rest.
+#
+# A dry run stops there. A real run (dry_run false) also commits the
+# translations to the fixed branch i18n/auto, as the GitHub App, on top of main,
+# and opens a pull request into main with the report as its description — or
+# updates the one already open. The push and the pull request use the App's
+# token, not GITHUB_TOKEN: what GITHUB_TOKEN pushes or opens starts no workflow,
+# and the pull request has to run docs.yml like any other. Nothing reaches main
+# but through that pull request.
 #
 # The Claude API is reached with no key: the job asks GitHub for OIDC tokens and
 # tools/translate.py exchanges them at Anthropic (Workload Identity Federation),
@@ -14,9 +20,11 @@ name: translate
 # accepts refs/heads/main of this repository and a job with no environment, so
 # a run dispatched from any other ref is refused at the exchange.
 #
-# A run starts from the translations of the last successful run on main, its
-# artifact: what that run translated and has not changed since is skipped, and
-# costs nothing. Before the first call the log has what the run is expected to
+# A dry run starts from the translations of the last successful run on main,
+# its artifact: what that run translated and has not changed since is skipped,
+# and costs nothing. A real run starts from main alone: a translation reaches
+# main reviewed, through the pull request, and never carried over unread from
+# an artifact. Before the first call the log has what the run is expected to
 # cost, and the most it could; it stops once max_cost is spent.
 on:
   workflow_dispatch:
@@ -30,7 +38,7 @@ on:
         type: string
         default: "index,start,why,about,contact"
       dry_run:
-        description: "Dry run: write to the artifact only (the only mode for now)"
+        description: "Dry run: write to the artifact only; unticked, commit to i18n/auto and open a pull request"
         type: boolean
         default: true
       max_cost:
@@ -38,6 +46,8 @@ on:
         type: number
         default: 12
 
+# GITHUB_TOKEN only reads: the branch and the pull request are written with the
+# App's token.
 permissions:
   id-token: write
   contents: read
@@ -52,19 +62,18 @@ jobs:
   translate:
     name: Translate
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Three languages of five pages and a catalog, each built and checked after
+    # every answer: the first run took four and a half minutes for one page.
+    timeout-minutes: 120
     steps:
-      - name: Refuse anything but a dry run
-        if: ${{ !inputs.dry_run }}
-        run: |
-          echo "Only dry runs for now: the translations are not published yet."
-          exit 1
-
       # fetch-depth: 0 — a translation records the commit of its original, and
       # its notice is dated by it: the copy the checks build needs the history.
+      # persist-credentials: false — git would otherwise send GITHUB_TOKEN with
+      # the push, whatever token its URL carries.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check out digline/digline
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
@@ -82,6 +91,7 @@ jobs:
 
       - name: Find the last successful run's translations
         id: previous
+        if: inputs.dry_run
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -116,6 +126,7 @@ jobs:
           LANGS: ${{ inputs.langs }}
           PAGES: ${{ inputs.pages }}
           MAX_COST: ${{ inputs.max_cost }}
+          DRY_RUN: ${{ inputs.dry_run }}
           ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORG_ID }}
           ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
           ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
@@ -123,8 +134,10 @@ jobs:
         run: |
           set -euo pipefail
           existing=()
+          mode=(--dry-run)
+          if [ "$DRY_RUN" = "false" ]; then mode=(); fi
           if [ -d "$RUNNER_TEMP/previous" ]; then existing=(--existing "$RUNNER_TEMP/previous"); fi
-          uv run tools/translate.py --langs "$LANGS" --pages "$PAGES" --dry-run \
+          uv run tools/translate.py --langs "$LANGS" --pages "$PAGES" "${mode[@]}" \
             --out "$RUNNER_TEMP/translation" --max-cost "$MAX_COST" "${existing[@]}"
 
       - name: Report
@@ -132,6 +145,66 @@ jobs:
         run: |
           if [ -f "$RUNNER_TEMP/translation/report.md" ]; then
             cat "$RUNNER_TEMP/translation/report.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # A real run publishes what passed even when a page failed: the failed
+      # page is not written, and the report says so. The job still fails.
+      - name: Anything to publish?
+        id: written
+        if: ${{ !inputs.dry_run && !cancelled() }}
+        run: |
+          if [ -f "$RUNNER_TEMP/translation/pr-body.md" ]; then
+            echo "report=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "The run wrote no report: nothing to publish."
+          fi
+
+      - name: The App's token
+        id: app
+        if: ${{ !cancelled() && steps.written.outputs.report == 'true' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          # The App ID: GitHub takes it as the issuer as well as the client ID.
+          client-id: ${{ secrets.TRANSLATION_APP_ID }}
+          private-key: ${{ secrets.TRANSLATION_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Commit to i18n/auto and open the pull request
+        if: ${{ !cancelled() && steps.app.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          bot="${APP_SLUG}[bot]"
+          id=$(gh api "/users/${bot}" --jq .id)
+          git config user.name "$bot"
+          git config user.email "${id}+${bot}@users.noreply.github.com"
+          git add -A -- docs i18n
+          # Translations and catalogs only; anything else staged is a mistake.
+          if git diff --cached --name-only | grep -vE '^(docs/(it|de|es)/[^/]+\.md|i18n/(it|de|es)\.yml)$'; then
+            echo "::error::The run changed something other than translations (above)."
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "Nothing translated differs from main: no commit, no pull request."
+            exit 0
+          fi
+          git commit -q -m "Translate the presentation pages and the catalog" \
+            -m "Run ${GITHUB_SERVER_URL}/${REPOSITORY}/actions/runs/${GITHUB_RUN_ID}; the report is the pull request's description."
+          # The branch is the bot's alone: each run rewrites it on top of main.
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git" HEAD:refs/heads/i18n/auto
+          body="$RUNNER_TEMP/translation/pr-body.md"
+          number=$(gh pr list --repo "$REPOSITORY" --head i18n/auto --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --repo "$REPOSITORY" --body-file "$body"
+            echo "Updated pull request #${number}" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            url=$(gh pr create --repo "$REPOSITORY" --base main --head i18n/auto \
+              --title "Translations: the presentation pages and the catalog" --body-file "$body")
+            echo "Opened ${url}" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Keep the translations, the report and the bill
