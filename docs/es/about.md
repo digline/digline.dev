@@ -7,8 +7,8 @@ description: digline es una herramienta de código abierto, con licencia Apache-
 search:
   exclude: true
 source: about.md
-source_sha: 7ebd57b776b0
-source_commit: 69114fa
+source_sha: 3f64df7155ba
+source_commit: 886a723
 model: claude-opus-5
 ---
 
@@ -16,6 +16,6 @@ model: claude-opus-5
 
 digline es una herramienta de código abierto para mantener bajo control las aplicaciones de LLM, publicada con licencia Apache-2.0. La ha creado y la mantiene Alessandro Prandini.
 
-Surgió de llevar a producción aplicaciones de este tipo y de la necesidad de saber, en cada cambio, si habían empeorado.
+Surgió de desarrollar un producto de IA y de la necesidad de saber, después de cada cambio en un prompt o en un modelo, qué respuestas habían empeorado.
 
 El código, las incidencias y las versiones publicadas están en [GitHub](https://github.com/digline/digline).

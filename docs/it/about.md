@@ -7,8 +7,8 @@ description: digline è uno strumento open source, Apache-2.0, per rilevare le r
 search:
   exclude: true
 source: about.md
-source_sha: 7ebd57b776b0
-source_commit: 69114fa
+source_sha: 3f64df7155ba
+source_commit: 886a723
 model: claude-opus-5
 ---
 
@@ -16,6 +16,6 @@ model: claude-opus-5
 
 digline è uno strumento open source per tenere sotto controllo le applicazioni basate su LLM, distribuito con licenza Apache-2.0. È sviluppato e mantenuto da Alessandro Prandini.
 
-È nato dall'esperienza di portare in produzione applicazioni di questo tipo e dal bisogno di sapere, a ogni modifica, se fossero peggiorate.
+È nato dallo sviluppo di un prodotto basato sull'AI e dal bisogno di sapere, dopo ogni modifica a un prompt o a un modello, quali risposte fossero peggiorate.
 
 Il codice, le issue e le release sono su [GitHub](https://github.com/digline/digline).
