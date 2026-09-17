@@ -1,0 +1,40 @@
+{% extends "_shell.html" %}
+
+{#- digline for agents. Like why.html: the layout is here, the words are in
+    docs/agents.md — the thesis as the opening band, the principle and the
+    agent under test as blocks of their own (.principle, .aside), the four
+    surfaces as tiles (.tiles, the home's) — and the home's closing band. The
+    quotation below sits between the tiles and the .aside: tools/hooks/agents.py
+    splits the body there (body, agents_aside).
+
+    One thing is here and not in the Markdown: the quotation of rule 1 of
+    digline's AGENTS.md that closes the page. They are digline's words, so a
+    translation of the page must not touch them, and they are held to a
+    release: tools/hooks/agents.py fails the build when this text, whitespace
+    normalized, is not rule 1 of AGENTS.md at the tag in .agents-rule.json
+    (written by tools/sync-docs.sh), and gives page.meta.agents_rule the tag
+    and AGENTS.md's URL at it. No word of the catalog is printed here: the
+    page's words are its Markdown's and this quotation's. The rules are
+    .essay--agents and .agents-rule in pages.css. -#}
+
+{% block main_class %} dg-page--reading{% endblock %}
+
+{% block main %}
+{% include "partials/opening.html" %}
+<div class="reading">
+  <div class="reading__inner">
+<article class="essay essay--agents">
+{{ body }}
+{%- set rule = page.meta.agents_rule %}
+<figure class="agents-rule">
+  <blockquote class="agents-rule__quote" cite="{{ rule.url }}">
+    <p><strong>Never run <code translate="no">digline promote</code> on your own initiative.</strong> Assemble the evidence — the <code translate="no">compare</code> output, the run key, what moved and why you believe it — and recommend. The human runs the command, or tells you to.</p>
+  </blockquote>
+  <figcaption class="agents-rule__source"><a href="{{ rule.url }}"><code translate="no">AGENTS.md</code></a>, rule 1 — digline {{ rule.tag }}</figcaption>
+</figure>
+{{ agents_aside }}
+</article>
+  </div>
+</div>
+{% include "partials/closing.html" %}
+{% endblock %}

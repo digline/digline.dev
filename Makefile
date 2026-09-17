@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening indexes glyphs assets translate i18n translations translation-checks agent build check clean
+.PHONY: docs preview serve css source home opening agents indexes glyphs assets translate i18n translations translation-checks agent build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -31,6 +31,10 @@ home:            ## the home's hook against its fixtures, refusals included — 
 opening:         ## the opening band's hook: title and lede, title alone, no title — needs no build
 	uv run tools/hooks/opening.py --selftest
 
+agents:          ## /agents/: rule 1 read out of AGENTS.md, links led to the tag, the quotation held to the rule — needs no build
+	python3 tools/agents_rule.py --selftest
+	uv run tools/hooks/agents.py --selftest
+
 assets:          ## the asset-hash check against its own small site, refusals included — needs no build
 	uv run tools/check-assets.py --selftest
 
@@ -55,7 +59,7 @@ translation-checks: docs  ## every translation against its original: the fake on
 agent: docs      ## the translating agent with a fake model — prompts, skipping, the fixed section, retries, the spending limit, the report, a real build — no network
 	uv run tools/translate.py --selftest
 
-build: docs css source home opening indexes glyphs assets translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
+build: docs css source home opening agents indexes glyphs assets translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site

@@ -749,7 +749,7 @@ def _refusal_cases() -> list[tuple[str, str, dict, str | None]]:
 def _copy_site(into: str) -> None:
     """The parts of the repository a build reads, into a directory of its own,
     under git so that seo.py dates the pages as it does here."""
-    for name in ("mkdocs.yml", ".lastmod.tsv"):
+    for name in ("mkdocs.yml", ".lastmod.tsv", ".agents-rule.json"):
         if os.path.isfile(os.path.join(ROOT, name)):
             shutil.copy(os.path.join(ROOT, name), into)
     ignore = shutil.ignore_patterns("__pycache__", ".DS_Store")

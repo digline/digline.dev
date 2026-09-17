@@ -506,7 +506,7 @@ class Workspace:
         self.dir = tempfile.mkdtemp(prefix="translate-")
         self.root = os.path.join(self.dir, "repo")
         subprocess.run(["git", "clone", "-q", "--local", repo, self.root], check=True)
-        for name in ("mkdocs.yml", ".lastmod.tsv"):
+        for name in ("mkdocs.yml", ".lastmod.tsv", ".agents-rule.json"):
             if os.path.isfile(os.path.join(repo, name)):
                 shutil.copy(os.path.join(repo, name), self.root)
         ignore = shutil.ignore_patterns("__pycache__", ".DS_Store")

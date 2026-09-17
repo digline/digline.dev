@@ -119,6 +119,10 @@ hooks:
   # paragraph follows it at once, that paragraph, split out of the rendered page
   # and handed to overrides/partials/opening.html. See the file's docstring.
   - tools/hooks/opening.py
+  # /agents/: its links to AGENTS.md and the skill led to the release tag, and
+  # the quotation of rule 1 that closes it held to AGENTS.md at that tag
+  # (.agents-rule.json, written by tools/sync-docs.sh). See the file's docstring.
+  - tools/hooks/agents.py
   # This site's own stylesheets and fonts, linked with a hash of their content,
   # so a changed file is a new URL and no cache serves the old one. See the
   # file's docstring; tools/check-assets.py checks the result.
