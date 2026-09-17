@@ -42,7 +42,7 @@
         {%- endif %}</p>
       <h1 class="hero__title" id="hero-h">{{ "home.hero.title" | t }}<span class="hero__quiet">{{ "home.hero.title_quiet" | t }}</span></h1>
       <p class="hero__lede">{{ "home.hero.lede" | t }}</p>
-      <div class="install" data-copy>
+      <div class="install" id="install" data-copy>
         <code class="install__cmd" translate="no">pip install digline</code>
       </div>
       <p class="install__req">{{ "home.hero.requires" | t(python=home.requires_python) }}</p>

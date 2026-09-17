@@ -33,6 +33,17 @@ bar (overrides/partials/header.html): one entry per hreflang link but
 x-default — the same list, so the menu and the links cannot disagree — each
 language by its own name (languages.NAMES), the page's own marked current.
 
+── the ids of a translation's headings (on_page_content, on_page_context) ───
+A link written for an English page's section — /why/#a-prompt-is-not-code —
+leads, once sent to the translation, to the same section. A translation up to
+date with its original (its source_sha is the original's now) gets its
+original's heading ids, by position — its permalinks, its own #links and its
+toc with them — and the build fails when its headings are not as many, at the
+same levels (tools/check-translations.py's d) says the same after the build).
+A translation behind its original keeps its own ids, whatever its headings:
+they may not be the original's any more, and the English site stays free to
+change.
+
 ── as each translation is written (on_post_page) ─────────────────────────────
 A reader who chose a language stays in it. Every <a href> of a translation —
 the bar, the logo, the hero, the body, the closing band, the footer — that
@@ -57,6 +68,12 @@ with or without its final slash, normalized first — leads to the English page
 of a page translated into that language, or to a path under /<lang>/ that
 site/ does not have (link_problems).
 
+Every page of site/, English or not, fails it when a link with a #fragment
+leads to a page site/ has and that page has no such id — a warning only, not
+a failure, when the page is a translation behind its original — or when a
+home, English or translated, has no id="install" (STABLE_IDS: the footer and
+other sites link to it) (anchor_problems).
+
     usage: tools/hooks/translations.py --selftest
 
 --selftest needs docs/product/ synced (`make docs`). It checks each refusal
@@ -72,10 +89,16 @@ Then it tampers with the built hreflang and checks that each change is
 refused; plants links in the built Italian home and checks that the link gate
 refuses each one it must (/why/, https://digline.dev/why/, ../why/, /why,
 ../why/index.html#x, /it/docs/) and passes the others (/it/why/, /docs/);
-adds an Italian Start in the test alone, with links written in a
-translation's Markdown, builds again and checks that they are rewritten and
-gated with no change here; and builds once more with a translation that has
-no description.
+plants links with #fragments and renames ids, and checks that the anchor
+gate refuses a missing id, a home without id="install" and a renamed id on
+/product/metrics/, and passes /it/why/#<an English id>; checks the ids of the
+up-to-date Why translations are English Why's, and refuses a heading fewer or
+at another level; adds an Italian Start in the test alone, with links written in a
+translation's Markdown, and makes Italian Why behind its original with two
+headings swapped, builds again and checks that links are rewritten and gated
+with no change here, and that Italian Why keeps its own ids with warnings, not
+errors; builds with an up-to-date German Why a heading fewer, refused; and
+builds once more with a translation that has no description.
 """
 
 from __future__ import annotations
@@ -88,7 +111,7 @@ import sys
 import tempfile
 from html.parser import HTMLParser
 
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import unquote, urljoin, urlsplit
 
 import yaml
 from mkdocs.exceptions import PluginError
@@ -208,6 +231,8 @@ def translations_in(files) -> dict[str, dict[str, str]]:
 
 
 def on_files(files, config, **kwargs):
+    _headings.clear()
+    _behind.clear()
     _groups.clear()
     _groups.update(translations_in(files))
     return files
@@ -240,6 +265,14 @@ def on_page_context(context, page, config, nav, **kwargs):
     if languages.is_translation(src_uri):
         repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
         page.meta["translation_notice"] = notice(page.meta, repo, original)
+        # Up to date: its original's heading ids, so a #link written for the
+        # English page lands on the same section. Behind: its own, whatever
+        # its headings — they may not be the original's any more.
+        if behind(page.meta, repo, original):
+            _behind.add("/" + page.url)
+        else:
+            page.content, mapping = english_ids(page.content, _headings.get(original, []), src_uri)
+            _retitle(page.toc, mapping)
     return context
 
 
@@ -378,8 +411,8 @@ def destination(href: str, page_path: str, site_url: str):
         return None
     parts = urlsplit(href)
     site = urlsplit(site_url)
-    if parts.scheme or parts.netloc:
-        if parts.scheme not in ("http", "https") or parts.netloc != site.netloc:
+    if parts.scheme or parts.netloc or href.startswith("//"):
+        if parts.scheme not in ("http", "https", "") or parts.netloc != site.netloc:
             return None
         form = "absolute"
     else:
@@ -427,6 +460,59 @@ def localize(html: str, page_path: str, lang: str, translated: set[str], site_ur
         return _HREF.sub(one_href, text, count=1)
 
     return _A_TAG.sub(one_tag, html)
+
+
+# ── the ids of a translation's headings ──────────────────────────────────────
+
+# src_uri → the (level, id) of each heading of the page's Markdown, in order,
+# as the toc extension wrote them: every page, read in on_page_content, which
+# mkdocs runs for every page before it renders any (on_page_context).
+_headings: dict[str, list[tuple[str, str]]] = {}
+# The URL paths of the translations behind their originals ("/it/why/"): their
+# headings keep their own ids, and a link to one of them with an id they do not
+# have is a warning, not an error.
+_behind: set[str] = set()
+
+_HEADING = re.compile(r'<(h[1-6])\b([^>]*?)\sid="([^"]*)"')
+_SAME_PAGE = re.compile(r'(\shref=")#([^"]*)(")')
+
+
+def headings_of(html: str) -> list[tuple[str, str]]:
+    return [(m.group(1), m.group(3)) for m in _HEADING.finditer(html)]
+
+
+def english_ids(html: str, english: list[tuple[str, str]], where: str) -> tuple[str, dict[str, str]]:
+    """A translation's content with the ids of its original's headings, by
+    position, its own #links to them following: (html, own id → English id).
+    Refused when the headings are not as many, at the same levels."""
+    own = headings_of(html)
+    if [level for level, _ in own] != [level for level, _ in english]:
+        raise PluginError(f"translations: {where}: its headings are {[level for level, _ in own]}, and its original's "
+                          f"{[level for level, _ in english]} — the ids of a translation up to date with its original "
+                          "are its original's, by position, so the two must have the same headings")
+    mapping = {mine: theirs for (_, mine), (_, theirs) in zip(own, english)}
+    count = iter(english)
+    html = _HEADING.sub(lambda m: f'<{m.group(1)}{m.group(2)} id="{next(count)[1]}"', html)
+    html = _SAME_PAGE.sub(lambda m: f"{m.group(1)}#{mapping.get(m.group(2), m.group(2))}{m.group(3)}", html)
+    return html, mapping
+
+
+def _retitle(items, mapping: dict[str, str]) -> None:
+    for item in items:
+        item.id = mapping.get(item.id, item.id)
+        _retitle(item.children, mapping)
+
+
+def on_page_content(html, page, config, files, **kwargs):
+    _headings[page.file.src_uri] = headings_of(html)
+    return html
+
+
+def behind(meta: dict, repo: str, original: str) -> bool:
+    """A translation made from another version of its original than the one there is now."""
+    import translation  # tools/translation.py
+
+    return meta.get("source_sha") != translation.source_sha(repo, original)
 
 
 def on_post_page(output, page, config, **kwargs):
@@ -483,9 +569,97 @@ def link_problems(site: str, groups: dict[str, dict[str, str]], site_url: str) -
     return problems, read
 
 
+class _Ids(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.ids: set[str] = set()
+        self.hrefs: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if attrs.get("id"):
+            self.ids.add(attrs["id"])
+        if tag == "a" and attrs.get("name"):
+            self.ids.add(attrs["name"])
+        if tag == "a" and attrs.get("href"):
+            self.hrefs.append(attrs["href"])
+
+    handle_startendtag = handle_starttag
+
+
+# Ids other pages and other sites link to: the page must keep them.
+STABLE_IDS = {"": ("install",)}
+
+
+def anchor_problems(site: str, site_url: str, behind_paths: set[str] = frozenset()
+                    ) -> tuple[list[str], list[str], int]:
+    """Every link with a #fragment, on every page of site/, to a page site/ has:
+    the id missing there is an error — a warning when that page is a
+    translation behind its original — and every id of STABLE_IDS must be on its
+    page, in every language. (errors, warnings, links read)"""
+    parsed: dict[str, _Ids] = {}
+
+    def page(relative: str) -> _Ids | None:
+        if relative not in parsed:
+            full = os.path.join(site, relative)
+            if not os.path.isfile(full):
+                parsed[relative] = None
+            else:
+                parser = _Ids()
+                with open(full, encoding="utf-8") as fh:
+                    parser.feed(fh.read())
+                parsed[relative] = parser
+        return parsed[relative]
+
+    errors: list[str] = []
+    warnings: list[str] = []
+    read = 0
+    for folder, dirs, names in os.walk(site):
+        dirs.sort()
+        for name in sorted(n for n in names if n.endswith(".html")):
+            relative = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
+            page_path = "/" + (relative[: -len("index.html")] if name == "index.html" else relative)
+            for href in page(relative).hrefs:
+                fragment = unquote(urlsplit(href).fragment)
+                if not fragment:
+                    continue
+                if href.startswith("#"):
+                    target, target_file = page_path, relative
+                else:
+                    found = destination(href, page_path, site_url)
+                    if found is None:
+                        continue
+                    target = found[0]
+                    target_file = target[1:] + "index.html" if target.endswith("/") else target[1:]
+                there = page(target_file)
+                if there is None:
+                    continue
+                read += 1
+                if fragment not in there.ids:
+                    message = f"{relative}: {href!r} leads to #{fragment}, which {target} does not have"
+                    if target in behind_paths:
+                        warnings.append(message + " (a translation behind its original: its headings keep their own ids)")
+                    else:
+                        errors.append(message)
+    for base, ids in STABLE_IDS.items():
+        for lang in ("",) + languages.LANGUAGES:
+            relative = (f"{lang}/" if lang else "") + (base + "/" if base else "") + "index.html"
+            there = page(relative)
+            if there is None:
+                continue
+            for wanted in ids:
+                if wanted not in there.ids:
+                    errors.append(f"{relative}: no id {wanted!r}, which links on this site and elsewhere lead to")
+    return errors, warnings, read
+
+
 def on_post_build(config, **kwargs):
     problems, _ = check_site(config["site_dir"], _groups, config["site_url"])
     problems += link_problems(config["site_dir"], _groups, config["site_url"])[0]
+    errors, warnings, _ = anchor_problems(config["site_dir"], config["site_url"], _behind)
+    problems += errors
+    for warning in warnings:
+        print(f"WARNING -  translations: {warning}", file=sys.stderr)
     if problems:
         raise PluginError(f"translations: {len(problems)} problem(s) in site/:\n  " + "\n  ".join(problems))
 
@@ -614,6 +788,28 @@ def selftest() -> int:
         else:
             print(f"translations selftest: refused, as it must — {label}")
 
+    # The ids of an up-to-date translation's headings, on HTML alone: by position,
+    # its own #links and its toc following, and refused on a count or a level apart.
+    from mkdocs.structure.toc import AnchorLink
+
+    english = [("h1", "why"), ("h2", "a-prompt-is-not-code"), ("h2", "the-model-changes-under-you")]
+    mine = ('<h1 id="perche">Perché</h1><p><a href="#il-modello">giù</a></p>'
+            '<h2 id="il-modello">Il modello</h2><h2 id="un-prompt">Un prompt</h2>')
+    html, mapping = english_ids(mine, english, "it/why.md")
+    toc = [AnchorLink("Perché", "perche", 1)]
+    toc[0].children = [AnchorLink("Il modello", "il-modello", 2), AnchorLink("Un prompt", "un-prompt", 2)]
+    _retitle(toc, mapping)
+    expect("english_ids: by position, the page's own #link and its toc following",
+           (headings_of(html), 'href="#a-prompt-is-not-code"' in html, [toc[0].id] + [c.id for c in toc[0].children]),
+           (english, True, ["why", "a-prompt-is-not-code", "the-model-changes-under-you"]))
+    for label, wrong in (("a heading fewer", '<h1 id="p">P</h1><h2 id="x">X</h2>'),
+                         ("a heading at another level", '<h1 id="p">P</h1><h2 id="x">X</h2><h3 id="y">Y</h3>')):
+        try:
+            english_ids(wrong, english, "it/why.md")
+            failures.append(f"english_ids: {label} not refused")
+        except PluginError as error:
+            expect(f"english_ids refuses {label}", "its headings are" in str(error), True)
+
     # 2. The copy the fixture starts from holds no translation of the repository's:
     # a translated page and a whole catalog, and what english_only leaves of them.
     import translation  # tools/translation.py
@@ -710,6 +906,23 @@ def selftest() -> int:
                True)
         found, read = link_problems(site, groups, SITE_URL)
         expect("the link gate on the built fixture", (found, read > 100), ([], True))
+
+        # The headings of a translation up to date with its original: its
+        # original's ids, by position, and its permalinks with them.
+        def heading_ids(path):
+            return re.findall(r'<h[1-6][^>]*\sid="([^"]*)"', _read(site, path))
+
+        expect("the Italian and German Why: English Why's heading ids, in order",
+               (heading_ids("it/why/index.html") == heading_ids("why/index.html"),
+                heading_ids("de/why/index.html") == heading_ids("why/index.html"), len(heading_ids("why/index.html")) > 3),
+               (True, True, True))
+        expect("the Italian Why's permalinks lead to the English ids",
+               re.findall(r'class="headerlink" href="#([^"]*)"', it_why) ==
+               re.findall(r'class="headerlink" href="#([^"]*)"', _read(site, "why/index.html")), True)
+        errors, warnings, read = anchor_problems(site, SITE_URL)
+        expect("the anchor gate on the built fixture", (errors, warnings, read > 50), ([], [], True))
+        expect("the install id on the homes", ['id="install"' in _read(site, p) for p in ("index.html", "it/index.html")],
+               [True, True])
 
         search = _read(site, "search/search_index.json")
         expect("no translation in the search index",
@@ -841,8 +1054,46 @@ def selftest() -> int:
                planted("it/index.html", '<a href="/it/why/">x</a>', '<a href="/docs/">x</a>',
                        '<a href="https://digline.dev/it/why/">x</a>', '<a href="../start/">x</a>',
                        '<a href="../why/" hreflang="en">x</a>'), [])
+        # The anchor gate.
+        def anchors_planted(path, change):
+            original = _read(site, path)
+            with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                fh.write(change(original))
+            try:
+                return anchor_problems(site, SITE_URL)
+            finally:
+                with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                    fh.write(original)
+
+        english_id = heading_ids("why/index.html")[2]
+        add = lambda anchor: (lambda h: h.replace("</main>", anchor + "</main>", 1))
+        expect("the anchor gate passes a link to /it/why/#<an English id>, the up-to-date translation",
+               anchors_planted("it/index.html", add(f'<a href="../it/why/#{english_id}">x</a>'))[:2], ([], []))
+        errors, _, _ = anchors_planted("it/index.html", add('<a href="../it/why/#inesistente">x</a>'))
+        expect("the anchor gate refuses /it/why/#inesistente",
+               any("leads to #inesistente, which /it/why/ does not have" in e for e in errors), True)
+        errors, _, _ = anchors_planted("index.html", lambda h: h.replace(' id="install"', "", 1))
+        expect("the anchor gate refuses a home without id=install (and the footer's links to it)",
+               (any("index.html: no id 'install'" in e for e in errors),
+                any("leads to #install, which / does not have" in e for e in errors)), (True, True))
+        errors, _, _ = anchors_planted("product/metrics/index.html", lambda h: h.replace(' id="repeated"', ' id="repeated-renamed"', 1))
+        expect("the anchor gate refuses the home's links to a renamed id on /product/metrics/, in English and Italian",
+               sorted({e.split(":")[0] for e in errors if "#repeated, which /product/metrics/ does not have" in e}),
+               ["index.html", "it/index.html", "product/metrics/index.html"])
         _groups.clear()
         _groups.update(groups)
+        _behind.clear()
+        metrics = _read(site, "product/metrics/index.html")
+        with open(os.path.join(site, "product", "metrics", "index.html"), "w", encoding="utf-8") as fh:
+            fh.write(metrics.replace(' id="repeated"', ' id="repeated-renamed"', 1))
+        try:
+            on_post_build({"site_dir": site, "site_url": SITE_URL})
+            failures.append("the anchor gate: on_post_build did not stop the build on a renamed id")
+        except PluginError as error:
+            expect("the anchor gate stops the build (on_post_build)", "#repeated, which /product/metrics/" in str(error), True)
+        finally:
+            with open(os.path.join(site, "product", "metrics", "index.html"), "w", encoding="utf-8") as fh:
+                fh.write(metrics)
         original_home = _read(site, "it/index.html")
         with open(os.path.join(site, "it", "index.html"), "w", encoding="utf-8") as fh:
             fh.write(original_home.replace("</main>", '<a href="/why/">x</a></main>', 1))
@@ -862,8 +1113,23 @@ def selftest() -> int:
         with open(os.path.join(root, "docs", "it", "start.md"), "w", encoding="utf-8") as fh:
             fh.write(translation.fake_translation(root, "it", start_meta))
         with open(os.path.join(root, "docs", "it", "about.md"), "a", encoding="utf-8") as fh:
-            fh.write("\n[uno](/why/) [due](https://digline.dev/why/?x=1#h) [tre](../why.md#a-prompt-is-not-code) "
+            fh.write("\n[uno](/why/) [due](https://digline.dev/why/?x=1#the-model-changes-under-you) [tre](../why.md#a-prompt-is-not-code) "
                      "[quattro](/product/guide/) [cinque](../start.md) [sei](../index.md)\n")
+        # And the Italian Why behind its original — English Why changed after it
+        # was made — with two of its headings swapped: as many headings, at the
+        # same levels, and still its own ids, since it is behind.
+        english_why_md = os.path.join(root, "docs", "why.md")
+        with open(english_why_md, encoding="utf-8") as fh:
+            english_why_text = fh.read()
+        with open(english_why_md, "a", encoding="utf-8") as fh:
+            fh.write("\nOne sentence more in English.\n")
+        it_why_md = os.path.join(root, "docs", "it", "why.md")
+        with open(it_why_md, encoding="utf-8") as fh:
+            lines = fh.read().split("\n")
+        h2 = [i for i, line in enumerate(lines) if line.startswith("## ")]
+        lines[h2[0]], lines[h2[1]] = lines[h2[1]], lines[h2[0]]
+        with open(it_why_md, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines))
         rebuilt = _build(root)
         if rebuilt.returncode != 0:
             print(rebuilt.stdout[-3000:] + rebuilt.stderr[-3000:], file=sys.stderr)
@@ -876,14 +1142,40 @@ def selftest() -> int:
             expect("Italian Start added in the test: the Italian home's Start now leads to /it/start/",
                    ('class="hero__link--primary" href="../it/start/"' in home, 'href="../start/"' in home), (True, False))
             expect("links in a translation's Markdown: to /it/ with query and fragment, the documentation in English",
-                   body, ["/it/why/", "https://digline.dev/it/why/?x=1#h", "../../it/why/#a-prompt-is-not-code", "/product/guide/",
+                   body, ["/it/why/", "https://digline.dev/it/why/?x=1#the-model-changes-under-you", "../../it/why/#a-prompt-is-not-code", "/product/guide/",
                           "../../it/start/", "../../it/"])
             expect("the link gate on it, and the post-build check", (link_problems(site, with_start, SITE_URL)[0],
                                                                      check_site(site, with_start, SITE_URL)[0]), ([], []))
+            output = rebuilt.stdout + rebuilt.stderr
+            expect("the Italian Why behind its original, headings swapped: its own ids, the build passes",
+                   (heading_ids("it/why/index.html") != heading_ids("why/index.html"),
+                    len(heading_ids("it/why/index.html")) == len(heading_ids("why/index.html"))), (True, True))
+            expect("links with English ids to the Italian Why, behind: warnings in the build, not errors",
+                   (output.count("WARNING -  translations:") >= 2, "(a translation behind its original" in output), (True, True))
+            errors, warnings, _ = anchor_problems(site, SITE_URL, {"/it/why/"})
+            expect("the anchor gate: to a translation behind, the missing ids are warnings",
+                   (errors, len(warnings) >= 2), ([], True))
             groups = with_start
             found = planted("it/index.html", '<a href="../start/">x</a>')
             expect("the link gate: ../start/ from /it/, once Start is translated, is refused",
                    any("leads to the English /start/" in p for p in found), True)
+
+        # A translation up to date with its original, with a heading fewer: the
+        # build fails. English Why as it was, so German Why is up to date again.
+        with open(english_why_md, "w", encoding="utf-8") as fh:
+            fh.write(english_why_text)
+        de_why = os.path.join(root, "docs", "de", "why.md")
+        with open(de_why, encoding="utf-8") as fh:
+            de_text = fh.read()
+        with open(de_why, "w", encoding="utf-8") as fh:
+            fh.write(re.sub(r"(?m)^## [^\n]*\n", "", de_text, count=1))
+        fewer = _build(root)
+        with open(de_why, "w", encoding="utf-8") as fh:
+            fh.write(de_text)
+        if fewer.returncode == 0 or "de/why.md: its headings are" not in fewer.stdout + fewer.stderr:
+            failures.append("a translation up to date with a heading fewer: the build was not refused for it")
+        else:
+            print("translations selftest: refused, as it must — an up-to-date translation with a heading fewer")
 
         # 5. A translation that does not hold together stops the real build.
         about = os.path.join(root, "docs", "it", "about.md")
