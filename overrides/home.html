@@ -11,7 +11,10 @@
     What a translator must leave as written carries translate="no": every <pre>
     and <code>, the case ids, the check names, the packages, the image and the
     run ids. tools/check-translate.py fails the build on a <pre> or <code>
-    without it. -#}
+    without it. Inside a <pre>, a line this site writes rather than digline
+    prints — the two questions under the scores, "… N more lines" — is a
+    .out__note with translate="yes", the one place the check lets a translator
+    back in. -#}
 
 {% block main_class %} dg-page--home{% endblock %}
 
@@ -239,14 +242,14 @@
         <h3 class="panel__head">The new run on its own <span>no reference</span></h3>
         <pre class="out" translate="no"><span class="out__line quiet">{{ r.table.header }}</span>
           {%- for row in r.table.rows %}<span class="out__line">{{ row }}</span>{% endfor -%}
-          <span class="out__line"></span><span class="out__line quiet">Were these {% if r.before_common %}{{ r.before_common }}{% else %}better{% endif %} yesterday? Did anything change?</span><span class="out__line quiet">Nothing here says.</span></pre>
+          <span class="out__line"></span><span class="out__line quiet out__note" translate="yes">Were these {% if r.before_common %}{{ r.before_common }}{% else %}better{% endif %} yesterday? Did anything change?</span><span class="out__line quiet out__note" translate="yes">Nothing here says.</span></pre>
         <div class="tags"><span>no baseline</span><span>no change on record</span><span>no exit code</span></div>
       </div>
       <div class="readings__arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="panel panel--good">
         <h3 class="panel__head">digline compare <span>against the reference</span></h3>
         <pre class="out" translate="no">
-          {%- for line in r.compare_lines %}<span class="out__line{% if line.kind == "worse" %} worse{% elif line.kind in ("head", "more") %} quiet{% endif %}">{{ line.text }}</span>{% endfor -%}
+          {%- for line in r.compare_lines %}<span class="out__line{% if line.kind == "worse" %} worse{% elif line.kind in ("head", "more") %} quiet{% endif %}{% if line.kind == "more" %} out__note{% endif %}"{% if line.kind == "more" %} translate="yes"{% endif %}>{{ line.text }}</span>{% endfor -%}
           <span class="out__line"></span><span class="out__line worse">exit {{ r.exit }}</span></pre>
         <div class="tags"><span>each check named</span><span>prompt change detected</span><span>exit {{ r.exit }}</span></div>
       </div>
