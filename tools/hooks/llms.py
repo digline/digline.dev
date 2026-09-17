@@ -205,6 +205,11 @@ DESCRIPTIONS: dict[str, str] = {
         "one takes, what it produces, and how it misleads you if you are not "
         "looking"
     ),
+    "product/selection.md": (
+        "How to test a system that selects items from its input: the offered "
+        "set declared per case in a `suite.py`, and why an empty selection must "
+        "never pass alone"
+    ),
     "product/declarative.md": (
         "How to write a suite as data in a `suite.toml` rather than a "
         "`suite.py`, and which suites should stay Python"
