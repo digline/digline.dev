@@ -250,10 +250,11 @@ html { scroll-padding-top: var(--bar-room); }
 
 /* ══ the glow ══════════════════════════════════════════════════════════
 
-   The green-and-blue glow of a band: the closing band (pages.css), and every
-   opening band — the reading pages', Material's and the 404's, which lay it
-   with the one rule below. Here because both halves load this file, so the
-   bands cannot drift apart.
+   The green-and-blue glow of a band: every closing band — the presentation
+   pages' and the empty one under every documentation page — and every
+   opening band — the reading pages', Material's and the 404's — each kind
+   laying it with one rule below. Here because both halves load this file, so
+   the bands cannot drift apart.
 
    Its colours are the hero's glow at 85% (color-mix on the tokens, which are
    unchanged), over one more layer of --wash than the body: at its strongest
@@ -278,6 +279,15 @@ html { scroll-padding-top: var(--bar-room); }
   position: relative;
   isolation: isolate;
 }
+/* A closing band's ground: the glow over one more layer of --wash than the
+   body it closes, that layer rising out of the body over --band-fade. The
+   presentation pages' closing band (pages.css) and the empty one at the foot of
+   every documentation page (theme.css) both lay it with this rule. */
+.closing {
+  background-image:
+    var(--band-glow),
+    linear-gradient(transparent, var(--wash) var(--band-fade));
+}
 /* An opening band's deeper ground: the glow over one more --wash, on a layer
    of its own under the text, so that one mask fades both into the body across
    the band's last --band-gap. At the band's foot the colour is exactly the
@@ -300,17 +310,6 @@ html { scroll-padding-top: var(--bar-room); }
   font-family: var(--sans);
   margin-top: auto;
 }
-/* Previous / next, on the documentation pages only. It sits on the band, above
-   the three columns, parted from them by a rule. */
-.dg-foot__pager {
-  box-sizing: border-box;
-  max-width: 1220px;
-  margin: 0 auto;
-  padding: 8px 20px 0;
-  border-bottom: 1px solid var(--band-rule);
-}
-.dg-foot__pager + .dg-foot__in { padding-top: 34px; }
-
 .dg-foot__in {
   box-sizing: border-box;
   max-width: 1220px;
@@ -361,16 +360,5 @@ html { scroll-padding-top: var(--bar-room); }
 
 @media (max-width: 700px) {
   .dg-foot__cols { grid-template-columns: 1fr; gap: 26px; }
-  /* Previous / next, on the documentation pages only. It sits on the band, above
-   the three columns, parted from them by a rule. */
-.dg-foot__pager {
-  box-sizing: border-box;
-  max-width: 1220px;
-  margin: 0 auto;
-  padding: 8px 20px 0;
-  border-bottom: 1px solid var(--band-rule);
-}
-.dg-foot__pager + .dg-foot__in { padding-top: 34px; }
-
-.dg-foot__in { padding: 34px 14px 26px; }
+  .dg-foot__in { padding: 34px 14px 26px; }
 }

@@ -414,6 +414,37 @@ body {
   .md-container > .opening { padding: calc(44px + var(--bar-room)) 0 var(--band-gap); }
 }
 
+/* ── the foot of the page ─────────────────────────────────────────────────
+   Under <main>, before the band at the bottom (overrides/main.html): the
+   pager, then an empty closing band. Both stand on the body's ground, laid as
+   <main> lays it, so nothing changes colour where <main> ends.
+
+   Previous / next is Material's pager in its own markup, on that ground rather
+   than on the dark band: the body's ink, --muted for "Previous" and "Next"
+   (the site's colour for a label, where Material dims them with opacity:
+   5.96:1 light, 6.38:1 dark on this ground), and the bar's face, as it had on
+   the band.
+
+   The closing band is .closing's ground and glow (chrome.css), masked in over
+   its first --band-fade so that it rises out of the body with no line — the
+   glow included, which the mask catches where it reaches the band's top. It is
+   as tall as the space under an opening band (2 × --band-gap) plus that fade:
+   168px, 150px on a phone. Its foot meets the dark band edge to edge. */
+.dg-docfoot {
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--wash), var(--wash));
+}
+.dg-docfoot__pager {
+  font-family: var(--sans);
+  color: var(--ink);
+}
+.dg-docfoot__pager .md-footer__direction { color: var(--muted); opacity: 1; }
+.dg-docfoot__band {
+  height: calc(2 * var(--band-gap) + var(--band-fade));
+  -webkit-mask-image: linear-gradient(transparent, #000 var(--band-fade));
+  mask-image: linear-gradient(transparent, #000 var(--band-fade));
+}
+
 /* The roadmap arrives as a task list. Material marks a done item in a green of
    its own that belongs to nothing else here; done and not done yet use the two
    colours the report already uses, so a shipped track reads like a check that

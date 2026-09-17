@@ -127,7 +127,7 @@
         </div>
         <ul class="stackcol__rows">
           {%- for p in home.stack.providers %}
-          <li><div class="stackrow"><span class="stackrow__name">{{ p.name }}</span><span class="stackrow__sub stackrow__sub--mono">{{ p.package }}</span></div></li>
+          <li><div class="stackrow"><span class="stackrow__name">{{ p.name }}</span>{% if p.also %}<span class="stackrow__sub"><span class="stackrow__pkg">{{ p.package }}</span> {{ p.also_html }}</span>{% else %}<span class="stackrow__sub stackrow__sub--mono">{{ p.package }}</span>{% endif %}</div></li>
           {%- endfor %}
         </ul>
       </section>

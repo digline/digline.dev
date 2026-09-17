@@ -469,6 +469,10 @@ pre {
 .stackrow__name { display: block; font-size: .96875rem; font-weight: 600; line-height: 1.35; color: var(--ink); }
 .stackrow__sub { display: block; margin-top: .0625rem; font-size: .84375rem; line-height: 1.45; color: var(--muted); }
 .stackrow__sub--mono { font-family: var(--mono-page); font-size: .78125rem; }
+/* A package followed by words (OpenAI's "and any OpenAI-compatible endpoint"):
+   the package in the mono line's face and size, the words as the sans line. */
+.stackrow__pkg { font-family: var(--mono-page); font-size: .78125rem; }
+.stackrow__word { white-space: nowrap; }
 /* The question is the page's title after its colon, as written there; its
    first letter is capitalised here, the text is not touched. */
 .stackrow__sub--question::first-letter { text-transform: uppercase; }
@@ -689,13 +693,10 @@ pre {
 
 /* ── the closing band ────────────────────────────────────────────────────── */
 .closing {
+  /* Its ground — the band's glow over one more layer of --wash than the body
+     it closes, rising out of the body over --band-fade, so there is no line
+     where the band begins — is .closing in chrome.css. */
   padding: 4.5rem 0;
-  /* The band's glow (--band-glow, chrome.css) across the band, over one more
-     layer of --wash than the body it closes. That layer rises out of the body
-     over --band-fade, so there is no line where the band begins. */
-  background-image:
-    var(--band-glow),
-    linear-gradient(transparent, var(--wash) var(--band-fade));
 }
 .closing .part__inner {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
