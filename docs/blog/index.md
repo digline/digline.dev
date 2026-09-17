@@ -9,7 +9,7 @@ description: >-
 
 # Writing
 
-Occasional posts on measuring LLM systems — written from the pipelines I run
+Occasional posts on measuring LLM systems written from the pipelines I run
 myself, with the runs behind them public wherever they can be. The decisions
 they arrive at end up in the [decision records](../product/adr/index.md);
 these are the working out.
