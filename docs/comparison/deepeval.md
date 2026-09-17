@@ -34,7 +34,7 @@ DeepTeam, from the same team, red-teams the application against 40-plus vulnerab
 
 **There is no server, no account and no telemetry.** `uv add digline` or the Docker image, and that is the whole installation. No key, no login, no hosted report, and nothing that leaves the machine the run happened on. For a team whose prompts and outputs cannot cross the perimeter, that is the architecture rather than a setting.
 
-**`promote` is absent from every surface an agent can reach.** The MCP server's eight tools read runs and measure new ones; none writes a baseline. Neither does any flag in `pytest-digline` or any input in the GitHub Action. An agent can measure everything and approve nothing, and not because it is refused: the call does not exist. [digline for agents](../agents.md) explains why an absence and a refusal are not the same thing.
+**`promote` is absent from every surface an agent can reach.** The MCP server's tools read runs and measure new ones; none writes a baseline. Neither does any flag in `pytest-digline` or any input in the GitHub Action. An agent can measure everything and approve nothing, and not because it is refused: the call does not exist. [digline for agents](../agents.md) explains why an absence and a refusal are not the same thing.
 
 ## When to use which
 

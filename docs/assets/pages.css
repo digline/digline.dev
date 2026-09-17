@@ -819,6 +819,56 @@ pre {
   color: var(--ink);
 }
 
+/* ── digline for agents ───────────────────────────────────────────────────
+   The essay, with three things of its own (overrides/agents.html):
+   .principle — the thesis the page stands on, set apart by the gradient rule
+   along its side; the four surfaces as the home's .tiles, each with a title
+   and a closing "Not there" line; .aside — the agent under test, a panel with
+   its own kicker, because it is about another agent than the rest of the page;
+   and .agents-rule, the quotation of AGENTS.md that closes it. */
+.essay--agents > h2,
+.essay--agents > .principle,
+.essay--agents > .tiles,
+.essay--agents > .aside { margin-top: 2.25rem; }
+.essay--agents .principle {
+  padding: .25rem 0 .25rem 1.25rem;
+  border-left: 3px solid transparent;
+  border-image: var(--grad) 1;
+}
+.essay--agents .principle h2 { margin-bottom: .75rem; }
+.essay--agents > h2 { padding-top: 2.25rem; border-top: 1px solid var(--rule-soft); }
+.essay--agents .tiles { margin-top: 1.25rem; }
+.essay--agents .tile h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.0625rem; line-height: 1.3; letter-spacing: -.01em; font-weight: 700;
+  color: var(--ink);
+}
+.essay--agents .tile p { font-size: .9375rem; }
+.essay--agents .tile p:last-child { color: var(--muted); }
+.essay--agents .aside {
+  padding: 1.5rem;
+  background: var(--wash);
+  border: 1px solid var(--rule); border-radius: .875rem;
+}
+.essay--agents .aside h2 { margin-top: .25rem; }
+.essay--agents .aside__kicker {
+  margin: 0 0 .5rem;
+  font-size: .8125rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted);
+}
+.agents-rule { max-width: 40rem; margin: 2.75rem 0 0; }
+.agents-rule__quote {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg);
+  border: 1px solid var(--rule); border-radius: .875rem;
+  box-shadow: var(--shadow-soft);
+}
+.agents-rule__quote p { margin: 0; font-size: 1.0625rem; line-height: 1.6; color: var(--ink); }
+.agents-rule__quote code { font-family: var(--mono-page); font-size: .875em; }
+.agents-rule__source { margin: .625rem 0 0; font-size: .875rem; color: var(--muted); }
+.agents-rule__source a { color: var(--link); }
+
 /* The video carries its own width, ratio and ground inline, in docs/start.md,
    so it is correct under any stylesheet. What is left here is the frame the
    home's panels have, and the line under it set as the home's notes. */

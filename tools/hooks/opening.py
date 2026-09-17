@@ -16,12 +16,12 @@ page has to repeat its title or move its first paragraph into front matter.
 The template gets `opening` (the first four) and `body`. Two kinds of page get
 them, and they are held to different rules:
 
-  * the reading pages, by template — why, start, about, contact — rendered by
+  * the reading pages, by template — why, start, about, contact, agents — rendered by
     their own file in overrides/ through _shell.html. Their layout is built
     round a lede, so each must start with an <h1> and a paragraph, or the
     build fails.
   * every page without a template of its own — the documentation Material
-    renders, from agents to the ADRs — through overrides/main.html, which puts
+    renders, from the comparison to the ADRs — through overrides/main.html, which puts
     the band in Material's `hero` block above the sidebars and the body where
     page.content would be. These are written to be read on GitHub as well, and
     many do not open on a paragraph (an ADR opens on its status list): when the
@@ -59,7 +59,7 @@ from html import escape as html_escape
 from mkdocs.exceptions import PluginError
 
 # The templates that open with the band and are built round a lede.
-READING = {"why.html", "start.html", "about.html", "contact.html"}
+READING = {"why.html", "start.html", "about.html", "contact.html", "agents.html"}
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -242,6 +242,20 @@ def selftest() -> int:
     title = ('How digline compares<a class="headerlink" href="#how-digline-compares" '
              'title="Link to this section">&para;</a>')
     native = {"operator.md", "security.md", "examples/index.md"}
+
+    # 0. Every template that lays out a reading page — it extends _shell.html
+    #    and opens with the band — is in READING, and nothing else is: a
+    #    template left out would get no band and no body, and render empty.
+    overrides = os.path.join(ROOT, "overrides")
+    laid_out = set()
+    for name in sorted(os.listdir(overrides)):
+        if name.endswith(".html"):
+            with open(os.path.join(overrides, name), encoding="utf-8") as fh:
+                text = fh.read()
+            if '{% extends "_shell.html" %}' in text and 'include "partials/opening.html"' in text:
+                laid_out.add(name)
+    expect("READING is every template that extends _shell.html and opens with the band", READING, laid_out)
+    expect("agents.html is a reading page", "agents.html" in READING, True)
 
     # 1. A title and a paragraph: the paragraph is the lede, and leaves the body.
     content = h1 + '<p>The space is <em>crowded</em>.</p>\n<h2 id="a">A</h2>\n<p>Rest.</p>'

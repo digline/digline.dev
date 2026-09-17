@@ -354,4 +354,24 @@ if git -C "$here" rev-parse --git-dir >/dev/null 2>&1; then
   done
 fi
 
-echo "docs/product/ ← $src ($(find "$out" -name '*.md' | wc -l | tr -d ' ') pages, $(wc -l < "$manifest" | tr -d ' ') dated)"
+# Rule 1 of AGENTS.md, as the latest release has it, for the quotation that
+# closes /agents/ (overrides/agents.html). AGENTS.md is not copied — it is not a
+# page here — so this is the moment its words are in reach: tools/agents_rule.py
+# reads them at the latest v* tag the checkout's HEAD contains, and writes the
+# tag, its commit and the rule to .agents-rule.json. tools/hooks/agents.py
+# points the page's links at that tag and fails the build when the quotation is
+# not that text. The tags are fetched first: a clone older than the release has
+# not got its tag.
+rule="$here/.agents-rule.json"
+if ! git -C "$src" fetch --quiet --tags origin 2>/dev/null && [ -z "${SYNC_UNRELEASED:-}" ]; then
+  refuse "cannot fetch the tags of origin in $src" \
+         "The quotation on /agents/ is held to the latest release tag, and the" \
+         "tags have to be the ones origin has now to say which that is."
+fi
+python3 "$here/tools/agents_rule.py" "$src" > "$rule.tmp" && mv "$rule.tmp" "$rule" || {
+  rm -f "$rule.tmp" "$rule"
+  echo "sync: could not read rule 1 of AGENTS.md at a release tag of $src (above)" >&2
+  exit 1
+}
+
+echo "docs/product/ ← $src ($(find "$out" -name '*.md' | wc -l | tr -d ' ') pages, $(wc -l < "$manifest" | tr -d ' ') dated; AGENTS.md rule 1 at $(sed -n 's/.*"tag": "\([^"]*\)".*/\1/p' "$rule"))"
