@@ -158,7 +158,7 @@ DESCRIPTIONS: dict[str, str] = {
     ),
     # Handbook
     "handbook/index.md": (
-        "What the seven chapters cover and the order to read them in — about "
+        "What the eight chapters cover and the order to read them in — about "
         "evaluating an LLM feature, not about the tool: nothing here needs "
         "digline installed"
     ),
@@ -170,23 +170,27 @@ DESCRIPTIONS: dict[str, str] = {
         "What a case is, why almost every team has a prompt and no cases, and "
         "how to have twenty of them by this afternoon"
     ),
-    "handbook/03-checks.md": (
+    "handbook/03-ground-truth.md": (
+        "Where the expected answer comes from when nobody gives you one, and "
+        "why whether it can be collected is decided when you write the feature"
+    ),
+    "handbook/04-checks.md": (
         "How to turn an output into a verdict, and the rule that saves the most "
         "time: use a model to judge only what nothing else can"
     ),
-    "handbook/04-the-judge.md": (
+    "handbook/05-the-judge.md": (
         "How to measure how often your judge disagrees with itself, and why "
         "that number has to exist before any score it produces can be read"
     ),
-    "handbook/05-the-reference.md": (
+    "handbook/06-the-reference.md": (
         "Why a threshold is not a reference, and how to choose the one number "
         "you agree to be measured against"
     ),
-    "handbook/06-maintenance.md": (
+    "handbook/07-maintenance.md": (
         "When to run the suite, what should make you look, and what to do the "
         "morning it turns red and you changed nothing"
     ),
-    "handbook/07-for-teams-building-for-others.md": (
+    "handbook/08-for-teams-building-for-others.md": (
         "The two extra jobs a suite does when the LLM feature belongs to a "
         "client, and the one rule about their data that cannot be bent"
     ),

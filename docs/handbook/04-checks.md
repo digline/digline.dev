@@ -7,7 +7,7 @@ description: >-
   can.
 ---
 
-# 3. Checks: deterministic first, judge last
+# 4. Checks: deterministic first, judge last
 
 A case says what goes in and what you know about the right answer. A check is how you turn an output into a verdict. This chapter is about choosing checks — and about a rule that sounds too simple to matter and saves more time than anything else here: **use a model to judge only what nothing else can.**
 
@@ -63,7 +63,7 @@ For those, a judged check is the only option, and there are two shapes. A **rubr
 
 Whichever you use, three rules, all of which come from the same fact — the judge is a distribution:
 
-1. **Threshold and tolerance are mandatory**, not defaults. A judged check with an implicit "anything above 0 passes" is green forever and tells you nothing. Set the threshold where the system measurably is; set the tolerance from measured noise (chapter 4 shows how).
+1. **Threshold and tolerance are mandatory**, not defaults. A judged check with an implicit "anything above 0 passes" is green forever and tells you nothing. Set the threshold where the system measurably is; set the tolerance from measured noise (chapter 5 shows how).
 2. **Sample.** One judgement per case is one draw. Ask three or five times and combine — or you will spend the next month chasing regressions that are the judge changing its mind.
 3. **Keep the judge's prompt as fixed as your system's.** It is a prompt. It drifts for the same reasons. It should live in a file, be versioned, and be recorded with every run, exactly like the prompt under test.
 

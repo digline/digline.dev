@@ -7,7 +7,7 @@ description: >-
   catches it.
 ---
 
-# 5. The reference
+# 6. The reference
 
 Everything so far produces numbers. This chapter is about the one number that matters more than the others: the one you write down and agree to be measured against.
 
@@ -39,13 +39,13 @@ Three things a promotion should refuse, because each one would make the referenc
 
 - A run produced under a **different configuration** than the current suite: its numbers were measured by other rules.
 - A run with **any check in error** — a *could not judge* — because a reference is an approved state and an error is not a state.
-- A run from a **different tenant** than the one you are promoting for, if your suite has perimeters (chapter 7).
+- A run from a **different tenant** than the one you are promoting for, if your suite has perimeters (chapter 8).
 
 If your tool does not refuse these, refuse them yourself. A reference you cannot trust is worse than none, because it turns every later comparison into an argument.
 
 ## Not the first green run
 
-The first run that passes is the most tempting one to promote and the wrong one. You have just read chapter 4: the judge wobbles, and a single run is one draw. Promote it and the reference records the lucky sample; every later run is compared to the lucky one, and looks worse than it is.
+The first run that passes is the most tempting one to promote and the wrong one. You have just read chapter 5: the judge wobbles, and a single run is one draw. Promote it and the reference records the lucky sample; every later run is compared to the lucky one, and looks worse than it is.
 
 In the newsletter project this was found the hard way. The first reference was promoted from the first good run. Three calibration runs later, two cases that the reference recorded at ⅔ agreement were at 1.0 in every subsequent run — the reference had caught them on a bad draw, and would have reported an *improvement* on every future run for no reason.
 

@@ -7,9 +7,9 @@ description: >-
   with a number.
 ---
 
-# 4. The judge
+# 5. The judge
 
-Chapter 3 ended with a rule: at most one judged check, sampled, with a measured tolerance. This chapter is about the word *measured* — what happens when you skip it, and the forty-minute procedure that replaces guessing with a number. All the figures are from the [newsletter judge](https://github.com/digline/brief), and you can reproduce them.
+Chapter 4 ended with a rule: at most one judged check, sampled, with a measured tolerance. This chapter is about the word *measured* — what happens when you skip it, and the forty-minute procedure that replaces guessing with a number. All the figures are from the [newsletter judge](https://github.com/digline/brief), and you can reproduce them.
 
 ## Two noises, not one
 
