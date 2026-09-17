@@ -605,8 +605,10 @@ def selftest() -> int:
 
         # b) the other half: a translation that links to a page translated into
         # its language — /it/why/ to the Italian home, /it/, where Why links to
-        # /, with a #fragment the original does not have — passes.
-        before = edit(why, first_in_main(r'<a href="\.\./\.\./"', '<a href="../#altrove"'))
+        # /, with a #fragment the original does not have — passes. The hook
+        # already writes ../../it/ there; the plant writes it as ../, with the
+        # fragment.
+        before = edit(why, first_in_main(r'<a href="\.\./\.\./it/"', '<a href="../#altrove"'))
         found, _, _ = check(site, root)
         restore(why, before)
         if found:

@@ -33,11 +33,29 @@ bar (overrides/partials/header.html): one entry per hreflang link but
 x-default — the same list, so the menu and the links cannot disagree — each
 language by its own name (languages.NAMES), the page's own marked current.
 
+── as each translation is written (on_post_page) ─────────────────────────────
+A reader who chose a language stays in it. Every <a href> of a translation —
+the bar, the logo, the hero, the body, the closing band, the footer — that
+leads to an English page with a translation in the page's language is sent to
+that translation instead: /why/ becomes /it/why/ on an Italian page, and a link
+to a page with none, the documentation's, stays English. The #fragment and the
+?query are kept, and so is the link's form: relative (written from the site's
+root, as base_url writes it), root-relative, or absolute to site_url. Which
+pages have a translation is not written anywhere: it is the files in
+docs/<lang>/ (translations_in), so a page translated tomorrow is covered
+without a change here. Links with hreflang — the language menu, and the
+notice's link to the original — are left alone: they lead to another language
+on purpose.
+
 ── after the build (on_post_build) ──────────────────────────────────────────
 Every page in site/ is read again, and the build fails when its hreflang
 links are not exactly the ones its group should have — none, for a page with
 no translation — or when a translation's <html lang> or og:locale is not its
-language.
+language. And every page under a language's folder fails it when one of its
+<a href> without hreflang — relative, root-relative or absolute to site_url,
+with or without its final slash, normalized first — leads to the English page
+of a page translated into that language, or to a path under /<lang>/ that
+site/ does not have (link_problems).
 
     usage: tools/hooks/translations.py --selftest
 
@@ -51,7 +69,13 @@ the result: the hreflang of every page, the language of the translations, the
 bar, the footer and the closing band on a translation, the search index,
 llms.txt, the sitemap, check-llms.py, check-translate.py and check-glyphs.py.
 Then it tampers with the built hreflang and checks that each change is
-refused, and builds once more with a translation that has no description.
+refused; plants links in the built Italian home and checks that the link gate
+refuses each one it must (/why/, https://digline.dev/why/, ../why/, /why,
+../why/index.html#x, /it/docs/) and passes the others (/it/why/, /docs/);
+adds an Italian Start in the test alone, with links written in a
+translation's Markdown, builds again and checks that they are rewritten and
+gated with no change here; and builds once more with a translation that has
+no description.
 """
 
 from __future__ import annotations
@@ -331,8 +355,137 @@ def _switch_problems(path: str, head: "_Head", switch: dict | None, site_url: st
     return problems
 
 
+# ── the links of a translation ───────────────────────────────────────────────
+
+
+def translated_paths(groups: dict[str, dict[str, str]]) -> dict[str, set[str]]:
+    """language → the URL paths of the English pages translated into it:
+    {"it": {"/", "/why/"}}."""
+    paths: dict[str, set[str]] = {lang: set() for lang in languages.LANGUAGES}
+    for original, group in groups.items():
+        for lang in group:
+            paths[lang].add("/" + languages.page_url(original))
+    return paths
+
+
+def destination(href: str, page_path: str, site_url: str):
+    """Where an href of the page at page_path ("/it/why/") leads on this site:
+    (path, form) — the path normalized to a page's ("/why", "/why/index.html"
+    and "../why/" all "/why/"), and the form it was written in, "absolute",
+    "root" or "relative". None for a link off the site, a mailto:, or a
+    #fragment of the page itself."""
+    if not href or href.startswith("#"):
+        return None
+    parts = urlsplit(href)
+    site = urlsplit(site_url)
+    if parts.scheme or parts.netloc:
+        if parts.scheme not in ("http", "https") or parts.netloc != site.netloc:
+            return None
+        form = "absolute"
+    else:
+        form = "root" if href.startswith("/") else "relative"
+    path = urlsplit(urljoin(f"{site.scheme}://{site.netloc}{page_path}", href)).path
+    if path.endswith("/index.html"):
+        path = path[: -len("index.html")]
+    elif not path.endswith("/") and "." not in path.rsplit("/", 1)[-1]:
+        path += "/"
+    return path, form
+
+
+_A_TAG = re.compile(r"<a\s[^>]*>", re.I)
+_HREF = re.compile(r'(\shref=)(["\'])(.*?)\2', re.S)
+
+
+def localize(html: str, page_path: str, lang: str, translated: set[str], site_url: str) -> str:
+    """The page's links to English pages that have a translation in lang, sent
+    to the translation: see the docstring's on_post_page."""
+    site = urlsplit(site_url)
+    to_root = "../" * page_path.strip("/").count("/") + ("../" if page_path.strip("/") else "")
+
+    def one_tag(tag: re.Match) -> str:
+        text = tag.group(0)
+        if re.search(r"\shreflang=", text, re.I):
+            return text
+
+        def one_href(m: re.Match) -> str:
+            href = m.group(3)
+            found = destination(href, page_path, site_url)
+            if found is None or found[0] not in translated:
+                return m.group(0)
+            path, form = found
+            target = f"/{lang}{path}"
+            parts = urlsplit(href)
+            tail = (f"?{parts.query}" if parts.query else "") + (f"#{parts.fragment}" if parts.fragment else "")
+            if form == "absolute":
+                new = f"{parts.scheme}://{parts.netloc}{target}{tail}"
+            elif form == "root":
+                new = f"{target}{tail}"
+            else:
+                new = f"{to_root or './'}{target[1:]}{tail}"
+            return f"{m.group(1)}{m.group(2)}{new}{m.group(2)}"
+
+        return _HREF.sub(one_href, text, count=1)
+
+    return _A_TAG.sub(one_tag, html)
+
+
+def on_post_page(output, page, config, **kwargs):
+    lang = languages.language_of(page.file.src_uri)
+    if lang is None:
+        return output
+    translated = translated_paths(_groups)[lang]
+    return localize(output, "/" + page.url, lang, translated, config["site_url"])
+
+
+class _Anchors(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.anchors: list[tuple[str, bool]] = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "a" and attrs.get("href") is not None:
+            self.anchors.append((attrs["href"], "hreflang" in attrs))
+
+    handle_startendtag = handle_starttag
+
+
+def link_problems(site: str, groups: dict[str, dict[str, str]], site_url: str) -> tuple[list[str], int]:
+    """Every link of every page under a language's folder in site/: one to the
+    English page of a page translated into that language, or to a path under
+    /<lang>/ that site/ does not have, is a problem. (problems, links read)"""
+    translated = translated_paths(groups)
+    problems: list[str] = []
+    read = 0
+    for lang in languages.LANGUAGES:
+        for folder, dirs, names in os.walk(os.path.join(site, lang)):
+            dirs.sort()
+            for name in sorted(n for n in names if n.endswith(".html")):
+                path = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
+                page_path = "/" + (path[: -len("index.html")] if name == "index.html" else path)
+                parser = _Anchors()
+                with open(os.path.join(folder, name), encoding="utf-8") as fh:
+                    parser.feed(fh.read())
+                for href, has_hreflang in parser.anchors:
+                    found = destination(href, page_path, site_url)
+                    if found is None:
+                        continue
+                    read += 1
+                    target = found[0]
+                    if target in translated[lang] and not has_hreflang:
+                        problems.append(f"{path}: {href!r} leads to the English {target}, "
+                                        f"and it has a translation, /{lang}{target}")
+                    if target.startswith(f"/{lang}/"):
+                        on_disk = os.path.join(site, target[1:])
+                        if not (os.path.isfile(os.path.join(on_disk, "index.html")) if target.endswith("/")
+                                else os.path.isfile(on_disk)):
+                            problems.append(f"{path}: {href!r} leads to {target}, which site/ does not have")
+    return problems, read
+
+
 def on_post_build(config, **kwargs):
     problems, _ = check_site(config["site_dir"], _groups, config["site_url"])
+    problems += link_problems(config["site_dir"], _groups, config["site_url"])[0]
     if problems:
         raise PluginError(f"translations: {len(problems)} problem(s) in site/:\n  " + "\n  ".join(problems))
 
@@ -518,16 +671,45 @@ def selftest() -> int:
                                                    links("product/guide/index.html").locale), ("en", "en"))
 
         it_why = _read(site, "it/why/index.html")
-        expect("the bar marks Why on /it/why/",
-               bool(re.search(r'<a class="dg-nav__optional" href="[./]*why/" aria-current="page">', it_why)), True)
+        expect("the bar marks Why on /it/why/, and leads to it",
+               bool(re.search(r'<a class="dg-nav__optional" href="\.\./\.\./it/why/" aria-current="page">', it_why)), True)
         closing = re.search(r'<p class="closing__links">(.*?)</p>', it_why, re.S).group(1)
         expect("the closing band leaves Why out on /it/why/", re.findall(r'href="[./]*([a-z/]*)"', closing),
                ["product/guide/", "agents/", "comparison/"])
-        expect("the footer marks About on /it/about/",
-               bool(re.search(r'href="[./]*about/" aria-current="page"', _read(site, "it/about/index.html"))), True)
+        expect("the footer marks About on /it/about/, and leads to it",
+               bool(re.search(r'href="\.\./\.\./it/about/" aria-current="page"', _read(site, "it/about/index.html"))), True)
         expect("the Italian home is the home", 'class="hero__title"' in _read(site, "it/index.html"), True)
         expect("the Italian Why links the Handbook in English",
                'href="../../handbook/01-what-you-are-shipping/"' in it_why, True)
+
+        # The links of a translation: to a page translated into its language, the
+        # translation; to one that is not, the English page. The fixture has
+        # it: index, why, about; de: why.
+        def hrefs(path, pattern):
+            return re.findall(pattern, _read(site, path))
+
+        expect("on /it/why/: the logo to /it/, Start (not translated) in English, the footer's About to /it/about/",
+               (hrefs("it/why/index.html", r'class="dg-brand" href="([^"]*)"'), '<a href="../../start/">' in it_why,
+                'href="../../it/about/"' in it_why, 'href="../../about/"' in it_why),
+               (["../../it/"], True, True, False))
+        expect("on /it/: the hero's Why to /it/why/, its Start to the English page, #install kept",
+               ('class="hero__link--quiet" href="../it/why/"' in _read(site, "it/index.html"),
+                'class="hero__link--primary" href="../start/"' in _read(site, "it/index.html"),
+                'href="../it/#install"' in _read(site, "it/index.html")), (True, True, True))
+        de_why_html = _read(site, "de/why/index.html")
+        expect("on /de/why/: Why to /de/why/, the logo to the English home (no German home), About in English",
+               ('href="../../de/why/" aria-current="page"' in de_why_html,
+                hrefs("de/why/index.html", r'class="dg-brand" href="([^"]*)"'), 'href="../../about/"' in de_why_html,
+                'href="../../it/about/"' in de_why_html), (True, ["../../"], True, False))
+        expect("the language menu and the notice keep their links to other languages",
+               ('class="dg-lang__item" href="../../why/" lang="en" hreflang="en"' in it_why
+                or bool(re.search(r'class="dg-lang__item" href="\.\./\.\./why/"[^>]*hreflang="en"', it_why)),
+                bool(re.search(r'data-translation-notice>.*?<a href="\.\./\.\./why/" hreflang="en"', it_why, re.S))),
+               (True, True))
+        expect("English pages keep their English links", 'class="hero__link--quiet" href="./why/"' in _read(site, "index.html"),
+               True)
+        found, read = link_problems(site, groups, SITE_URL)
+        expect("the link gate on the built fixture", (found, read > 100), ([], True))
 
         search = _read(site, "search/search_index.json")
         expect("no translation in the search index",
@@ -624,6 +806,84 @@ def selftest() -> int:
                 failures.append(f"{label}: not refused ({found})")
             else:
                 print(f"translations selftest: refused, as it must — {label}")
+
+        # The link gate: a link planted in the built Italian home, each on its own.
+        def planted(path, *anchors):
+            original = _read(site, path)
+            with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                fh.write(original.replace("</main>", "".join(anchors) + "</main>", 1))
+            try:
+                return link_problems(site, groups, SITE_URL)[0]
+            finally:
+                with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                    fh.write(original)
+
+        for label, anchor, needle in [
+            ("a link to /why/ from /it/", '<a href="/why/">x</a>', "leads to the English /why/"),
+            ("a link to https://digline.dev/why/ from /it/", '<a href="https://digline.dev/why/">x</a>',
+             "leads to the English /why/"),
+            ("a link to ../why/ from /it/", '<a href="../why/">x</a>', "leads to the English /why/"),
+            ("a link to /why, no final slash", '<a href="/why">x</a>', "leads to the English /why/"),
+            ("a link to ../why/index.html#x", '<a href="../why/index.html#x">x</a>', "leads to the English /why/"),
+            ("a link to the English home, https://digline.dev", '<a href="https://digline.dev">x</a>',
+             "leads to the English /"),
+            ("a link to /it/docs/, which the site does not have", '<a href="/it/docs/">x</a>',
+             "leads to /it/docs/, which site/ does not have"),
+            ("a link to ../it/start/, not translated in the fixture", '<a href="../it/start/">x</a>',
+             "leads to /it/start/, which site/ does not have"),
+        ]:
+            found = planted("it/index.html", anchor)
+            if not any(needle in p for p in found):
+                failures.append(f"the link gate, {label}: not refused ({found})")
+            else:
+                print(f"translations selftest: refused, as it must — the link gate, {label}")
+        expect("the link gate passes /it/why/, /docs/, the English Start (not translated) and an hreflang link to /why/",
+               planted("it/index.html", '<a href="/it/why/">x</a>', '<a href="/docs/">x</a>',
+                       '<a href="https://digline.dev/it/why/">x</a>', '<a href="../start/">x</a>',
+                       '<a href="../why/" hreflang="en">x</a>'), [])
+        _groups.clear()
+        _groups.update(groups)
+        original_home = _read(site, "it/index.html")
+        with open(os.path.join(site, "it", "index.html"), "w", encoding="utf-8") as fh:
+            fh.write(original_home.replace("</main>", '<a href="/why/">x</a></main>', 1))
+        try:
+            on_post_build({"site_dir": site, "site_url": SITE_URL})
+            failures.append("the link gate: on_post_build did not stop the build on a link to /why/ from /it/")
+        except PluginError as error:
+            expect("the link gate stops the build (on_post_build)", "leads to the English /why/" in str(error), True)
+        finally:
+            with open(os.path.join(site, "it", "index.html"), "w", encoding="utf-8") as fh:
+                fh.write(original_home)
+
+        # A translation added in this test only — Italian Start — and links written
+        # in a translation's Markdown: rewritten and gated, with no change to the code.
+        start_meta = {"title": "Inizia qui", "template": "start.html", "lang": "it", "translation_of": "start.md",
+                      "description": "Traduzione finta di Start, solo per questo test.", "search": {"exclude": True}}
+        with open(os.path.join(root, "docs", "it", "start.md"), "w", encoding="utf-8") as fh:
+            fh.write(translation.fake_translation(root, "it", start_meta))
+        with open(os.path.join(root, "docs", "it", "about.md"), "a", encoding="utf-8") as fh:
+            fh.write("\n[uno](/why/) [due](https://digline.dev/why/?x=1#h) [tre](../why.md#a-prompt-is-not-code) "
+                     "[quattro](/product/guide/) [cinque](../start.md) [sei](../index.md)\n")
+        rebuilt = _build(root)
+        if rebuilt.returncode != 0:
+            print(rebuilt.stdout[-3000:] + rebuilt.stderr[-3000:], file=sys.stderr)
+            failures.append("the fixture with Italian Start added did not build")
+        else:
+            with_start = dict(groups, **{"start.md": {"it": "it/start.md"}})
+            home = _read(site, "it/index.html")
+            about_html = _read(site, "it/about/index.html")
+            body = re.findall(r'<a href="([^"]*)">(?:uno|due|tre|quattro|cinque|sei)</a>', about_html)
+            expect("Italian Start added in the test: the Italian home's Start now leads to /it/start/",
+                   ('class="hero__link--primary" href="../it/start/"' in home, 'href="../start/"' in home), (True, False))
+            expect("links in a translation's Markdown: to /it/ with query and fragment, the documentation in English",
+                   body, ["/it/why/", "https://digline.dev/it/why/?x=1#h", "../../it/why/#a-prompt-is-not-code", "/product/guide/",
+                          "../../it/start/", "../../it/"])
+            expect("the link gate on it, and the post-build check", (link_problems(site, with_start, SITE_URL)[0],
+                                                                     check_site(site, with_start, SITE_URL)[0]), ([], []))
+            groups = with_start
+            found = planted("it/index.html", '<a href="../start/">x</a>')
+            expect("the link gate: ../start/ from /it/, once Start is translated, is refused",
+                   any("leads to the English /start/" in p for p in found), True)
 
         # 5. A translation that does not hold together stops the real build.
         about = os.path.join(root, "docs", "it", "about.md")
