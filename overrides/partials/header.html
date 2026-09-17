@@ -16,6 +16,14 @@
 
   Its words are keys in i18n/en.yml, under `bar`, printed with the `t` filter.
 
+  Every link of the site's own templates is written
+  {{ base_url.rstrip('/') }}/<path>. On a page base_url is relative, "." or
+  "../..", and nothing changes; on the 404, which mkdocs renders without a
+  page, it is site_url's path, "/", and {{ base_url }}/why/ would be //why/ —
+  a link to a host named "why", from the 404 at any URL. The rstrip makes it
+  /why/. tools/hooks/translations.py fails the build on any href starting with
+  //, the 404 included.
+
   The language menu, before GitHub, only on a page with translations — the
   English page and each translation: page.meta.language_switch, which
   tools/hooks/translations.py builds from the page's hreflang links. A
@@ -48,7 +56,7 @@
     </label>
     {% endif %}
 
-    <a class="dg-brand" href="{{ base_url }}/" title="digline" data-md-component="logo">
+    <a class="dg-brand" href="{{ base_url.rstrip('/') }}/" title="digline" data-md-component="logo">
       {% include "partials/mark.html" %}
       <span translate="no">digline</span>
     </a>
@@ -65,21 +73,21 @@
     {% endif %}
 
     <nav class="dg-nav" aria-label="{{ 'bar.sections_label' | t }}">
-      <a href="{{ base_url }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>{{ "bar.start" | t }}</a>
+      <a href="{{ base_url.rstrip('/') }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>{{ "bar.start" | t }}</a>
       {#- The entry that yields when the bar runs out of room: Why is reachable
           from Start here, which is the entry beside it, and from the landing.
           Hidden by .dg-nav__optional: under 500px in chrome.css, and on the
           documentation pages under 670px in theme.css. -#}
-      <a class="dg-nav__optional" href="{{ base_url }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>{{ "bar.why" | t }}</a>
+      <a class="dg-nav__optional" href="{{ base_url.rstrip('/') }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>{{ "bar.why" | t }}</a>
       {#- Yields with Why: the footer carries it in the Docs column, beside Why. -#}
-      <a class="dg-nav__optional" href="{{ base_url }}/agents/"{% if here == "agents.md" %} aria-current="page"{% endif %}>{{ "bar.agents" | t }}</a>
-      <a href="{{ base_url }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>{{ "bar.handbook" | t }}</a>
-      <a href="{{ base_url }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>{{ "bar.docs" | t }}</a>
+      <a class="dg-nav__optional" href="{{ base_url.rstrip('/') }}/agents/"{% if here == "agents.md" %} aria-current="page"{% endif %}>{{ "bar.agents" | t }}</a>
+      <a href="{{ base_url.rstrip('/') }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>{{ "bar.handbook" | t }}</a>
+      <a href="{{ base_url.rstrip('/') }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>{{ "bar.docs" | t }}</a>
       {#- The second entry that yields when the bar runs out of room, and it
           yields for the same reason Why does: the footer carries it in the
           Docs column, so losing it on a narrow phone costs a scroll, not a
           destination. -#}
-      <a class="dg-nav__optional" href="{{ base_url }}/blog/"{% if here.startswith("blog/") %} aria-current="true"{% endif %}>{{ "bar.writing" | t }}</a>
+      <a class="dg-nav__optional" href="{{ base_url.rstrip('/') }}/blog/"{% if here.startswith("blog/") %} aria-current="true"{% endif %}>{{ "bar.writing" | t }}</a>
     </nav>
 
     <div class="dg-actions">
@@ -99,7 +107,7 @@
         </summary>
         <ul class="dg-lang__menu">
           {%- for item in switch["items"] %}
-          <li><a class="dg-lang__item" href="{{ base_url }}/{{ item.path }}" lang="{{ item.lang }}" hreflang="{{ item.lang }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.name }}</a></li>
+          <li><a class="dg-lang__item" href="{{ base_url.rstrip('/') }}/{{ item.path }}" lang="{{ item.lang }}" hreflang="{{ item.lang }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.name }}</a></li>
           {%- endfor %}
         </ul>
       </details>

@@ -74,6 +74,11 @@ a failure, when the page is a translation behind its original — or when a
 home, English or translated, has no id="install" (STABLE_IDS: the footer and
 other sites link to it) (anchor_problems).
 
+And every page of site/, the 404 included, fails it on an href that starts
+with // (protocol_relative_problems): a link relative to the protocol leads to
+another host — //why/ to a host named "why" — which is what {{ base_url }}/why/
+wrote on the 404 until the templates wrote base_url.rstrip('/').
+
     usage: tools/hooks/translations.py --selftest
 
 --selftest needs docs/product/ synced (`make docs`). It checks each refusal
@@ -653,11 +658,44 @@ def anchor_problems(site: str, site_url: str, behind_paths: set[str] = frozenset
     return errors, warnings, read
 
 
+class _Hrefs(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.hrefs: list[tuple[str, str]] = []
+
+    def handle_starttag(self, tag, attrs):
+        for name, value in attrs:
+            if name == "href" and value is not None:
+                self.hrefs.append((tag, value))
+
+    handle_startendtag = handle_starttag
+
+
+def protocol_relative_problems(site: str) -> tuple[list[str], int]:
+    """Every href of every page of site/ that starts with //: (problems, pages read)."""
+    problems: list[str] = []
+    pages = 0
+    for folder, dirs, names in os.walk(site):
+        dirs.sort()
+        for name in sorted(n for n in names if n.endswith(".html")):
+            relative = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
+            parser = _Hrefs()
+            with open(os.path.join(folder, name), encoding="utf-8") as fh:
+                parser.feed(fh.read())
+            pages += 1
+            for tag, href in parser.hrefs:
+                if href.startswith("//"):
+                    problems.append(f"{relative}: <{tag} href={href!r}> is relative to the protocol, a link to "
+                                    f"the host {urlsplit(href).netloc or '(none)'!r}, not to this site")
+    return problems, pages
+
+
 def on_post_build(config, **kwargs):
     problems, _ = check_site(config["site_dir"], _groups, config["site_url"])
     problems += link_problems(config["site_dir"], _groups, config["site_url"])[0]
     errors, warnings, _ = anchor_problems(config["site_dir"], config["site_url"], _behind)
     problems += errors
+    problems += protocol_relative_problems(config["site_dir"])[0]
     for warning in warnings:
         print(f"WARNING -  translations: {warning}", file=sys.stderr)
     if problems:
@@ -921,6 +959,32 @@ def selftest() -> int:
                re.findall(r'class="headerlink" href="#([^"]*)"', _read(site, "why/index.html")), True)
         errors, warnings, read = anchor_problems(site, SITE_URL)
         expect("the anchor gate on the built fixture", (errors, warnings, read > 50), ([], [], True))
+        found, pages = protocol_relative_problems(site)
+        not_found = _read(site, "404.html")
+        expect("the 404: its bar and footer lead to /why/ and /#install, no href starts with //, anywhere",
+               ('href="/why/"' in not_found, 'href="/#install"' in not_found, 'class="dg-brand" href="/"' in not_found,
+                'class="dg-mark" src="/assets/favicon.svg"' in not_found, found, pages > 50), (True, True, True, True, [], True))
+
+        def hrefs_planted(path, anchor):
+            original = _read(site, path)
+            with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                fh.write(original.replace("</body>", anchor + "</body>", 1))
+            try:
+                return protocol_relative_problems(site)[0]
+            finally:
+                with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                    fh.write(original)
+
+        for label, path, anchor in (("the 404 with //why/", "404.html", '<a href="//why/">x</a>'),
+                                    ("a page with //why/", "why/index.html", '<a href="//why/">x</a>'),
+                                    ("a page with //#install", "about/index.html", '<a href="//#install">x</a>')):
+            found = hrefs_planted(path, anchor)
+            if not any(f"{path}: <a href=" in p and "relative to the protocol" in p for p in found):
+                failures.append(f"the // gate, {label}: not refused ({found})")
+            else:
+                print(f"translations selftest: refused, as it must — the // gate, {label}")
+        expect("the // gate passes an explicit https://github.com/… link",
+               hrefs_planted("404.html", '<a href="https://github.com/digline/digline">x</a>'), [])
         expect("the install id on the homes", ['id="install"' in _read(site, p) for p in ("index.html", "it/index.html")],
                [True, True])
 
@@ -1083,6 +1147,17 @@ def selftest() -> int:
         _groups.clear()
         _groups.update(groups)
         _behind.clear()
+        not_found = _read(site, "404.html")
+        with open(os.path.join(site, "404.html"), "w", encoding="utf-8") as fh:
+            fh.write(not_found.replace("</body>", '<a href="//why/">x</a></body>', 1))
+        try:
+            on_post_build({"site_dir": site, "site_url": SITE_URL})
+            failures.append("the // gate: on_post_build did not stop the build on //why/ in the 404")
+        except PluginError as error:
+            expect("the // gate stops the build (on_post_build)", "404.html: <a href='//why/'>" in str(error), True)
+        finally:
+            with open(os.path.join(site, "404.html"), "w", encoding="utf-8") as fh:
+                fh.write(not_found)
         metrics = _read(site, "product/metrics/index.html")
         with open(os.path.join(site, "product", "metrics", "index.html"), "w", encoding="utf-8") as fh:
             fh.write(metrics.replace(' id="repeated"', ' id="repeated-renamed"', 1))

@@ -18,8 +18,8 @@
       <section>
         <h2>{{ "footer.columns.product" | t }}</h2>
         <ul>
-          <li><a href="{{ base_url }}/#install">{{ "footer.links.install" | t }}</a></li>
-          <li><a href="{{ base_url }}/product/changelog/">{{ "footer.links.changelog" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/#install">{{ "footer.links.install" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/product/changelog/">{{ "footer.links.changelog" | t }}</a></li>
           <li><a href="{{ config.repo_url }}">GitHub</a></li>
           <li><a href="https://pypi.org/project/digline/">PyPI</a></li>
         </ul>
@@ -28,14 +28,14 @@
       <section>
         <h2>{{ "footer.columns.docs" | t }}</h2>
         <ul>
-          <li><a href="{{ base_url }}/why/">{{ "footer.links.why" | t }}</a></li>
-          <li><a href="{{ base_url }}/comparison/">{{ "footer.links.comparison" | t }}</a></li>
-          <li><a href="{{ base_url }}/agents/">{{ "footer.links.agents" | t }}</a></li>
-          <li><a href="{{ base_url }}/product/guide/">{{ "footer.links.guide" | t }}</a></li>
-          <li><a href="{{ base_url }}/product/metrics/">{{ "footer.links.metrics" | t }}</a></li>
-          <li><a href="{{ base_url }}/product/api/">{{ "footer.links.reference" | t }}</a></li>
-          <li><a href="{{ base_url }}/product/examples/">{{ "footer.links.examples" | t }}</a></li>
-          <li><a href="{{ base_url }}/blog/">{{ "footer.links.writing" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/why/">{{ "footer.links.why" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/comparison/">{{ "footer.links.comparison" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/agents/">{{ "footer.links.agents" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/product/guide/">{{ "footer.links.guide" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/product/metrics/">{{ "footer.links.metrics" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/product/api/">{{ "footer.links.reference" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/product/examples/">{{ "footer.links.examples" | t }}</a></li>
+          <li><a href="{{ base_url.rstrip('/') }}/blog/">{{ "footer.links.writing" | t }}</a></li>
         </ul>
       </section>
 
@@ -53,8 +53,8 @@
       {# The two pages that are about us rather than about the product. They
          belong here, not in the sections at the top. #}
       <nav class="dg-foot__meta" aria-label="{{ 'footer.meta.label' | t }}">
-        <a href="{{ base_url }}/about/"{% if here == "about.md" %} aria-current="page"{% endif %}>{{ "footer.meta.about" | t }}</a>
-        <a href="{{ base_url }}/contact/"{% if here == "contact.md" %} aria-current="page"{% endif %}>{{ "footer.meta.contact" | t }}</a>
+        <a href="{{ base_url.rstrip('/') }}/about/"{% if here == "about.md" %} aria-current="page"{% endif %}>{{ "footer.meta.about" | t }}</a>
+        <a href="{{ base_url.rstrip('/') }}/contact/"{% if here == "contact.md" %} aria-current="page"{% endif %}>{{ "footer.meta.contact" | t }}</a>
       </nav>
     </div>
   </div>

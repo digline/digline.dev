@@ -27,10 +27,10 @@
 {%- set s = r.scale %}
 {%- set notice = page.meta.translation_notice %}
 {%- set run_html %}<span class="mono" title="{{ r.run_id }}" translate="no">{{ r.run_short }}…</span>{% endset %}
-{%- set home_json_html %}<a href="{{ base_url }}/product/assets/home/home.json">home.json</a>{% endset %}
+{%- set home_json_html %}<a href="{{ base_url.rstrip('/') }}/product/assets/home/home.json">home.json</a>{% endset %}
 {%- set dependencies_html %}{% for name in home.dependencies.names %}<span class="mono" translate="no">{{ name }}</span>{% if not loop.last %}, {% endif %}{% endfor %}{% endset %}
 {%- set quickstart_run_html %}<span class="mono" title="{{ home.quickstart.run_id }}" translate="no">{{ home.quickstart.run_short }}…</span>{% endset %}
-{%- set guide_html %}<a href="{{ base_url }}/product/guide/">{{ "home.try.full_guide" | t }}</a>{% endset %}
+{%- set guide_html %}<a href="{{ base_url.rstrip('/') }}/product/guide/">{{ "home.try.full_guide" | t }}</a>{% endset %}
 
 <section class="hero" aria-labelledby="hero-h">
   <div class="part__inner">
@@ -38,7 +38,7 @@
       <p class="hero__status"><span>{{ "home.hero.license" | t }}</span><span>{% if home.pre_1_0 %}{{ "home.hero.version_pre_1_0" | t(version=home.version) }}{% else %}{{ "home.hero.version" | t(version=home.version) }}{% endif %}</span>
         {%- if notice %}<span class="hero__notice{% if notice.stale %} hero__notice--stale{% endif %}" data-translation-notice>
           {%- if notice.stale %}{{ "do_not_translate.stale" | t }}{% else %}{{ "do_not_translate.notice" | t }}{% endif %}
-          <a href="{{ base_url }}/{{ notice.original }}" hreflang="en">{{ "do_not_translate.original" | t(date=notice.date) }}</a></span>
+          <a href="{{ base_url.rstrip('/') }}/{{ notice.original }}" hreflang="en">{{ "do_not_translate.original" | t(date=notice.date) }}</a></span>
         {%- endif %}</p>
       <h1 class="hero__title" id="hero-h">{{ "home.hero.title" | t }}<span class="hero__quiet">{{ "home.hero.title_quiet" | t }}</span></h1>
       <p class="hero__lede">{{ "home.hero.lede" | t }}</p>
@@ -47,8 +47,8 @@
       </div>
       <p class="install__req">{{ "home.hero.requires" | t(python=home.requires_python) }}</p>
       <p class="hero__links">
-        <a class="hero__link--primary" href="{{ base_url }}/start/">{{ "home.hero.start" | t }}</a>
-        <a class="hero__link--quiet" href="{{ base_url }}/why/">{{ "home.hero.why" | t }}</a>
+        <a class="hero__link--primary" href="{{ base_url.rstrip('/') }}/start/">{{ "home.hero.start" | t }}</a>
+        <a class="hero__link--quiet" href="{{ base_url.rstrip('/') }}/why/">{{ "home.hero.why" | t }}</a>
       </p>
       <ul class="facts">
         <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 8.5l3 3 7-7"/></svg>{{ "home.hero.facts.no_key" | t }}</li>
@@ -160,7 +160,7 @@
         </div>
         <ul class="stackcol__rows">
           {%- for e in home.stack.examples %}
-          <li><a class="stackrow stackrow--link" href="{{ base_url }}/{{ e.href }}"><span><span class="stackrow__name">{{ e.name }}</span><span class="stackrow__sub stackrow__sub--question">{{ e.question }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
+          <li><a class="stackrow stackrow--link" href="{{ base_url.rstrip('/') }}/{{ e.href }}"><span><span class="stackrow__name">{{ e.name }}</span><span class="stackrow__sub stackrow__sub--question">{{ e.question }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
           {%- endfor %}
         </ul>
       </section>
@@ -171,7 +171,7 @@
         </div>
         <ul class="stackcol__rows">
           {%- for r in home.stack.run %}
-          <li><a class="stackrow stackrow--link" href="{{ base_url }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub stackrow__sub--mono" translate="no">{{ r.code }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
+          <li><a class="stackrow stackrow--link" href="{{ base_url.rstrip('/') }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub stackrow__sub--mono" translate="no">{{ r.code }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
           {%- endfor %}
         </ul>
       </section>
@@ -211,7 +211,7 @@
       {%- for group in home.commands.groups %}
       {%- for c in group.commands %}
       <li class="group--{{ group.key }}">
-        <a class="cmd" href="{{ base_url }}/{{ c.href }}">
+        <a class="cmd" href="{{ base_url.rstrip('/') }}/{{ c.href }}">
           <span class="cmd__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">{{ icons.get(c.name, '<circle cx="12" cy="12" r="3"/>') }}</svg></span>
           <code class="cmd__name" translate="no">digline {{ c.name }}</code>
           <span class="cmd__help">{{ c.help }}</span>
@@ -237,7 +237,7 @@
         <p class="kind__text">{{ kind.description }}</p>
         <ul class="kind__checks">
           {%- for check in kind.checks %}
-          <li><a class="kind__check" translate="no" href="{{ base_url }}/{{ check.href }}">{{ check.name }}</a></li>
+          <li><a class="kind__check" translate="no" href="{{ base_url.rstrip('/') }}/{{ check.href }}">{{ check.name }}</a></li>
           {%- endfor %}
         </ul>
       </li>
@@ -310,10 +310,10 @@
   {#- Copied from digline/docs/assets/flow/, where a private generator writes
       them: replace them from there, do not edit them here. -#}
   <div class="flow">
-    <img class="flow__light" src="{{ base_url }}/assets/flow/digline-flow-light.svg"
+    <img class="flow__light" src="{{ base_url.rstrip('/') }}/assets/flow/digline-flow-light.svg"
          width="960" height="540" loading="lazy" decoding="async"
          alt="{{ 'home.flow.alt' | t }}">
-    <img class="flow__dark" src="{{ base_url }}/assets/flow/digline-flow.svg"
+    <img class="flow__dark" src="{{ base_url.rstrip('/') }}/assets/flow/digline-flow.svg"
          width="960" height="540" loading="lazy" decoding="async"
          alt="{{ 'home.flow.alt' | t }}">
   </div>
@@ -326,7 +326,7 @@
   <h2 class="part__title" id="ahead-h">{{ "home.roadmap.title" | t }} <span class="grad-text">{{ "home.roadmap.title_accent" | t }}</span></h2>
   <p><b>{{ "home.roadmap.shipped_label" | t }}</b> {{ "home.roadmap.shipped_text" | t }}</p>
   <p><b>{{ "home.roadmap.never_label" | t }}</b> {{ "home.roadmap.never_text" | t }}</p>
-  <p class="ahead__more"><a href="{{ base_url }}/product/roadmap/">{{ "home.roadmap.more" | t }}</a></p>
+  <p class="ahead__more"><a href="{{ base_url.rstrip('/') }}/product/roadmap/">{{ "home.roadmap.more" | t }}</a></p>
   </div>
 </section>
 
