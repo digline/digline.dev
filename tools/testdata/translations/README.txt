@@ -1,10 +1,18 @@
-Fake translations, for tools/hooks/translations.py --selftest only.
+Fake translations, for the selftests of tools/hooks/translations.py and
+tools/check-translations.py only.
 
-docs/it/ and docs/de/ are copied over a copy of the site's docs/ in a
-temporary directory, each language given a catalog that is a copy of
-i18n/en.yml, and the site is built there. Nothing here is a translation to
-publish: the words are placeholders in the right language, and none of these
-files is ever in docs/.
+Each file here is a translation's front matter and nothing else. A selftest
+copies the site into a temporary directory and writes each translation there
+with tools/translation.py, fake_translation(): this front matter, stamped with
+what the translation was made from (source, source_sha, source_commit, model,
+and for the home source_keys), over the text of the English page as it is at
+that moment, pseudo-translated — code, links, numbers, headings and the terms
+to keep left as they are, every other word given a suffix (ẞ in German). Each
+language gets a catalog that is a copy of i18n/en.yml, and the site is built
+there.
+
+So the fake translations follow the English pages wherever they go, and
+nothing here is a translation to publish. None of these files is ever in docs/.
 
   it: index.md, why.md, about.md
   de: why.md

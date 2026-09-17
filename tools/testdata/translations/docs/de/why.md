@@ -9,10 +9,7 @@ search:
   exclude: true
 ---
 
-# Warum
-
-Ein gefälschter Absatz mit ä ö ü ß und ẞ, den das Eröffnungsband als Lede nimmt.
-
-## Ein gefälschter Abschnitt
-
-Ein Link zum [Leitfaden](../product/guide.md).
+<!--
+  The text is not written here: tools/translation.py, fake_translation(),
+  makes it from the English page as it is when a selftest runs.
+-->

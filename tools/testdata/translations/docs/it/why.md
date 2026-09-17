@@ -11,10 +11,7 @@ search:
   exclude: true
 ---
 
-# Perché
-
-Un paragrafo finto, che la fascia d'apertura prende come lede.
-
-## Una sezione finta
-
-Un link alla [guida](../product/guide.md), che resta in inglese, e uno all'[originale](../why.md).
+<!--
+  The text is not written here: tools/translation.py, fake_translation(),
+  makes it from the English page as it is when a selftest runs.
+-->

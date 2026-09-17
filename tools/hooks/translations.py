@@ -38,8 +38,10 @@ language.
 
 --selftest needs docs/product/ synced (`make docs`). It checks each refusal
 above on front matter of its own, then copies the site into a temporary
-directory, adds the fake translations of tools/testdata/translations/ with a
-catalog per language copied from en.yml, builds it with --strict, and reads
+directory, adds the fake translations of tools/testdata/translations/ — their
+front matter from there, their text each English page as it is today,
+pseudo-translated and stamped by tools/translation.py — with a catalog per
+language copied from en.yml, builds it with --strict, and reads
 the result: the hreflang of every page, the language of the translations, the
 bar, the footer and the closing band on a translation, the search index,
 llms.txt, the sitemap, check-llms.py, check-translate.py and check-glyphs.py.
@@ -278,8 +280,14 @@ def _copy_site(into: str) -> None:
     ignore = shutil.ignore_patterns("__pycache__", ".DS_Store")
     for name in ("overrides", "tools", "i18n", "docs"):
         shutil.copytree(os.path.join(ROOT, name), os.path.join(into, name), ignore=ignore)
-    for lang in os.listdir(FIXTURE):
-        shutil.copytree(os.path.join(FIXTURE, lang), os.path.join(into, "docs", lang))
+    import translation  # tools/translation.py
+
+    for lang in sorted(os.listdir(FIXTURE)):
+        os.makedirs(os.path.join(into, "docs", lang))
+        for name in sorted(os.listdir(os.path.join(FIXTURE, lang))):
+            meta, _ = translation.read_page(os.path.join(FIXTURE, lang, name))
+            with open(os.path.join(into, "docs", lang, name), "w", encoding="utf-8") as fh:
+                fh.write(translation.fake_translation(into, lang, meta))
         shutil.copy(os.path.join(ROOT, "i18n", "en.yml"), os.path.join(into, "i18n", f"{lang}.yml"))
     git = ["git", "-C", into, "-c", "user.name=selftest", "-c", "user.email=selftest@invalid",
            "-c", "commit.gpgsign=false"]
@@ -366,8 +374,8 @@ def selftest() -> int:
         expect("the footer marks About on /it/about/",
                bool(re.search(r'href="[./]*about/" aria-current="page"', _read(site, "it/about/index.html"))), True)
         expect("the Italian home is the home", 'class="hero__title"' in _read(site, "it/index.html"), True)
-        expect("the Italian Why links the guide in English",
-               'href="../../product/guide/"' in it_why, True)
+        expect("the Italian Why links the Handbook in English",
+               'href="../../handbook/01-what-you-are-shipping/"' in it_why, True)
 
         search = _read(site, "search/search_index.json")
         expect("no translation in the search index",
@@ -431,7 +439,7 @@ def selftest() -> int:
         with open(about, encoding="utf-8") as fh:
             text = fh.read()
         with open(about, "w", encoding="utf-8") as fh:
-            fh.write(re.sub(r"description: >-\n  .*\n", "", text))
+            fh.write(re.sub(r"(?m)^description:[^\n]*\n(?:  [^\n]*\n)*", "", text, count=1))
         refused = _build(root)
         if refused.returncode == 0 or "docs/it/about.md: no description of its own" not in refused.stdout + refused.stderr:
             failures.append("a translation with no description: the build was not refused for it")

@@ -169,6 +169,18 @@ jobs:
           uv run tools/check-translate.py --selftest
           uv run tools/check-translate.py site
 
+      - name: Check every translation against its original
+        # tools/check-translations.py: in each translation's <main>, the same
+        # code, links, numbers and headings as its original's, the glossary's
+        # terms kept and its forbidden words absent, and a front matter that
+        # records what it was made from. An original changed since its
+        # translation is reported, never refused. --selftest first: the fake
+        # translations of tools/testdata/translations pass, a failure planted
+        # for each check is refused, a changed original is reported with exit 0.
+        run: |
+          uv run tools/check-translations.py --selftest
+          uv run tools/check-translations.py site
+
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.
       - uses: actions/upload-pages-artifact@v4
