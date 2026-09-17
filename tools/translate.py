@@ -27,15 +27,24 @@ of its pages translated either: a page cannot be built without it.
 A page that passes is read once more by a second call, which reports errors of
 meaning only — a negation turned round, a threshold or a behaviour described
 the other way, a claim the English does not make, something left out — as
-JSON, {ok, issues}. A page with issues is kept, and marked "needs attention".
+JSON, {ok, issues, notes}. A page with issues is corrected once, with the
+issues as its context, then checked and read again: it is marked "needs
+attention" only when an error of meaning is still there (a correction that
+fails the checks is not kept). Notes are the evident calques, reported and never
+blocking.
+
+The instructions ask for idiomatic Italian, German and Spanish, not calques of
+the English, with Italian examples of calques these pages have had, and for
+quantified statements kept at their strength ("most" is not "almost all").
 
 ── the model and the bill ───────────────────────────────────────────────────
 claude-opus-5 for both calls, adaptive thinking, structured JSON output, and
 server-side fallbacks ("default"): a request the model declines is run again
 on the model Anthropic routes it to, and the report names the model that
 answered. Every call's input and output tokens are recorded and priced from
-PRICES, read from Anthropic's pricing page on PRICES_READ. The run stops before
-the next call once --max-cost (USD) has been spent.
+PRICES, read from Anthropic's pricing page on PRICES_READ. Before the first call
+the run prints what it expects to cost, and the most it could (estimate()); it
+stops before the next call once --max-cost (USD) has been spent.
 
 ── the credentials ──────────────────────────────────────────────────────────
 No API key. In GitHub Actions the job asks GitHub for an OIDC token and
@@ -49,6 +58,10 @@ ANTHROPIC_WORKSPACE_ID; the GitHub side, ACTIONS_ID_TOKEN_REQUEST_URL and
 ACTIONS_ID_TOKEN_REQUEST_TOKEN, which a job with id-token: write has.
 
 ── what it writes ───────────────────────────────────────────────────────────
+Without --dry-run the translations are also written into docs/ and i18n/ of
+the repository, for translate.yml to commit and open a pull request with, and
+--out gets pr-body.md, the report without the texts, and summary.json.
+
 With --dry-run, nothing in docs/ or i18n/: everything goes to --out —
 docs/<lang>/<page>.md and i18n/<lang>.yml for what was translated or carried
 over unchanged, report.md, and calls.json. --existing DIR lays the
@@ -56,7 +69,7 @@ translations of an earlier dry run (its --out) over the repository first, so
 a second run skips what the first translated.
 
     usage: tools/translate.py --langs it,de,es --pages index,start,why,about,contact
-                              --out DIR --dry-run [--existing DIR] [--max-cost 5]
+                              --out DIR [--dry-run] [--existing DIR] [--max-cost 12]
            tools/translate.py --selftest
 
 --selftest makes no network call: a fake model and, where it needs one, a fake
@@ -100,7 +113,7 @@ FALLBACK_BETA = "server-side-fallback-2026-07-01"
 PRICES = {"claude-opus-5": (5.0, 25.0), "claude-opus-4-8": (5.0, 25.0)}
 PRICES_READ = "2026-09-17"
 
-DEFAULT_MAX_COST = 5.0
+DEFAULT_MAX_COST = 12.0
 REFRESH_MARGIN = 120
 MAX_TOKENS = 64000
 
@@ -266,7 +279,17 @@ Write as a careful technical writer whose first language is {LANGUAGE_NAMES[lang
 - Leave exactly as written: code spans and code blocks, commands, program output, URLs and link targets, HTML tags and attributes, HTML entities' meaning, Markdown structure, numbers (a decimal point stays a point: 0.88, never 0,88), and headings with their level — translate a heading's words, keep its number of # signs and its place.
 - Leave these terms in English, exactly as written, wherever the English uses them: {", ".join(words["keep"])}.
 - Leave these names exactly as written: the commands digline {", digline ".join(names["commands"])}; the checks {", ".join(names["checks"])}; the packages {", ".join(names["packages"])}; the frameworks {", ".join(names["frameworks"])}.
-- Never use these words: {", ".join(words["forbidden"].get(lang, [])) or "(none)"}."""
+- Never use these words: {", ".join(words["forbidden"].get(lang, [])) or "(none)"}.
+- Write idiomatic {LANGUAGE_NAMES[lang]}, never a calque: do not carry English syntax, idioms or collocations across word for word. Say what a native technical writer would say in their place.
+- Keep the strength of every quantified or hedged statement: "most" is the majority, not "almost all"; "some", "often", "rarely", "about", "may" keep exactly their force.{CALQUES.get(lang, "")}"""
+
+
+# Calques seen in Italian translations of these pages, as examples of what the
+# rule above means.
+CALQUES = {
+    "it": """
+- Calques to avoid in Italian, for example: "it is not yours to show" is not "non è tuo da mostrare" but "non puoi mostrarlo tu"; "you are sampling from it" is not "ne stai campionando" but "stai estraendo dei campioni"; "happened to it", said of a thing, is not "è successo a lui"; "catches below the line" is not "intercetta sotto la linea"; "most teams" is "la maggior parte dei team", not "quasi tutti i team".""",
+}
 
 
 PAGE_SCHEMA = {
@@ -301,14 +324,21 @@ MEANING_SCHEMA = {
             "required": ["kind", "english", "translation", "explanation"],
             "additionalProperties": False,
         }},
+        "notes": {"type": "array", "items": {
+            "type": "object",
+            "properties": {"english": {"type": "string"}, "translation": {"type": "string"},
+                           "suggestion": {"type": "string"}},
+            "required": ["english", "translation", "suggestion"],
+            "additionalProperties": False,
+        }},
     },
-    "required": ["ok", "issues"],
+    "required": ["ok", "issues", "notes"],
     "additionalProperties": False,
 }
 
 
 def page_prompt(lang: str, meta: dict, body: str, previous: dict | None, diff: str | None,
-                problems: list[str] | None, last: dict | None) -> str:
+                problems: list[str] | None, last: dict | None, review: list[dict] | None = None) -> str:
     fields = "\n".join(f"{field}: {meta[field]}" for field in TRANSLATED_FIELDS if meta.get(field))
     parts = [f"""Translate this page into {LANGUAGE_NAMES[lang]}.
 
@@ -331,6 +361,13 @@ The English Markdown:
 <english_diff>
 {diff or "(no difference in the Markdown: only the description changed)"}
 </english_diff>""")
+    if review:
+        parts.append(f"""A reviewer read your translation, below, against the English and found these errors of meaning. Correct exactly these, and change nothing else:
+{json.dumps(review, ensure_ascii=False, indent=2)}
+
+<last_answer>
+{json.dumps(last, ensure_ascii=False, indent=2)}
+</last_answer>""")
     if problems:
         parts.append(f"""Your last answer, below, did not pass the site's checks. Correct exactly these problems and change nothing else:
 {chr(10).join("- " + p for p in problems)}
@@ -378,7 +415,9 @@ An error of meaning is: a negation added, dropped or turned round; a threshold, 
 
 Not errors, and never to be reported: style, word choice, register, sentence order; English terms, commands, code and names left in English on purpose; the first person plural of the English rendered as the first person singular or impersonally (that is required); link targets with ../ in front.
 
-Return JSON {{"ok": true, "issues": []}} when there is no error of meaning; otherwise "ok": false and one issue per error, quoting the English and the translation."""
+Return JSON {{"ok": true, "issues": [], "notes": []}} when there is no error of meaning; otherwise "ok": false and one issue per error, quoting the English and the translation.
+
+Separately, in "notes", list the evident calques: a phrase carried across from English word for word, which a native writer would not write, quoting the translation and suggesting the idiomatic wording. Notes are advice: they never make "ok" false."""
 
 
 def meaning_prompt(english: str, translated: str) -> str:
@@ -417,13 +456,20 @@ class Workspace:
             shutil.rmtree(os.path.join(self.root, name), ignore_errors=True)
             shutil.copytree(os.path.join(repo, name), os.path.join(self.root, name), ignore=ignore)
         if existing:
+            # Only what the repository does not have: a translation on main (a
+            # merged one, perhaps corrected by hand) is never replaced by a run's.
             for lang in languages.LANGUAGES:
                 pages = os.path.join(existing, "docs", lang)
                 if os.path.isdir(pages):
-                    shutil.copytree(pages, os.path.join(self.root, "docs", lang), dirs_exist_ok=True)
+                    for name in os.listdir(pages):
+                        target = os.path.join(self.root, "docs", lang, name)
+                        if not os.path.exists(target):
+                            os.makedirs(os.path.dirname(target), exist_ok=True)
+                            shutil.copy(os.path.join(pages, name), target)
                 words = os.path.join(existing, "i18n", f"{lang}.yml")
-                if os.path.isfile(words):
-                    shutil.copy(words, os.path.join(self.root, "i18n", f"{lang}.yml"))
+                target = os.path.join(self.root, "i18n", f"{lang}.yml")
+                if os.path.isfile(words) and not catalog_entries(target):
+                    shutil.copy(words, target)
         self.checks = _load(os.path.join(self.root, "tools", "check-translations.py"))
 
     def path(self, *parts: str) -> str:
@@ -664,6 +710,13 @@ class Translator:
         self.outcomes.append(Outcome(lang, subject, "failed", "not written", 2, problems))
         return before is not None and not catalog_plan(root, lang)[0]
 
+    def meaning(self, lang, subject, english_body, answer) -> dict:
+        verdict = self.ask("meaning", lang, subject, 1, meaning_system(lang),
+                           meaning_prompt(english_body, answer["body"]), MEANING_SCHEMA).data
+        verdict.setdefault("issues", [])
+        verdict.setdefault("notes", [])
+        return verdict
+
     def page(self, lang: str, name: str) -> None:
         root = self.ws.root
         page = PAGE_FILES[name]
@@ -696,8 +749,27 @@ class Translator:
             problems = self.check(lang, page)
             if not problems:
                 outcome = Outcome(lang, subject, "translated", state, attempt, text=text)
-                verdict = self.ask("meaning", lang, subject, 1, meaning_system(lang),
-                                   meaning_prompt(english_body, answer["body"]), MEANING_SCHEMA).data
+                verdict = self.meaning(lang, subject, english_body, answer)
+                if not _meaning_ok(verdict):
+                    # One round of correction, with the issues; checked and read
+                    # again. What fails the checks is not kept.
+                    reply = self.ask("correction", lang, subject, 1, system,
+                                     page_prompt(lang, english_meta, english_body, previous, diff, None, answer,
+                                                 review=verdict["issues"]), PAGE_SCHEMA)
+                    corrected = page_text(root, lang, page, reply.data, reply.model)
+                    with open(path, "w", encoding="utf-8") as fh:
+                        fh.write(corrected)
+                    after = self.check(lang, page)
+                    if after:
+                        with open(path, "w", encoding="utf-8") as fh:
+                            fh.write(text)
+                        outcome.detail += "; its correction failed the checks and was not kept: " + "; ".join(after)[:300]
+                    else:
+                        outcome.text = corrected
+                        again = self.meaning(lang, subject, english_body, reply.data)
+                        again["notes"] = verdict.get("notes", []) + again.get("notes", [])
+                        verdict = again
+                        outcome.detail += "; corrected once"
                 outcome.meaning = verdict
                 self.outcomes.append(outcome)
                 return
@@ -709,10 +781,54 @@ class Translator:
         self.outcomes.append(Outcome(lang, subject, "failed", "not written", 2, problems))
 
 
+def _meaning_ok(verdict: dict) -> bool:
+    return bool(verdict.get("ok")) and not verdict.get("issues")
+
+
+# ── the estimate ─────────────────────────────────────────────────────────────
+
+# Tokens per character, and output per input, from the first run on
+# 2026-09-17 (the Italian catalog and Why): a page's translation wrote about 4.4
+# output tokens (thinking included) per token of English; the catalog, 1.65; a
+# reading of meaning, about 1,200.
+CHARS_PER_TOKEN = 3.2
+
+
+def estimate(root: str, langs: list[str], pages: list[str]) -> tuple[float, float]:
+    """(the expected cost in USD, the most it could cost with every second
+    attempt and correction), from what the plan would translate."""
+    price_in, price_out = PRICES[MODEL]
+    expected = worst = 0.0
+    for lang in langs:
+        wanted, _ = catalog_plan(root, lang)
+        if wanted:
+            tokens = len(json.dumps(wanted, ensure_ascii=False)) / CHARS_PER_TOKEN
+            cost = ((tokens + 1500) * price_in + 1.65 * tokens * price_out) / 1e6
+            expected += cost
+            worst += 2 * cost
+        for name in pages:
+            page = PAGE_FILES[name]
+            if page_plan(root, lang, page) == "unchanged":
+                continue
+            _, body = translation.read_page(os.path.join(root, "docs", page))
+            tokens = len(body) / CHARS_PER_TOKEN
+            translate = ((tokens + 1500) * price_in + (4.4 * tokens + 500) * price_out) / 1e6
+            read = ((2.3 * tokens + 800) * price_in + 1200 * price_out) / 1e6
+            expected += translate + read
+            worst += 3 * translate + 2 * read
+    return expected, worst
+
+
 # ── the report ───────────────────────────────────────────────────────────────
 
 
-def report(translator: Translator, langs, pages, dry_run: bool, started: str) -> str:
+def needs_attention(outcome: "Outcome") -> bool:
+    return outcome.meaning is not None and not _meaning_ok(outcome.meaning)
+
+
+def report(translator: Translator, langs, pages, dry_run: bool, started: str,
+           estimated: tuple[float, float] | None = None, texts: bool = True) -> str:
+    """The run in Markdown; without the texts, it is the bot's pull request body."""
     ledger = translator.ledger
     lines = [f"# Translation run, {started}", "",
              f"- Mode: {'dry run — nothing written to docs/ or i18n/' if dry_run else 'writing to docs/ and i18n/'}",
@@ -720,14 +836,18 @@ def report(translator: Translator, langs, pages, dry_run: bool, started: str) ->
              f"- Model: {MODEL}; prices {', '.join(f'{m} ${p[0]:g}/${p[1]:g} per MTok in/out' for m, p in PRICES.items())} "
              f"(Anthropic's pricing page, read {PRICES_READ})",
              f"- Spent: **{ledger.spent:.4f} USD** of a {ledger.cap:.2f} USD limit, in {len(ledger.calls)} call(s); "
-             f"{sum(c.input_tokens for c in ledger.calls)} input and {sum(c.output_tokens for c in ledger.calls)} output tokens",
-             "", "## Outcomes", "", "| Language | What | Status | Attempts | Checks | Meaning |", "|---|---|---|---|---|---|"]
+             f"{sum(c.input_tokens for c in ledger.calls)} input and {sum(c.output_tokens for c in ledger.calls)} output tokens"]
+    if estimated:
+        lines.append(f"- Estimated before the run: {estimated[0]:.2f} USD, at most {estimated[1]:.2f} with every second "
+                     "attempt and correction")
+    lines += ["", "## Outcomes", "", "| Language | What | Status | Attempts | Checks | Meaning |", "|---|---|---|---|---|---|"]
     attention = []
     for o in translator.outcomes:
         meaning = "—"
         if o.meaning is not None:
-            meaning = "ok" if o.meaning.get("ok") and not o.meaning.get("issues") else "**needs attention**"
-            if meaning != "ok":
+            meaning = "**needs attention**" if needs_attention(o) else (
+                "ok after a correction" if "corrected once" in o.detail else "ok")
+            if needs_attention(o):
                 attention.append(o)
         checks = "passed" if o.status == "translated" else ("failed: " + "; ".join(o.problems)[:300] if o.problems else "—")
         detail = f"{o.status}" + (f" ({o.detail})" if o.detail else "")
@@ -739,15 +859,22 @@ def report(translator: Translator, langs, pages, dry_run: bool, started: str) ->
             for issue in o.meaning.get("issues", []):
                 lines.append(f"- **{issue['kind']}**: {issue['explanation']}\n  - English: {issue['english']}\n"
                              f"  - Translation: {issue['translation']}")
+    noted = [o for o in translator.outcomes if o.meaning and o.meaning.get("notes")]
+    if noted:
+        lines += ["", "## Calques noted (not blocking)", ""]
+        for o in noted:
+            lines.append(f"### `{o.subject}`")
+            for note in o.meaning["notes"]:
+                lines.append(f"- {note['translation']} → {note['suggestion']}  \n  English: {note['english']}")
     lines += ["", "## Calls", "", "| Kind | Language | What | Attempt | Model | Input tokens | Output tokens | Cost (USD) |",
               "|---|---|---|---|---|---|---|---|"]
     for c in ledger.calls:
         lines.append(f"| {c.kind} | {c.lang} | `{c.subject}` | {c.attempt} | {c.model} | {c.input_tokens} | "
                      f"{c.output_tokens} | {c.cost:.4f} |")
-    texts = [o for o in translator.outcomes if o.status == "translated" and o.text]
-    if texts:
+    written = [o for o in translator.outcomes if o.status == "translated" and o.text] if texts else []
+    if written:
         lines += ["", "## Texts", ""]
-        for o in texts:
+        for o in written:
             lines += [f"<details><summary><code>{o.subject}</code></summary>", "", "````markdown" if o.subject.endswith(".md") else "````yaml",
                       o.text.rstrip("\n"), "````", "", "</details>", ""]
     return "\n".join(lines) + "\n"
@@ -783,24 +910,35 @@ def main(argv: list[str]) -> int:
     wrong = [lang for lang in langs if lang not in languages.LANGUAGES] + [p for p in pages if p not in PAGE_FILES]
     if wrong:
         parser.error(f"not a language or a page: {', '.join(wrong)}")
-    if not args.dry_run:
-        parser.error("only --dry-run for now: the translations are not published yet")
     started = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime())
     workspace = Workspace(ROOT, args.existing)
+    estimated = estimate(workspace.root, langs, pages)
+    print(f"translate: estimated cost {estimated[0]:.2f} USD, at most {estimated[1]:.2f} with every second attempt "
+          f"and correction; the limit is {args.max_cost:.2f} USD", flush=True)
     translator = Translator(Claude(FederatedToken()), Ledger(args.max_cost), workspace)
     try:
         translator.run(langs, pages)
         os.makedirs(args.out, exist_ok=True)
         write_out(translator, args.out)
-        text = report(translator, langs, pages, True, started)
+        if not args.dry_run:
+            # The translations into the repository, for the bot's pull request.
+            write_out(translator, ROOT)
+        text = report(translator, langs, pages, args.dry_run, started, estimated)
         with open(os.path.join(args.out, "report.md"), "w", encoding="utf-8") as fh:
             fh.write(text)
+        with open(os.path.join(args.out, "pr-body.md"), "w", encoding="utf-8") as fh:
+            fh.write(report(translator, langs, pages, args.dry_run, started, estimated, texts=False)
+                     + "\n🤖 Opened by tools/translate.py (.github/workflows/translate.yml).\n")
         with open(os.path.join(args.out, "calls.json"), "w", encoding="utf-8") as fh:
             json.dump([dataclasses.asdict(c) for c in translator.ledger.calls], fh, indent=2)
         print(text)
     finally:
         workspace.close()
     failed = [o for o in translator.outcomes if o.status in ("failed", "stopped")]
+    with open(os.path.join(args.out, "summary.json"), "w", encoding="utf-8") as fh:
+        json.dump({"failed": len(failed), "needs_attention": sum(needs_attention(o) for o in translator.outcomes),
+                   "translated": sum(o.status == "translated" for o in translator.outcomes),
+                   "spent": round(translator.ledger.spent, 4)}, fh)
     return 1 if failed else 0
 
 
@@ -826,9 +964,12 @@ def _english_entries(prompt: str) -> list[dict]:
     return json.loads(block)
 
 
-def _fake_answer(root: str, lang: str, meaning_ok: bool = True):
+def _fake_answer(root: str, lang: str, meaning_ok=True):
     """A fake model that translates the way the fixtures do: the catalog as it
-    is, a page pseudo-translated, and a meaning check that says what it is told."""
+    is, a page pseudo-translated, and a meaning check that says what it is told
+    — a boolean, or a list of booleans, one reading after another."""
+    readings = list(meaning_ok) if isinstance(meaning_ok, (list, tuple)) else None
+
     def answer(system, prompt, schema):
         if schema is CATALOG_SCHEMA:
             return {"entries": [{"key": e["key"], "text": e.get("text", ""), "one": e.get("one", ""),
@@ -837,10 +978,14 @@ def _fake_answer(root: str, lang: str, meaning_ok: bool = True):
             body = re.search(r"<english>\n(.*?)\n</english>", prompt, re.S).group(1)
             meta = dict(re.findall(r"^(title|seo_title|description|kicker|accent): (.*)$",
                                    prompt.split("<english>")[0], re.M))
+            corrected = "\n\nCorrected." if "A reviewer read your translation" in prompt else ""
             return {field: meta.get(field, "") for field in TRANSLATED_FIELDS} | {
-                "body": translation.pseudo_translate(body, lang, root).replace("](../", "](")}
-        return {"ok": meaning_ok, "issues": [] if meaning_ok else [
-            {"kind": "negation", "english": "does not", "translation": "does", "explanation": "a negation dropped"}]}
+                "body": translation.pseudo_translate(body, lang, root).replace("](../", "](") + corrected}
+        ok = readings.pop(0) if readings is not None else meaning_ok
+        return {"ok": ok, "issues": [] if ok else [
+            {"kind": "negation", "english": "does not", "translation": "does", "explanation": "a negation dropped"}],
+                "notes": [{"english": "is not yours to show", "translation": "non è tuo da mostrare",
+                           "suggestion": "non puoi mostrarlo tu"}]}
     return answer
 
 
@@ -862,6 +1007,10 @@ def selftest() -> int:
     expect("the rules: the address, the voice, the decimal point, the glossary, the names, the forbidden words",
            all(s in system for s in ('the informal "du"', '"wir"', "0.88, never 0,88", "noise floor", "digline compare",
                                      "LangChain", "digline-openai", "Basislinie")), True)
+    expect("the rules: idiomatic, no calques, quantifiers at their strength, Italian examples",
+           ("never a calque" in rules("es", ROOT), '"most" is the majority' in rules("de", ROOT),
+            "non puoi mostrarlo tu" in rules("it", ROOT), "non puoi mostrarlo tu" in rules("de", ROOT)),
+           (True, True, True, False))
     expect("the rules in Italian address the reader with tu, and never noi",
            ('the informal "tu"' in rules("it", ROOT), '"noi"' in rules("it", ROOT)), (True, True))
     english_meta, english_body = translation.read_page(os.path.join(ROOT, "docs", "why.md"))
@@ -961,13 +1110,49 @@ def selftest() -> int:
         fake = FakeModel(_fake_answer(root, "it", meaning_ok=False))
         translator = Translator(fake, Ledger(5.0), workspace, check=lambda lang, page: [])
         translator.page("it", "contact")
-        text = report(translator, ["it"], ["contact"], True, "2026-09-17 12:00 UTC")
-        wanted = ("| it | `docs/it/contact.md` | translated (new) | 1 | passed | **needs attention** |",
-                  "## Needs attention", "a negation dropped",
+        expect("an error of meaning that stays: corrected once, read again, still needs attention",
+               ([c.kind for c in translator.ledger.calls], needs_attention(translator.outcomes[-1]),
+                "a negation dropped" in fake.prompts[2][1]),
+               (["page", "meaning", "correction", "meaning"], True, True))
+        text = report(translator, ["it"], ["contact"], True, "2026-09-17 12:00 UTC", (0.5, 1.2))
+        wanted = ("| it | `docs/it/contact.md` | translated (new; corrected once) | 1 | passed | **needs attention** |",
+                  "## Needs attention", "a negation dropped", "## Calques noted (not blocking)",
+                  "non è tuo da mostrare → non puoi mostrarlo tu",
                   "| page | it | `docs/it/contact.md` | 1 | claude-opus-5 | 1000 | 500 | 0.0175 |",
-                  "Spent: **0.0350 USD**", "## Texts", "<code>docs/it/contact.md</code>")
-        expect("the report: outcome, needs attention, calls, cost, the text",
+                  "| correction | it | `docs/it/contact.md` | 1 |", "Spent: **0.0700 USD**",
+                  "Estimated before the run: 0.50 USD, at most 1.20", "## Texts", "<code>docs/it/contact.md</code>")
+        expect("the report: outcome, needs attention, calques, calls, cost, estimate, the text",
                [w for w in wanted if w not in text], [])
+        body = report(translator, ["it"], ["contact"], False, "2026-09-17 12:00 UTC", (0.5, 1.2), texts=False)
+        expect("the pull request's body: the same report without the texts",
+               ("## Texts" in body, "## Needs attention" in body, "writing to docs/ and i18n/" in body), (False, True, True))
+
+        # The correction that works: an error of meaning found, corrected, read again, ok.
+        os.remove(os.path.join(root, "docs", "it", "contact.md"))
+        fake = FakeModel(_fake_answer(root, "it", meaning_ok=[False, True]))
+        translator = Translator(fake, Ledger(5.0), workspace, check=lambda lang, page: [])
+        translator.page("it", "contact")
+        text = report(translator, ["it"], ["contact"], True, "2026-09-17 12:00 UTC")
+        expect("an error of meaning corrected: ok after a correction, not needing attention",
+               (needs_attention(translator.outcomes[-1]), "ok after a correction" in text), (False, True))
+
+        # The correction that fails the checks is not kept.
+        os.remove(os.path.join(root, "docs", "it", "contact.md"))
+        checks = iter([[], ["structure — block 3 is 'p', and the original's is 'li'"]])
+        fake = FakeModel(_fake_answer(root, "it", meaning_ok=False))
+        translator = Translator(fake, Ledger(5.0), workspace, check=lambda lang, page: next(checks))
+        translator.page("it", "contact")
+        first_text = translator.outcomes[-1].text
+        with open(os.path.join(root, "docs", "it", "contact.md"), encoding="utf-8") as fh:
+            on_disk = fh.read()
+        expect("a correction failing the checks: not kept, the checked translation stays, needs attention",
+               (on_disk == first_text and "Corrected." not in on_disk, needs_attention(translator.outcomes[-1]),
+                "its correction failed the checks" in translator.outcomes[-1].detail), (True, True, True))
+
+        # The estimate, and a run's output never replacing what the repository has.
+        expected, worst = estimate(root, ["it"], ["start", "why"])
+        expect("the estimate: something to pay for pages to translate, more at most", (0 < expected < worst), True)
+        expect("the estimate: nothing for what is up to date", estimate(root, ["it"], ["about"]), (0.0, 0.0))
     finally:
         workspace.close()
 
@@ -998,6 +1183,8 @@ def selftest() -> int:
             expect("written out: the catalog and the page", sorted(
                 os.path.relpath(os.path.join(d, n), out) for d, _, ns in os.walk(out) for n in ns),
                 ["docs/it/why.md", "i18n/it.yml"])
+            with open(os.path.join(out, "docs", "it", "why.md"), "a", encoding="utf-8") as fh:
+                fh.write("\nA line only the run's output has.\n")
             second = Workspace(ROOT, out)
             try:
                 again = FakeModel(_fake_answer(second.root, "it"))

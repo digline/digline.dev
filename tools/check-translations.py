@@ -20,6 +20,9 @@ of its English original as they were built, and fails when
      the same numbers, as many times each. 0.88 stays 0.88: a decimal comma is
      another number, and nothing is normalized;
   d) headings: the levels of h1–h6, in order, are not the same;
+  h) structure: the blocks of the content — every p, li, blockquote, hr, pre,
+     table and heading, in order — are not the same sequence: a paragraph
+     merged into the next, or split, or written twice, or dropped;
   e) the glossary, tools/i18n/glossary.yml: a term to keep that the original
      shows is not in the translation, or the translation uses one of its
      language's forbidden words outside code (tools/translation.py);
@@ -38,7 +41,11 @@ of its English original as they were built, and fails when
 
 It also says, for every translation, whether its original has changed since it
 was translated (tools/translation.py, status()), and that is never a failure:
-the English site must stay free to change. The exit status is 0 then.
+the English site must stay free to change. The exit status is 0 then. A
+translation whose original has changed is not compared with it (a–e, h): it was
+checked against the English it was made from, and the English it would be held
+to now is another text. It is reported, its notice must say it is behind, and
+the agent translates it again.
 
     usage: tools/check-translations.py site [--root DIR]
            tools/check-translations.py --fixed-digest [--root DIR]
@@ -94,6 +101,8 @@ BLOCK = {"p", "li", "ul", "ol", "dl", "dt", "dd", "div", "section", "header", "f
          "figure", "figcaption", "blockquote", "table", "tr", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6",
          "pre", "br", "nav", "main"}
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
+# The blocks h) compares, in the order the page has them.
+STRUCTURE = {"p", "li", "blockquote", "hr", "pre", "table"} | HEADINGS
 NUMBER = re.compile(r"\d+(?:\.\d+)*")
 
 
@@ -114,6 +123,7 @@ class Main(HTMLParser):
         self.code_texts: list[tuple[str, str]] = []
         self.hrefs: list[str] = []
         self.headings: list[str] = []
+        self.blocks: list[str] = []
         self.prose: list[str] = []
         self.everything: list[str] = []
         self.notice = False
@@ -155,6 +165,8 @@ class Main(HTMLParser):
             self.buffer.append("\n")
         if tag in HEADINGS:
             self.headings.append(tag)
+        if tag in STRUCTURE and not self.pre:
+            self.blocks.append(tag)
         if tag == "a" and "href" in attrs and "headerlink" not in (attrs.get("class") or "").split():
             self.hrefs.append(attrs["href"])
         elif tag == "a" and "href" in attrs:
@@ -395,6 +407,9 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
         if DISCLAIMER_REQUIRED:
             problems += notice_problems(page, here, src_uri, meta, lang, stale, root)
             counted["notices"] += page.notices
+        if stale:
+            counted["behind"] += 1
+            continue
 
         # a) code
         problem = _sequence_problem(here, "code", english.code_texts, page.code_texts)
@@ -417,6 +432,12 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
             problems.append(f"{here}: numbers differ from the original's — missing {sorted(lost.elements()) or 'none'}, "
                             f"not in the original {sorted(added.elements()) or 'none'}")
         counted["numbers"] += sum(numbers.values())
+
+        # h) structure
+        problem = _sequence_problem(here, "block", english.blocks, page.blocks)
+        if problem:
+            problems.append(problem.replace(": block ", ": structure — block ", 1).replace(" block(s)", " block(s) of structure"))
+        counted["blocks"] += len(english.blocks)
 
         # d) headings
         problem = _sequence_problem(here, "heading", english.headings, page.headings)
@@ -467,8 +488,9 @@ def main(argv: list[str]) -> int:
     else:
         print(f"translations: {counted['translations']} translation(s) against their originals — "
               f"{counted['code']} code, {counted['links']} links, {counted['numbers']} numbers, "
-              f"{counted['headings']} headings, {counted['kept']} kept terms, the same; "
-              f"{counted['notices']} notice(s) right; {len(changed)} original(s) changed since translated")
+              f"{counted['headings']} headings, {counted['blocks']} blocks, {counted['kept']} kept terms, the same; "
+              f"{counted['notices']} notice(s) right; {len(changed)} original(s) changed since translated, "
+              f"{counted['behind']} translation(s) not compared with an original they were not made from")
     return 0
 
 
@@ -500,7 +522,7 @@ def selftest() -> int:
         problems, changed, counted = check(site, root)
         if problems or changed:
             failures.append(f"the fixture's translations were refused or reported changed: {problems} {changed}")
-        for what in ("translations", "code", "links", "numbers", "headings", "kept"):
+        for what in ("translations", "code", "links", "numbers", "headings", "blocks", "kept"):
             if not counted[what]:
                 failures.append(f"the fixture counted no {what}: a check that reads nothing passes anything")
         print(f"translations selftest: the fixture passes — {dict(counted)}")
@@ -539,6 +561,16 @@ def selftest() -> int:
             ("c) a decimal point made a comma", why, first_in_main(r"0\.91", "0,91"), "numbers differ"),
             ("c) a number dropped", why, first_in_main(r"(<p[^>]*>[^<]*?)\b4\b", r"\1four"), "numbers differ"),
             ("d) a heading one level down", why, first_in_main(r"<h2([^>]*)>(.*?)</h2>", r"<h3\1>\2</h3>"), "heading "),
+            ("h) two paragraphs merged into one", why,
+             first_in_main(r"(<article class=\"essay\">.*?<p>(?:(?!</p>).)*)</p>\s*<p>", r"\1 "), "structure"),
+            ("h) a paragraph written twice, further on", why,
+             lambda html: (lambda m: html[:m.end()] + html[m.end():].replace("<hr", m.group(0) + "\n<hr", 1))(
+                 re.search(r"<article class=\"essay\">\s*(<p>.*?</p>)", html, re.S)),
+             "structure"),
+            ("h) the last line written twice", why,
+             lambda html: (lambda last: html.replace(last, last + "\n" + last, 1))(
+                 re.findall(r"<p>[^\n]*?</p>(?=\s*</article>)", html, re.S)[-1]),
+             "structure"),
             ("e) baseline translated wherever the home shows it", "site/it/index.html",
              lambda html: html[:html.index("<main")] + re.sub(r"(?i)(?<![\w-])baseline(?![\w-])",
                                                               "riferimento approvato", html[html.index("<main"):]),
@@ -681,7 +713,7 @@ def selftest() -> int:
     if failures:
         return 1
     print(f"translations selftest: the fixture's {counted['translations']} translations pass, each with its notice; "
-          f"{len(planted) + len(notice_planted)} planted failures across a) to g) refused; a changed original "
+          f"{len(planted) + len(notice_planted)} planted failures across a) to h) refused; a changed original "
           "reported, not refused, and shown stale on its translations")
     return 0
 
