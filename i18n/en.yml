@@ -1,0 +1,294 @@
+# The words the site writes itself, in English: the original.
+#
+# Read by the `t` filter in overrides/ and by t() in tools/hooks/home.py; the
+# format, the plurals and the placeholders are described at the top of
+# tools/catalog.py. The build fails on a key the templates or the hooks name
+# and this file does not have, and on a key here that nothing names
+# (tools/hooks/i18n.py).
+#
+# Values are HTML as the templates wrote it: entities stay entities, and a value
+# that ran over several lines keeps its line breaks and their indentation.
+# Values are quoted, so that YAML never reads a word as something else.
+
+# Numbers in words, for {number} and {Number} in a plural. Past twenty, digits.
+numbers:
+  1: "one"
+  2: "two"
+  3: "three"
+  4: "four"
+  5: "five"
+  6: "six"
+  7: "seven"
+  8: "eight"
+  9: "nine"
+  10: "ten"
+  11: "eleven"
+  12: "twelve"
+  13: "thirteen"
+  14: "fourteen"
+  15: "fifteen"
+  16: "sixteen"
+  17: "seventeen"
+  18: "eighteen"
+  19: "nineteen"
+  20: "twenty"
+
+# overrides/partials/header.html — the bar, on every page.
+bar:
+  drawer_title: "Navigation"
+  sections_label: "Sections"
+  start: "Start here"
+  why: "Why"
+  agents: "Agents"
+  handbook: "Handbook"
+  docs: "Docs"
+  writing: "Writing"
+  search_title: "Search"
+  github: "digline on GitHub"
+  palette: "Switch between light and dark"
+
+# overrides/partials/footer.html — the band at the foot of every page.
+footer:
+  columns:
+    product: "Product"
+    docs: "Docs"
+    contact: "Contact"
+  links:
+    install: "Install"
+    changelog: "Changelog"
+    why: "Why"
+    comparison: "Comparison"
+    agents: "For agents"
+    guide: "Guide"
+    metrics: "Metrics"
+    reference: "Reference"
+    examples: "Examples"
+    writing: "Writing"
+  line: "Apache-2.0 · Made in Italy, maintained in the open"
+  meta:
+    label: "This site"
+    about: "About"
+    contact: "Contact"
+
+# overrides/partials/closing.html — the closing band of the home, Why and Start here.
+closing:
+  title: "Start with one suite and"
+  title_accent: "one approved run."
+  lede: "The guide needs no key."
+  links:
+    why: "why a hash wasn&rsquo;t enough &rarr;"
+    guide: "see it on your own suite &rarr;"
+    agents: "what an agent can and cannot do &rarr;"
+    comparison: "how it differs from the tools you know &rarr;"
+  copy: "Copy"
+  copied: "Copied"
+
+# overrides/404.html
+not_found:
+  title: "404 - Not found"
+
+# overrides/home.html, and the words tools/hooks/home.py puts into it.
+home:
+  hero:
+    license: "Open source, Apache-2.0"
+    version: "v{version}"
+    version_pre_1_0: "v{version}, pre-1.0"
+    title: "You changed one&nbsp;prompt."
+    title_quiet: "What else got worse?"
+    lede: "A new prompt, a model version, a library upgrade. The app still runs, and one answer your client relied on is now wrong. digline tells you which case, by how much, and whether the drop is bigger than the judge&rsquo;s own noise."
+    requires: "Requires Python {python}"
+    start: "Start here"
+    why: "Why a reference in the repo"
+    facts:
+      no_key: "Quickstart needs no API key"
+      no_server: "No server, no telemetry"
+      exit_code: "Exit code for CI"
+
+  # The interpreter range, when digline declares a lower bound (home.py).
+  python:
+    or_newer: "{version} or newer"
+
+  verdict:
+    got_worse: "got worse"
+    scale_ref: "ref {score}"
+    scale_run: "run {score}"
+    also_worse: "Also worse"
+    diff_head: "{path} · +{added} −{removed} lines, changed since the reference"
+    exit:
+      one: "{count} check got worse. CI stops here."
+      other: "{count} checks got worse. CI stops here."
+    # {run}: the run id, shortened; {source}: the link to home.json.
+    caption:
+      one: "Canned model and judge, {count} sample per case: judge noise is not measured in this demo. Captured with digline {version}, run {run} · {source}"
+      other: "Canned model and judge, {count} samples per case: judge noise is not measured in this demo. Captured with digline {version}, run {run} · {source}"
+    caption_unsampled: "Canned model and judge: judge noise is not measured in this demo. Captured with digline {version}, run {run} · {source}"
+
+  problem:
+    kicker: "The problem"
+    title: "An LLM app can get worse"
+    title_accent: "without anything breaking."
+    intro: "The tests pass, the app answers, the demo works. Then a prompt edit, a model version or a library upgrade changes one answer your client depended on, and nothing in the pipeline says so."
+    usually: "How it usually goes"
+    usually_items:
+      average: "Re-run the evals and look at the average"
+      bad_day: "No way to tell a real drop from the judge having a bad day"
+      notebook: "What was approved, and when, lives in someone&rsquo;s notebook"
+      client: "The client finds the regression first"
+    with_reference: "With an approved reference in the repo"
+    with_reference_items:
+      compared: "Every change is compared case by case"
+      noise: "The judge&rsquo;s noise is measured before a drop is called"
+      file: "The reference is a file in a PR, with a commit and a name on it"
+      ci: "CI stops before the release does"
+
+  fits:
+    kicker: "How it fits"
+    title: "It lives in your repo,"
+    title_accent: "not on a server."
+    intro: "Nothing to sign up for and nothing to host. The reference is a file, and the tool is a package."
+    reference_title: "The reference is a file in your repo"
+    reference_text: "Scores, prompt and model config, committed next to the code. It changes through a PR, so there is a commit and a name on every approval."
+    # home.py
+    dependencies:
+      one: "{Number} dependency"
+      other: "{Number} dependencies"
+    dependencies_title: "{dependencies}, no provider SDK"
+    # {names}: each dependency's name, in code.
+    dependencies_text: "digline installs {names} and nothing else of its own. No server, no telemetry, nothing hosted. In CI the exit code is the whole interface."
+
+  stack:
+    providers_title: "Providers"
+    providers_text: "One plugin each, installed only if you use it."
+    # home.py: after a provider's package, when it reaches other endpoints too.
+    openai_compatible: "and any OpenAI-compatible endpoint"
+    examples_title: "Worked examples"
+    examples_text: "A real app on each framework, with its suite."
+    run_title: "Other ways to run it"
+    run_text: "In a container, or for an agent."
+    # home.py: the rows of "Other ways to run it".
+    docker: "Docker image"
+    mcp: "MCP server"
+
+  commands:
+    kicker: "Commands"
+    # home.py
+    count:
+      one: "{Number} command"
+      other: "{Number} commands"
+    title: "{commands},"
+    title_accent: "one job each."
+    intro: "Every command has its own page or a place in the guide."
+    # home.py, COMMAND_GROUPS: the legend on the home and the groups under
+    # Commands in the documentation's sidebar.
+    groups:
+      record: "Record and approve"
+      compare: "Compare"
+      history: "History"
+      maintenance: "Maintenance"
+
+  checks:
+    kicker: "Checks"
+    title: "Deterministic first,"
+    title_accent: "judge last."
+    count:
+      one: "{count} check"
+      other: "{count} checks"
+    # home.py
+    kind_count:
+      one: "{number} kind"
+      other: "{number} kinds"
+    intro: "{checks} today, in {kinds}. The list grows; the kinds stay."
+    # home.py, CHECK_KINDS
+    kinds:
+      deterministic:
+        label: "Deterministic"
+        description: "No model involved. Same output, same verdict."
+      judged:
+        label: "Judged"
+        description: "A second model scores the answer, and its noise is measured."
+      budget:
+        label: "Budgets"
+        description: "A ceiling on cost or latency, scored graded rather than pass/fail."
+      aggregate:
+        label: "Aggregates"
+        description: "One verdict over the whole run."
+      wrapper:
+        label: "Wrappers"
+        description: "Takes the nature of the check it wraps."
+
+  readings:
+    kicker: "Without a reference, and with one"
+    title: "The same eval run,"
+    title_accent: "read two ways."
+    intro: "One line of the prompt changed between two runs. On the left, the scores you get without a reference. On the right, what digline prints against the approved one."
+    alone_head: "The new run on its own"
+    alone_tag: "no reference"
+    # Inside the output, as .out__note lines.
+    were_these_score: "Were these {score} yesterday? Did anything change?"
+    were_these_better: "Were these better yesterday? Did anything change?"
+    nothing_says: "Nothing here says."
+    alone_tags:
+      no_baseline: "no baseline"
+      no_change: "no change on record"
+      no_exit: "no exit code"
+    compare_tag: "against the reference"
+    compare_tags:
+      named: "each check named"
+      prompt: "prompt change detected"
+    # home.py: where the compare output is shortened, as a .out__note line.
+    more_lines:
+      one: "… {count} more line"
+      other: "… {count} more lines"
+    note: "Both columns come from the same captured run, digline {version}. The left one shows only the new scores; the right one is the compare output, shortened where marked."
+
+  try:
+    kicker: "Try it"
+    title: "The quickstart runs"
+    title_accent: "without an API key."
+    intro: "You need Python {python}. The model call in the guide is canned, so you can see the whole loop before wiring a real provider."
+    steps:
+      run: "Runs the suite and writes a run file."
+      promote: "A person approves that run as the reference."
+      compare: "Every later run is checked against it."
+    you_type: "you type"
+    digline_prints: "digline prints"
+    # {run}: the run id, shortened; {guide}: the link to the guide.
+    note: "Output captured from digline {version}, run {run}. {guide}"
+    full_guide: "Full guide"
+
+  flow:
+    kicker: "In an agentic flow"
+    title: "Where the check sits"
+    title_accent: "when an agent is making the changes."
+    intro: "The agent edits, digline decides whether the edit can go further."
+    alt: "Animated diagram of digline in an agentic flow: an agent's output passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent reaches for promote, the server answers that no such tool exists."
+
+  roadmap:
+    kicker: "Roadmap"
+    title: "Where it&rsquo;s"
+    title_accent: "headed"
+    shipped_label: "Shipped &mdash; verdict credibility:"
+    shipped_text: |-
+      a drop is a regression only when
+        it leaves the interval the baseline measured across its own samples, and the
+        open work now is adoption.
+    never_label: "Two things will never be on the roadmap."
+    never_text: |-
+      A hosted service that
+        receives your payloads &mdash; prompts, outputs and the judge stay in your
+        perimeter. And usage data collection, ever.
+    more: |-
+      the whole
+        roadmap, tracks and gates rather than dates &rarr;
+
+  pilots:
+    kicker: "Pilots"
+    title: "Building LLM features"
+    title_accent: "for clients?"
+    body: |-
+      I&rsquo;m looking for a few pilot teams to run digline on
+        real projects &mdash; especially teams that build and maintain AI solutions for
+        third parties. In exchange you get direct support and a say in what gets built
+        next.
+    write_me: "Write me:"
+    issue: "or open a GitHub issue"

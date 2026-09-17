@@ -61,6 +61,13 @@ One variable, ``home``, and only on the page whose source is ``index.md``. See
 ``compute()`` for its shape, and ``grids()`` for its ``commands`` and
 ``checks``.
 
+── the words ────────────────────────────────────────────────────────────────
+The words this hook puts on the page — "Twelve commands", a group's label, a
+kind's description, "3.12 or newer", "… 4 more lines" — are keys in
+i18n/en.yml, read with ``t()`` from tools/catalog.py, the function the
+templates' `t` filter is. Nothing here spells a word of the page or decides a
+plural: the catalog does.
+
     usage: tools/hooks/home.py --selftest
 """
 
@@ -70,10 +77,13 @@ import json
 import os
 import re
 import sys
-from html import escape as html_escape, unescape as html_unescape
+from html import unescape as html_unescape
 from typing import Any
 
 from mkdocs.exceptions import PluginError
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from catalog import t  # noqa: E402  the site's words: i18n/en.yml
 
 # Where sync-docs.sh puts the two files, under docs_dir.
 HOME_JSON = "product/assets/home/home.json"
@@ -97,31 +107,27 @@ _RUN_SHORT = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{6}")
 SCORE_LO = 0.0
 SCORE_HI = 1.0
 
-_WORDS = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
-          7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven",
-          12: "Twelve", 13: "Thirteen", 14: "Fourteen", 15: "Fifteen",
-          16: "Sixteen", 17: "Seventeen", 18: "Eighteen", 19: "Nineteen",
-          20: "Twenty"}
-
 # How the home groups digline's commands: a choice this site makes, not
 # something digline declares. Every command home.json lists must be in exactly
 # one group, and every name here must be a command home.json lists, so a
 # command added or removed in digline stops the build here until it is placed.
+# The label is the legend on the home and the group's title under Commands in
+# the documentation's sidebar (split_commands).
 COMMAND_GROUPS = (
-    ("record", "Record and approve", ("run", "promote")),
-    ("compare", "Compare", ("compare", "diff", "explain", "report")),
-    ("history", "History", ("list", "log", "register", "view")),
-    ("maintenance", "Maintenance", ("rejudge", "migrate")),
+    ("record", t("home.commands.groups.record"), ("run", "promote")),
+    ("compare", t("home.commands.groups.compare"), ("compare", "diff", "explain", "report")),
+    ("history", t("home.commands.groups.history"), ("list", "log", "register", "view")),
+    ("maintenance", t("home.commands.groups.maintenance"), ("rejudge", "migrate")),
 )
 
 # The kinds a check declares (digline's `KIND`), in the order the home shows
 # them, with the words it shows them with. An unknown kind stops the build.
 CHECK_KINDS = (
-    ("deterministic", "Deterministic", "No model involved. Same output, same verdict."),
-    ("judged", "Judged", "A second model scores the answer, and its noise is measured."),
-    ("budget", "Budgets", "A ceiling on cost or latency, scored graded rather than pass/fail."),
-    ("aggregate", "Aggregates", "One verdict over the whole run."),
-    ("wrapper", "Wrappers", "Takes the nature of the check it wraps."),
+    ("deterministic", t("home.checks.kinds.deterministic.label"), t("home.checks.kinds.deterministic.description")),
+    ("judged", t("home.checks.kinds.judged.label"), t("home.checks.kinds.judged.description")),
+    ("budget", t("home.checks.kinds.budget.label"), t("home.checks.kinds.budget.description")),
+    ("aggregate", t("home.checks.kinds.aggregate.label"), t("home.checks.kinds.aggregate.description")),
+    ("wrapper", t("home.checks.kinds.wrapper.label"), t("home.checks.kinds.wrapper.description")),
 )
 
 # The stack band under "How it fits": which providers, examples and other ways
@@ -138,7 +144,7 @@ CHECK_KINDS = (
 # vLLM judges its own runs."
 STACK_PROVIDERS = (
     ("Anthropic", "digline-anthropic", None),
-    ("OpenAI", "digline-openai", ("base_url", "and any OpenAI-compatible endpoint")),
+    ("OpenAI", "digline-openai", ("base_url", t("home.stack.openai_compatible"))),
     ("Amazon Bedrock", "digline-bedrock", None),
 )
 STACK_EXAMPLES = (
@@ -148,8 +154,8 @@ STACK_EXAMPLES = (
     ("LangChain4j", "product/examples/langchain4j.md"),
 )
 STACK_RUN = (
-    ("Docker image", "product/docker.md"),
-    ("MCP server", "product/mcp.md"),
+    (t("home.stack.docker"), "product/docker.md"),
+    (t("home.stack.mcp"), "product/mcp.md"),
 )
 
 # Where a command without a page of its own is written about, and where the
@@ -296,7 +302,7 @@ def _anchor(value: float) -> str:
 def _python_range(specifier: str) -> str:
     """">=3.12" as "3.12 or newer"; any other range as digline declares it."""
     match = re.fullmatch(r">=\s*(\d+\.\d+(?:\.\d+)?)", specifier.strip())
-    return f"{match.group(1)} or newer" if match else specifier.strip()
+    return t("home.python.or_newer", version=match.group(1)) if match else specifier.strip()
 
 
 def _short_run(run_id: str) -> str:
@@ -428,7 +434,7 @@ def compute(data: dict) -> dict[str, Any]:
             kind = "head"
         shortened.append({"kind": kind, "text": line})
     if omitted:
-        shortened.append({"kind": "more", "text": f"… {omitted} more lines"})
+        shortened.append({"kind": "more", "text": t("home.readings.more_lines", count=omitted)})
 
     suite_match = _SUITE.search(compare["cmd"])
     samples_match = _SAMPLES.search(str(regression.get("band", "")))
@@ -438,7 +444,6 @@ def compute(data: dict) -> dict[str, Any]:
 
     names = list(data["runtime_dependencies"]["names"])
     count = len(names)
-    dependency_word = _WORDS.get(count, str(count))
 
     major = int(version.split(".")[0])
 
@@ -451,7 +456,7 @@ def compute(data: dict) -> dict[str, Any]:
         "dependencies": {
             "names": names,
             "count": count,
-            "heading": f"{dependency_word} {'dependency' if count == 1 else 'dependencies'}",
+            "heading": t("home.fits.dependencies", count=count),
         },
         "regression": {
             "suite": suite_match.group(1) if suite_match else None,
@@ -660,12 +665,12 @@ def grids(data: dict, pages: set[str], guide_html: str, metrics_ids: set[str],
     return {
         "commands": {
             "count": count,
-            "heading": f"{_WORDS.get(count, str(count))} commands",
+            "heading": t("home.commands.count", count=count),
             "groups": groups,
         },
         "checks": {
             "total": len(checks),
-            "kinds_word": _WORDS.get(len(CHECK_KINDS), str(len(CHECK_KINDS))).lower(),
+            "kinds_text": t("home.checks.kind_count", count=len(CHECK_KINDS)),
             "kinds": kind_groups,
         },
     }
@@ -737,15 +742,16 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str
             if not any(re.search(written, s) and re.search(rf"(?<![\w-]){re.escape(parameter)}(?![\w-])", s)
                        for s in sentences):
                 raise _fail_site(
-                    f"the stack band says `{package}` works with {also.removeprefix('and ')}, and no "
+                    f"the stack band says `{package}` “{also}”, and no "
                     f"sentence under product/ names `{package}` together with `{parameter}`, the "
                     "parameter that points it at another address."
                 )
             row["also"] = also
             # A hyphenated word ("OpenAI-compatible") is kept whole: a column
             # a third of the page wide would otherwise break it at the hyphen.
+            # The catalog's words are HTML already, and are not escaped again.
             row["also_html"] = re.sub(r"\S+-\S+", lambda m: f'<span class="stackrow__word">{m.group(0)}</span>',
-                                      html_escape(also))
+                                      also)
         providers.append(row)
 
     def page(source: str) -> str:
@@ -1088,7 +1094,7 @@ def selftest() -> int:
            ["deterministic", "judged", "budget", "aggregate", "wrapper"])
     expect("kind counts", [k["count"] for k in g["checks"]["kinds"]], [12, 2, 2, 4, 2])
     expect("check total", g["checks"]["total"], 22)
-    expect("kinds in words", g["checks"]["kinds_word"], "five")
+    expect("kinds in words", g["checks"]["kinds_text"], "five kinds")
     expect("a check's link", g["checks"]["kinds"][2]["checks"][0],
            {"name": "CostBudget", "href": "product/metrics/#costbudget"})
     expect("checks in alphabetical order, case aside (aggregates, which digline declares F1 first)",

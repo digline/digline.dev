@@ -19,6 +19,16 @@ and removes it when its work is merged or abandoned: `git worktree remove ../dig
 
 Why: on 16 September a branch change made outside the session moved the shared checkout back to `main` mid-task, and the next commit landed on local `main` instead of on the branch it was written for.
 
+At the end of the session, after the merge, the shared checkout's local `main` is brought level with `origin/main`: by fast-forward only, and only when the checkout is on `main`, has nothing uncommitted, and its `main` is an ancestor of `origin/main`. Otherwise it is left as it is, and the session says so.
+
+    git -C ../digline.dev fetch
+    test "$(git -C ../digline.dev branch --show-current)" = main \
+      && test -z "$(git -C ../digline.dev status --porcelain)" \
+      && git -C ../digline.dev merge-base --is-ancestor main origin/main \
+      && git -C ../digline.dev merge --ff-only origin/main
+
+Why: after PR #17 the shared checkout's `main` was five commits behind `origin/main`, so `git branch -d` refused a branch that was already merged, and whoever opened the checkout next was reading an old site.
+
 ## A page the site did not have
 
 Every page in the nav needs a description, or the build fails:

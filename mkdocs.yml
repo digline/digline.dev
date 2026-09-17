@@ -84,6 +84,11 @@ hooks:
   # templates put it on their own code. tools/check-translate.py checks the
   # result. See the file's docstring.
   - tools/hooks/notranslate.py
+  # The words the templates and home.py show, by key, from i18n/en.yml: the
+  # `t` filter, and a build that fails on a key the source names and the
+  # catalog lacks, or the catalog holds and nothing names. See the file's
+  # docstring, and tools/catalog.py for how a value is written.
+  - tools/hooks/i18n.py
   - tools/hooks/seo.py
   # llms.txt at the root, and the Markdown source of every page beside its
   # rendered form — the machine-readable side of the site. Both are derived

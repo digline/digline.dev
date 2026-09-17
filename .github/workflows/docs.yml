@@ -96,6 +96,14 @@ jobs:
         # back there to be fixed.
         run: uv run tools/hooks/opening.py --selftest
 
+      - name: Check the catalog's hook
+        # tools/hooks/i18n.py and tools/catalog.py: a catalog, a template and a
+        # hook of their own that agree pass, and t() prints plurals, numbers
+        # and placeholders as written; a key named and missing, held and
+        # unused, not written out, or passed the wrong arguments is refused.
+        # The real check runs inside the build, in on_config.
+        run: uv run tools/hooks/i18n.py --selftest
+
       - name: Check the indexes' hook
         # tools/hooks/indexes.py: the Decisions table from records of every
         # shape the real ones have, the Examples tiles and their external line,

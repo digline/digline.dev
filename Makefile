@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening indexes glyphs assets translate build check clean
+.PHONY: docs preview serve css source home opening indexes glyphs assets translate i18n build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -43,7 +43,10 @@ glyphs:          ## the glyph check against its own four-page site, refusals inc
 translate:       ## the translate="no" and lang check against its own two-page site, refusals included — needs no build
 	uv run tools/check-translate.py --selftest
 
-build: docs css source home opening indexes glyphs assets translate  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph or code a translator may rewrite fails it
+i18n:            ## the catalog's check and t() against their own catalog, template and hook, refusals included — needs no build
+	uv run tools/hooks/i18n.py --selftest
+
+build: docs css source home opening indexes glyphs assets translate i18n  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite or a catalog key named and missing, or held and unused, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site

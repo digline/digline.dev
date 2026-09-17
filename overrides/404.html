@@ -2,7 +2,8 @@
   Material's 404, with the opening band every other documentation page has. The
   404 is not a page to mkdocs, so tools/hooks/opening.py never sees it: the band
   is set here, with Material's own title and no lede, and the article under it is empty.
+  The title is a key in i18n/en.yml, printed with the `t` filter.
 -#}
 {% extends "main.html" %}
-{% set opening = {"title": "404 - Not found", "title_id": none, "lede": none, "kicker": none} %}
+{% set opening = {"title": "not_found.title" | t, "title_id": none, "lede": none, "kicker": none} %}
 {% block content %}{% endblock %}
