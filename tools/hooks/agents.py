@@ -29,6 +29,11 @@ AGENTS.md at that tag, and so must the quotation's cite — a tag typed into the
 template instead would fail as soon as the file moved to the next release
 (caption_problems).
 
+Every link to AGENTS.md on the site — the documentation copied from digline,
+whose relative and main links tools/sync-docs.sh rewrites, and the pages written
+here — must lead to AGENTS.md at the same release tag; one at main, or at any
+other ref, fails the build (agents_md_link_problems).
+
 The search index is checked too, since the page left Material's template:
 search/search_index.json must hold /agents/ with its title and its opening in
 readable text, an entry for each tile (each <h3> in a .tile of the page), and
@@ -189,6 +194,26 @@ def caption_problems(page_html: str, rule: dict) -> list[str]:
     return problems
 
 
+_AGENTS_MD = re.compile(r'href="https://github\.com/digline/digline/blob/([^/"]+)/AGENTS\.md(?:[#?][^"]*)?"')
+
+
+def agents_md_link_problems(site: str, tag: str) -> tuple[list[str], int]:
+    """Every link to AGENTS.md in site/'s pages, at a ref that is not the tag: (problems, links read)."""
+    problems: list[str] = []
+    read = 0
+    for folder, dirs, names in os.walk(site):
+        dirs.sort()
+        for name in sorted(n for n in names if n.endswith(".html")):
+            relative = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
+            with open(os.path.join(folder, name), encoding="utf-8") as fh:
+                for ref in _AGENTS_MD.findall(fh.read()):
+                    read += 1
+                    if ref != tag:
+                        problems.append(f"{relative}: a link to AGENTS.md at {ref}, and the site documents {tag} — "
+                                        "tools/sync-docs.sh leads every link to AGENTS.md to the release tag")
+    return problems, read
+
+
 def search_problems(index: dict, page_html: str) -> list[str]:
     """/agents/ in the search index as a reader of the results would see it."""
     docs = index.get("docs", [])
@@ -260,6 +285,7 @@ def on_post_build(config, **kwargs):
         page_html = fh.read()
     rule = load(_rule_path(config))
     problems = quotation_problems(page_html, rule) + caption_problems(page_html, rule)
+    problems += agents_md_link_problems(config["site_dir"], rule["tag"])[0]
     with open(os.path.join(config["site_dir"], "search", "search_index.json"), encoding="utf-8") as fh:
         problems += search_problems(json.load(fh), page_html)
     if problems:
@@ -363,6 +389,23 @@ def selftest() -> int:
            (any("the quotation is from v0.16.0" in p for p in found), any("the caption links to" in p for p in found),
             any("cite is" in p for p in found)), (True, True, True))
     expect("no caption: refused", "0 captions" in caption_problems(page, rule)[0], True)
+
+    # Links to AGENTS.md anywhere on the site: at the tag, and at nothing else.
+    with tempfile.TemporaryDirectory() as site:
+        os.makedirs(os.path.join(site, "product", "adr"))
+        def page_at(path, ref):
+            with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
+                fh.write(f'<p><a href="https://github.com/digline/digline/blob/{ref}/AGENTS.md">AGENTS.md</a></p>')
+        page_at("product/mcp.html", "v0.15.0")
+        page_at("product/adr/0011.html", "v0.15.0")
+        expect("links to AGENTS.md at the tag, in the copied pages", agents_md_link_problems(site, "v0.15.0"), ([], 2))
+        page_at("product/adr/0011.html", "main")
+        found, _ = agents_md_link_problems(site, "v0.15.0")
+        expect("a link to AGENTS.md at main after the sync: refused",
+               (len(found), "product/adr/0011.html: a link to AGENTS.md at main" in found[0]), (1, True))
+        page_at("product/adr/0011.html", "v0.14.1")
+        expect("a link to AGENTS.md at an older tag: refused",
+               "at v0.14.1, and the site documents v0.15.0" in agents_md_link_problems(site, "v0.15.0")[0][0], True)
 
     # The search index.
     tiles_html = ('<div class="tile">\n<h3 id="the-mcp-server">The MCP server</h3>'
