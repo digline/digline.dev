@@ -209,6 +209,10 @@ Every one of the five problems is visible in the data I already had. None requir
 
 Dan Luu's line is that evals are more about avoiding mistakes than following a process. I'd add one thing from the other side of the table: the machinery doesn't avoid the mistakes for you, but it does something almost as useful. It keeps the evidence. The diffs in exercise 2 survive only because the run stored the prompt text. The table in exercise 3 exists because every item ever judged is still in the file. When I finally asked the right question, the answer was already on disk.
 
+## Added after publication
+
+A reader pointed out what the five exercises have in common, which I said once in the middle and never as the lesson: every number was answering for a population nobody had named at the moment it was reported. Recall answered for the items I was shown; precision for 17 cases; accuracy for whichever run was standing; the threshold for the suite's size. The sentence I should have opened with: name the population in the same breath as the number.
+
 ---
 
 *All numbers in this post come from `.digline/` in the two repos and from `seen.json` in each; run ids are `2026-09-03T06-14-13…`, `06-18-43…`, `06-24-50…` for exercise 1, `2026-09-09T06-34-01…` and `06-51-45…` for exercise 2, `2026-09-11T15-09-23…` for exercise 4. Thread titles in exercise 4 are paraphrased; the threads are public but the point is not who wrote them.*
