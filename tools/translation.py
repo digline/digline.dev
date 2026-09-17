@@ -115,6 +115,37 @@ def commit_date(root: str, commit) -> str | None:
     return out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else None
 
 
+FIXED_HEADING = "# ── DO NOT TRANSLATE"
+
+
+def fixed_section(path: str) -> str:
+    """A catalog's do_not_translate section, as written: from its heading to the end."""
+    if not os.path.isfile(path):
+        return ""
+    with open(path, encoding="utf-8") as fh:
+        text = fh.read()
+    start = text.find(FIXED_HEADING)
+    if start < 0:
+        start = text.find(catalog.FIXED + ":")
+    return text[start:] if start >= 0 else ""
+
+
+def english_only(root: str) -> None:
+    """A copy of the repository as it was before any translation: no
+    docs/<lang>/, and each i18n/<lang>.yml its fixed section alone. The
+    selftests start from it, so they pass whether or not the repository they
+    copy has translations."""
+    import shutil
+
+    for lang in languages.LANGUAGES:
+        shutil.rmtree(os.path.join(root, "docs", lang), ignore_errors=True)
+        path = os.path.join(root, "i18n", f"{lang}.yml")
+        if os.path.isfile(path):
+            fixed = fixed_section(path)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(fixed)
+
+
 def fixed_texts(root: str) -> dict[str, dict[str, str]]:
     """Each language's fixed section, key → text; a language with no catalog is absent."""
     texts = {}

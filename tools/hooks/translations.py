@@ -392,6 +392,10 @@ def _copy_site(into: str) -> None:
         shutil.copytree(os.path.join(ROOT, name), os.path.join(into, name), ignore=ignore)
     import translation  # tools/translation.py
 
+    # The fixture's translations, and no others: whatever the repository has
+    # translated is left out of the copy.
+    translation.english_only(into)
+
     # The English site first, committed, so that each translation is stamped
     # with a commit the copy has — its notice is dated by it. On a fixed day in
     # the past, so that a notice dated today is not mistaken for one dated by
@@ -419,8 +423,7 @@ def _copy_site(into: str) -> None:
                 _merge(words, yaml.safe_load(fh))
         # What the fake catalog was translated from: every English key, as now.
         words[translation.KEYS_FIELD] = translation.nested(translation.catalog_hashes(into))
-        with open(os.path.join(ROOT, "i18n", f"{lang}.yml"), encoding="utf-8") as fh:
-            fixed = fh.read()
+        fixed = translation.fixed_section(os.path.join(into, "i18n", f"{lang}.yml"))
         with open(os.path.join(into, "i18n", f"{lang}.yml"), "w", encoding="utf-8") as fh:
             fh.write(yaml.safe_dump(words, allow_unicode=True, sort_keys=False, width=1000) + "\n" + fixed)
     subprocess.run(git + ["add", "-A"], check=True)
@@ -458,7 +461,25 @@ def selftest() -> int:
         else:
             print(f"translations selftest: refused, as it must — {label}")
 
-    # 2. The fixture, built.
+    # 2. The copy the fixture starts from holds no translation of the repository's:
+    # a translated page and a whole catalog, and what english_only leaves of them.
+    import translation  # tools/translation.py
+
+    with tempfile.TemporaryDirectory() as root:
+        os.makedirs(os.path.join(root, "docs", "it"))
+        os.makedirs(os.path.join(root, "i18n"))
+        with open(os.path.join(root, "docs", "it", "why.md"), "w", encoding="utf-8") as fh:
+            fh.write("---\nlang: it\n---\n\n# Perché\n")
+        fixed = translation.fixed_section(os.path.join(ROOT, "i18n", "it.yml"))
+        with open(os.path.join(root, "i18n", "it.yml"), "w", encoding="utf-8") as fh:
+            fh.write("bar:\n  why: Perché\n\nsource_keys:\n  bar:\n    why: 1a2b3c4d5e6f\n\n" + fixed)
+        translation.english_only(root)
+        with open(os.path.join(root, "i18n", "it.yml"), encoding="utf-8") as fh:
+            left = fh.read()
+        expect("english_only: no docs/it/, and the catalog its fixed section alone, as written",
+               (os.path.exists(os.path.join(root, "docs", "it")), left == fixed, bool(fixed.strip())), (False, True, True))
+
+    # 3. The fixture, built.
     if not os.path.isfile(os.path.join(ROOT, "docs", "product", "guide.md")):
         print("translations selftest: docs/product/ is not synced; run `make docs` first.", file=sys.stderr)
         return 1
@@ -553,7 +574,7 @@ def selftest() -> int:
                    (links(path).switches, "details.dg-lang" in html), (0, False))
         expect("the menu's script on a page with the menu", 'querySelector("details.dg-lang")' in _read(site, "why/index.html"), True)
 
-        # 3. The built site, tampered with.
+        # 4. The built site, tampered with.
         def tampered(path, change):
             original = _read(site, path)
             with open(os.path.join(site, path), "w", encoding="utf-8") as fh:
@@ -604,7 +625,7 @@ def selftest() -> int:
             else:
                 print(f"translations selftest: refused, as it must — {label}")
 
-        # 4. A translation that does not hold together stops the real build.
+        # 5. A translation that does not hold together stops the real build.
         about = os.path.join(root, "docs", "it", "about.md")
         with open(about, encoding="utf-8") as fh:
             text = fh.read()
