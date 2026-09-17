@@ -22,6 +22,9 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import languages  # noqa: E402  tools/languages.py
+
 SITE_URL = "https://digline.dev/"
 
 # Built by the theme, not pages: the same exception the sitemap check makes.
@@ -117,7 +120,12 @@ def main(site: str) -> int:
         for name in names
         if name.endswith(".html")
     }
-    missing = sorted(built - listed - NOT_PAGES)
+    # Translations are not in llms.txt, by decision: it is the index of the
+    # English site. They are left out here by their language's folder.
+    missing = sorted(page for page in built - listed - NOT_PAGES
+                     if not languages.is_translation(page))
+    for page in sorted(page for page in listed if languages.is_translation(page)):
+        errors.append(f"{page} is a translation, and llms.txt lists only the English site")
     if missing:
         errors.append("in the build but not in llms.txt: " + ", ".join(missing))
 

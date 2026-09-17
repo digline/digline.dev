@@ -11,7 +11,9 @@
 -#}
 {% set plain_page = true %}
 <!doctype html>
-<html lang="{{ config.theme.language | default('en') }}">
+{#- The page's language: its lang: front matter on a translation
+    (tools/hooks/translations.py), the theme's everywhere else. #}
+<html lang="{{ page.meta.lang or config.theme.language | default('en') }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

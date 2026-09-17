@@ -5,8 +5,8 @@ Every page on the site — the presentation pages, whose <main> is a .dg-page, a
 the documentation Material renders — draws its text in IBM Plex Sans and IBM
 Plex Mono, from docs/assets/fonts/. Each file there holds, for its family:
 
-  * a fixed base: printable ASCII, U+0020 to U+007E, and – — ‘ ’ “ ” … · → − × •
-    (tools/plex.py, BASE);
+  * a fixed base: printable ASCII, U+0020 to U+007E, – — ‘ ’ “ ” … · → − × •,
+    and ẞ U+1E9E for German (tools/plex.py, BASE);
   * fixed ranges, in both families: Latin-1 U+00A0–00FF, General Punctuation
     U+2010–202F, the vulgar fractions U+2150–215F, the arrows U+2190–219F and
     the mathematical operators U+2200–226F; in Mono also box drawing
