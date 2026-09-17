@@ -26,16 +26,18 @@ of its pages translated either: a page cannot be built without it.
 
 A page that passes is read once more by a second call, which reports errors of
 meaning only — a negation turned round, a threshold or a behaviour described
-the other way, a claim the English does not make, something left out — as
-JSON, {ok, issues, notes}. A page with issues is corrected once, with the
-issues as its context, then checked and read again: it is marked "needs
-attention" only when an error of meaning is still there (a correction that
-fails the checks is not kept). Notes are the evident calques, reported and never
-blocking.
+the other way, a claim the English does not make, something left out, a term
+in a sense it does not have ("deprecate" as "abschreiben") — as JSON, {ok,
+issues, notes}; notes are the evident calques. A page with issues or notes is
+corrected once, with both as its context, then checked and read again: it is
+marked "needs attention" only when an error of meaning is still there, and the
+notes still there are reported, never blocking (a correction that fails the
+checks is not kept).
 
 The instructions ask for idiomatic Italian, German and Spanish, not calques of
-the English, with Italian examples of calques these pages have had, and for
-quantified statements kept at their strength ("most" is not "almost all").
+the English, with examples of calques and wrong senses these pages have had,
+and for quantified statements kept at their strength ("most" is not "almost
+all").
 
 ── the model and the bill ───────────────────────────────────────────────────
 claude-opus-5 for both calls, adaptive thinking, structured JSON output, and
@@ -124,7 +126,6 @@ PAGE_FILES = {os.path.splitext(page)[0]: page for page in languages.PAGES}
 
 # The front matter a translation translates; the rest is copied or stamped.
 TRANSLATED_FIELDS = ("title", "seo_title", "description", "kicker", "accent")
-FIXED_HEADING = "# ── DO NOT TRANSLATE"
 
 
 class BudgetExceeded(Exception):
@@ -284,11 +285,15 @@ Write as a careful technical writer whose first language is {LANGUAGE_NAMES[lang
 - Keep the strength of every quantified or hedged statement: "most" is the majority, not "almost all"; "some", "often", "rarely", "about", "may" keep exactly their force.{CALQUES.get(lang, "")}"""
 
 
-# Calques seen in Italian translations of these pages, as examples of what the
-# rule above means.
+# Calques and wrong senses seen in translations of these pages, as examples of
+# what the rules above mean.
 CALQUES = {
     "it": """
-- Calques to avoid in Italian, for example: "it is not yours to show" is not "non è tuo da mostrare" but "non puoi mostrarlo tu"; "you are sampling from it" is not "ne stai campionando" but "stai estraendo dei campioni"; "happened to it", said of a thing, is not "è successo a lui"; "catches below the line" is not "intercetta sotto la linea"; "most teams" is "la maggior parte dei team", not "quasi tutti i team".""",
+- Calques to avoid in Italian, for example: "it is not yours to show" is not "non è tuo da mostrare" but "non puoi mostrarlo tu"; "you are sampling from it" is not "ne stai campionando" but "stai estraendo dei campioni"; "happened to it", said of a thing, is not "è successo a lui"; "catches below the line" is not "intercetta sotto la linea" but "rileva ciò che è sotto soglia"; "most teams" is "la maggior parte dei team", not "quasi tutti i team".""",
+    "de": """
+- Calques and wrong senses to avoid in German, for example: "they deprecate versions" is not "Sie schreiben Versionen ab" ("abschreiben" is to write off) but "Sie markieren Versionen als veraltet" or "Sie stellen Versionen ein".""",
+    "es": """
+- Calques to avoid in Spanish, for example: "it is not yours to show" is not "no es tuyo para mostrarlo" but "no puedes mostrarlo tú".""",
 }
 
 
@@ -318,7 +323,7 @@ MEANING_SCHEMA = {
         "ok": {"type": "boolean"},
         "issues": {"type": "array", "items": {
             "type": "object",
-            "properties": {"kind": {"type": "string", "enum": ["negation", "reversed", "added", "omitted", "other"]},
+            "properties": {"kind": {"type": "string", "enum": ["negation", "reversed", "added", "omitted", "sense", "other"]},
                            "english": {"type": "string"}, "translation": {"type": "string"},
                            "explanation": {"type": "string"}},
             "required": ["kind", "english", "translation", "explanation"],
@@ -338,7 +343,8 @@ MEANING_SCHEMA = {
 
 
 def page_prompt(lang: str, meta: dict, body: str, previous: dict | None, diff: str | None,
-                problems: list[str] | None, last: dict | None, review: list[dict] | None = None) -> str:
+                problems: list[str] | None, last: dict | None, review: list[dict] | None = None,
+                notes: list[dict] | None = None) -> str:
     fields = "\n".join(f"{field}: {meta[field]}" for field in TRANSLATED_FIELDS if meta.get(field))
     parts = [f"""Translate this page into {LANGUAGE_NAMES[lang]}.
 
@@ -361,9 +367,17 @@ The English Markdown:
 <english_diff>
 {diff or "(no difference in the Markdown: only the description changed)"}
 </english_diff>""")
-    if review:
-        parts.append(f"""A reviewer read your translation, below, against the English and found these errors of meaning. Correct exactly these, and change nothing else:
-{json.dumps(review, ensure_ascii=False, indent=2)}
+    if review or notes:
+        found = []
+        if review:
+            found.append(f"""These errors of meaning. Correct each so that it says what the English says:
+{json.dumps(review, ensure_ascii=False, indent=2)}""")
+        if notes:
+            found.append(f"""These calques. Rewrite each in idiomatic {LANGUAGE_NAMES[lang]}, keeping its meaning; the suggestion is one way, not the only one:
+{json.dumps(notes, ensure_ascii=False, indent=2)}""")
+        parts.append(f"""A reviewer read your translation, below, against the English and found what follows. Correct exactly these, and change nothing else.
+
+{chr(10).join(found)}
 
 <last_answer>
 {json.dumps(last, ensure_ascii=False, indent=2)}
@@ -411,13 +425,13 @@ Return JSON {{"entries": [...]}}: one entry for each key below, in the same orde
 def meaning_system(lang: str) -> str:
     return f"""You check a translation of a page of digline.dev from English into {LANGUAGE_NAMES[lang]} for errors of meaning, and nothing else.
 
-An error of meaning is: a negation added, dropped or turned round; a threshold, a comparison, a number's role or a behaviour described the other way round; a claim, a promise or a detail the English does not make; something the English says that the translation leaves out.
+An error of meaning is: a negation added, dropped or turned round; a threshold, a comparison, a number's role or a behaviour described the other way round; a claim, a promise or a detail the English does not make; something the English says that the translation leaves out; a word or term translated with a sense it does not have in the English — "deprecate" rendered in German as "abschreiben", which means to write off — is an error of meaning too (kind "sense"), never a note.
 
 Not errors, and never to be reported: style, word choice, register, sentence order; English terms, commands, code and names left in English on purpose; the first person plural of the English rendered as the first person singular or impersonally (that is required); link targets with ../ in front.
 
 Return JSON {{"ok": true, "issues": [], "notes": []}} when there is no error of meaning; otherwise "ok": false and one issue per error, quoting the English and the translation.
 
-Separately, in "notes", list the evident calques: a phrase carried across from English word for word, which a native writer would not write, quoting the translation and suggesting the idiomatic wording. Notes are advice: they never make "ok" false."""
+Separately, in "notes", list the evident calques: a phrase carried across from English word for word, which a native writer would not write, but whose meaning is right, quoting the translation and suggesting the idiomatic wording. Notes never make "ok" false."""
 
 
 def meaning_prompt(english: str, translated: str) -> str:
@@ -444,7 +458,7 @@ class Workspace:
     """A local clone of the repository, for its history, with the working tree
     laid over it — and over that the translations of an earlier run."""
 
-    def __init__(self, repo: str, existing: str | None = None):
+    def __init__(self, repo: str, existing: str | None = None, english_only: bool = False):
         self.dir = tempfile.mkdtemp(prefix="translate-")
         self.root = os.path.join(self.dir, "repo")
         subprocess.run(["git", "clone", "-q", "--local", repo, self.root], check=True)
@@ -455,6 +469,10 @@ class Workspace:
         for name in ("overrides", "tools", "i18n", "docs"):
             shutil.rmtree(os.path.join(self.root, name), ignore_errors=True)
             shutil.copytree(os.path.join(repo, name), os.path.join(self.root, name), ignore=ignore)
+        if english_only:
+            # The selftest's copy: as if nothing were translated yet, whatever
+            # the repository holds.
+            translation.english_only(self.root)
         if existing:
             # Only what the repository does not have: a translation on main (a
             # merged one, perhaps corrected by hand) is never replaced by a run's.
@@ -509,16 +527,7 @@ class Workspace:
 # ── the catalog ──────────────────────────────────────────────────────────────
 
 
-def fixed_section(path: str) -> str:
-    """The catalog's do_not_translate section, as written: from its heading to the end."""
-    if not os.path.isfile(path):
-        return ""
-    with open(path, encoding="utf-8") as fh:
-        text = fh.read()
-    start = text.find(FIXED_HEADING)
-    if start < 0:
-        start = text.find(catalog.FIXED + ":")
-    return text[start:] if start >= 0 else ""
+fixed_section = translation.fixed_section
 
 
 def catalog_entries(path: str) -> dict[str, str | dict]:
@@ -750,12 +759,13 @@ class Translator:
             if not problems:
                 outcome = Outcome(lang, subject, "translated", state, attempt, text=text)
                 verdict = self.meaning(lang, subject, english_body, answer)
-                if not _meaning_ok(verdict):
-                    # One round of correction, with the issues; checked and read
-                    # again. What fails the checks is not kept.
+                if not _meaning_ok(verdict) or verdict.get("notes"):
+                    # One round of correction, with the errors and the calques;
+                    # checked and read again. What fails the checks is not kept.
                     reply = self.ask("correction", lang, subject, 1, system,
                                      page_prompt(lang, english_meta, english_body, previous, diff, None, answer,
-                                                 review=verdict["issues"]), PAGE_SCHEMA)
+                                                 review=verdict.get("issues"), notes=verdict.get("notes")),
+                                     PAGE_SCHEMA)
                     corrected = page_text(root, lang, page, reply.data, reply.model)
                     with open(path, "w", encoding="utf-8") as fh:
                         fh.write(corrected)
@@ -766,9 +776,9 @@ class Translator:
                         outcome.detail += "; its correction failed the checks and was not kept: " + "; ".join(after)[:300]
                     else:
                         outcome.text = corrected
-                        again = self.meaning(lang, subject, english_body, reply.data)
-                        again["notes"] = verdict.get("notes", []) + again.get("notes", [])
-                        verdict = again
+                        # What the second reading finds is what stays: the notes
+                        # of the first were corrected.
+                        verdict = self.meaning(lang, subject, english_body, reply.data)
                         outcome.detail += "; corrected once"
                 outcome.meaning = verdict
                 self.outcomes.append(outcome)
@@ -967,7 +977,8 @@ def _english_entries(prompt: str) -> list[dict]:
 def _fake_answer(root: str, lang: str, meaning_ok=True):
     """A fake model that translates the way the fixtures do: the catalog as it
     is, a page pseudo-translated, and a meaning check that says what it is told
-    — a boolean, or a list of booleans, one reading after another."""
+    — True (ok), False (an error and a calque) or "notes" (ok, with a calque),
+    or a list of those, one reading after another."""
     readings = list(meaning_ok) if isinstance(meaning_ok, (list, tuple)) else None
 
     def answer(system, prompt, schema):
@@ -981,11 +992,12 @@ def _fake_answer(root: str, lang: str, meaning_ok=True):
             corrected = "\n\nCorrected." if "A reviewer read your translation" in prompt else ""
             return {field: meta.get(field, "") for field in TRANSLATED_FIELDS} | {
                 "body": translation.pseudo_translate(body, lang, root).replace("](../", "](") + corrected}
-        ok = readings.pop(0) if readings is not None else meaning_ok
+        said = readings.pop(0) if readings is not None else meaning_ok
+        ok = said is not False
         return {"ok": ok, "issues": [] if ok else [
             {"kind": "negation", "english": "does not", "translation": "does", "explanation": "a negation dropped"}],
-                "notes": [{"english": "is not yours to show", "translation": "non è tuo da mostrare",
-                           "suggestion": "non puoi mostrarlo tu"}]}
+                "notes": [] if said is True else [{"english": "is not yours to show", "translation": "non è tuo da mostrare",
+                                                   "suggestion": "non puoi mostrarlo tu"}]}
     return answer
 
 
@@ -1011,6 +1023,13 @@ def selftest() -> int:
            ("never a calque" in rules("es", ROOT), '"most" is the majority' in rules("de", ROOT),
             "non puoi mostrarlo tu" in rules("it", ROOT), "non puoi mostrarlo tu" in rules("de", ROOT)),
            (True, True, True, False))
+    expect("the examples of each language: sotto soglia, Versionen als veraltet, no es tuyo para mostrarlo",
+           ("sotto soglia" in rules("it", ROOT), '"Sie schreiben Versionen ab"' in rules("de", ROOT),
+            "als veraltet" in rules("de", ROOT), '"no es tuyo para mostrarlo"' in rules("es", ROOT),
+            "no es tuyo" in rules("it", ROOT)), (True, True, True, True, False))
+    expect("the reading of meaning: a term in another sense is an error, never a note",
+           ('"abschreiben"' in meaning_system("de"), 'kind "sense"' in meaning_system("it"),
+            "sense" in MEANING_SCHEMA["properties"]["issues"]["items"]["properties"]["kind"]["enum"]), (True, True, True))
     expect("the rules in Italian address the reader with tu, and never noi",
            ('the informal "tu"' in rules("it", ROOT), '"noi"' in rules("it", ROOT)), (True, True))
     english_meta, english_body = translation.read_page(os.path.join(ROOT, "docs", "why.md"))
@@ -1042,7 +1061,7 @@ def selftest() -> int:
            (a == b, b != c, tokens.exchanges), (True, True, 2))
 
     # 3. The catalog's plan and file: the fixed section is never asked for, and comes back as it was.
-    workspace = Workspace(ROOT)
+    workspace = Workspace(ROOT, english_only=True)
     try:
         root = workspace.root
         fixed_before = fixed_section(os.path.join(root, "i18n", "it.yml"))
@@ -1136,6 +1155,32 @@ def selftest() -> int:
         expect("an error of meaning corrected: ok after a correction, not needing attention",
                (needs_attention(translator.outcomes[-1]), "ok after a correction" in text), (False, True))
 
+        # Calques alone start a correction too, with the notes as its context.
+        os.remove(os.path.join(root, "docs", "it", "contact.md"))
+        fake = FakeModel(_fake_answer(root, "it", meaning_ok=["notes", True]))
+        translator = Translator(fake, Ledger(5.0), workspace, check=lambda lang, page: [])
+        translator.page("it", "contact")
+        text = report(translator, ["it"], ["contact"], True, "2026-09-17 12:00 UTC")
+        expect("calques alone: corrected once with the notes, read again, nothing left to note",
+               ([c.kind for c in translator.ledger.calls], "non puoi mostrarlo tu" in fake.prompts[2][1],
+                "These errors of meaning" in fake.prompts[2][1], needs_attention(translator.outcomes[-1]),
+                "## Calques noted" in text), (["page", "meaning", "correction", "meaning"], True, False, False, False))
+
+        os.remove(os.path.join(root, "docs", "it", "contact.md"))
+        fake = FakeModel(_fake_answer(root, "it", meaning_ok=["notes", "notes"]))
+        translator = Translator(fake, Ledger(5.0), workspace, check=lambda lang, page: [])
+        translator.page("it", "contact")
+        text = report(translator, ["it"], ["contact"], True, "2026-09-17 12:00 UTC")
+        expect("calques that stay after the correction: noted, never needing attention",
+               (needs_attention(translator.outcomes[-1]), "## Calques noted (not blocking)" in text,
+                "## Needs attention" in text), (False, True, False))
+
+        os.remove(os.path.join(root, "docs", "it", "contact.md"))
+        fake = FakeModel(_fake_answer(root, "it", meaning_ok=True))
+        translator = Translator(fake, Ledger(5.0), workspace, check=lambda lang, page: [])
+        translator.page("it", "contact")
+        expect("nothing found: no correction", [c.kind for c in translator.ledger.calls], ["page", "meaning"])
+
         # The correction that fails the checks is not kept.
         os.remove(os.path.join(root, "docs", "it", "contact.md"))
         checks = iter([[], ["structure — block 3 is 'p', and the original's is 'li'"]])
@@ -1157,7 +1202,7 @@ def selftest() -> int:
         workspace.close()
 
     # 7. The real thing, without the network: the Italian catalog and Why, built and checked.
-    workspace = Workspace(ROOT)
+    workspace = Workspace(ROOT, english_only=True)
     try:
         fake = FakeModel(_fake_answer(workspace.root, "it"))
         translator = Translator(fake, Ledger(5.0), workspace)
@@ -1185,7 +1230,7 @@ def selftest() -> int:
                 ["docs/it/why.md", "i18n/it.yml"])
             with open(os.path.join(out, "docs", "it", "why.md"), "a", encoding="utf-8") as fh:
                 fh.write("\nA line only the run's output has.\n")
-            second = Workspace(ROOT, out)
+            second = Workspace(ROOT, out, english_only=True)
             try:
                 again = FakeModel(_fake_answer(second.root, "it"))
                 rerun = Translator(again, Ledger(5.0), second)
