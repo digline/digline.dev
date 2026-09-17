@@ -852,8 +852,8 @@ pre {
 }
 .essay--agents .aside h2 { margin-top: .25rem; }
 .essay--agents .aside__kicker {
-  margin: 0 0 .5rem;
-  font-size: .8125rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  margin: 0 0 .75rem;
+  font-size: .875rem; font-style: italic;
   color: var(--muted);
 }
 .agents-rule { max-width: 40rem; margin: 2.75rem 0 0; }
