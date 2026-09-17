@@ -57,6 +57,31 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 3. Commit, saying which digline branch and commit it was built against, the URL count, and that the branch waits for the record. Do not merge.
 4. When the record is on digline main: update `../digline`, rebase or merge the branch, `make build` green, merge, push, check live.
 
+## Translations
+
+The five presentation pages (`docs/index.md`, `start`, `why`, `about`, `contact`) and the catalog (`i18n/en.yml`) are translated into Italian, German and Spanish by `.github/workflows/translate.yml`, which runs `tools/translate.py`. Its docstring has how a translation is made and checked; this is what happens around it.
+
+**What starts a run.** A push to `main` that touches one of those pages, `i18n/en.yml`, or a template that writes catalog words (`overrides/home.html`, `404.html`, `partials/header.html`, `footer.html`, `opening.html`, `closing.html`). The Plan job asks `tools/translate.py --plan` what is behind English on `main` as it is: nothing, and the run stops there — no call, no pull request opened or touched. Otherwise only what changed is translated: an English sentence changed in `about.md` costs three pages, not fifteen. One run at a time; a newer push replaces a pending run, never the one in progress. The bot's own merges touch only `docs/<lang>/` and `i18n/<lang>.yml`, which start nothing.
+
+**What it produces.** A commit by `digline-translation-bot[bot]` on `i18n/auto`, rewritten on top of `main` at every run, and a pull request into `main` (opened, or updated if one is open) whose description is the run's report: what was translated or skipped, the checks, the reading of meaning, the calques noted, tokens and cost. docs.yml runs on it like on any other.
+
+- **No page needs attention**: the run enables auto-merge with a merge commit. The ruleset on `main` requires the Build check, so the pull request merges itself when Build is green, and the push deploys.
+- **A page needs attention** (an error of meaning still there after the correction round): no auto-merge, the label `translation: needs attention`, and the report in the description says which page, the English, the translation and why. A person reads it and either pushes a fix onto `i18n/auto` and merges by hand once Build is green (before any other run, which would rewrite the branch), or closes the pull request and corrects on `main` as below.
+
+A page whose translation failed the checks twice is not written, and the job fails; what passed is still proposed.
+
+**Correcting a translation by hand.** A branch and a pull request like any change: edit `docs/<lang>/<page>.md` (the text; leave `source`, `source_sha`, `source_commit` and `model` as they are), or a key of `i18n/<lang>.yml` (never the `do_not_translate` section: `FIXED_TEXTS_DIGEST` in `tools/check-translations.py` refuses it). `make build` checks it against the original like any translation. It does not start a run. It lasts as long as its original does not change: a page until its English `source_sha` moves, a catalog key until that English key does. Then the agent translates again, starting from the corrected text and the English diff, asked to change as little as the diff requires — the correction usually survives, but read the next pull request's diff for that page.
+
+**A run by hand.** From `main` only — the federation rule refuses any other ref:
+
+    gh workflow run translate.yml --ref main -f langs=it,de,es -f pages=index,start,why,about,contact -f dry_run=false -f max_cost=12
+
+`dry_run` defaults to true: the translations, the report and the bill go to the run's artifact, nothing to `docs/` or a pull request.
+
+**The spending limit.** Per run. By hand, the `max_cost` input (12 USD by default); after a push, 12 USD, set by `MAX_COST` in the Translate step of `translate.yml`; locally, `DEFAULT_MAX_COST` in `tools/translate.py`. The log has the estimate before the first call, and the run stops before the call that would pass the limit.
+
+**The credentials.** No Anthropic key: the job's GitHub OIDC token is exchanged at Anthropic (Workload Identity Federation). The federation rule is in the Anthropic Console of the organization whose id is the repository variable `ANTHROPIC_ORG_ID`; its own id is `ANTHROPIC_FEDERATION_RULE_ID`, with `ANTHROPIC_SERVICE_ACCOUNT_ID` and `ANTHROPIC_WORKSPACE_ID` next to it (Settings → Secrets and variables → Actions → Variables). It accepts this repository's `refs/heads/main` in the immutable subject form, `repo:digline@321413575/digline.dev@1348500446:ref:refs/heads/main`, and a job with no environment. The pull request is opened with the GitHub App's token, secrets `TRANSLATION_APP_ID` and `TRANSLATION_APP_PRIVATE_KEY`, because what `GITHUB_TOKEN` opens starts no workflow. Auto-merge needs "Allow auto-merge" on in the repository settings and the ruleset on `main` (pull request required, Build required, no force push).
+
 ## The gates, before any merge into `main`
 
 - `make css` whenever `docs/assets/*.css` changed. It needs no build.

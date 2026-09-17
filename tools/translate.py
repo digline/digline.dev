@@ -35,9 +35,12 @@ notes still there are reported, never blocking (a correction that fails the
 checks is not kept).
 
 The instructions ask for idiomatic Italian, German and Spanish, not calques of
-the English, with examples of calques and wrong senses these pages have had,
-and for quantified statements kept at their strength ("most" is not "almost
-all").
+the English, with the calques and wrong senses these pages have had written as
+concepts, each with its wording in every language (CONCEPTS), and for
+quantified statements kept at their strength ("most" is not "almost all").
+
+--plan prints what a run would translate, as JSON, and calls nothing:
+translate.yml starts no run when there is nothing.
 
 ── the model and the bill ───────────────────────────────────────────────────
 claude-opus-5 for both calls, adaptive thinking, structured JSON output, and
@@ -72,6 +75,7 @@ a second run skips what the first translated.
 
     usage: tools/translate.py --langs it,de,es --pages index,start,why,about,contact
                               --out DIR [--dry-run] [--existing DIR] [--max-cost 12]
+           tools/translate.py --langs it,de,es --pages ... --plan
            tools/translate.py --selftest
 
 --selftest makes no network call: a fake model and, where it needs one, a fake
@@ -282,19 +286,59 @@ Write as a careful technical writer whose first language is {LANGUAGE_NAMES[lang
 - Leave these names exactly as written: the commands digline {", digline ".join(names["commands"])}; the checks {", ".join(names["checks"])}; the packages {", ".join(names["packages"])}; the frameworks {", ".join(names["frameworks"])}.
 - Never use these words: {", ".join(words["forbidden"].get(lang, [])) or "(none)"}.
 - Write idiomatic {LANGUAGE_NAMES[lang]}, never a calque: do not carry English syntax, idioms or collocations across word for word. Say what a native technical writer would say in their place.
-- Keep the strength of every quantified or hedged statement: "most" is the majority, not "almost all"; "some", "often", "rarely", "about", "may" keep exactly their force.{CALQUES.get(lang, "")}"""
+- Keep the strength of every quantified or hedged statement: "most" is the majority, not "almost all"; "some", "often", "rarely", "about", "may" keep exactly their force.{calques(lang)}"""
 
 
-# Calques and wrong senses seen in translations of these pages, as examples of
-# what the rules above mean.
-CALQUES = {
-    "it": """
-- Calques to avoid in Italian, for example: "it is not yours to show" is not "non è tuo da mostrare" but "non puoi mostrarlo tu"; "you are sampling from it" is not "ne stai campionando" but "stai estraendo dei campioni"; "happened to it", said of a thing, is not "è successo a lui"; "catches below the line" is not "intercetta sotto la linea" but "rileva ciò che è sotto soglia"; "most teams" is "la maggior parte dei team", not "quasi tutti i team".""",
-    "de": """
-- Calques and wrong senses to avoid in German, for example: "they deprecate versions" is not "Sie schreiben Versionen ab" ("abschreiben" is to write off) but "Sie markieren Versionen als veraltet" or "Sie stellen Versionen ein".""",
-    "es": """
-- Calques to avoid in Spanish, for example: "it is not yours to show" is not "no es tuyo para mostrarlo" but "no puedes mostrarlo tú".""",
-}
+# Calques and wrong senses seen in translations of these pages, by concept: the
+# English, what it means, and in each language the wording to use, with the
+# calques actually met there (none is made up). Every concept has every language: the rule is the
+# same in all of them, only the words differ.
+CONCEPTS = [
+    {"english": "catches below the line", "sense": "a threshold catches what falls under it",
+     "it": ("sotto soglia", ["intercetta sotto la linea"]),
+     "de": ("unter dem Schwellenwert", ["unter der Linie"]),
+     "es": ("por debajo del umbral", [])},
+    {"english": "it is not yours to show", "sense": "you are not the one able to show it",
+     "it": ("non puoi mostrarlo tu", ["non è tuo da mostrare"]),
+     "de": ("kannst du nicht vorzeigen", []),
+     "es": ("no puedes mostrarlo", ["no es tuyo para mostrarlo"])},
+    {"english": "worth reading", "sense": "deserving to be read",
+     "it": ("vale la pena leggere", ["valgono la lettura"]),
+     "de": ("lesenswert", []),
+     "es": ("vale la pena leer", [])},
+    {"english": "it is what a judge is", "sense": "that is simply how a judge works",
+     "it": ("è così che funziona un giudice", []),
+     "de": ("so funktioniert ein Richter", []),
+     "es": ("así funciona un juez", ["es lo que un juez es"])},
+    {"english": "you are sampling from it", "sense": "each answer is a sample drawn from a distribution",
+     "it": ("stai estraendo dei campioni", ["ne stai campionando"]),
+     "de": ("du ziehst Stichproben daraus", []),
+     "es": ("estás extrayendo muestras", [])},
+    {"english": "it happened to it", "sense": "said of a thing, a project: it occurred in it",
+     "it": ("è successo in questo progetto", ["è successo a lui"]),
+     "de": ("ist in diesem Projekt passiert", []),
+     "es": ("pasó en este proyecto", [])},
+    {"english": "most teams", "sense": "the majority of teams, not almost all of them",
+     "it": ("la maggior parte dei team", ["quasi tutti i team"]),
+     "de": ("die meisten Teams", []),
+     "es": ("la mayoría de los equipos", [])},
+    {"english": "they deprecate versions", "sense": "they mark versions as outdated, to be withdrawn — not an accounting write-off",
+     "it": ("dichiarano obsolete delle versioni", []),
+     "de": ("markieren Versionen als veraltet", ["Sie schreiben Versionen ab"]),
+     "es": ("marcan versiones como obsoletas", [])},
+]
+
+
+def calques(lang: str) -> str:
+    """The concepts, in the words of one language."""
+    lines = []
+    for concept in CONCEPTS:
+        right, wrong = concept[lang]
+        avoid = "; not " + ", not ".join(f'"{w}"' for w in wrong) if wrong else ""
+        lines.append(f'  - "{concept["english"]}" ({concept["sense"]}): "{right}"{avoid}')
+    return (f"\n- The same concepts, in every language, have been carried across word for word before. "
+            f"In {LANGUAGE_NAMES[lang]}, write them as follows — examples of the rule, not a glossary:\n"
+            + "\n".join(lines))
 
 
 PAGE_SCHEMA = {
@@ -890,6 +934,21 @@ def report(translator: Translator, langs, pages, dry_run: bool, started: str,
     return "\n".join(lines) + "\n"
 
 
+def plan(root: str, langs: list[str], pages: list[str]) -> dict:
+    """What a run would translate, without a call: each language's catalog keys
+    behind English, and its pages new or changed. "work" is false when there is
+    nothing, and translate.yml then starts no run."""
+    catalogs, changed = {}, {}
+    for lang in langs:
+        wanted, _ = catalog_plan(root, lang)
+        if wanted:
+            catalogs[lang] = len(wanted)
+        todo = [name for name in pages if page_plan(root, lang, PAGE_FILES[name]) != "unchanged"]
+        if todo:
+            changed[lang] = todo
+    return {"work": bool(catalogs or changed), "catalogs": catalogs, "pages": changed}
+
+
 def write_out(translator: Translator, out: str) -> None:
     """Every translation the copy now holds, for the languages run: what this
     run translated and what it carried over unchanged."""
@@ -910,7 +969,9 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--langs", default=",".join(languages.LANGUAGES))
     parser.add_argument("--pages", default=",".join(PAGE_FILES))
-    parser.add_argument("--out", required=True)
+    parser.add_argument("--out")
+    parser.add_argument("--plan", action="store_true",
+                        help="print what would be translated, as JSON, and call nothing")
     parser.add_argument("--existing")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--max-cost", type=float, default=DEFAULT_MAX_COST)
@@ -920,6 +981,11 @@ def main(argv: list[str]) -> int:
     wrong = [lang for lang in langs if lang not in languages.LANGUAGES] + [p for p in pages if p not in PAGE_FILES]
     if wrong:
         parser.error(f"not a language or a page: {', '.join(wrong)}")
+    if args.plan:
+        print(json.dumps(plan(ROOT, langs, pages)))
+        return 0
+    if not args.out:
+        parser.error("--out is required, except with --plan")
     started = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime())
     workspace = Workspace(ROOT, args.existing)
     estimated = estimate(workspace.root, langs, pages)
@@ -1023,10 +1089,20 @@ def selftest() -> int:
            ("never a calque" in rules("es", ROOT), '"most" is the majority' in rules("de", ROOT),
             "non puoi mostrarlo tu" in rules("it", ROOT), "non puoi mostrarlo tu" in rules("de", ROOT)),
            (True, True, True, False))
-    expect("the examples of each language: sotto soglia, Versionen als veraltet, no es tuyo para mostrarlo",
-           ("sotto soglia" in rules("it", ROOT), '"Sie schreiben Versionen ab"' in rules("de", ROOT),
-            "als veraltet" in rules("de", ROOT), '"no es tuyo para mostrarlo"' in rules("es", ROOT),
-            "no es tuyo" in rules("it", ROOT)), (True, True, True, True, False))
+    expect("the concepts: every one in every language, with its wording",
+           [(c["english"], lang) for c in CONCEPTS for lang in languages.LANGUAGES
+            if not (isinstance(c.get(lang), tuple) and c[lang][0] and f'"{c[lang][0]}"' in rules(lang, ROOT))], [])
+    expect("the concepts in each language's words: below the line, not yours to show, worth reading, what a judge is",
+           ([w in rules("it", ROOT) for w in ('"sotto soglia"', '"non puoi mostrarlo tu"', '"vale la pena leggere"',
+                                               '"è così che funziona un giudice"')],
+            [w in rules("de", ROOT) for w in ('"unter dem Schwellenwert"', '"kannst du nicht vorzeigen"', '"lesenswert"',
+                                               '"so funktioniert ein Richter"', '"Sie schreiben Versionen ab"')],
+            [w in rules("es", ROOT) for w in ('"por debajo del umbral"', '"no puedes mostrarlo"', '"vale la pena leer"',
+                                               '"así funciona un juez"', '"no es tuyo para mostrarlo"')]),
+           ([True] * 4, [True] * 5, [True] * 5))
+    expect("each language gets its own words only",
+           ("no es tuyo" in rules("it", ROOT), "sotto soglia" in rules("de", ROOT), "lesenswert" in rules("es", ROOT)),
+           (False, False, False))
     expect("the reading of meaning: a term in another sense is an error, never a note",
            ('"abschreiben"' in meaning_system("de"), 'kind "sense"' in meaning_system("it"),
             "sense" in MEANING_SCHEMA["properties"]["issues"]["items"]["properties"]["kind"]["enum"]), (True, True, True))
@@ -1204,6 +1280,10 @@ def selftest() -> int:
     # 7. The real thing, without the network: the Italian catalog and Why, built and checked.
     workspace = Workspace(ROOT, english_only=True)
     try:
+        first = plan(workspace.root, ["it"], ["why"])
+        expect("the plan before any translation: every catalog key, and Why",
+               (first["work"], first["catalogs"].get("it") == len(catalog_entries(workspace.path("i18n", "en.yml"))),
+                first["pages"]), (True, True, {"it": ["why"]}))
         fake = FakeModel(_fake_answer(workspace.root, "it"))
         translator = Translator(fake, Ledger(5.0), workspace)
         translator.run(["it"], ["why"])
@@ -1232,12 +1312,21 @@ def selftest() -> int:
                 fh.write("\nA line only the run's output has.\n")
             second = Workspace(ROOT, out, english_only=True)
             try:
+                expect("the plan over the first run's output: nothing for Why, Start still to translate",
+                       (plan(second.root, ["it"], ["why"]), plan(second.root, ["it"], ["why", "start"])),
+                       ({"work": False, "catalogs": {}, "pages": {}},
+                        {"work": True, "catalogs": {}, "pages": {"it": ["start"]}}))
                 again = FakeModel(_fake_answer(second.root, "it"))
                 rerun = Translator(again, Ledger(5.0), second)
                 rerun.run(["it"], ["why"])
                 expect("a second run over the first one's output: nothing to translate, no call",
                        ([(o.subject, o.status) for o in rerun.outcomes], len(again.prompts)),
                        ([("i18n/it.yml", "unchanged"), ("docs/it/why.md", "unchanged")], 0))
+                # One English sentence changed: the plan has that page, in that language, and nothing else.
+                with open(second.path("docs", "why.md"), "a", encoding="utf-8") as fh:
+                    fh.write("\nOne more sentence.\n")
+                expect("the plan after an English edit: that page, no catalog key",
+                       plan(second.root, ["it"], ["why"]), {"work": True, "catalogs": {}, "pages": {"it": ["why"]}})
             finally:
                 second.close()
     finally:
