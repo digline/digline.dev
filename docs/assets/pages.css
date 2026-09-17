@@ -690,14 +690,11 @@ pre {
 /* ── the closing band ────────────────────────────────────────────────────── */
 .closing {
   padding: 4.5rem 0;
-  /* The glow the hero has behind its card, across the band, over one more
+  /* The band's glow (--band-glow, chrome.css) across the band, over one more
      layer of --wash than the body it closes. That layer rises out of the body
-     over --band-fade, so there is no line where the band begins. The glow is
-     85% of the hero's here: over the deeper tint, that keeps --muted and the
-     gradient's teal at 4.6:1 where the glow is strongest, in both themes. */
+     over --band-fade, so there is no line where the band begins. */
   background-image:
-    radial-gradient(40% 70% at 55% 43%, color-mix(in srgb, var(--glow-fine) 85%, transparent), transparent 70%),
-    radial-gradient(35% 63% at 80% 64%, color-mix(in srgb, var(--glow-link) 85%, transparent), transparent 70%),
+    var(--band-glow),
     linear-gradient(transparent, var(--wash) var(--band-fade));
 }
 .closing .part__inner {
@@ -732,9 +729,9 @@ pre {
    The ground is the home's, laid the home's way: one flat layer of --wash on
    <main>, over the --bg of <body>, edge to edge at any width because <main>
    is. The opening keeps its place against it by being one layer deeper — a
-   second --wash over the ground, which fades into it at the band's foot
-   rather than stopping at a rule; the closing band is the home's, glow and
-   all. */
+   second --wash over the ground, with the closing band's glow on its right,
+   which fades into it at the band's foot rather than stopping at a rule; the
+   closing band is the home's, glow and all. */
 .dg-page--reading {
   max-width: none; padding: 0;
   background-image: linear-gradient(var(--wash), var(--wash));
@@ -742,11 +739,11 @@ pre {
 .reading__inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem; }
 
 .opening {
+  /* Its ground — the glow over one more layer of --wash than the body, thinning
+     out into the body's tint across the last --band-gap — is .opening::before
+     in chrome.css: the fade sits in the band's own bottom space, with no rule
+     and no step. */
   padding: calc(4rem + var(--bar-room)) 0 var(--band-gap);
-  /* One layer of --wash deeper than the body, down to the band's foot, where
-     it thins out into the body's tint across the last --band-gap: the fade
-     sits in the band's own bottom space, with no rule and no step. */
-  background-image: linear-gradient(var(--wash) calc(100% - var(--band-gap)), transparent);
 }
 .opening__title { margin-bottom: 1rem; }
 /* A band with a title and no lede ends on the title: its margin would add to

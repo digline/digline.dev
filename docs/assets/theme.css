@@ -332,17 +332,17 @@ body {
 
    The band sits above <main>, straight on <body>, so it lays two layers of
    --wash where the reading pages' band lays one on a ground that already has
-   one: the same depth, a degree past the body's, fading to it at the foot. */
+   one: the same depth, a degree past the body's, and the same glow, fading to
+   it at the foot. */
 .md-container > .opening {
   padding: calc(64px + var(--bar-room)) 0 var(--band-gap);
+  /* The body's ground all the way down. The deeper layer and the glow over it
+     are .opening::before (chrome.css), which fades out over the last
+     --band-gap: at the band's foot the colour is exactly the body's (the
+     ground of <main>, below), so the sidebar, the TOC and the article start
+     on it with no rule and no strip. */
   background-color: var(--bg);
-  /* The body's --wash all the way down, and one more over it that fades out
-     over the last --band-gap: at the band's foot the colour is exactly the
-     body's (the ground of <main>, below), so the sidebar, the TOC and the
-     article start on it with no rule and no strip. */
-  background-image:
-    linear-gradient(var(--wash) calc(100% - var(--band-gap)), transparent),
-    linear-gradient(var(--wash), var(--wash));
+  background-image: linear-gradient(var(--wash), var(--wash));
 }
 /* Under the band, the page starts --band-gap down, as the reading pages do:
    the article's first element and the first line of the sidebar and the TOC

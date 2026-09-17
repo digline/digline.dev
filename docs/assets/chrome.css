@@ -248,6 +248,50 @@ html { scroll-padding-top: var(--bar-room); }
   .dg-nav .dg-nav__optional { display: none; }
 }
 
+/* ══ the glow ══════════════════════════════════════════════════════════
+
+   The green-and-blue glow of a band: the closing band (pages.css), and every
+   opening band — the reading pages', Material's and the 404's, which lay it
+   with the one rule below. Here because both halves load this file, so the
+   bands cannot drift apart.
+
+   Its colours are the hero's glow at 85% (color-mix on the tokens, which are
+   unchanged), over one more layer of --wash than the body: at its strongest
+   that keeps --muted and the gradient at 4.5:1 or more, in both themes. Only
+   where it is strongest moves: the closing band's text runs across its left
+   and middle, an opening band's sits on its left, so an opening band holds
+   the glow to its right, where the band is empty.
+
+   Declared on the bands and not on :root: the colours are resolved where the
+   property is declared, and a reader's choice of theme is on <body>. */
+.opening,
+.closing {
+  --glow-fine-at: 55% 43%;
+  --glow-link-at: 80% 64%;
+  --band-glow:
+    radial-gradient(40% 70% at var(--glow-fine-at), color-mix(in srgb, var(--glow-fine) 85%, transparent), transparent 70%),
+    radial-gradient(35% 63% at var(--glow-link-at), color-mix(in srgb, var(--glow-link) 85%, transparent), transparent 70%);
+}
+.opening {
+  --glow-fine-at: 80% 45%;
+  --glow-link-at: 95% 62%;
+  position: relative;
+  isolation: isolate;
+}
+/* An opening band's deeper ground: the glow over one more --wash, on a layer
+   of its own under the text, so that one mask fades both into the body across
+   the band's last --band-gap. At the band's foot the colour is exactly the
+   body's — under Material's sidebar, article and TOC alike — however far down
+   the glow reaches. */
+.opening::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background-image: var(--band-glow), linear-gradient(var(--wash), var(--wash));
+  -webkit-mask-image: linear-gradient(#000 calc(100% - var(--band-gap)), transparent);
+  mask-image: linear-gradient(#000 calc(100% - var(--band-gap)), transparent);
+  pointer-events: none;
+}
+
 /* ══ the band ══════════════════════════════════════════════════════════ */
 
 .dg-foot {
