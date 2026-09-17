@@ -52,9 +52,11 @@ It watches a suite on a schedule and opens an issue when a result needs a decisi
 
 ### pytest-digline and the GitHub Action
 
-[`pytest-digline`](product/pytest.md) puts the comparison in a pytest report, one row per check; the [GitHub Action](https://github.com/digline/digline-action) comments it on the pull request and exits with digline's code.
+pytest-digline puts the comparison in a pytest report; the GitHub Action comments it on the pull request and exits with digline's code.
 
 **Not there:** a way to promote. No flag, fixture or marker in the plugin and no input in the Action makes a run the new baseline.
+
+**Details:** [pytest-digline](product/pytest.md), [the GitHub Action](https://github.com/digline/digline-action)
 
 </div>
 
@@ -62,9 +64,11 @@ It watches a suite on a schedule and opens an issue when a result needs a decisi
 
 ### AGENTS.md and the skill
 
-[`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md) is the judgment layer the tool does not encode: when to re-run, when to investigate, what to recommend. The same rules ship as a Claude Code skill, [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline), and a test fails if their rules drift apart.
+AGENTS.md is the judgment layer the tool does not encode: when to re-run, investigate or recommend. The same rules ship as a Claude Code skill, and a test fails if their rules drift apart.
 
-**Not there:** the approval. The first rule, at the end of this page, leaves it to a person.
+**Not there:** the approval. The first rule, below, leaves it to a person.
+
+**Details:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline)
 
 </div>
 
