@@ -27,7 +27,7 @@
         ("comparison/", "closing.links.comparison" | t),
       ] %}
       {%- if path != here_url %}
-      <a href="{{ base_url }}/{{ path }}">{{ label }}</a>
+      <a href="{{ base_url.rstrip('/') }}/{{ path }}">{{ label }}</a>
       {%- endif %}
       {%- endfor %}
     </p>

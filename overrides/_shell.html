@@ -26,11 +26,11 @@
 <link rel="canonical" href="{{ page.canonical_url }}">
 {%- endif %}
 {#- Own stylesheets carry a hash of their content (tools/hooks/assets.py). -#}
-<link rel="icon" href="{{ base_url }}/assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{{ base_url }}/{{ 'assets/tokens.css' | versioned }}">
-<link rel="stylesheet" href="{{ base_url }}/{{ 'assets/fonts.css' | versioned }}">
-<link rel="stylesheet" href="{{ base_url }}/{{ 'assets/chrome.css' | versioned }}">
-<link rel="stylesheet" href="{{ base_url }}/{{ 'assets/pages.css' | versioned }}">
+<link rel="icon" href="{{ base_url.rstrip('/') }}/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{ base_url.rstrip('/') }}/{{ 'assets/tokens.css' | versioned }}">
+<link rel="stylesheet" href="{{ base_url.rstrip('/') }}/{{ 'assets/fonts.css' | versioned }}">
+<link rel="stylesheet" href="{{ base_url.rstrip('/') }}/{{ 'assets/chrome.css' | versioned }}">
+<link rel="stylesheet" href="{{ base_url.rstrip('/') }}/{{ 'assets/pages.css' | versioned }}">
 {# Material's four-line storage helper: the bar's palette toggle writes through
    it, under the same key the documentation reads. No request, no dependency. #}
 {% include "partials/javascripts/base.html" %}
