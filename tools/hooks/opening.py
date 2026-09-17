@@ -142,7 +142,7 @@ def upstream(src_uri: str, native: set[str]) -> str | None:
     if rest == "docker.md":
         return "docker/README.md"
     if rest == "adr/index.md":
-        return "docs/adr/ (tools/sync-docs.sh writes the index from the records' titles)"
+        return "docs/adr/ (tools/sync-docs.sh writes the index, tools/hooks/indexes.py its table)"
     if rest.startswith("examples/"):
         return f"examples/{rest[len('examples/'):-len('.md')]}/README.md"
     return f"docs/{rest}"
@@ -185,11 +185,15 @@ def split_docs(content: str, source: str, native: set[str]) -> tuple[dict, str]:
 
 
 def native_pages() -> set[str]:
-    """The product/ pages written in this repository, under pages/product/."""
+    """The product/ pages written in this repository, under pages/product/, by
+    their path there: `operator.md`, `examples/index.md`."""
     folder = os.path.join(ROOT, "pages", "product")
-    if not os.path.isdir(folder):
-        return set()
-    return {name for name in os.listdir(folder) if name.endswith(".md")}
+    return {
+        os.path.relpath(os.path.join(dirpath, name), folder).replace(os.sep, "/")
+        for dirpath, _, names in os.walk(folder)
+        for name in names
+        if name.endswith(".md")
+    }
 
 
 def on_page_context(context, page, config, nav, **kwargs):
@@ -237,7 +241,7 @@ def selftest() -> int:
           'href="#how-digline-compares" title="Link to this section">&para;</a></h1>\n')
     title = ('How digline compares<a class="headerlink" href="#how-digline-compares" '
              'title="Link to this section">&para;</a>')
-    native = {"operator.md", "security.md"}
+    native = {"operator.md", "security.md", "examples/index.md"}
 
     # 1. A title and a paragraph: the paragraph is the lede, and leaves the body.
     content = h1 + '<p>The space is <em>crowded</em>.</p>\n<h2 id="a">A</h2>\n<p>Rest.</p>'
@@ -295,6 +299,9 @@ def selftest() -> int:
             "in CHANGELOG.md")
     refused("no h1, a product page written here",
             lambda: split_docs(no_h1, "product/operator.md", native),
+            "has no `# Title`", absent="digline/digline")
+    refused("no h1, a product index written here",
+            lambda: split_docs(no_h1, "product/examples/index.md", native),
             "has no `# Title`", absent="digline/digline")
     refused("no h1, a page written here",
             lambda: split_docs(no_h1, "handbook/index.md", native),

@@ -34,6 +34,9 @@ Each of these is a claim the home would make that the file does not support:
     ``items``;
   * a command in ``cli_commands`` has no group in COMMAND_GROUPS below, or
     COMMAND_GROUPS names a command digline does not have;
+  * the nav's ``Commands:`` group lists something that is not a command page,
+    or a command page no group in COMMAND_GROUPS names (see
+    ``split_commands()``: the nav's command subgroups are these groups);
   * a command has no page of its own, product/<name>/, no heading in the guide
     or in a Reference page that names it, and is not written in the guide's
     text either (see ``command_link()`` for the order they are tried in);
@@ -665,14 +668,20 @@ _H1_TEXT = re.compile(r"<h1\b[^>]*>(.*?)</h1>", re.I | re.S)
 _FIRST_P = re.compile(r"<p\b[^>]*>(.*?)</p>", re.I | re.S)
 
 
-def page_question(page_html: str, source: str) -> str:
-    """The question an example's page asks: its title after the colon
-    ("My pipeline is LangChain: what changed when I upgraded it?"), or the
-    whole title when it has none."""
+def page_title(page_html: str, source: str) -> str:
+    """An example's page title, as plain text, without its permalink."""
     match = _H1_TEXT.search(page_html)
     title = _plain(re.sub(r'<a class="headerlink".*?</a>', "", match.group(1), flags=re.S)).strip() if match else ""
     if not title:
         raise _fail_site(f"the stack band reads its question from the title of {source}, which has none.")
+    return title
+
+
+def page_question(page_html: str, source: str) -> str:
+    """The question an example's page asks: its title after the colon
+    ("My pipeline is LangChain: what changed when I upgraded it?"), or the
+    whole title when it has none."""
+    title = page_title(page_html, source)
     _, colon, after = title.partition(":")
     return after.strip() if colon and after.strip() else title
 
@@ -762,8 +771,63 @@ _pages: set[str] = set()
 _rendered: dict[str, str] = {}
 _reference: list[str] = []
 
-# The nav section whose pages a command's tile may point into, after the guide.
-REFERENCE_SECTION = "Reference"
+# The nav sections whose pages a command's tile may point into, after the guide:
+# every page under them, subgroups included, in the order the nav lists them.
+# "A Reference page", below, is any of those pages.
+REFERENCE_SECTIONS = ("Commands", "Running it", "Reference")
+
+# The nav group that on_config splits by COMMAND_GROUPS.
+COMMANDS_SECTION = "Commands"
+
+
+def split_commands(entries: list, source: str = "mkdocs.yml") -> list:
+    """The flat `Commands:` list of the nav, as one subgroup per COMMAND_GROUPS
+    entry that has a page in it, labelled as the home labels it.
+
+    Each entry is a one-key mapping, label to `product/<name>.md`. Groups and
+    pages come out in COMMAND_GROUPS order, whatever order the list has; a
+    group with no page (Record and approve: run and promote are written in the
+    guide) is left out. An entry that is not a command page, or a command no
+    group names, fails the build: the grouping is decided here, once, for the
+    home and the nav alike.
+    """
+    placed: dict[str, tuple[str, dict]] = {}
+    for entry in entries:
+        path = next(iter(entry.values())) if isinstance(entry, dict) and len(entry) == 1 else None
+        match = re.fullmatch(r"product/([a-z][a-z0-9-]*)\.md", path) if isinstance(path, str) else None
+        if not match:
+            raise _fail_site(
+                f"the `{COMMANDS_SECTION}:` group in {source} holds {entry!r}, which is not a "
+                "`label: product/<command>.md` line. Only command pages go there.")
+        placed[match.group(1)] = (path, entry)
+    grouped = {name for _, _, names in COMMAND_GROUPS for name in names}
+    loose = sorted(set(placed) - grouped)
+    if loose:
+        raise _fail_site(
+            f"the `{COMMANDS_SECTION}:` group in {source} lists a page for "
+            f"{', '.join(loose)}, which no group in COMMAND_GROUPS names, so the nav "
+            "has nowhere to put it.")
+    return [{label: [placed[name][1] for name in names if name in placed]}
+            for _, label, names in COMMAND_GROUPS if any(name in placed for name in names)]
+
+
+def on_config(config, **kwargs):
+    """The nav's `Commands:` group, split into the home's command groups."""
+    def walk(items):
+        for item in items or []:
+            if not isinstance(item, dict):
+                continue
+            for key, value in item.items():
+                if key == COMMANDS_SECTION and isinstance(value, list):
+                    item[key] = split_commands(value, config.config_file_path or "mkdocs.yml")
+                    return True
+                if isinstance(value, list) and walk(value):
+                    return True
+        return False
+
+    if not walk(config["nav"]):
+        raise _fail_site(f"the nav has no `{COMMANDS_SECTION}:` group to split.")
+    return config
 
 
 def on_files(files, config, **kwargs):
@@ -774,16 +838,21 @@ def on_files(files, config, **kwargs):
 
 
 def on_nav(nav, config, files, **kwargs):
-    """The Reference pages, in the order the nav lists them."""
+    """The pages under the reference sections, in the order the nav lists them."""
     _reference.clear()
+
+    def pages(items):
+        for item in items:
+            if getattr(item, "is_section", False):
+                yield from pages(item.children)
+            elif getattr(item, "is_page", False) and item.file:
+                yield item.file.src_uri
 
     def walk(items):
         for item in items:
             if getattr(item, "is_section", False):
-                if item.title == REFERENCE_SECTION:
-                    _reference.extend(
-                        child.file.src_uri for child in item.children
-                        if getattr(child, "is_page", False) and child.file)
+                if item.title in REFERENCE_SECTIONS:
+                    _reference.extend(pages(item.children))
                 else:
                     walk(item.children)
 
@@ -1012,6 +1081,39 @@ def selftest() -> int:
     expect("first mention above every heading", first_mention("<p>digline run</p><h2 id='x'>X</h2>", "run"), "")
     expect("a longer name is not the command", first_mention('<h2 id="a">A</h2><p>digline list-runs</p>', "list"), None)
 
+    # 1b'. The nav's Commands group, split by COMMAND_GROUPS: groups and pages
+    #      in the home's order whatever order the list has, a group with no
+    #      page left out, and anything that is not a grouped command page
+    #      refused.
+    flat = [{"digline view": "product/view.md"}, {"digline diff": "product/diff.md"},
+            {"digline migrate": "product/migrate.md"}, {"digline explain": "product/explain.md"},
+            {"digline log": "product/log.md"}]
+    expect("commands split by COMMAND_GROUPS, in its order", split_commands(flat), [
+        {"Compare": [{"digline diff": "product/diff.md"}, {"digline explain": "product/explain.md"}]},
+        {"History": [{"digline log": "product/log.md"}, {"digline view": "product/view.md"}]},
+        {"Maintenance": [{"digline migrate": "product/migrate.md"}]},
+    ])
+    split_refusals = [
+        ("a command page no group names", flat + [{"digline doctor": "product/doctor.md"}],
+         "for doctor, which no group in COMMAND_GROUPS names"),
+        ("a page that is not a command page", flat + [{"The Docker image": "product/examples/rag.md"}],
+         "which is not a `label: product/<command>.md` line"),
+        ("a subgroup instead of a page", flat + [{"More": [{"digline list": "product/list.md"}]}],
+         "which is not a `label: product/<command>.md` line"),
+        ("a path with no label", flat + ["product/report.md"],
+         "which is not a `label: product/<command>.md` line"),
+    ]
+    for label, entries, needle in split_refusals:
+        try:
+            split_commands(entries)
+        except PluginError as error:
+            if needle not in str(error):
+                failures.append(f"{label}: refused, but not for this: {error}")
+            else:
+                print(f"selftest: refused, as it must — {label}: {str(error).splitlines()[0]}")
+            continue
+        failures.append(f"{label}: accepted, which it exists to refuse")
+
     # 1c. The stack band, against pages of the shape the build has: a title with
     #     a colon, one without, the Docker and MCP pages' first paragraphs.
     stack_pages = {source for _, source in STACK_EXAMPLES + STACK_RUN}
@@ -1176,8 +1278,9 @@ def selftest() -> int:
         print(f"selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print(f"selftest: home.json fixture computes as expected, grids and stack band included; "
-          f"{len(cases) + len(grid_refusals) + len(stack_refusals)} refusals refused")
+    print(f"selftest: home.json fixture computes as expected, grids, stack band and the nav's "
+          f"command groups included; "
+          f"{len(cases) + len(grid_refusals) + len(stack_refusals) + len(split_refusals)} refusals refused")
     return 0
 
 

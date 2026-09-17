@@ -96,6 +96,12 @@ jobs:
         # back there to be fixed.
         run: uv run tools/hooks/opening.py --selftest
 
+      - name: Check the indexes' hook
+        # tools/hooks/indexes.py: the Decisions table from records of every
+        # shape the real ones have, the Examples tiles and their external line,
+        # and a record missing its number, title, status or date refused.
+        run: uv run tools/hooks/indexes.py --selftest
+
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
         # reaching the site. sitemap.xml and robots.txt come out of this step

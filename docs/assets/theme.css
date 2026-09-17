@@ -441,6 +441,73 @@ body {
 .md-typeset .dg-pilot p { margin: 0; color: var(--muted); }
 .md-typeset .dg-pilot a { color: var(--link); }
 
+/* ── the Examples index ──────────────────────────────────────────────────
+   One tile per example, filled by tools/hooks/indexes.py: the example's name
+   and the question its page asks, the whole tile a link. The stack band's
+   blocks from the home (pages.css, .stackcol and .stackrow) in px, because
+   Material's rem is not the presentation pages': the rule, the radius, the
+   soft shadow, the examples' green as a line along the top with its glow
+   under it, and the arrow that moves on hover. Two columns, then one.
+   `[dir] … ul.` because Material sets a list's display, margin and its items'
+   indent with selectors that would outrank the class alone. */
+[dir] .md-typeset ul.dg-examples {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0; padding: 0;
+  list-style: none;
+}
+[dir] .md-typeset ul.dg-examples > li { margin: 0; padding: 0; }
+.md-typeset .dg-example {
+  --c: var(--grad-start);
+  position: relative; isolation: isolate;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  height: 100%; box-sizing: border-box;
+  padding: 18px 18px 16px;
+  color: inherit; text-decoration: none;
+  background: var(--bg);
+  border: 1px solid var(--rule); border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+.md-typeset .dg-example::before {
+  content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0;
+  height: 3px; background: var(--c);
+}
+.md-typeset .dg-example::after {
+  content: ""; position: absolute; z-index: -1; inset: 0;
+  background-image: radial-gradient(90% 60% at 20% 0%,
+    color-mix(in srgb, var(--c) var(--tile-glow), transparent), transparent 70%);
+}
+.md-typeset .dg-example__name { display: block; font-size: 15.5px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.md-typeset .dg-example__question { display: block; margin-top: 2px; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+/* The question is the title after its colon, as written there; its first
+   letter is capitalised here, the text is not touched. */
+.md-typeset .dg-example__question::first-letter { text-transform: uppercase; }
+.md-typeset .dg-example__arrow { color: var(--muted); transition: transform .15s, color .15s; }
+.md-typeset .dg-example:hover { color: inherit; border-color: color-mix(in srgb, var(--c) 45%, var(--rule)); }
+.md-typeset .dg-example:hover .dg-example__arrow { color: var(--c); transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .dg-example__arrow { transition: none; }
+}
+@media (max-width: 44rem) {
+  [dir] .md-typeset ul.dg-examples { grid-template-columns: minmax(0, 1fr); }
+}
+/* A link in the Examples group that leaves the site: a line of its own under
+   the tiles, tagged as such, never a tile that looks like a page here. */
+.md-typeset .dg-examples__external { margin: 20px 0 0; color: var(--muted); }
+.md-typeset .dg-examples__tag {
+  display: inline-block; margin-right: 8px; padding: 1px 9px;
+  font-size: 12px; font-weight: 600; line-height: 1.6;
+  color: var(--muted); border: 1px solid var(--rule); border-radius: 999px;
+}
+.md-typeset .dg-examples__external a { color: var(--link); }
+
+/* ── the Decisions table ─────────────────────────────────────────────────
+   Filled by tools/hooks/indexes.py inside a .dg-decisions block. The number
+   and the date never break: a date split at its hyphen reads as two. */
+.md-typeset .dg-decisions td:first-child,
+.md-typeset .dg-decisions td:last-child { white-space: nowrap; }
+
 /* ── the bar on a phone ──────────────────────────────────────────────────
    The sections leave the bar entirely at 453px and under, on the documentation
    pages and there only — this file is the half of the site Material renders,

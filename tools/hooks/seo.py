@@ -283,7 +283,7 @@ PRODUCT: dict[str, tuple[str, str]] = {
     "product/adr/index.md": (
         "Decisions",
         "Why digline is shaped the way it is: one architecture decision record "
-        "per decision, in the order they were taken, superseded ones kept and "
+        "per decision, in the order they were numbered, superseded ones kept and "
         "marked.",
     ),
     "product/adr/0001-verdict-not-score.md": (
@@ -422,6 +422,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why the judge gets measurements of its own: a calibration case whose "
         "known partial answer must score inside a band, repeatability beside "
         "it, and the suite's shape and spread.",
+    ),
+    "product/examples/index.md": (
+        "Examples",
+        "Worked examples of digline, each named by the question it answers \u2014 "
+        "from a prompt with no application yet to a suite watched on a schedule "
+        "\u2014 with the suite, the committed baseline and the CI job behind it.",
     ),
     "product/examples/prompt-first.md": (
         "Example: a prompt, no application yet",
