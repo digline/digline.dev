@@ -43,8 +43,10 @@ Each of these is a claim the home would make that the file does not support:
   * a check's ``kind`` is not one of CHECK_KINDS, or its ``anchor`` is not an
     id on product/metrics/;
   * the stack band under "How it fits" cannot find what it prints (see
-    ``stack()``): a provider's package in the synced documentation, an
-    example's page or its title, the image name on product/docker/ or the
+    ``stack()``): a provider's package in the synced documentation, or, for a
+    provider shown with any compatible endpoint, a sentence there that names
+    the package and the parameter that points it elsewhere; an example's page
+    or its title, the image name on product/docker/ or the
     package name on product/mcp/.
 
 The pages and anchors are looked for twice: in the rendered Markdown, before
@@ -68,7 +70,7 @@ import json
 import os
 import re
 import sys
-from html import unescape as html_unescape
+from html import escape as html_escape, unescape as html_unescape
 from typing import Any
 
 from mkdocs.exceptions import PluginError
@@ -127,10 +129,17 @@ CHECK_KINDS = (
 # Everything else a row prints is read from the build by ``stack()``: the
 # package a provider is installed as, the question an example's page asks, the
 # image and the package name the Docker and MCP pages open on.
+#
+# (name, package, endpoint): endpoint, where there is one, is (the parameter
+# that sets the address, the words after the package on its second line). The
+# row says the package reaches any compatible endpoint only while a sentence of
+# the synced docs names both the package and that parameter — today api.md's
+# "`digline-openai` takes a `base_url`, so a customer's own Azure deployment or
+# vLLM judges its own runs."
 STACK_PROVIDERS = (
-    ("Anthropic", "digline-anthropic"),
-    ("OpenAI-compatible", "digline-openai"),
-    ("Amazon Bedrock", "digline-bedrock"),
+    ("Anthropic", "digline-anthropic", None),
+    ("OpenAI", "digline-openai", ("base_url", "and any OpenAI-compatible endpoint")),
+    ("Amazon Bedrock", "digline-bedrock", None),
 )
 STACK_EXAMPLES = (
     ("LangChain", "product/examples/langchain.md"),
@@ -712,13 +721,32 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str) -> dict[str
                which every provider's package name must be written
     """
     providers = []
-    for name, package in STACK_PROVIDERS:
-        if not re.search(rf"(?<![\w-]){re.escape(package)}(?![\w-])", docs_text):
+    sentences = None
+    for name, package, endpoint in STACK_PROVIDERS:
+        written = rf"(?<![\w-]){re.escape(package)}(?![\w-])"
+        if not re.search(written, docs_text):
             raise _fail_site(
                 f"the stack band shows {name} as `{package}`, and no page under product/ "
                 "writes that package name."
             )
-        providers.append({"name": name, "package": package})
+        row = {"name": name, "package": package, "also": None}
+        if endpoint:
+            parameter, also = endpoint
+            if sentences is None:
+                sentences = re.split(r"(?<=[.!?])\s+|\n\s*\n", docs_text)
+            if not any(re.search(written, s) and re.search(rf"(?<![\w-]){re.escape(parameter)}(?![\w-])", s)
+                       for s in sentences):
+                raise _fail_site(
+                    f"the stack band says `{package}` works with {also.removeprefix('and ')}, and no "
+                    f"sentence under product/ names `{package}` together with `{parameter}`, the "
+                    "parameter that points it at another address."
+                )
+            row["also"] = also
+            # A hyphenated word ("OpenAI-compatible") is kept whole: a column
+            # a third of the page wide would otherwise break it at the hyphen.
+            row["also_html"] = re.sub(r"\S+-\S+", lambda m: f'<span class="stackrow__word">{m.group(0)}</span>',
+                                      html_escape(also))
+        providers.append(row)
 
     def page(source: str) -> str:
         if source not in pages or source not in rendered:
@@ -1126,11 +1154,16 @@ def selftest() -> int:
         "product/docker.md": '<h1 id="t">The official digline image</h1>\n<p><code>ghcr.io/digline/digline</code></p><p>The <code>other</code>.</p>',
         "product/mcp.md": '<h1 id="t">digline over MCP</h1>\n<p><code>digline-mcp</code> is the <a href="x">MCP</a> server.</p>',
     }
-    docs_text = "uv add digline-anthropic, or digline-openai; digline-bedrock (Converse API)."
+    docs_text = ("uv add digline-anthropic, or digline-openai; digline-bedrock (Converse API).\n\n"
+                 "The judge lives where the output does. `digline-openai` takes a\n`base_url`, so "
+                 "a customer's own Azure deployment judges its own runs.")
     band = stack(stack_pages, stack_rendered, docs_text)
-    expect("providers", [(p["name"], p["package"]) for p in band["providers"]],
-           [("Anthropic", "digline-anthropic"), ("OpenAI-compatible", "digline-openai"),
-            ("Amazon Bedrock", "digline-bedrock")])
+    expect("providers", [(p["name"], p["package"], p["also"]) for p in band["providers"]],
+           [("Anthropic", "digline-anthropic", None),
+            ("OpenAI", "digline-openai", "and any OpenAI-compatible endpoint"),
+            ("Amazon Bedrock", "digline-bedrock", None)])
+    expect("a hyphenated word kept whole", band["providers"][1]["also_html"],
+           'and any <span class="stackrow__word">OpenAI-compatible</span> endpoint')
     expect("questions: after the colon, or the whole title",
            [e["question"] for e in band["examples"]],
            ["what changed when I upgraded it?", "is it still answering from the right page?",
@@ -1145,6 +1178,12 @@ def selftest() -> int:
         ("a provider package no page writes",
          lambda p, r, t: (p, r, t.replace("digline-bedrock", "digline-aws")),
          "writes that package name"),
+        ("an endpoint no sentence documents",
+         lambda p, r, t: (p, r, t.replace("takes a\n`base_url`", "takes a key")),
+         "names `digline-openai` together with `base_url`"),
+        ("the package and the parameter in two different sentences",
+         lambda p, r, t: (p, r, t.replace("takes a\n`base_url`, so", "is a plugin. A `base_url` means")),
+         "names `digline-openai` together with `base_url`"),
         ("a longer name is not the package",
          lambda p, r, t: (p, r, t.replace("digline-openai", "digline-openai-extra")),
          "`digline-openai`, and no page under product/"),
