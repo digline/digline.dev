@@ -207,6 +207,28 @@ else
   fi
 fi
 
+# Rule 1 of AGENTS.md, as the latest release has it, for the quotation that
+# closes /agents/ (overrides/agents.html). AGENTS.md is not copied — it is not a
+# page here — so this is the moment its words are in reach: tools/agents_rule.py
+# reads them at the latest v* tag the checkout's HEAD contains, and writes the
+# tag, its commit and the rule to .agents-rule.json. tools/hooks/agents.py
+# points the page's links at that tag and fails the build when the quotation is
+# not that text. The tags are fetched first: a clone older than the release has
+# not got its tag. Before anything is copied, because the links to AGENTS.md
+# the copied pages carry are rewritten to the same tag below.
+rule="$here/.agents-rule.json"
+if ! git -C "$src" fetch --quiet --tags origin 2>/dev/null && [ -z "${SYNC_UNRELEASED:-}" ]; then
+  refuse "cannot fetch the tags of origin in $src" \
+         "The quotation on /agents/ is held to the latest release tag, and the" \
+         "tags have to be the ones origin has now to say which that is."
+fi
+python3 "$here/tools/agents_rule.py" "$src" > "$rule.tmp" && mv "$rule.tmp" "$rule" || {
+  rm -f "$rule.tmp" "$rule"
+  echo "sync: could not read rule 1 of AGENTS.md at a release tag of $src (above)" >&2
+  exit 1
+}
+agents_tag="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["tag"])' "$rule")"
+
 rm -rf "$out"
 mkdir -p "$out/examples"
 
@@ -262,8 +284,13 @@ perl -pi -e 's{\]\(docs/adr/\)}{](adr/index.md)}g'                              
 
 # AGENTS.md is at the root of the other repository and is not a page here: it is
 # a file an agent reads in a checkout, not documentation about the product. It
-# is linked from docs/ and from an ADR, so from two depths.
-perl -pi -e 's{\]\((?:\.\./)+AGENTS\.md\)}{](https://github.com/digline/digline/blob/main/AGENTS.md)}g' \
+# is linked from docs/ and from an ADR, so from two depths, and a page may
+# already link it on GitHub at main. Every one of those links leads to AGENTS.md
+# at the release tag read above, not main: these pages document that release,
+# and main's AGENTS.md may have moved on, or moved. tools/hooks/agents.py fails
+# the build on a link to AGENTS.md at any other ref.
+perl -pi -e 's{\]\((?:\.\./)+AGENTS\.md\)}{](https://github.com/digline/digline/blob/'"$agents_tag"'/AGENTS.md)}g;
+             s{https://github\.com/digline/digline/blob/main/AGENTS\.md}{https://github.com/digline/digline/blob/'"$agents_tag"'/AGENTS.md}g' \
   "$out"/*.md "$out"/adr/*.md
 
 # The two files that live at the root of the repository reach the documentation
@@ -294,6 +321,10 @@ find "$native" -name '*.md' -type f | while read -r page; do
   rel="${page#"$native"/}"
   mkdir -p "$out/$(dirname "$rel")"
   cp "$page" "$out/$rel"
+  # The one rewrite that applies here too: a native page links AGENTS.md on
+  # GitHub, written to main, and on the site it is AGENTS.md at the release tag,
+  # like every other link to it (above).
+  perl -pi -e 's{https://github\.com/digline/digline/blob/main/AGENTS\.md}{https://github.com/digline/digline/blob/'"$agents_tag"'/AGENTS.md}g' "$out/$rel"
 done
 
 # The dates the sitemap needs.
@@ -353,25 +384,5 @@ if git -C "$here" rev-parse --git-dir >/dev/null 2>&1; then
     fi
   done
 fi
-
-# Rule 1 of AGENTS.md, as the latest release has it, for the quotation that
-# closes /agents/ (overrides/agents.html). AGENTS.md is not copied — it is not a
-# page here — so this is the moment its words are in reach: tools/agents_rule.py
-# reads them at the latest v* tag the checkout's HEAD contains, and writes the
-# tag, its commit and the rule to .agents-rule.json. tools/hooks/agents.py
-# points the page's links at that tag and fails the build when the quotation is
-# not that text. The tags are fetched first: a clone older than the release has
-# not got its tag.
-rule="$here/.agents-rule.json"
-if ! git -C "$src" fetch --quiet --tags origin 2>/dev/null && [ -z "${SYNC_UNRELEASED:-}" ]; then
-  refuse "cannot fetch the tags of origin in $src" \
-         "The quotation on /agents/ is held to the latest release tag, and the" \
-         "tags have to be the ones origin has now to say which that is."
-fi
-python3 "$here/tools/agents_rule.py" "$src" > "$rule.tmp" && mv "$rule.tmp" "$rule" || {
-  rm -f "$rule.tmp" "$rule"
-  echo "sync: could not read rule 1 of AGENTS.md at a release tag of $src (above)" >&2
-  exit 1
-}
 
 echo "docs/product/ ← $src ($(find "$out" -name '*.md' | wc -l | tr -d ' ') pages, $(wc -l < "$manifest" | tr -d ' ') dated; AGENTS.md rule 1 at $(sed -n 's/.*"tag": "\([^"]*\)".*/\1/p' "$rule"))"
