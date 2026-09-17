@@ -172,17 +172,18 @@ nav:
       - Inspect AI: comparison/inspect-ai.md
       - Opik: comparison/opik.md
 
-  # Written here, not in digline/digline: these seven chapters are about the
+  # Written here, not in digline/digline: these eight chapters are about the
   # problem, not about the tool, and they do not move with a release.
   - Handbook:
       - handbook/index.md
       - 1. What you are actually shipping: handbook/01-what-you-are-shipping.md
       - 2. Cases: handbook/02-cases.md
-      - 3. Checks: handbook/03-checks.md
-      - 4. The judge: handbook/04-the-judge.md
-      - 5. The reference: handbook/05-the-reference.md
-      - 6. Maintenance: handbook/06-maintenance.md
-      - 7. For teams building for others: handbook/07-for-teams-building-for-others.md
+      - 3. Ground truth: handbook/03-ground-truth.md
+      - 4. Checks: handbook/04-checks.md
+      - 5. The judge: handbook/05-the-judge.md
+      - 6. The reference: handbook/06-the-reference.md
+      - 7. Maintenance: handbook/07-maintenance.md
+      - 8. For teams building for others: handbook/08-for-teams-building-for-others.md
 
   # One section, so that the sidebar of a documentation page is the
   # documentation and nothing else. Its groups are closed except the one the

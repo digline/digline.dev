@@ -7,7 +7,7 @@ description: >-
   that cannot bend.
 ---
 
-# 7. For teams building for others
+# 8. For teams building for others
 
 Everything up to here applies to anyone with an LLM in production. This chapter is for a narrower group: consultancies, software houses, anyone who builds and maintains an LLM feature for a customer who does not develop, and who owns the data the feature runs on. If that is you, the same suite does two more jobs — and one of them has a rule that cannot be bent.
 
@@ -15,7 +15,7 @@ Everything up to here applies to anyone with an LLM in production. This chapter 
 
 In a product you build for yourself there is one interested party. Here there are three, and they want different things from the same numbers.
 
-**The developer** wants what the previous six chapters describe: cases, checks, a reference, a comparison in CI.
+**The developer** wants what the previous seven chapters describe: cases, checks, a reference, a comparison in CI.
 
 **The consultancy** — your company — maintains this feature for several customers at once. It needs to answer, for each of them, *did last Tuesday's release make customer A's assistant worse?* — and it needs to answer it without holding customer A's data, and without customer A's numbers ever sitting in the same place as customer B's.
 
@@ -23,7 +23,7 @@ In a product you build for yourself there is one interested party. Here there ar
 
 > *What did you test, when, under which version, and who approved it?*
 
-A dashboard does not answer that. A dashboard shows today. The question is about a date, a commit, an artefact that someone can open six months later and that has not changed since. The reference file from chapter 5 is that artefact — which is why it lives in the repository and not on a vendor's server: a file you can hand over, with a hash and a date, is evidence; a screen someone else hosts is not.
+A dashboard does not answer that. A dashboard shows today. The question is about a date, a commit, an artefact that someone can open six months later and that has not changed since. The reference file from chapter 6 is that artefact — which is why it lives in the repository and not on a vendor's server: a file you can hand over, with a hash and a date, is evidence; a screen someone else hosts is not.
 
 ## The rule: the payload stays where it was born, the verdict travels
 
@@ -77,4 +77,4 @@ That closes the loop that chapter 2 asked for by hand: *one failure seen, one ca
 
 ---
 
-That is the handbook. If you have read it end to end, you know more about keeping an LLM feature under control than most teams shipping one. The tool built around these seven chapters is [digline](../index.md); the project all the numbers came from is [public](https://github.com/digline/brief). Neither is required to start — the twenty cases are.
+That is the handbook. If you have read it end to end, you know more about keeping an LLM feature under control than most teams shipping one. The tool built around these eight chapters is [digline](../index.md); the project most of the numbers came from is [public](https://github.com/digline/brief). Neither is required to start — the twenty cases are.

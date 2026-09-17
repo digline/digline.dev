@@ -62,7 +62,7 @@ What the twenty need:
 
 **Both answers.** If every case expects a "yes", a model that always says yes scores perfectly. The newsletter suite has ten articles the reader wanted and eleven it did not. Without the eleven, the judge's biggest weakness — promoting things that merely sound relevant — would be invisible.
 
-**The boring middle, not just the edges.** A suite of twenty pathological inputs tells you how the system fails under stress and nothing about how it behaves on Tuesday. Most cases should be ordinary.
+**The boring middle, not just the edges.** A suite of twenty pathological inputs tells you how the system fails under stress and nothing about how it behaves on Tuesday. Include ordinary ones — as a shape of their own, not as most of the set.
 
 **Stable inputs.** A case that fetches today's data is a different case tomorrow. Snapshot the input into the file. The newsletter project stores the article summary in the case, not a URL to re-fetch: the same twenty-one inputs, every run, for months.
 
@@ -90,4 +90,4 @@ That is why the boring work is the only work worth doing first. Six months in, t
 4. Put them in a file, in the repository, next to the code. Snapshot the inputs. Add labels where they apply.
 5. From now on: one failure seen, one case written, the same day.
 
-The next chapter is about what to check on each of them — and why the checks that need no model at all come first.
+The next chapter is about where the right answers come from when nobody gives you any — and why that is decided when you write the feature, not afterwards.

@@ -6,7 +6,7 @@ description: >-
   to do the morning CI turns red and you changed nothing at all.
 ---
 
-# 6. Maintenance
+# 7. Maintenance
 
 A suite that runs once is a demo. This chapter is about the part that makes it a practice: when it runs, what should make you look, and what to do on the morning it turns red and you changed nothing.
 
@@ -18,7 +18,7 @@ Something happens; the suite runs; the comparison says whether it got worse. The
 
 The prompt, the model, the retrieval, the code around the call. This is the trigger you expect, and the one CI handles: every pull request runs the suite and compares with the reference. Red blocks the merge; the lines under the headline say which cases moved and by how much; the diff of the prompt sits next to them.
 
-The response is the ordinary one — look at the cases that regressed, decide whether the change is worth it, fix or accept. The only rule: a red comparison is never fixed by widening the tolerance or lowering the threshold. Those are rule changes, and rule changes go through the front door (chapter 5), not through the fix for a failing build.
+The response is the ordinary one — look at the cases that regressed, decide whether the change is worth it, fix or accept. The only rule: a red comparison is never fixed by widening the tolerance or lowering the threshold. Those are rule changes, and rule changes go through the front door (chapter 6), not through the fix for a failing build.
 
 ### 2. The provider changed something
 
