@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening indexes glyphs assets build check clean
+.PHONY: docs preview serve css source home opening indexes glyphs assets translate build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -40,18 +40,23 @@ indexes:         ## the Examples tiles and the Decisions table: every missing fi
 glyphs:          ## the glyph check against its own four-page site, refusals included — needs no build
 	uv run tools/check-glyphs.py --selftest
 
-build: docs css source home opening indexes glyphs assets  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind or a character with no Plex glyph fails it
+translate:       ## the translate="no" and lang check against its own two-page site, refusals included — needs no build
+	uv run tools/check-translate.py --selftest
+
+build: docs css source home opening indexes glyphs assets translate  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph or code a translator may rewrite fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
+	uv run tools/check-translate.py site
 
 check: css source  ## the stylesheets, the source, the two generated indexes and the glyphs against an existing site/
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
+	uv run tools/check-translate.py site
 
 clean:
 	rm -rf site docs/product .sync-preview

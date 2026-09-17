@@ -141,6 +141,16 @@ jobs:
           uv run tools/check-assets.py --selftest
           uv run tools/check-assets.py site
 
+      - name: Check that code is not offered to a translator
+        # Every <pre> and <code> on every page carries translate="no"
+        # (tools/hooks/notranslate.py, and the templates for their own), so a
+        # browser translating the page leaves commands and output as written;
+        # and every page is <html lang="en">. --selftest first: a clean
+        # two-page site passes and counts its tags, each missing attribute fails.
+        run: |
+          uv run tools/check-translate.py --selftest
+          uv run tools/check-translate.py site
+
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.
       - uses: actions/upload-pages-artifact@v4
