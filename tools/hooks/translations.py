@@ -8,7 +8,7 @@ original. This hook does three things with them.
 ── before anything renders (on_files) ───────────────────────────────────────
 Every file under a language's folder is read, and the build fails when
 
-  * it is not one of the five presentation pages (languages.PAGES), at the
+  * it is not one of the six presentation pages (languages.PAGES), at the
     path of its original: docs/it/why.md, not docs/it/perche.md nor
     docs/it/handbook/index.md;
   * its ``lang:`` is not the name of its folder, or that language has no
@@ -726,8 +726,8 @@ def _refusal_cases() -> list[tuple[str, str, dict, str | None]]:
             "description": "Una descrizione.", "search": {"exclude": True}}
     return [
         ("a translation that holds together", "it/why.md", good, None),
-        ("a page that is not a presentation page", "it/agents.md", dict(good, translation_of="agents.md"),
-         "agents.md is not one of them"),
+        ("a page that is not a presentation page", "it/comparison/index.md",
+         dict(good, translation_of="comparison/index.md"), "comparison/index.md is not one of them"),
         ("a presentation page at another path", "it/perche.md", good, "perche.md is not one of them"),
         ("a lang that is not its folder's", "it/why.md", dict(good, lang="de"), "lang is 'de', and the page is in the it/ folder"),
         ("a language with no catalog", "es/why.md", dict(good, lang="es"), "lang es has no catalog"),

@@ -1,7 +1,7 @@
 """Which languages the site is translated into, and which of its pages.
 
 English is the original, and the only language of the documentation, the
-Handbook, the comparison and the blog. The five presentation pages may have a
+Handbook, the comparison and the blog. The six presentation pages may have a
 translation in each of LANGUAGES, written in docs/<lang>/ at the same path as
 the English page it translates, and served at the same path under /<lang>/:
 
@@ -35,9 +35,9 @@ LANGUAGES = ("it", "de", "es")
 # in one language; these say the same thing in every page.
 NAMES = {"en": "English", "it": "Italiano", "de": "Deutsch", "es": "Español"}
 
-# The pages that may be translated: the five presentation pages, by their
+# The pages that may be translated: the six presentation pages, by their
 # source path under docs/.
-PAGES = ("index.md", "start.md", "why.md", "about.md", "contact.md")
+PAGES = ("index.md", "start.md", "why.md", "about.md", "contact.md", "agents.md")
 
 
 def language_of(path: str) -> str | None:
