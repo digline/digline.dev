@@ -28,6 +28,8 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 RULE = re.compile(r"^## 1\. .*?$\n+((?:^>.*\n?)+)", re.M)
 
@@ -46,8 +48,37 @@ def git(src: str, *args: str) -> str:
     return subprocess.run(["git", "-C", src, *args], check=True, capture_output=True, text=True).stdout.strip()
 
 
+def released(src: str) -> list[str]:
+    return git(src, "tag", "--merged", "HEAD", "--list", "v*", "--sort=-v:refname").splitlines()
+
+
+def deepen(src: str) -> bool:
+    """Give a shallow checkout the history its tags have to be tested against.
+
+    `--merged HEAD` walks from HEAD, and in a shallow clone that walk stops at
+    the graft one commit down: the tags are all there and none of them is an
+    ancestor of anything, so the checkout reads as a repository that never
+    released. digline's CI checks itself out shallow for the docs job on
+    purpose, so this is the ordinary shape here and not a broken clone.
+
+    Deepening is the honest answer and not widening the refusal, because the
+    question — which release does HEAD contain — has an answer that a shallow
+    clone is merely unable to reach. Returns whether anything was deepened, so
+    a checkout that was never shallow is not fetched twice.
+    """
+    if git(src, "rev-parse", "--is-shallow-repository") != "true":
+        return False
+    subprocess.run(["git", "-C", src, "fetch", "--quiet", "--tags", "--unshallow", "origin"],
+                   check=False, capture_output=True, text=True)
+    return True
+
+
 def read(src: str) -> dict:
-    tags = git(src, "tag", "--merged", "HEAD", "--list", "v*", "--sort=-v:refname").splitlines()
+    tags = released(src)
+    if not tags and deepen(src):
+        # The clone was shallow, so the first reading was about the graft and
+        # not about the history. This one is about the history.
+        tags = released(src)
     if not tags:
         raise SystemExit(f"agents_rule: {src} contains no v* release tag: nothing released to quote")
     tag = tags[0]
@@ -67,10 +98,33 @@ def selftest() -> int:
         failures.append("no numbered rule 1: something extracted")
     if extract(text.replace("> **Never", "**Never").replace("> the evidence", "the evidence")) is not None:
         failures.append("rule 1 with no blockquote: something extracted")
+    with tempfile.TemporaryDirectory() as tmp:
+        # The shape digline's CI is in: checked out shallow on purpose, with the
+        # tags fetched afterwards. Read from the graft alone it looks like a
+        # repository that never released, which is the defect this covers.
+        origin, clone = f"{tmp}/origin", f"{tmp}/clone"
+        subprocess.run(["git", "init", "--quiet", "-b", "main", origin], check=True)
+        Path(origin, "AGENTS.md").write_text(text, encoding="utf-8")
+        for args in (["add", "AGENTS.md"], ["-c", "user.email=s@t", "-c", "user.name=s", "commit", "--quiet", "-m", "one"],
+                     ["tag", "v0.1.0"], ["-c", "user.email=s@t", "-c", "user.name=s", "commit", "--quiet", "--allow-empty", "-m", "two"]):
+            subprocess.run(["git", "-C", origin, *args], check=True, capture_output=True)
+        subprocess.run(["git", "clone", "--quiet", "--depth", "1", "--no-tags", f"file://{origin}", clone], check=True)
+        subprocess.run(["git", "-C", clone, "fetch", "--quiet", "--tags", "origin"], check=True)
+        if git(clone, "rev-parse", "--is-shallow-repository") != "true":
+            failures.append("the selftest's own clone is not shallow: it proves nothing")
+        else:
+            try:
+                found = read(clone)["tag"]
+            except SystemExit as refusal:
+                found = f"refused: {refusal}"
+            if found != "v0.1.0":
+                failures.append(f"shallow clone: {found!r}, not the tag HEAD contains")
+
     for failure in failures:
         print(f"agents_rule selftest: FAILED — {failure}", file=sys.stderr)
     if not failures:
-        print("agents_rule selftest: rule 1's blockquote read, and nothing read without a rule 1 or its blockquote")
+        print("agents_rule selftest: rule 1's blockquote read, nothing read without a rule 1 or its blockquote, "
+              "and the release tag found in a shallow clone")
     return 1 if failures else 0
 
 
