@@ -113,7 +113,12 @@ pre {
    its box goes on underneath itself, indented, the hanging indent .console had
    before, and never scrolls sideways. Run ids and hashes have no space to break
    at, so they break anywhere. An empty line keeps its height. */
-.dg-page--home pre.out { white-space: pre-wrap; overflow-wrap: anywhere; }
+.dg-page--home pre.out,
+/* The two comparisons on Start here (tools/hooks/home.py): digline's own
+   output, set as the home sets it — a line too long for the column goes on
+   underneath itself rather than sideways, which at 390px is every one of
+   them. */
+.essay pre.out { white-space: pre-wrap; overflow-wrap: anywhere; }
 .out__line { display: block; padding-left: 2ch; text-indent: -2ch; }
 .out__line:empty::before { content: "\a0"; }
 
