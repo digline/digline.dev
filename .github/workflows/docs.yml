@@ -147,6 +147,14 @@ jobs:
         # on_post_build, during the build step below.
         run: uv run tools/hooks/blog.py --selftest
 
+      - name: Check the card's image
+        # tools/hooks/seo.py: a PNG and a JPEG measured from their bytes, and a
+        # default card that is missing or that says nothing about its size
+        # refused. Every card the build writes is read back against the file it
+        # names in on_post_build, during the build step below — the width and
+        # the height reach a reader on a machine that never fetches the image.
+        run: uv run tools/hooks/seo.py --selftest
+
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
         # reaching the site. sitemap.xml and robots.txt come out of this step
