@@ -19,9 +19,9 @@ The examples below come from a real, public project: a small program that reads 
 
 When you change a line of code, the same input produces the same output, every time. That is what makes tests possible: you write down what should come out, and the machine tells you whether it did.
 
-A prompt does not work like that. Send the same article to the same model with the same prompt, and one morning it scores 4, the next morning 3. Nothing changed — not your code, not the model, not the input. The model is a probability distribution, and you are sampling from it.
+A prompt does not work like that. Ask the same model the same question five times, same prompt, same article, and it does not always answer the same way. Every run of the newsletter judge asks each of twenty-one articles five times. In two to six of them, depending on the run, the five answers disagree with each other. Nothing changed between those five: not the code, not the model, not the input. The model is a probability distribution, and you are sampling from it.
 
-In our newsletter judge, out of twenty-one articles scored twice with an identical prompt, one changed its verdict. That is not a bug in the judge. It is what a judge is. But it means the ordinary reflex — *run it once, it looks right, ship it* — is not a test. It is one sample.
+But it means the ordinary reflex — *run it once, it looks right, ship it* — is not a test. It is one sample.
 
 ## The model changes under you
 
@@ -35,7 +35,7 @@ This is the failure that no code review can catch, because there is no diff. The
 
 Most teams do have a threshold somewhere: a score below 0.7 fails, above passes. It is better than nothing, and it misses the failure that matters most.
 
-Here is the shape of it. A check scores 0.91 on the day you ship. Three weeks and two prompt tweaks later it scores 0.78. Still above 0.7. Still green. Still passing every test you have. And the users have already started to feel it, because a drop of thirteen points is a different product to the person on the other end.
+Here is the shape of it, with made-up numbers. A check scores 0.91 on the day you ship. Three weeks and two prompt tweaks later it scores 0.78. Still above 0.7. Still green. Still passing every test you have. And the users have already started to feel it, because a drop of thirteen points is a different product to the person on the other end.
 
 A threshold catches *below the line*. It does not catch *worse than it was*. For that you need a reference — the approved state, recorded — and a comparison against it on every change. The reference is the piece almost every team is missing, and it is the reason the drift from 0.91 to 0.78 is invisible to them until a customer names it.
 
@@ -43,11 +43,11 @@ A threshold catches *below the line*. It does not catch *worse than it was*. For
 
 For anything that cannot be checked by exact match — is this answer polite, does it stay on policy, does it summarise faithfully — the practical tool is another model acting as a judge. It works. It also inherits every problem above: the judge samples too, and it changes its mind.
 
-In the newsletter project, once the judge was sampled several times per article instead of once, the picture got clearer and more uncomfortable at the same time. Most articles were judged the same way every time. Six out of twenty-one were not: on those, a five-vote judge would split 3–2 one run and 4–1 the next. Those six were exactly the articles a human would also have hesitated over. The judge was not broken; it was honest about the borderline.
+In the newsletter project the judge votes five times per article and the majority decides. Two runs four days apart, same prompt: on one article out of twenty-one the majority flipped, from two votes out of five to five out of five. And the articles that split are not the same ones each run: across the six published runs, eleven of the twenty-one split at least once, one of them in five runs, four of them only once. Ten never split at all. Those eleven are the borderline ones, and a five-vote majority is a thin thing to hang a decision on.
 
-This isn't only our experience: Dan Luu re-graded the same Senior SWE-Bench outputs ten times and found the verdict disagreeing with the official result about a quarter of the time, on identical input ([exercise 7](https://danluu.com/exercise-7/)). We applied this reading to our own judges: [Bad evals, my own](blog/bad-evals-my-own.md). The judge is an instrument. An instrument gets calibrated.
+It isn't only my experience. Dan Luu had the same Senior SWE-Bench outputs graded ten more times and the tastefulness verdict disagreed with the official one 23% of the time, on identical input ([exercise 7](https://danluu.com/exercise-7/)). I applied the same reading to my own judges: [Bad evals, my own](blog/bad-evals-my-own.md). The judge is an instrument. An instrument gets calibrated.
 
-Two consequences follow. First, you cannot know whether your *system* got worse until you know how much your *judge* wobbles on its own — the noise floor has to be measured before anything else is. Second, a single case is a bad unit for a decision. Across those same runs, the aggregate — how many articles the judge and the human agreed on — moved by one case out of twenty-one while individual cases swung by three votes. Individual cases are for diagnosis. The aggregate is what you can put a threshold on.
+Two consequences follow. First, you cannot know whether your *system* got worse until you know how much your *judge* wobbles on its own — the noise floor has to be measured before anything else is. Second, a single case is a bad unit for a decision. Across that pair of runs the aggregate moved by one article out of twenty-one, while the article itself moved by three votes out of five. Individual cases are for diagnosis. The aggregate is what you can put a threshold on.
 
 ## The customer's question
 
@@ -69,9 +69,11 @@ Put the pieces together and "under control" turns out to be three concrete thing
 
 **A history.** Every reference you ever approved, in git, with the reasons. When someone asks the customer's question, the answer is a `git log`.
 
-In the newsletter project, all of this costs about eight cents per run. Four experiments on the judge's prompt, one calibration, and the project has a number it can state — "agrees with the reader on 62% of borderline articles, stable across runs" — and a file that says which prompt produced it.
+In the newsletter project a run costs about seven cents: twenty-one articles, judged five times each. The project has a number it can state, with the runs to back it: the judge agrees with the reader on 16 of 21 articles in four of the six published runs, and on 15 and 14 in the other two.
 
-That is what [digline](index.md) does, and it is all it does. The reference lives in your repository. Nothing leaves your machine. `pip install digline` to try it; the newsletter project is [public](https://github.com/digline/brief) if you want to see the real thing first.
+That is what [digline](index.md) does, and it is all it does. The reference lives in your repository. Nothing leaves your machine. `pip install digline` to try it; the newsletter project is [public](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) if you want to see the real thing first.
+
+Where these numbers come from: six runs of the newsletter judge, committed as [fixtures](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures), [with a note on which number comes from which run](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), and [a script](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/recompute.py) that recomputes every number in this page from them.
 
 ---
 

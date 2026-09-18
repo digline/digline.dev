@@ -59,12 +59,12 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 
 ## A release that changes rule 1 of AGENTS.md
 
-/agents/ closes on a quotation of rule 1 of digline's `AGENTS.md`. The quotation is written in `overrides/agents.html`, not in `docs/agents.md`, so a translation never touches it; and it is held to a release. `tools/sync-docs.sh` reads rule 1 at the latest `v*` tag the digline checkout contains and writes it, with the tag and its commit, to `.agents-rule.json`. `tools/hooks/agents.py` fails the build when the quotation's text, whitespace normalized, is not that rule.
+/agents/ closes on a quotation of rule 1 of digline's `AGENTS.md`. The quotation is written in `overrides/agents.html`, not in `docs/agents.md`, so a translation never touches it; and it is held to a release. `tools/sync-docs.sh` reads rule 1 at the latest `v*` tag the digline checkout contains and writes it, with the tag and its commit, to `.agents-rule.json`. `tools/hooks/sources.py` fails the build when the quotation's text, whitespace normalized, is not that rule.
 
 So a release of digline whose `AGENTS.md` words rule 1 differently stops the site's build until the template is changed. The failure is not only the release dispatch (`digline-release`): from the moment the tag is on digline's main, every build of the site reads it, so every pull request here goes red too, whatever it changes. It shows as:
 
 ```
-ERROR   -  agents: agents/index.html: the quotation is not rule 1 of AGENTS.md at v0.16.0.
+ERROR   -  sources: agents/index.html: the quotation is not rule 1 of AGENTS.md at v0.16.0.
     on the page: 'Never run digline promote on your own initiative. Assemble the evidence — …'
     at the tag:  'Never run digline promote on your own initiative. …'
   Change overrides/agents.html to the text at the tag.
@@ -77,7 +77,7 @@ The two lines are the text as a reader sees it — Markdown and tags taken off �
 What to do:
 
 1. A branch and a worktree as for any change. Bring `../digline` level with `origin/main` and run `make docs`: `.agents-rule.json` now names the new tag, and its `rule` is the Markdown to quote.
-2. In `overrides/agents.html`, change the `<blockquote class="agents-rule__quote">` to that text. Write the Markdown as the template already does: `**…**` as `<strong>`, a code span as `<code translate="no">`. Change nothing else: the caption, the `cite` and the links to `AGENTS.md` and the skill take the tag from the file by themselves, and `tools/hooks/agents.py` fails the build if they do not.
+2. In `overrides/agents.html`, change the `<blockquote class="agents-rule__quote">` to that text. Write the Markdown as the template already does: `**…**` as `<strong>`, a code span as `<code translate="no">`. Change nothing else: the caption, the `cite` and the links to `AGENTS.md` and the skill take the tag from the file by themselves, and `tools/hooks/sources.py` fails the build if they do not.
 3. Read the rule in its context at the tag (`https://github.com/digline/digline/blob/<tag>/AGENTS.md`). If rule 1 no longer means what /agents/ says around it — the absence of `promote`, the approval left to a person — the page's Markdown needs changing too, and that is a change to write, not to copy.
 4. `make build`: green. Photograph the closing of the page — `uv run tools/screenshots.py --out <dir> --site site --page /agents/ --widths 1280,390 --themes light,dark --viewport-only --height 900 --scroll-to ".agents-rule" --scroll-block center` — and read the quotation and the caption, which names the new tag.
 5. Pull request, CI green, merge with a merge commit. The push deploys; then, on the live page, the quotation once, the caption at the new tag, and the links to `AGENTS.md` and the skill at that tag answering 200 — and a link at `main` found 0 times.
@@ -85,7 +85,7 @@ What to do:
 Two neighbours of the same failure:
 
 - AGENTS.md at the tag has no `## 1.` heading opening on a blockquote (the rules renumbered, or rule 1 no longer quoted): the sync stops before anything is copied — ``agents_rule: AGENTS.md at <tag> has no `## 1.` rule opening on a blockquote``. The fix is the same decision as step 3, and `tools/agents_rule.py` may need to learn the new shape.
-- `.agents-rule.json` missing, or with no rule or no tag: `agents: …/.agents-rule.json cannot be read` or `… has no rule 1 of AGENTS.md at …`. It is written by the sync, never by hand: run `make docs`.
+- `.agents-rule.json` missing, or with no rule or no tag: `sources: …/.agents-rule.json cannot be read` or `… has no rule 1 of AGENTS.md at …`. It is written by the sync, never by hand: run `make docs`.
 
 ## Translations
 

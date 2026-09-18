@@ -1,6 +1,20 @@
-"""/agents/: its links to AGENTS.md at a release, and the quotation that closes it.
+"""The repositories the site cites as a source, pinned so a link keeps its word.
 
-The page closes on rule 1 of digline's AGENTS.md, quoted in
+A page that says what a repository contains has to lead to the state it read,
+not to whatever that repository holds today. Two rules, one per repository,
+both checked on the built site:
+
+  * **digline/digline**: every link to AGENTS.md leads to it at the release tag
+    the sync read (tools/sync-docs.sh, .agents-rule.json). A link at main, or at
+    any other ref, fails the build (agents_md_link_problems).
+  * **digline/brief**: every link leads to a full 40-character commit, the runs
+    /why/ reads its numbers from. main, a branch, a tag and a short sha all fail
+    the build (brief_link_problems): a tag can be moved and a branch moves by
+    itself, and the files a reader is sent to verify would not be the ones the
+    page was written from.
+
+── the quotation on /agents/ ─────────────────────────────────────────────────
+That page closes on rule 1 of digline's AGENTS.md, quoted in
 overrides/agents.html — not in docs/agents.md, so that a translation of the
 page never rewrites digline's words. Those words are digline's and change
 there, so they are held to a release: tools/sync-docs.sh writes
@@ -39,7 +53,7 @@ search/search_index.json must hold /agents/ with its title and its opening in
 readable text, an entry for each tile (each <h3> in a .tile of the page), and
 no translated page (search_problems).
 
-    usage: tools/hooks/agents.py --selftest
+    usage: tools/hooks/sources.py --selftest
 """
 
 from __future__ import annotations
@@ -72,12 +86,12 @@ def load(path: str) -> dict:
         with open(path, encoding="utf-8") as fh:
             data = json.load(fh)
     except (OSError, ValueError) as error:
-        raise PluginError(f"agents: {path} cannot be read ({error}). tools/sync-docs.sh writes it: "
+        raise PluginError(f"sources: {path} cannot be read ({error}). tools/sync-docs.sh writes it: "
                           "run `make docs` against a digline checkout.") from None
     if not isinstance(data, dict) or not str(data.get("tag") or "").startswith("v"):
-        raise PluginError(f"agents: {path} names no release tag, so there is no release to quote")
+        raise PluginError(f"sources: {path} names no release tag, so there is no release to quote")
     if not str(data.get("rule") or "").strip():
-        raise PluginError(f"agents: {path} has no rule 1 of AGENTS.md at {data.get('tag')}: nothing to hold the "
+        raise PluginError(f"sources: {path} has no rule 1 of AGENTS.md at {data.get('tag')}: nothing to hold the "
                           "quotation on /agents/ to")
     return data
 
@@ -86,7 +100,7 @@ def at_tag(markdown: str, tag: str, source: str) -> str:
     """The page's links to digline's main, at the tag; refused when one is missing."""
     missing = [url for url in LINKS if url not in markdown]
     if missing:
-        raise PluginError(f"agents: {source} has no link to {', '.join(missing)} — the page's links to AGENTS.md "
+        raise PluginError(f"sources: {source} has no link to {', '.join(missing)} — the page's links to AGENTS.md "
                           "and the skill are written to main and led to the release tag here")
     for url, form in LINKS.items():
         markdown = markdown.replace(url, form.format(tag=tag))
@@ -214,6 +228,30 @@ def agents_md_link_problems(site: str, tag: str) -> tuple[list[str], int]:
     return problems, read
 
 
+BRIEF = "https://github.com/digline/brief"
+_BRIEF = re.compile(r'href="' + re.escape(BRIEF) + r'(?:/(?:blob|tree|commit)/([^/"]+)[^"]*)?"')
+_SHA = re.compile(r"\A[0-9a-f]{40}\Z")
+
+
+def brief_link_problems(site: str) -> tuple[list[str], int]:
+    """Every link to digline/brief in site/'s pages, at anything but a full
+    commit sha: (problems, links read). The repository's own front page — no
+    /blob/ or /tree/ — is a link to the project, not to a file, and passes."""
+    problems: list[str] = []
+    read = 0
+    for folder, dirs, names in os.walk(site):
+        dirs.sort()
+        for name in sorted(n for n in names if n.endswith(".html")):
+            relative = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
+            with open(os.path.join(folder, name), encoding="utf-8") as fh:
+                for ref in _BRIEF.findall(fh.read()):
+                    read += 1
+                    if ref and not _SHA.match(ref):
+                        problems.append(f"{relative}: a link to digline/brief at {ref!r}, and a source is cited at a "
+                                        "full commit sha — a tag can be moved and a branch moves by itself")
+    return problems, read
+
+
 def search_problems(index: dict, page_html: str) -> list[str]:
     """/agents/ in the search index as a reader of the results would see it."""
     docs = index.get("docs", [])
@@ -264,7 +302,7 @@ def split_aside(body: str, source: str) -> tuple[str, str]:
     """The page's body before its .aside, and the .aside to the end: the template
     sets the quotation between the two. Refused unless there is exactly one."""
     if body.count(ASIDE) != 1:
-        raise PluginError(f"agents: {source} has {body.count(ASIDE)} <div class=\"aside\" markdown>, and the "
+        raise PluginError(f"sources: {source} has {body.count(ASIDE)} <div class=\"aside\" markdown>, and the "
                           "quotation of rule 1 is set before the one block about the agent under test")
     before, after = body.split(ASIDE, 1)
     return before, ASIDE + after
@@ -280,16 +318,17 @@ def on_page_context(context, page, config, nav, **kwargs):
 def on_post_build(config, **kwargs):
     path = os.path.join(config["site_dir"], "agents", "index.html")
     if not os.path.isfile(path):
-        raise PluginError("agents: site/agents/index.html was not built")
+        raise PluginError("sources: site/agents/index.html was not built")
     with open(path, encoding="utf-8") as fh:
         page_html = fh.read()
     rule = load(_rule_path(config))
     problems = quotation_problems(page_html, rule) + caption_problems(page_html, rule)
     problems += agents_md_link_problems(config["site_dir"], rule["tag"])[0]
+    problems += brief_link_problems(config["site_dir"])[0]
     with open(os.path.join(config["site_dir"], "search", "search_index.json"), encoding="utf-8") as fh:
         problems += search_problems(json.load(fh), page_html)
     if problems:
-        raise PluginError("agents: " + "\n".join(problems))
+        raise PluginError("sources: " + "\n".join(problems))
 
 
 # ── the selftest ─────────────────────────────────────────────────────────────
@@ -304,14 +343,14 @@ def selftest() -> int:
         if actual != wanted:
             failures.append(f"{label}: got {actual!r}, wanted {wanted!r}")
         else:
-            print(f"agents selftest: {label}")
+            print(f"sources selftest: {label}")
 
     def refused(label, call, needle):
         try:
             call()
         except PluginError as error:
             if needle in str(error):
-                print(f"agents selftest: refused, as it must — {label}")
+                print(f"sources selftest: refused, as it must — {label}")
             else:
                 failures.append(f"{label}: refused, but not for this: {error}")
             return
@@ -407,6 +446,24 @@ def selftest() -> int:
         expect("a link to AGENTS.md at an older tag: refused",
                "at v0.14.1, and the site documents v0.15.0" in agents_md_link_problems(site, "v0.15.0")[0][0], True)
 
+    # Links to digline/brief: a full commit sha, and nothing else.
+    with tempfile.TemporaryDirectory() as site:
+        os.makedirs(os.path.join(site, "why"))
+        sha = "9507bb06f7dd90a4b6a624dbe77725e50819a02f"
+        def brief_page(*refs):
+            with open(os.path.join(site, "why", "index.html"), "w", encoding="utf-8") as fh:
+                fh.write("".join(f'<a href="{BRIEF}{r}">x</a>' for r in refs))
+        brief_page(f"/tree/{sha}", f"/blob/{sha}/fixtures/README.md", f"/blob/{sha}/fixtures/recompute.py", "")
+        expect("links to digline/brief at a full sha, and its front page", brief_link_problems(site), ([], 4))
+        for label, ref in (("main", "/blob/main/fixtures/README.md"),
+                           ("a tag", "/tree/why-2026-09/fixtures"),
+                           ("a short sha", f"/blob/{sha[:7]}/fixtures/README.md"),
+                           ("a branch", "/tree/why-fixtures/fixtures")):
+            brief_page(ref)
+            found, _ = brief_link_problems(site)
+            expect(f"a link to digline/brief at {label}: refused",
+                   (len(found), "and a source is cited at a full commit sha" in (found[0] if found else "")), (1, True))
+
     # The search index.
     tiles_html = ('<div class="tile">\n<h3 id="the-mcp-server">The MCP server</h3>'
                   '<div class="tile">\n<h3 id="the-operator">The operator</h3>')
@@ -431,7 +488,7 @@ def selftest() -> int:
         expect(f"search: {label} refused", any(needle in p for p in found), True)
 
     for failure in failures:
-        print(f"agents selftest: FAILED — {failure}", file=sys.stderr)
+        print(f"sources selftest: FAILED — {failure}", file=sys.stderr)
     return 1 if failures else 0
 
 

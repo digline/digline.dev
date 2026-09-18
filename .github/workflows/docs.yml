@@ -97,13 +97,13 @@ jobs:
         run: uv run tools/hooks/opening.py --selftest
 
       - name: Check the agents page's hook
-        # tools/agents_rule.py and tools/hooks/agents.py: rule 1 read out of
+        # tools/agents_rule.py and tools/hooks/sources.py: rule 1 read out of
         # AGENTS.md and nothing read without it, the page's links led to the
         # release tag, and a quotation that is not the rule at the tag, or a
         # file with no rule or no tag, refused.
         run: |
           python3 tools/agents_rule.py --selftest
-          uv run tools/hooks/agents.py --selftest
+          uv run tools/hooks/sources.py --selftest
 
       - name: Check the catalog's hook
         # tools/hooks/i18n.py and tools/catalog.py: a catalog, a template and a

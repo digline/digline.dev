@@ -33,7 +33,7 @@ opening:         ## the opening band's hook: title and lede, title alone, no tit
 
 agents:          ## /agents/: rule 1 read out of AGENTS.md, links led to the tag, the quotation held to the rule — needs no build
 	python3 tools/agents_rule.py --selftest
-	uv run tools/hooks/agents.py --selftest
+	uv run tools/hooks/sources.py --selftest
 
 assets:          ## the asset-hash check against its own small site, refusals included — needs no build
 	uv run tools/check-assets.py --selftest
