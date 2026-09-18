@@ -474,6 +474,13 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
+    "blog/denominator-trap.md": (
+        "Why a case that errors, is suspended or carries no label leaves a "
+        "run-level aggregate's denominator and raises the score exactly when "
+        "it was the failing case; three questions to ask of your own eval "
+        "code, and what digline's compare and explain now say when the two "
+        "sides counted different cases"
+    ),
     "blog/bad-evals-my-own.md": (
         "Five exercises on two LLM judges the author runs, artifacts first and "
         "explanations after: a noise floor that itself moves across sixteen "
