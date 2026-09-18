@@ -8,8 +8,8 @@ description: Un prompt non è codice, e il modello si muove sotto i tuoi piedi. 
 search:
   exclude: true
 source: why.md
-source_sha: 5ff0a8d6fc10
-source_commit: 6bb2652
+source_sha: afbb4736477e
+source_commit: 9b352ff
 model: claude-opus-5
 ---
 
@@ -47,7 +47,7 @@ Una soglia rileva *ciò che è sotto soglia*. Non rileva *ciò che è peggiore d
 
 Per tutto ciò che non si può verificare con una corrispondenza esatta — questa risposta è cortese, rispetta le policy, riassume in modo fedele — lo strumento pratico è un altro modello nel ruolo di giudice. Funziona. Ed eredita tutti i problemi visti sopra: anche il giudice estrae campioni, e cambia idea.
 
-Nel progetto delle newsletter il giudice vota cinque volte per articolo e decide la maggioranza. Due run a quattro giorni di distanza, stesso prompt: su un articolo su ventuno la maggioranza si è ribaltata, da due voti su cinque a cinque su cinque. E gli articoli su cui i voti si dividono non sono gli stessi in ogni run: nei sei run pubblicati, undici dei ventuno si sono divisi almeno una volta, uno di essi in cinque run, quattro di essi una sola volta. Dieci non si sono divisi mai. Quegli undici sono i casi limite, e una maggioranza di cinque voti è una base fragile su cui appoggiare una decisione.
+Nel progetto delle newsletter il giudice vota cinque volte per articolo e decide la maggioranza. Due run a quindici minuti di distanza, stesso prompt: su un articolo su ventuno la maggioranza si è ribaltata, da due voti su cinque a cinque su cinque. E gli articoli su cui i voti si dividono non sono gli stessi in ogni run: nei sei run pubblicati, undici dei ventuno si sono divisi almeno una volta, uno di essi in cinque run, quattro di essi una sola volta. Dieci non si sono divisi mai. Quegli undici sono i casi limite, e una maggioranza di cinque voti è una base fragile su cui appoggiare una decisione.
 
 Non è un'esperienza solo mia. Dan Luu ha fatto rivalutare dieci volte in più gli stessi output di Senior SWE-Bench e il verdetto sul buon gusto ha discordato da quello ufficiale nel 23% dei casi, a input identico ([exercise 7](https://danluu.com/exercise-7/)). Ho applicato la stessa lettura ai miei giudici: [Valutazioni sbagliate, le mie](../blog/bad-evals-my-own.md). Il giudice è uno strumento. Uno strumento si calibra.
 
