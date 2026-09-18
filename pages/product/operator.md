@@ -143,10 +143,12 @@ Fork it, point it at your endpoint, change the cadence.
 The second source — traffic into cases — is being designed with
 people who run LLM systems in production. What a capture looks like.
 How a request correlates to a run boundary. What makes one sample a
-candidate golden and another one noise. How redaction happens at
-birth, so the payload never leaves the perimeter even toward your own
-repository. These are questions your history answers better than our
-whiteboard.
+candidate golden and another one noise. What redaction can do at
+birth, and what it cannot: a case you commit lives in your
+repository, so the question is not whether the payload is written
+down but whose perimeter the repository is in. Where it is not yours,
+capture refuses to write and says so. These are questions your
+history answers better than our whiteboard.
 
 If that is you, [open an issue](https://github.com/digline/digline/issues)
 — that is the fastest way to move this.
