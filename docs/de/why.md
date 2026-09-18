@@ -8,8 +8,8 @@ description: Ein Prompt ist kein Code, und das Modell verändert sich unter dir.
 search:
   exclude: true
 source: why.md
-source_sha: 5ff0a8d6fc10
-source_commit: 6bb2652
+source_sha: afbb4736477e
+source_commit: 9b352ff
 model: claude-opus-5
 ---
 
@@ -47,7 +47,7 @@ Eine Schwelle erkennt, was *unter dem Schwellenwert* liegt. Sie erkennt nicht, w
 
 Für alles, was sich nicht durch exakten Vergleich prüfen lässt — ist diese Antwort höflich, hält sie sich an die Vorgaben, fasst sie treu zusammen —, ist ein weiteres Modell als Judge das praktikable Werkzeug. Das funktioniert. Es erbt aber auch jedes der Probleme von oben: Auch der Judge zieht Stichproben, und er ändert seine Meinung.
 
-Im Newsletter-Projekt stimmt der Judge pro Artikel fünfmal ab, und die Mehrheit entscheidet. Zwei runs im Abstand von vier Tagen, gleicher Prompt: Bei einem von einundzwanzig Artikeln kippte die Mehrheit, von zwei Stimmen von fünf auf fünf von fünf. Und es sind nicht in jedem run dieselben Artikel, bei denen die Stimmen auseinandergehen: Über die sechs veröffentlichten runs hinweg gingen elf der einundzwanzig mindestens einmal auseinander, einer davon in fünf runs, vier davon nur einmal. Zehn nie. Diese elf sind die Grenzfälle, und eine Mehrheit aus fünf Stimmen ist eine dünne Grundlage für eine Entscheidung.
+Im Newsletter-Projekt stimmt der Judge pro Artikel fünfmal ab, und die Mehrheit entscheidet. Zwei runs im Abstand von fünfzehn Minuten, gleicher Prompt: Bei einem von einundzwanzig Artikeln kippte die Mehrheit, von zwei Stimmen von fünf auf fünf von fünf. Und es sind nicht in jedem run dieselben Artikel, bei denen die Stimmen auseinandergehen: Über die sechs veröffentlichten runs hinweg gingen elf der einundzwanzig mindestens einmal auseinander, einer davon in fünf runs, vier davon nur einmal. Zehn nie. Diese elf sind die Grenzfälle, und eine Mehrheit aus fünf Stimmen ist eine dünne Grundlage für eine Entscheidung.
 
 Das ist nicht nur meine Erfahrung. Dan Luu ließ dieselben Senior-SWE-Bench-Ausgaben zehn weitere Male bewerten, und das Geschmacksurteil wich bei identischer Eingabe in 23% der Fälle vom offiziellen ab ([exercise 7](https://danluu.com/exercise-7/)). Ich habe dieselbe Lesart auf meine eigenen Judges angewandt: [Schlechte Evals, meine eigenen](../blog/bad-evals-my-own.md). Der Judge ist ein Messinstrument. Ein Messinstrument wird kalibriert.
 

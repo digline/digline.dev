@@ -8,8 +8,8 @@ description: Un prompt no es código, y el modelo se mueve bajo tus pies. Por qu
 search:
   exclude: true
 source: why.md
-source_sha: 5ff0a8d6fc10
-source_commit: 6bb2652
+source_sha: afbb4736477e
+source_commit: 9b352ff
 model: claude-opus-5
 ---
 
@@ -47,7 +47,7 @@ Un umbral detecta lo que está *por debajo de la línea*. No detecta *peor que a
 
 Para todo lo que no se puede comprobar por coincidencia exacta —si una respuesta es cortés, si se ajusta a la política, si resume con fidelidad— la herramienta práctica es otro modelo que actúa como juez. Funciona. También hereda todos los problemas anteriores: el juez también muestrea, y cambia de opinión.
 
-En el proyecto de los boletines, el juez vota cinco veces por artículo y decide la mayoría. Dos runs separados por cuatro días, con el mismo prompt: en uno de los veintiún artículos la mayoría se dio la vuelta, de dos votos de cinco a cinco de cinco. Y los artículos en los que el voto se divide no son los mismos en cada run: en los seis runs publicados, once de los veintiuno se dividieron al menos una vez, uno de ellos en cinco runs y cuatro de ellos solo una vez. Diez no se dividieron nunca. Esos once son los que están en el límite, y una mayoría de cinco votos es poca cosa sobre la que sostener una decisión.
+En el proyecto de los boletines, el juez vota cinco veces por artículo y decide la mayoría. Dos runs separados por quince minutos, con el mismo prompt: en uno de los veintiún artículos la mayoría se dio la vuelta, de dos votos de cinco a cinco de cinco. Y los artículos en los que el voto se divide no son los mismos en cada run: en los seis runs publicados, once de los veintiuno se dividieron al menos una vez, uno de ellos en cinco runs y cuatro de ellos solo una vez. Diez no se dividieron nunca. Esos once son los que están en el límite, y una mayoría de cinco votos es poca cosa sobre la que sostener una decisión.
 
 No es solo mi experiencia. Dan Luu hizo calificar otras diez veces las mismas salidas de Senior SWE-Bench y el veredicto sobre el buen gusto discrepó del oficial en el 23% de los casos, con entradas idénticas ([ejercicio 7](https://danluu.com/exercise-7/)). Apliqué la misma lectura a mis propios jueces: [Malas evaluaciones, las mías](../blog/bad-evals-my-own.md). El juez es un instrumento. Un instrumento se calibra.
 
