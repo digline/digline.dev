@@ -139,6 +139,14 @@ jobs:
         # and a record missing its number, title, status or date refused.
         run: uv run tools/hooks/indexes.py --selftest
 
+      - name: Check the posts' hook
+        # tools/hooks/blog.py: a post's `date:` read once and folded back, the
+        # list on /blog/ newest first under a heading per year, and a date
+        # missing, unparseable, quoted, carrying a time, or in the future each
+        # refused. The date itself is checked against the built card in
+        # on_post_build, during the build step below.
+        run: uv run tools/hooks/blog.py --selftest
+
       - name: Build
         # --strict: a link that no longer resolves fails here rather than
         # reaching the site. sitemap.xml and robots.txt come out of this step
