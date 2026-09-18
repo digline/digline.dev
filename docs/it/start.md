@@ -7,8 +7,8 @@ description: Cos'è una regressione degli LLM, perché i test ordinari non la ri
 search:
   exclude: true
 source: start.md
-source_sha: 4a378d5bd6f6
-source_commit: 933f4e0
+source_sha: f1b884ed9bca
+source_commit: 200f768
 model: claude-opus-5
 ---
 
@@ -18,7 +18,7 @@ Se sai già cos'è una regressione silenziosa, passa direttamente alla [Guida](.
 
 ## Il problema, in una storia
 
-Ho un piccolo script che ogni mattina legge qualche centinaio di articoli sull'IA e chiede a un modello linguistico di scegliere i cinque che valgono la lettura. Funzionava. Poi un giorno ha iniziato a tralasciare quelli buoni.
+Ho un piccolo script che ogni mattina legge qualche centinaio di articoli sull'IA e chiede a un modello linguistico di scegliere i cinque che vale la pena leggere. Funzionava. Poi un giorno ha iniziato a tralasciare quelli buoni.
 
 Niente era andato in crash. Nessun test era fallito. Il codice era lo stesso della settimana precedente. Era cambiato il *comportamento* del modello — una modifica al prompt qui, un aggiornamento del modello là — e il comportamento non è qualcosa che un test unitario verifica. Lo script restituiva sempre cinque articoli. Solo che erano i cinque sbagliati.
 
@@ -38,13 +38,15 @@ Le domande concrete, alla fine, sono queste:
 
 digline è un gate che metti davanti a quella domanda. Scrivi una volta per tutte cosa ti aspetti dal tuo sistema, sotto forma di un insieme di check: quelli deterministici (la risposta è JSON valido, non contiene numeri di telefono, cita il nome del cliente) e quelli giudicati (un secondo modello valuta la risposta rispetto a una griglia di valutazione). Li esegui sul tuo sistema. Quando il risultato ti soddisfa, lo **promuovi**: diventa il baseline, un file committato nel tuo repository accanto al codice.
 
-Da quel momento ogni run viene confrontato con quel baseline, e il report risponde all'unica domanda che conta:
+Da quel momento ogni run viene confrontato con quel baseline, e il report risponde all'unica domanda che conta. Ecco un run in cui niente è peggiorato, anche se tre check si sono spostati e un caso non ha potuto essere risolto:
 
-> Niente è peggiorato rispetto al riferimento. 2 check si sono spostati entro il rumore. Ogni caso è stato giudicabile. 1 caso è sospeso. La suite è invariata rispetto al riferimento. 1 file sotto test è cambiato dopo il riferimento.
+<!-- digline: a comparison where nothing got worse -->
 
-oppure
+ed ecco un run in cui sei check sono peggiorati:
 
-> 14 check sono peggiorati rispetto al riferimento. 7 casi non sono stati giudicabili. Nessun caso è sospeso. La suite è invariata rispetto al riferimento. I file sotto test sono gli stessi del riferimento.
+<!-- digline: a comparison where something did -->
+
+Entrambi sono ciò che `digline compare` ha stampato sulla suite di esempio del primo capitolo della [Guida](../product/guide.md), catturati dalla release da cui provengono questi documenti. I numeri sono quelli misurati da quei run.
 
 Il baseline è un file in git. Ha una cronologia, si può confrontare con diff, e nessuno lo promuove tranne te. Non c'è una dashboard a cui accedere né un servizio che riceve i tuoi dati: digline gira dove gira il tuo codice.
 
