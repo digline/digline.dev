@@ -7,8 +7,8 @@ description: Qué es una regresión de LLM, por qué las pruebas habituales no l
 search:
   exclude: true
 source: start.md
-source_sha: 4a378d5bd6f6
-source_commit: 933f4e0
+source_sha: f1b884ed9bca
+source_commit: 200f768
 model: claude-opus-5
 ---
 
@@ -38,13 +38,15 @@ Las preguntas prácticas resultan ser estas:
 
 digline es un gate que pones delante de esa pregunta. Escribes una vez lo que esperas de tu sistema en forma de un conjunto de checks: deterministas (la respuesta es JSON válido, no contiene números de teléfono, menciona el nombre del cliente) y juzgados (un segundo modelo puntúa la respuesta según una rúbrica). Los ejecutas contra tu sistema. Cuando el resultado te parece bien, lo **promueves**: pasa a ser el baseline, un archivo versionado en tu repositorio junto al código.
 
-A partir de entonces, cada run se compara con ese baseline y el informe responde a la única pregunta que importa:
+A partir de entonces, cada run se compara con ese baseline y el informe responde a la única pregunta que importa. Este es un run en el que nada empeoró, aunque tres checks se movieron y un caso no pudo resolverse:
 
-> Nada empeoró respecto a la referencia. 2 checks se movieron dentro del ruido. Todos los casos pudieron juzgarse. 1 caso está suspendido. La suite no ha cambiado respecto a la referencia. 1 archivo sometido a prueba cambió desde la referencia.
+<!-- digline: a comparison where nothing got worse -->
 
-o
+y este es uno en el que seis checks sí empeoraron:
 
-> 14 checks empeoraron respecto a la referencia. 7 casos no pudieron juzgarse. Ningún caso está suspendido. La suite no ha cambiado respecto a la referencia. Los archivos sometidos a prueba son los mismos que en la referencia.
+<!-- digline: a comparison where something did -->
+
+Ambos son lo que imprimió `digline compare` en la suite de ejemplo del primer capítulo de la [Guía](../product/guide.md), capturado de la versión publicada de la que proceden estos documentos. Las cifras son las que midieron esos runs.
 
 El baseline es un archivo en git. Tiene historial, se le puede sacar un diff y nadie más que tú lo promueve. No hay ningún panel en el que iniciar sesión ni ningún servicio que reciba tus datos: digline se ejecuta donde se ejecuta tu código.
 

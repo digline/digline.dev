@@ -7,8 +7,8 @@ description: Was eine LLM-Regression ist, warum normale Tests sie nicht erkennen
 search:
   exclude: true
 source: start.md
-source_sha: 4a378d5bd6f6
-source_commit: 933f4e0
+source_sha: f1b884ed9bca
+source_commit: 200f768
 model: claude-opus-5
 ---
 
@@ -38,13 +38,15 @@ Die praktischen Fragen lauten dann:
 
 digline ist ein gate, das du vor diese Frage stellst. Du schreibst einmal auf, was du von deinem System erwartest, und zwar als Satz von checks — deterministische (die Antwort ist gültiges JSON, enthält keine Telefonnummern, nennt den Namen des Kunden) und bewertete (ein zweites Modell beurteilt die Antwort anhand einer Rubrik). Du führst sie auf deinem System aus. Wenn dir das Ergebnis gefällt, gibst du es mit **promote** frei: Es wird zur baseline — eine Datei, die neben dem Code in dein Repository eingecheckt wird.
 
-Von da an wird jeder run mit dieser baseline verglichen, und der Bericht beantwortet die einzige Frage, auf die es ankommt:
+Von da an wird jeder run mit dieser baseline verglichen, und der Bericht beantwortet die einzige Frage, auf die es ankommt. Hier ist ein run, bei dem nichts schlechter geworden ist, obwohl sich drei checks bewegt haben und ein Fall nicht entschieden werden konnte:
 
-> Nichts ist gegenüber der Referenz schlechter geworden. 2 checks haben sich innerhalb des Rauschens bewegt. Jeder Fall konnte bewertet werden. 1 Fall ist ausgesetzt. Die Suite ist gegenüber der Referenz unverändert. 1 getestete Datei hat sich seit der Referenz geändert.
+<!-- digline: a comparison where nothing got worse -->
 
-oder
+und hier einer, bei dem sechs checks schlechter geworden sind:
 
-> 14 checks sind gegenüber der Referenz schlechter geworden. 7 Fälle konnten nicht bewertet werden. Kein Fall ist ausgesetzt. Die Suite ist gegenüber der Referenz unverändert. Die getesteten Dateien sind dieselben wie bei der Referenz.
+<!-- digline: a comparison where something did -->
+
+Beides ist die Ausgabe von `digline compare` auf der Beispiel-Suite aus dem ersten Kapitel des [Guide](../product/guide.md), aufgenommen aus dem Release, aus dem diese Dokumentation stammt. Die Zahlen sind die, die diese runs gemessen haben.
 
 Die baseline ist eine Datei in git. Sie hat eine Historie, sie lässt sich diffen, und niemand außer dir gibt sie frei. Es gibt kein Dashboard, in das man sich einloggen muss, und keinen Dienst, der deine Daten erhält — digline läuft dort, wo dein Code läuft.
 
@@ -57,7 +59,7 @@ Die baseline ist eine Datei in git. Sie hat eine Historie, sie lässt sich diffe
   Dein Browser unterstützt das video-Tag nicht. <a href="/assets/video/ep01.mp4">Video herunterladen</a>.
 </video>
 
-*Folge 1 einer kurzen Reihe über LLM-Regression. Ausgeliefert von dieser Seite — kein Player von Dritten, keine Cookies.*
+*Folge 1 einer kurzen Reihe über LLM-Regression. Ausgeliefert von dieser Seite — kein Drittanbieter-Player, keine Cookies.*
 
 ## Wie es weitergeht
 
