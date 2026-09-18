@@ -326,6 +326,11 @@ CONCEPTS = [
      "it": ("dichiarano obsolete delle versioni", []),
      "de": ("markieren Versionen als veraltet", ["Sie schreiben Versionen ab"]),
      "es": ("marcan versiones como obsoletas", [])},
+    {"english": "ToolsCalled holds which tools were called",
+     "sense": "an assertion holds the data — it records what happened; it does not check or verify it",
+     "it": ("contiene quali strumenti sono stati chiamati", []),
+     "de": ("hält fest, welche Tools aufgerufen wurden", ["prüft, welche Tools aufgerufen wurden"]),
+     "es": ("contiene qué herramientas se llamaron", [])},
 ]
 
 
@@ -1089,9 +1094,16 @@ def selftest() -> int:
            ("never a calque" in rules("es", ROOT), '"most" is the majority' in rules("de", ROOT),
             "non puoi mostrarlo tu" in rules("it", ROOT), "non puoi mostrarlo tu" in rules("de", ROOT)),
            (True, True, True, False))
-    expect("the concepts: every one in every language, with its wording",
+    expect("the concepts: every one in every language, the English and its wording",
            [(c["english"], lang) for c in CONCEPTS for lang in languages.LANGUAGES
-            if not (isinstance(c.get(lang), tuple) and c[lang][0] and f'"{c[lang][0]}"' in rules(lang, ROOT))], [])
+            if not (isinstance(c.get(lang), tuple) and c[lang][0] and f'"{c[lang][0]}"' in rules(lang, ROOT)
+                    and f'"{c["english"]}"' in rules(lang, ROOT) and c["sense"] in rules(lang, ROOT))], [])
+    expect("holds is not checks: the assertion records, in each language's words",
+           ('"contiene quali strumenti sono stati chiamati"' in rules("it", ROOT),
+            '"hält fest, welche Tools aufgerufen wurden"' in rules("de", ROOT),
+            '"prüft, welche Tools aufgerufen wurden"' in rules("de", ROOT),
+            '"contiene qué herramientas se llamaron"' in rules("es", ROOT),
+            "hält fest" in rules("es", ROOT)), (True, True, True, True, False))
     expect("the concepts in each language's words: below the line, not yours to show, worth reading, what a judge is",
            ([w in rules("it", ROOT) for w in ('"sotto soglia"', '"non puoi mostrarlo tu"', '"vale la pena leggere"',
                                                '"è così che funziona un giudice"')],
