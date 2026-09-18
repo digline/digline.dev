@@ -86,6 +86,6 @@ AGENTS.md ist die Urteilsebene, die das Werkzeug nicht abbildet: wann ein run zu
 Der getestete Agent, nicht der Agent, der digline benutzt.
 {: .aside__kicker }
 
-Der Satz eines Agenten ist nicht das, was das Geld bewegt hat. `ToolsCalled` prüft, welche Tools aufgerufen wurden und in welcher Reihenfolge; `ToolCalledWith` prüft die Argumente, die ein einzelner Aufruf trug. Im [Beispiel zu LangGraph](../product/examples/langgraph.md) muss ein Dispatch-Agent eine Bestellung nachsehen, bevor er sie erstattet, und genau den Betrag erstatten, den die Abfrage zurückgegeben hat – ein Agent, der die Abfrage überspringt, schreibt einen guten Satz, und keine Zusicherung über den Text kann das erkennen. Beide checks sind unter [den Zusicherungen](../product/api.md#the-assertions) aufgeführt.
+Der Satz eines Agenten ist nicht das, was das Geld bewegt hat. `ToolsCalled` hält fest, welche Tools aufgerufen wurden und in welcher Reihenfolge; `ToolCalledWith` hält die Argumente fest, die ein einzelner Aufruf trug. Im [Beispiel zu LangGraph](../product/examples/langgraph.md) muss ein Dispatch-Agent eine Bestellung nachsehen, bevor er sie erstattet, und genau den Betrag erstatten, den die Abfrage zurückgegeben hat – ein Agent, der die Abfrage überspringt, schreibt einen guten Satz, und keine Zusicherung über den Text kann das erkennen. Beide checks sind unter [den Zusicherungen](../product/api.md#the-assertions) aufgeführt.
 
 </div>

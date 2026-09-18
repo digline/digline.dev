@@ -86,6 +86,6 @@ AGENTS.md è lo strato di giudizio che lo strumento non codifica: quando riesegu
 L'agente sotto test, non l'agente che usa digline.
 {: .aside__kicker }
 
-La frase di un agente non è ciò che ha spostato il denaro. `ToolsCalled` contiene quali strumenti sono stati chiamati e in che ordine; `ToolCalledWith` contiene gli argomenti passati in una chiamata. Nell'[esempio LangGraph](../product/examples/langgraph.md) un agente di smistamento deve cercare un ordine prima di rimborsarlo e rimborsare l'importo restituito dalla ricerca: un agente che salta la ricerca scrive una buona frase, e nessuna asserzione sul testo può accorgersene. Entrambi i check sono elencati in [le asserzioni](../product/api.md#the-assertions).
+La frase di un agente non è ciò che ha spostato il denaro. `ToolsCalled` contiene quali strumenti sono stati chiamati e in che ordine; `ToolCalledWith` contiene gli argomenti passati in una chiamata. Nell'[esempio LangGraph](../product/examples/langgraph.md) un agente di smistamento deve cercare un ordine prima di rimborsarlo e rimborsare l'importo restituito dalla ricerca: un agente che salta la ricerca scrive una buona frase, e nessuna asserzione sul testo può accorgersene. Entrambi i check sono elencati tra [le asserzioni](../product/api.md#the-assertions).
 
 </div>
