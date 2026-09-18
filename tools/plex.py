@@ -76,9 +76,13 @@ RANGES = {
 #   U+2500–257F, box drawing — Plex Mono has the whole block, Plex Sans none of
 #     it. The trees in the documentation are in code blocks, in Mono; one drawn
 #     in running text (none today) would show its lines in the system face.
+#   \x9b U+009B, a control character — in neither family, as no font draws a
+#     control character. product/api/ shows it in a code span, in Mono: digline
+#     0.15.1 escapes a control character a model echoed back, and the note says
+#     what the record reads now by printing it.
 NO_PLEX_GLYPH = {
     "sans": {"∧"} | _span(0x2500, 0x257F),
-    "mono": {"∧"},
+    "mono": {"∧", "\x9b"},
 }
 
 # Text a presentation page shows that is in no HTML, by the class of the element
