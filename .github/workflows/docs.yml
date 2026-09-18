@@ -147,6 +147,13 @@ jobs:
         # on_post_build, during the build step below.
         run: uv run tools/hooks/blog.py --selftest
 
+      - name: Check the feed's hook
+        # tools/hooks/feed.py: an RSS 2.0 channel with its items newest first,
+        # RFC 822 dates, a guid that is the link, and a feed with no post or a
+        # channel missing a field refused. The file itself is read back by
+        # tools/check-feed.py after the build.
+        run: uv run tools/hooks/feed.py --selftest
+
       - name: Check the card's image
         # tools/hooks/seo.py: a PNG and a JPEG measured from their bytes, and a
         # default card that is missing or that says nothing about its size
@@ -173,6 +180,13 @@ jobs:
         # the build, and every page in the build listed. A page that quietly
         # stops being listed fails nothing else.
         run: tools/check-llms.py site
+
+      - name: Check the feed
+        # Every item under site_url and a page in the build, every <pubDate> a
+        # date that is not in the future and the day its own page declares, and
+        # both directions: a post missing from the feed, or anything in it that
+        # is not a post.
+        run: tools/check-feed.py site
 
       - name: Check the Plex glyphs
         # The fonts are subsets, and a browser draws a character a subset

@@ -14,6 +14,8 @@ myself, with the runs behind them public wherever they can be. The decisions
 they arrive at end up in the [decision records](../product/adr/index.md);
 these are the working out.
 
+There is a feed: [/feed.xml](/feed.xml). Full posts stay here.
+
 <!-- posts: the list is filled here by tools/hooks/blog.py, newest first under
      a heading per year, from each post's own `date:`, `title:` and
      `description:`. Nothing about a post is written twice. -->

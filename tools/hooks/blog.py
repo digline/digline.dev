@@ -239,6 +239,10 @@ def on_page_content(html_content, page, config, files, **kwargs):
     modified = max(str(page.update_date or ""), published)
     description = page.meta.get("description_text") or post["description"]
 
+    # The title the post is read under, beside the two dates: the JSON-LD
+    # below needs it, and so does the feed's item. `page.title` is not it —
+    # mkdocs replaces that with the post's label in the nav, which is shorter.
+    page.meta["post_title"] = post["title"]
     page.meta["published"] = published
     page.meta["published_display"] = human(post["date"])
     page.meta["article_published"] = published

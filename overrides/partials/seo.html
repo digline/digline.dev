@@ -40,6 +40,14 @@
 <meta property="article:published_time" content="{{ page.meta.article_published }}">
 <meta property="article:modified_time" content="{{ page.meta.article_modified }}">
 {%- endif %}
+{#- The feed, where it is an alternative reading of this page: the posts,
+    /blog/ which lists them, and the home, because pasting a domain into a
+    reader is how most people subscribe and the root is where it looks. Not on
+    a documentation page, which the feed says nothing about.
+    tools/hooks/feed.py decides, and writes the file. -#}
+{%- if page.meta.feed_url %}
+<link rel="alternate" type="application/rss+xml" title="{{ config.site_name }} — Writing" href="{{ page.meta.feed_url }}">
+{%- endif %}
 {%- for alternate in page.meta.hreflang or [] %}
 <link rel="alternate" hreflang="{{ alternate.lang }}" href="{{ alternate.href }}">
 {%- endfor %}

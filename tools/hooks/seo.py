@@ -839,6 +839,9 @@ def on_page_content(html_content, page, config, files, **kwargs):
     # a value read as data rather than written as HTML needs the other — the
     # JSON-LD below, and the one blog.py builds for a post.
     meta["description_text"] = description
+    # And the title before it, for the same reason: feed.py names the channel
+    # with it, and an RSS document escapes its own text.
+    meta["seo_title_text"] = full
     assert _default_size is not None
     image, size, image_alt = OG_IMAGE, _default_size, OG_IMAGE_ALT
     if meta.get("image"):
