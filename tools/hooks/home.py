@@ -1047,6 +1047,71 @@ def _behind(src_uri: str, repo: str, docs: str) -> bool:
     return meta.get("source_sha") != translation.source_sha(repo, START)
 
 
+#: What the English prose of /start/ says about the two captured runs, and
+#: where each number comes from. The page's words are free to change; the
+#: numbers in them are the capture's, and a capture that moves must take the
+#: sentence with it (RUNBOOK.md, "Translations" — the capture).
+CLAIMS = (
+    ("steady", lambda f: sum(
+        1 for d in f.get("deltas") or []
+        if d.get("within_noise") and not d.get("calibration")
+    ), "{word} checks moved"),
+    ("steady", lambda f: int(f.get("suspended") or 0), "{word} case could not be settled"),
+    ("prompt_regression", lambda f: int((f.get("counts") or {}).get("regressed") or 0),
+     "{word} checks did"),
+)
+
+#: Nine words, because a headline with ten of anything is a different page.
+NUMBER_WORDS = {
+    1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+    6: "six", 7: "seven", 8: "eight", 9: "nine",
+}
+
+
+def claim_problems(site: str, data: dict) -> list[str]:
+    """The numbers the English page says, against the runs it shows.
+
+    The sentence around the two comparisons counts what they report — three
+    checks moved, one case set aside, six checks worse — and those counts are
+    the capture's. A recapture that changes one of them leaves the sentence
+    saying what no run said, and nothing else on the page would notice.
+    """
+    path = os.path.join(site, "start", "index.html")
+    if not os.path.isfile(path):
+        return ["start/index.html was not built"]
+    with open(path, encoding="utf-8") as fh:
+        html = fh.read()
+    prose = html_unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<pre.*?</pre>", " ", html, flags=re.S)))
+    prose = " ".join(prose.split())
+    problems = []
+    for scenario, count_of, shape in CLAIMS:
+        count = count_of(scenarios_facts(data, scenario))
+        word = NUMBER_WORDS.get(count)
+        if word is None:
+            problems.append(
+                f"start/index.html: the {scenario} scenario reports {count}, and the page's "
+                "sentence counts in words up to nine"
+            )
+            continue
+        said = shape.format(word=word)
+        if said not in prose:
+            problems.append(
+                f"start/index.html: the page does not say {said!r}, and the {scenario} "
+                f"comparison it shows reports {count}"
+            )
+    return problems
+
+
+def scenarios_facts(data: dict, scenario: str) -> dict:
+    scenarios = data.get("scenarios")
+    if not isinstance(scenarios, dict) or not isinstance(scenarios.get(scenario), dict):
+        raise _fail(f"{HOME_JSON} has no `{scenario}` scenario, and /start/ shows its comparison.")
+    facts = scenarios[scenario].get("compare_json")
+    if not isinstance(facts, dict):
+        raise _fail(f"{HOME_JSON}: scenario `{scenario}` has no `compare_json`.")
+    return facts
+
+
 def start_problems(site: str, data: dict, behind: set[str] = frozenset()) -> list[str]:
     """Every built /start/ — English and translated — against the capture.
 
@@ -1105,7 +1170,7 @@ def on_post_build(config, **kwargs):
         if os.path.isfile(os.path.join(docs, lang, START))
         and _behind(f"{lang}/{START}", repo, docs)
     }
-    started = start_problems(site, data, behind)
+    started = start_problems(site, data, behind) + claim_problems(site, data)
     if started:
         raise _fail("\n  ".join(["/start/ does not show what was captured:", *started]))
     built = _built_grids(data)
