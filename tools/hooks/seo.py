@@ -205,6 +205,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "it takes, what it produces, and what it will do to you if you are not "
         "looking.",
     ),
+    "product/selection.md": (
+        "Testing a selection",
+        "How to check a system that chooses items from a set it was given: "
+        "declare the offered set per case in a suite.py, and two checks cover "
+        "what was invented, what leaked and what went missing.",
+    ),
     "product/declarative.md": (
         "Suites as data",
         "How to write a suite in a suite.toml rather than a suite.py: what the "

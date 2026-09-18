@@ -234,6 +234,7 @@ nav:
       - Essentials:
           - Guide: product/guide.md
           - Metrics: product/metrics.md
+          - Testing a selection: product/selection.md
           - Suites as data: product/declarative.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
       # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
