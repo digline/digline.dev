@@ -8,8 +8,8 @@ description: Un prompt no es código, y el modelo se mueve bajo tus pies. Por qu
 search:
   exclude: true
 source: why.md
-source_sha: 331a861da2e1
-source_commit: 933f4e0
+source_sha: 5ff0a8d6fc10
+source_commit: 6bb2652
 model: claude-opus-5
 ---
 
@@ -23,15 +23,15 @@ Los ejemplos que siguen provienen de un proyecto real y público: un pequeño pr
 
 Cuando cambias una línea de código, la misma entrada produce la misma salida, siempre. Eso es lo que hace posibles las pruebas: escribes lo que debería salir y la máquina te dice si salió.
 
-Un prompt no funciona así. Envía el mismo artículo al mismo modelo con el mismo prompt y una mañana lo puntúa con un 4 y la mañana siguiente con un 3. Nada cambió: ni tu código, ni el modelo, ni la entrada. El modelo es una distribución de probabilidad y tú estás muestreando de ella.
+Un prompt no funciona así. Haz la misma pregunta al mismo modelo cinco veces, con el mismo prompt y el mismo artículo, y no siempre responde igual. Cada run del juez de boletines pregunta cinco veces por cada uno de los veintiún artículos. En entre dos y seis de ellos, según el run, las cinco respuestas no coinciden entre sí. Nada cambió entre esas cinco: ni el código, ni el modelo, ni la entrada. El modelo es una distribución de probabilidad y tú estás muestreando de ella.
 
-En el juez de boletines, de veintiún artículos puntuados dos veces con un prompt idéntico, uno cambió de veredicto. Eso no es un error del juez. Es lo que un juez es. Pero significa que el reflejo habitual —*ejecutarlo una vez, parece correcto, publicar*— no es una prueba. Es una sola muestra.
+Pero significa que el reflejo habitual —*ejecutarlo una vez, parece correcto, publicar*— no es una prueba. Es una sola muestra.
 
 ## El modelo cambia bajo tus pies
 
 Aunque no toques una línea, aquello sobre lo que construiste se mueve.
 
-Los proveedores actualizan modelos. Retiran versiones. Cambian a qué apunta un alias por defecto. Un modelo llamado `latest` en marzo no es el mismo modelo en junio, y nada en tu repositorio registra que cambió. Tu historial de commits dice «sin cambios desde la release»; tus usuarios dicen «empeoró la semana pasada»; ambos dicen la verdad.
+Los proveedores actualizan modelos. Marcan versiones como obsoletas. Cambian a qué apunta un alias por defecto. Un modelo llamado `latest` en marzo no es el mismo modelo en junio, y nada en tu repositorio registra que cambió. Tu historial de commits dice «sin cambios desde la release»; tus usuarios dicen «empeoró la semana pasada»; ambos dicen la verdad.
 
 Este es el fallo que ninguna revisión de código puede detectar, porque no hay diff. La única forma de verlo es tener algo con lo que comparar —un registro de cómo se comportó el sistema sobre un conjunto de entradas, en una fecha, con una versión— y volver a ejecutar las mismas entradas para mirar la diferencia.
 
@@ -39,19 +39,19 @@ Este es el fallo que ninguna revisión de código puede detectar, porque no hay 
 
 La mayoría de los equipos sí tienen un umbral en algún sitio: una puntuación por debajo de 0.7 falla, por encima pasa. Es mejor que nada, y se le escapa el fallo que más importa.
 
-El patrón es este. Un check obtiene 0.91 el día que publicas. Tres semanas y dos ajustes de prompt después, obtiene 0.78. Sigue por encima de 0.7. Sigue en verde. Sigue pasando todas las pruebas que tienes. Y los usuarios ya han empezado a notarlo, porque una caída de trece puntos es un producto distinto para quien está al otro lado.
+El patrón es este, con cifras inventadas. Un check obtiene 0.91 el día que publicas. Tres semanas y dos ajustes de prompt después, obtiene 0.78. Sigue por encima de 0.7. Sigue en verde. Sigue pasando todas las pruebas que tienes. Y los usuarios ya han empezado a notarlo, porque una caída de trece puntos es un producto distinto para quien está al otro lado.
 
-Un umbral detecta *por debajo de la línea*. No detecta *peor que antes*. Para eso hace falta una referencia —el estado aprobado, registrado— y una comparación contra ella en cada cambio. La referencia es la pieza que le falta a casi todos los equipos, y es la razón de que la deriva de 0.91 a 0.78 les resulte invisible hasta que un cliente la nombra.
+Un umbral detecta lo que está *por debajo de la línea*. No detecta *peor que antes*. Para eso hace falta una referencia —el estado aprobado, registrado— y una comparación contra ella en cada cambio. La referencia es la pieza que le falta a casi todos los equipos, y es la razón de que la deriva de 0.91 a 0.78 les resulte invisible hasta que un cliente la nombra.
 
 ## Quién juzga al juez
 
 Para todo lo que no se puede comprobar por coincidencia exacta —si una respuesta es cortés, si se ajusta a la política, si resume con fidelidad— la herramienta práctica es otro modelo que actúa como juez. Funciona. También hereda todos los problemas anteriores: el juez también muestrea, y cambia de opinión.
 
-En el proyecto de los boletines, cuando el juez pasó a muestrearse varias veces por artículo en lugar de una, el panorama se volvió más claro y más incómodo a la vez. La mayoría de los artículos se juzgaban igual todas las veces. Seis de veintiuno, no: en esos, un juez de cinco votos se dividía 3–2 en un run y 4–1 en el siguiente. Esos seis eran exactamente los artículos ante los que una persona también habría dudado. El juez no estaba roto; era honesto sobre lo que estaba en el límite.
+En el proyecto de los boletines, el juez vota cinco veces por artículo y decide la mayoría. Dos runs separados por cuatro días, con el mismo prompt: en uno de los veintiún artículos la mayoría se dio la vuelta, de dos votos de cinco a cinco de cinco. Y los artículos en los que el voto se divide no son los mismos en cada run: en los seis runs publicados, once de los veintiuno se dividieron al menos una vez, uno de ellos en cinco runs y cuatro de ellos solo una vez. Diez no se dividieron nunca. Esos once son los que están en el límite, y una mayoría de cinco votos es poca cosa sobre la que sostener una decisión.
 
-No es solo mi experiencia: Dan Luu volvió a calificar diez veces las mismas salidas de Senior SWE-Bench y encontró que el veredicto discrepaba del resultado oficial en torno a una cuarta parte de las veces, con entradas idénticas ([ejercicio 7](https://danluu.com/exercise-7/)). Apliqué esta lectura a mis propios jueces: [Malas evaluaciones, las mías](../blog/bad-evals-my-own.md). El juez es un instrumento. Un instrumento se calibra.
+No es solo mi experiencia. Dan Luu hizo calificar otras diez veces las mismas salidas de Senior SWE-Bench y el veredicto sobre el buen gusto discrepó del oficial en el 23% de los casos, con entradas idénticas ([ejercicio 7](https://danluu.com/exercise-7/)). Apliqué la misma lectura a mis propios jueces: [Malas evaluaciones, las mías](../blog/bad-evals-my-own.md). El juez es un instrumento. Un instrumento se calibra.
 
-De aquí se derivan dos consecuencias. Primera, no puedes saber si tu *sistema* empeoró hasta que sepas cuánto oscila tu *juez* por sí solo: el noise floor hay que medirlo antes que nada. Segunda, un caso aislado es una mala unidad para tomar una decisión. A lo largo de esos mismos runs, el agregado —en cuántos artículos coincidieron el juez y la persona— se movió en un caso de veintiuno, mientras que los casos individuales oscilaban tres votos. Los casos individuales sirven para diagnosticar. El agregado es lo que admite un umbral.
+De aquí se derivan dos consecuencias. Primera, no puedes saber si tu *sistema* empeoró hasta que sepas cuánto oscila tu *juez* por sí solo: el noise floor hay que medirlo antes que nada. Segunda, un caso aislado es una mala unidad para tomar una decisión. A lo largo de ese par de runs, el agregado se movió en un artículo de veintiuno, mientras que el propio artículo se movió tres votos de cinco. Los casos individuales sirven para diagnosticar. El agregado es lo que admite un umbral.
 
 ## La pregunta del cliente
 
@@ -73,12 +73,14 @@ Junta las piezas y «bajo control» resulta ser tres cosas concretas, ninguna de
 
 **Un historial.** Cada referencia que hayas aprobado, en git, con los motivos. Cuando alguien haga la pregunta del cliente, la respuesta es un `git log`.
 
-En el proyecto de los boletines, todo esto cuesta unos ocho céntimos por run. Cuatro experimentos sobre el prompt del juez, una calibración, y el proyecto tiene una cifra que puede enunciar —«coincide con el lector en el 62% de los artículos dudosos, de forma estable entre runs»— y un archivo que dice qué prompt la produjo.
+En el proyecto de los boletines, un run cuesta unos siete céntimos: veintiún artículos, juzgados cinco veces cada uno. El proyecto tiene una cifra que puede enunciar, con los runs que la respaldan: el juez coincide con el lector en 16 de 21 artículos en cuatro de los seis runs publicados, y en 15 y 14 en los otros dos.
 
-Eso es lo que hace [digline](../index.md), y es todo lo que hace. La referencia vive en tu repositorio. Nada sale de tu máquina. `pip install digline` para probarlo; el proyecto de los boletines es [público](https://github.com/digline/brief) si prefieres ver primero algo real.
+Eso es lo que hace [digline](../index.md), y es todo lo que hace. La referencia vive en tu repositorio. Nada sale de tu máquina. `pip install digline` para probarlo; el proyecto de los boletines es [público](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) si prefieres ver primero algo real.
+
+De dónde salen estas cifras: seis runs del juez de boletines, incluidos en el repositorio como [fixtures](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures), [con una nota sobre qué cifra viene de qué run](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), y [un script](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/recompute.py) que recalcula a partir de ellos todas las cifras de esta página.
 
 ---
 
 Si tienes treinta minutos en lugar de cinco: el [Manual](../handbook/01-what-you-are-shipping.md).
 
-¿Te preguntas en qué se diferencia de las herramientas que ya conoces? Consulta [Cómo se compara digline](../comparison/index.md).
+¿Te preguntas en qué se diferencia de las herramientas que ya conoces? Consulta [En qué se diferencia digline](../comparison/index.md).
