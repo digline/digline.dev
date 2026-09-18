@@ -8,8 +8,8 @@ description: Un prompt non è codice, e il modello si muove sotto i tuoi piedi. 
 search:
   exclude: true
 source: why.md
-source_sha: afbb4736477e
-source_commit: 9b352ff
+source_sha: d1952e7f33ac
+source_commit: 3f60b0d
 model: claude-opus-5
 ---
 
@@ -75,7 +75,7 @@ Mettendo insieme i pezzi, «sotto controllo» si riduce a tre cose concrete, nes
 
 Nel progetto delle newsletter un run costa circa sette centesimi: ventuno articoli, giudicati cinque volte ciascuno. Il progetto ha un numero da dichiarare, con i run a sostenerlo: il giudice concorda con il lettore su 16 articoli su 21 in quattro dei sei run pubblicati, e su 15 e 14 negli altri due.
 
-È questo che fa [digline](../index.md), ed è tutto ciò che fa. Il riferimento sta nel tuo repository. Niente esce dalla tua macchina. `pip install digline` per provarlo; il progetto delle newsletter è [pubblico](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) se prima vuoi vedere un caso reale.
+È questo che fa [digline](../index.md), ed è tutto ciò che fa. Il riferimento sta nel tuo repository. L'unica chiamata che esce è quella che la tua suite fa al tuo modello — digline non ha server, né account, né telemetria. `pip install digline` per provarlo; il progetto delle newsletter è [pubblico](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) se prima vuoi vedere un caso reale.
 
 Da dove vengono questi numeri: sei run del giudice delle newsletter, committati come [fixtures](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures), [con una nota su quale numero viene da quale run](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), e [uno script](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/recompute.py) che da essi ricalcola ogni numero di questa pagina.
 
