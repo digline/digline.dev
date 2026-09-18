@@ -32,13 +32,15 @@ The practical questions turn out to be:
 
 digline is a gate you put in front of that question. You write down, once, what you expect from your system as a set of checks — deterministic ones (the answer is valid JSON, contains no phone numbers, mentions the customer's name) and judged ones (a second model rates the answer against a rubric). You run them against your system. When you're happy with the result, you **promote** it: it becomes the baseline, a file committed in your repository next to the code.
 
-From then on, every run is compared with that baseline, and the report answers the only question that matters:
+From then on, every run is compared with that baseline, and the report answers the only question that matters. Here is a run where nothing got worse, though three checks moved and one case could not be settled:
 
-> Nothing got worse compared with the reference. 2 checks moved within noise. Every case could be judged. 1 case is suspended. The suite is unchanged from the reference. 1 file under test changed since the reference.
+<!-- digline: a comparison where nothing got worse -->
 
-or
+and here is one where six checks did:
 
-> 14 checks got worse compared with the reference. 7 cases could not be judged. No case is suspended. The suite is unchanged from the reference. The files under test are the same as the reference.
+<!-- digline: a comparison where something did -->
+
+Both are what `digline compare` printed on the example suite of the [Guide](product/guide.md)'s first chapter, captured from the release the docs come from. The numbers are the ones those runs measured.
 
 The baseline is a file in git. It has history, it can be diffed, and nobody promotes it but you. There is no dashboard to log into and no service that receives your data — digline runs where your code runs.
 

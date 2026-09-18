@@ -90,6 +90,7 @@ from mkdocs.exceptions import PluginError
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from catalog import ORIGINAL, page_language, t  # noqa: E402  the site's words: i18n/<lang>.yml
+import languages  # noqa: E402  tools/languages.py
 
 # Where sync-docs.sh puts the two files, under docs_dir.
 HOME_JSON = "product/assets/home/home.json"
@@ -953,6 +954,10 @@ def on_page_content(html, page, config, files, **kwargs):
     if (page.file.src_uri in (GUIDE, METRICS) or page.file.src_uri in _reference
             or page.file.src_uri in _STACK_PAGES):
         _rendered[page.file.src_uri] = html
+    repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
+    if _is_start(page) and not _behind(page.file.src_uri, repo, config["docs_dir"]):
+        with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
+            html = with_sentences(html, json.load(fh), page.file.src_uri)
     return html
 
 
@@ -977,6 +982,166 @@ def _built_grids(data: dict, lang: str = ORIGINAL) -> dict[str, Any]:
                  [(uri, _rendered.get(uri, "")) for uri in _reference], lang)
 
 
+# ── the two comparisons /start/ shows ────────────────────────────────────────
+
+#: Where each of them goes in docs/start.md, and which captured scenario it is.
+#: A comment, not a fence: the words around it are the page's and get
+#: translated, the sentence is digline's and does not.
+SENTENCES = {
+    "<!-- digline: a comparison where nothing got worse -->": "steady",
+    "<!-- digline: a comparison where something did -->": "prompt_regression",
+}
+START = "start.md"
+
+
+def sentence(data: dict, scenario: str) -> str:
+    """The headline of a captured comparison, as `compare --json full` wrote it."""
+    scenarios = data.get("scenarios")
+    if not isinstance(scenarios, dict) or not isinstance(scenarios.get(scenario), dict):
+        raise _fail(f"{HOME_JSON} has no `{scenario}` scenario, and /start/ shows its comparison.")
+    facts = scenarios[scenario].get("compare_json")
+    if not isinstance(facts, dict) or not str(facts.get("sentence") or "").strip():
+        raise _fail(f"{HOME_JSON}: scenario `{scenario}` has no `compare_json.sentence`.")
+    return str(facts["sentence"])
+
+
+def as_output(text: str) -> str:
+    """One sentence, set the way the home sets what digline printed."""
+    return f'<pre class="out" translate="no"><span class="out__line">{text}</span></pre>'
+
+
+def with_sentences(html: str, data: dict, source: str) -> str:
+    """The page's two comments replaced by what the two runs printed.
+
+    A comment that is not there fails the build: a replacement that matches
+    nothing is how a page keeps saying what it said before the capture.
+    """
+    for comment, scenario in SENTENCES.items():
+        if comment not in html:
+            raise _fail(
+                f"{source} has no `{comment}`, and that is where the {scenario} "
+                "comparison goes. The page shows what digline printed, not a "
+                "sentence of its own."
+            )
+        html = html.replace(comment, as_output(sentence(data, scenario)))
+    return html
+
+
+def _is_start(page) -> bool:
+    return (page.meta.get("translation_of") or page.file.src_uri) == START
+
+
+def _behind(src_uri: str, repo: str, docs: str) -> bool:
+    """A translation made from another version of start.md than the one there is.
+
+    Between an edit to the English page and the bot's pull request, its
+    translations are the previous text — comments and all — and the sentences
+    have nowhere to go. They are left as they are until they catch up, the way
+    every other check on a translation behind its original is.
+    """
+    import translation  # tools/translation.py
+
+    if not languages.is_translation(src_uri):
+        return False
+    meta, _ = translation.read_page(os.path.join(docs, src_uri))
+    return meta.get("source_sha") != translation.source_sha(repo, START)
+
+
+#: What the English prose of /start/ says about the two captured runs, and
+#: where each number comes from. The page's words are free to change; the
+#: numbers in them are the capture's, and a capture that moves must take the
+#: sentence with it (RUNBOOK.md, "Translations" — the capture).
+CLAIMS = (
+    ("steady", lambda f: sum(
+        1 for d in f.get("deltas") or []
+        if d.get("within_noise") and not d.get("calibration")
+    ), "{word} checks moved"),
+    ("steady", lambda f: int(f.get("suspended") or 0), "{word} case could not be settled"),
+    ("prompt_regression", lambda f: int((f.get("counts") or {}).get("regressed") or 0),
+     "{word} checks did"),
+)
+
+#: Nine words, because a headline with ten of anything is a different page.
+NUMBER_WORDS = {
+    1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+    6: "six", 7: "seven", 8: "eight", 9: "nine",
+}
+
+
+def claim_problems(site: str, data: dict) -> list[str]:
+    """The numbers the English page says, against the runs it shows.
+
+    The sentence around the two comparisons counts what they report — three
+    checks moved, one case set aside, six checks worse — and those counts are
+    the capture's. A recapture that changes one of them leaves the sentence
+    saying what no run said, and nothing else on the page would notice.
+    """
+    path = os.path.join(site, "start", "index.html")
+    if not os.path.isfile(path):
+        return ["start/index.html was not built"]
+    with open(path, encoding="utf-8") as fh:
+        html = fh.read()
+    prose = html_unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<pre.*?</pre>", " ", html, flags=re.S)))
+    prose = " ".join(prose.split())
+    problems = []
+    for scenario, count_of, shape in CLAIMS:
+        count = count_of(scenarios_facts(data, scenario))
+        word = NUMBER_WORDS.get(count)
+        if word is None:
+            problems.append(
+                f"start/index.html: the {scenario} scenario reports {count}, and the page's "
+                "sentence counts in words up to nine"
+            )
+            continue
+        said = shape.format(word=word)
+        if said not in prose:
+            problems.append(
+                f"start/index.html: the page does not say {said!r}, and the {scenario} "
+                f"comparison it shows reports {count}"
+            )
+    return problems
+
+
+def scenarios_facts(data: dict, scenario: str) -> dict:
+    scenarios = data.get("scenarios")
+    if not isinstance(scenarios, dict) or not isinstance(scenarios.get(scenario), dict):
+        raise _fail(f"{HOME_JSON} has no `{scenario}` scenario, and /start/ shows its comparison.")
+    facts = scenarios[scenario].get("compare_json")
+    if not isinstance(facts, dict):
+        raise _fail(f"{HOME_JSON}: scenario `{scenario}` has no `compare_json`.")
+    return facts
+
+
+def start_problems(site: str, data: dict, behind: set[str] = frozenset()) -> list[str]:
+    """Every built /start/ — English and translated — against the capture.
+
+    The sentences are digline's words in every language: the same two, in the
+    same order, on all four pages.
+    """
+    wanted = [sentence(data, scenario) for scenario in SENTENCES.values()]
+    problems = []
+    for relative in ["start/index.html"] + [
+        f"{lang}/start/index.html"
+        for lang in languages.LANGUAGES
+        if f"{lang}/{START}" not in behind
+    ]:
+        whole = os.path.join(site, relative)
+        if not os.path.isfile(whole):
+            continue
+        with open(whole, encoding="utf-8") as fh:
+            html = fh.read()
+        found = [
+            html_unescape(re.sub(r"<[^>]+>", "", block)).strip()
+            for block in re.findall(r'<pre class="out"[^>]*>(.*?)</pre>', html, re.S)
+        ]
+        if found != wanted:
+            problems.append(
+                f"{relative}: the comparisons it shows are {found}, and the capture's "
+                f"are {wanted}"
+            )
+    return problems
+
+
 def on_page_context(context, page, config, nav, **kwargs):
     """The values reach the home and its translations and no other page, in
     the page's language."""
@@ -997,6 +1162,17 @@ def on_post_build(config, **kwargs):
     site = config["site_dir"]
     with open(os.path.join(config["docs_dir"], HOME_JSON), encoding="utf-8") as fh:
         data = json.load(fh)
+    repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
+    docs = config["docs_dir"]
+    behind = {
+        f"{lang}/{START}"
+        for lang in languages.LANGUAGES
+        if os.path.isfile(os.path.join(docs, lang, START))
+        and _behind(f"{lang}/{START}", repo, docs)
+    }
+    started = start_problems(site, data, behind) + claim_problems(site, data)
+    if started:
+        raise _fail("\n  ".join(["/start/ does not show what was captured:", *started]))
     built = _built_grids(data)
     hrefs = [c["href"] for g in built["commands"]["groups"] for c in g["commands"]]
     hrefs += [c["href"] for k in built["checks"]["kinds"] for c in k["checks"]]
