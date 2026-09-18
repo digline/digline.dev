@@ -49,6 +49,7 @@ on:
       - docs/why.md
       - docs/about.md
       - docs/contact.md
+      - docs/agents.md
       - i18n/en.yml
       # The templates that write words of the catalog ({{ "key" | t }}).
       - overrides/home.html
@@ -64,9 +65,9 @@ on:
         type: string
         default: "it,de,es"
       pages:
-        description: "Pages, comma-separated: index, start, why, about, contact"
+        description: "Pages, comma-separated: index, start, why, about, contact, agents"
         type: string
-        default: "index,start,why,about,contact"
+        default: "index,start,why,about,contact,agents"
       dry_run:
         description: "Dry run: write to the artifact only; unticked, commit to i18n/auto and open a pull request"
         type: boolean
@@ -118,7 +119,7 @@ jobs:
         id: plan
         env:
           LANGS: ${{ inputs.langs || 'it,de,es' }}
-          PAGES: ${{ inputs.pages || 'index,start,why,about,contact' }}
+          PAGES: ${{ inputs.pages || 'index,start,why,about,contact,agents' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
         run: |
           set -euo pipefail
@@ -201,7 +202,7 @@ jobs:
       - name: Translate
         env:
           LANGS: ${{ inputs.langs || 'it,de,es' }}
-          PAGES: ${{ inputs.pages || 'index,start,why,about,contact' }}
+          PAGES: ${{ inputs.pages || 'index,start,why,about,contact,agents' }}
           # The spending limit of a run: the input by hand, 12 USD after a push.
           MAX_COST: ${{ inputs.max_cost || 12 }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}

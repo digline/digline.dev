@@ -13,7 +13,7 @@ both checked on the built site:
     itself, and the files a reader is sent to verify would not be the ones the
     page was written from.
 
-── the quotation on /agents/ ─────────────────────────────────────────────────
+── the quotation on /agents/ and its translations ────────────────────────────
 That page closes on rule 1 of digline's AGENTS.md, quoted in
 overrides/agents.html — not in docs/agents.md, so that a translation of the
 page never rewrites digline's words. Those words are digline's and change
@@ -32,7 +32,8 @@ its form at the tag. A link of LINKS the Markdown does not have fails the build
 template gets ``page.meta.agents_rule``: the tag, and AGENTS.md's URL at it.
 
 ── after the build (on_post_build) ───────────────────────────────────────────
-site/agents/index.html must hold exactly one <blockquote class="agents-rule__quote">,
+/agents/ and each of its translations must hold exactly one
+<blockquote class="agents-rule__quote">,
 and its text, whitespace normalized, must be rule 1's at the tag, rendered
 from its Markdown the same way. The build fails otherwise, and when
 .agents-rule.json is missing or has no rule or no tag. Only that element is
@@ -68,6 +69,8 @@ from mkdocs.exceptions import PluginError
 
 TOOLS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.dirname(TOOLS)
+sys.path.insert(0, TOOLS)
+import languages  # noqa: E402  tools/languages.py
 
 PAGE = "agents.md"
 RULE_FILE = ".agents-rule.json"
@@ -322,7 +325,19 @@ def on_post_build(config, **kwargs):
     with open(path, encoding="utf-8") as fh:
         page_html = fh.read()
     rule = load(_rule_path(config))
-    problems = quotation_problems(page_html, rule) + caption_problems(page_html, rule)
+    problems = []
+    # The page and every translation of it: the quotation is the template's, so
+    # a translation carries digline's words unchanged, and this says so.
+    for relative in [os.path.join("agents", "index.html")] + [
+            os.path.join(lang, "agents", "index.html") for lang in languages.LANGUAGES]:
+        whole = os.path.join(config["site_dir"], relative)
+        if not os.path.isfile(whole):
+            continue
+        with open(whole, encoding="utf-8") as fh:
+            html = fh.read()
+        where = relative.replace(os.sep, "/")
+        problems += [p.replace("agents/index.html", where, 1) for p in
+                     quotation_problems(html, rule) + caption_problems(html, rule)]
     problems += agents_md_link_problems(config["site_dir"], rule["tag"])[0]
     problems += brief_link_problems(config["site_dir"])[0]
     with open(os.path.join(config["site_dir"], "search", "search_index.json"), encoding="utf-8") as fh:

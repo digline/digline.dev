@@ -89,7 +89,7 @@ Two neighbours of the same failure:
 
 ## Translations
 
-The five presentation pages (`docs/index.md`, `start`, `why`, `about`, `contact`) and the catalog (`i18n/en.yml`) are translated into Italian, German and Spanish by `.github/workflows/translate.yml`, which runs `tools/translate.py`. Its docstring has how a translation is made and checked; this is what happens around it.
+The six presentation pages (`docs/index.md`, `start`, `why`, `about`, `contact`, `agents`) and the catalog (`i18n/en.yml`) are translated into Italian, German and Spanish by `.github/workflows/translate.yml`, which runs `tools/translate.py`. Its docstring has how a translation is made and checked; this is what happens around it.
 
 **What starts a run.** A push to `main` that touches one of those pages, `i18n/en.yml`, or a template that writes catalog words (`overrides/home.html`, `404.html`, `partials/header.html`, `footer.html`, `opening.html`, `closing.html`). The Plan job asks `tools/translate.py --plan` what is behind English on `main` as it is: nothing, and the run stops there — no call, no pull request opened or touched. Otherwise only what changed is translated: an English sentence changed in `about.md` costs three pages, not fifteen. One run at a time; a newer push replaces a pending run, never the one in progress. The bot's own merges touch only `docs/<lang>/` and `i18n/<lang>.yml`, which start nothing.
 
