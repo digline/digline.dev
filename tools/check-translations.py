@@ -572,12 +572,11 @@ def selftest() -> int:
             # The first digits of the article's text — after a tag, so the 1 of
             # <h1> is not one — written out in words instead.
             ("c) a number dropped", why, first_in_article(r"(>[^<]*?)\b\d+\b", r"\1a number"), "numbers differ"),
-            # A paragraph of the translation's own, with a number the original
-            # has not got. c) reports it; h) reports the paragraph as well, since
-            # a paragraph is a block — the needle below is c)'s message, so the
-            # case passes on c) and not on h).
+            # A number the original has not got, inside a paragraph the
+            # translation already has: the blocks stay as they are, so this is
+            # c)'s alone.
             ("c) a number the original has not got", why,
-             first_in_article(r"</article>", "<p>42</p></article>"), "numbers differ"),
+             first_in_article(r"(<p[^>]*>)", r"\g<1>42 "), "numbers differ"),
             ("d) a heading one level down", why, first_in_main(r"<h2([^>]*)>(.*?)</h2>", r"<h3\1>\2</h3>"), "heading "),
             ("h) two paragraphs merged into one", why,
              first_in_main(r"(<article class=\"essay\">.*?<p>(?:(?!</p>).)*)</p>\s*<p>", r"\1 "), "structure"),
