@@ -91,14 +91,28 @@
     </nav>
 
     <div class="dg-actions">
-      {% if docs and "material/search" in config.plugins %}
-        {% set search = config.plugins["material/search"] | attr("config") %}
-        {% if search.enabled %}
-          <label class="md-header__button md-icon" for="__search" title="{{ 'bar.search_title' | t }}">
-            {% include ".icons/material/magnify.svg" %}
-          </label>
-          {% include "partials/search.html" %}
-        {% endif %}
+      {#- Search is one slot of the bar, always the same width, so the sections
+          do not move between a page that has it and a page that does not. The
+          documentation gets the icon, which spends Material's own checkbox and
+          overlay (theme.css); every other page gets the slot, empty and inert
+          — a <span>, never a <label for="__search">, which on a page without
+          the checkbox would be a control with nothing behind it.
+
+          One slot, not two: a translated page already spends it on the
+          language menu, so the row is three buttons wide wherever you are —
+          search or language or nothing, then GitHub, then the theme. The empty
+          one is gone under 454px, where the documentation's bar drops its
+          sections for the drawer and the presentation pages need every pixel
+          for the three that stay (theme.css). -#}
+      {% set searchable = docs and "material/search" in config.plugins
+                          and config.plugins["material/search"] | attr("config") | attr("enabled") %}
+      {% if searchable %}
+        <label class="md-header__button md-icon" for="__search" title="{{ 'bar.search_title' | t }}">
+          {% include ".icons/material/magnify.svg" %}
+        </label>
+        {% include "partials/search.html" %}
+      {% elif not switch %}
+        <span class="dg-actions__slot" aria-hidden="true"></span>
       {% endif %}
 
       {% if switch %}<details class="dg-lang">

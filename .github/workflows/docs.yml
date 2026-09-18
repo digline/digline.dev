@@ -178,6 +178,21 @@ jobs:
           uv run tools/check-assets.py --selftest
           uv run tools/check-assets.py site
 
+      - name: Check that the bar is the same width everywhere
+        # The first of the bar's three buttons is search on the documentation,
+        # the language menu where there are translations, and an inert span
+        # holding the space where there is neither (overrides/partials/
+        # header.html), so the entries do not move from one page to the next.
+        # tools/check-bar.py reads the build: the icon exactly on the pages
+        # that have an index behind it, on no other page and in no translation,
+        # and one holder for that first slot everywhere else. --selftest first:
+        # a clean four-page site passes, and each way of breaking the row —
+        # the icon on a page without search, a page with search missing it, a
+        # <label for="__search"> below the bar — is refused.
+        run: |
+          uv run tools/check-bar.py --selftest
+          uv run tools/check-bar.py site
+
       - name: Check that code is not offered to a translator
         # Every <pre> and <code> on every page carries translate="no"
         # (tools/hooks/notranslate.py, and the templates for their own), so a
