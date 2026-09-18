@@ -111,6 +111,11 @@ hooks:
   # After seo.py, and it has to be: it reads the description, the card's image
   # and the page.update_date that one decides. See the file's docstring.
   - tools/hooks/blog.py
+  # site/feed.xml, and the <link rel="alternate"> that points at it from the
+  # posts, from /blog/ and from the home. After blog.py, whose dates and titles
+  # it reads off page.meta rather than reading the front matter a second time.
+  # See the file's docstring, and tools/check-feed.py for what is checked after.
+  - tools/hooks/feed.py
   # llms.txt at the root, and the Markdown source of every page beside its
   # rendered form — the machine-readable side of the site. Both are derived
   # from the nav below and written into site/ after the build; a page in the
