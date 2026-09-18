@@ -26,7 +26,7 @@ Nothing in your repository moved. The model behind the API did — an update, a 
 
 *If it ran* is the point. CI runs on pushes, and nobody pushed. This trigger needs a schedule: a nightly or weekly job that runs the suite against the reference with no change on your side. A red result with a clean diff is the signature of the provider — the one failure that no code review, no test of your own code, and no amount of care can catch, and the one most teams discover from users.
 
-In the [newsletter project](https://github.com/digline/brief) this is a weekly workflow that runs the real judge and compares. It costs eight cents a week. It is the cheapest insurance in the repository.
+In the [newsletter project](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) this is a weekly workflow that runs the real judge and compares. It costs about seven cents a week. It is the cheapest insurance in the repository.
 
 The response is different from trigger 1: you did not do this, so you cannot undo it. Options, in order: pin the model version if the provider allows it and you were on an alias; adjust the prompt to the new behaviour and promote when back; or accept the new behaviour as the reference, deliberately, with the promotion as the record that you saw it and decided.
 
