@@ -39,6 +39,20 @@ raises here should still be a build that would have rendered.
 Everything is HTML-escaped once, here, because mkdocs renders templates with
 autoescape off and Material's base.html prints ``page.meta.description`` raw.
 The templates in overrides/ print these values raw for the same reason.
+
+── the card's image ─────────────────────────────────────────────────────────
+Its width and height are measured from the file, never declared: the page a
+reader is shown is drawn on a machine that will not fetch the image to check
+them. That holds for a page's own ``image:`` and, since the size stopped being
+a tuple in this file, for the one every other page falls back to. After the
+build each card is read back against the bytes it names, so the two cannot
+drift however the numbers were arrived at.
+
+    usage: tools/hooks/seo.py --selftest
+
+--selftest covers that much of this file and no more: a PNG and a JPEG
+measured, a default that is missing or unreadable refused, and a built card
+whose size is not the image's refused.
 """
 
 from __future__ import annotations
@@ -49,6 +63,8 @@ import os
 import re
 import struct
 import subprocess
+import sys
+import tempfile
 
 from mkdocs.exceptions import PluginError
 
@@ -115,9 +131,10 @@ def _attr(value: str) -> str:
     )
 
 # The social image. It already exists in the repository (docs/assets/) and is
-# the wordmark over the navy, with the product's own sentence under it.
+# the wordmark over the navy, with the product's own sentence under it. Its
+# size is not written here: it is measured, like every other card's, in
+# on_config, and a build whose default image is gone or unreadable stops there.
 OG_IMAGE = "assets/digline-wordmark.png"
-OG_IMAGE_SIZE = (1800, 440)
 OG_IMAGE_ALT = "digline — regression testing for LLM applications"
 
 # A page may put its own image on the card instead. A post whose subject *is* a
@@ -133,6 +150,12 @@ OG_IMAGE_ALT = "digline — regression testing for LLM applications"
 # the image is re-exported. A missing file, a missing alt, or a format this
 # cannot measure fails the build — the card is the one part of a page nobody
 # proof-reads, because it is only ever drawn somewhere else.
+#
+# That was true of every image except the one every page falls back to, whose
+# size was a tuple up here, three lines under the comment saying why it should
+# not be. It is measured now, and after the build every card the site wrote is
+# read back against the bytes of the file it names: a width and a height that
+# are not the image's cannot be shipped, whether they were typed or computed.
 
 # SOF0-SOF15, less the four markers in that range that are not frame headers
 # (DHT, JPG, DAC, DNL).
@@ -656,6 +679,8 @@ class _Dates:
 
 _dates: _Dates | None = None
 _leads: dict[str, str] = {}
+# The default card's size, measured in on_config from the file OG_IMAGE names.
+_default_size: tuple[int, int] | None = None
 
 
 # ── the hooks mkdocs calls ───────────────────────────────────────────────────
@@ -727,10 +752,33 @@ def on_nav(nav, config, files, **kwargs):
     raise PluginError("\n".join(parts))
 
 
+def default_image(docs_dir: str) -> tuple[int, int]:
+    """The size of the image every page falls back to, from its bytes.
+
+    The same reading, and the same two refusals, a page's own `image:` gets —
+    written once here because the fallback is not a special case, it is only
+    the card nobody declared. A build that cannot measure it would put a width
+    and a height on every page of the site without having read either.
+    """
+    path = os.path.join(docs_dir, *OG_IMAGE.split("/"))
+    if not os.path.isfile(path):
+        raise PluginError(
+            f"seo: the card every page falls back to is missing: {path}. "
+            f"`OG_IMAGE` names docs/{OG_IMAGE}.")
+    size = _image_size(path)
+    if size is None:
+        raise PluginError(
+            f"seo: cannot read the pixel size of docs/{OG_IMAGE} — PNG and "
+            "JPEG only. It is the card every page falls back to, and its "
+            "width and height are measured, never declared.")
+    return size
+
+
 def on_config(config, **kwargs):
-    global _dates, _leads
+    global _dates, _leads, _default_size
     _dates = _Dates(config)
     _leads = {}
+    _default_size = default_image(config["docs_dir"])
     # The git log for the whole tree is one subprocess, run once. If it came
     # back empty the history is shallow or absent and every date will fall back
     # to an mtime — worth saying out loud rather than shipping a flat sitemap.
@@ -791,7 +839,8 @@ def on_page_content(html_content, page, config, files, **kwargs):
     # a value read as data rather than written as HTML needs the other — the
     # JSON-LD below, and the one blog.py builds for a post.
     meta["description_text"] = description
-    image, size, image_alt = OG_IMAGE, OG_IMAGE_SIZE, OG_IMAGE_ALT
+    assert _default_size is not None
+    image, size, image_alt = OG_IMAGE, _default_size, OG_IMAGE_ALT
     if meta.get("image"):
         rel = str(meta["image"]).strip().lstrip("/")
         abs_path = os.path.join(config["docs_dir"], *rel.split("/"))
@@ -833,3 +882,227 @@ def on_page_content(html_content, page, config, files, **kwargs):
     assert _dates is not None
     page.update_date = _dates.of(page)
     return html_content
+
+
+_CARD = re.compile(
+    r'<meta property="og:image" content="([^"]*)">\s*'
+    r'<meta property="og:image:width" content="([^"]*)">\s*'
+    r'<meta property="og:image:height" content="([^"]*)">')
+
+
+def card_of(html: str) -> tuple[str, str, str] | None:
+    """(url, width, height) of the card in a rendered page, or None."""
+    found = _CARD.search(html)
+    return found.groups() if found else None
+
+
+def check_cards(site_dir: str, site_url: str) -> list[str]:
+    """Every card the build wrote, against the bytes of the file it names.
+
+    The width and the height reach a reader on a machine that will never fetch
+    the image to check them, which is what makes them worth checking here: a
+    card drawn at the wrong size is a card nobody on this side of the wire ever
+    sees go wrong.
+    """
+    prefix = (site_url or "").rstrip("/") + "/"
+    errors: list[str] = []
+    sizes: dict[str, tuple[int, int] | None] = {}
+    for folder, _, names in os.walk(site_dir):
+        for name in sorted(names):
+            if not name.endswith(".html"):
+                continue
+            page = os.path.join(folder, name)
+            with open(page, encoding="utf-8") as fh:
+                card = card_of(fh.read())
+            if card is None:
+                continue
+            url, width, height = card
+            where = os.path.relpath(page, site_dir)
+            if not url.startswith(prefix):
+                errors.append(f"{where}: og:image is {url}, which is not under {prefix}")
+                continue
+            rel = url[len(prefix):]
+            path = os.path.join(site_dir, *rel.split("/"))
+            if rel not in sizes:
+                sizes[rel] = _image_size(path) if os.path.isfile(path) else None
+            size = sizes[rel]
+            if size is None:
+                errors.append(f"{where}: og:image names {rel}, which the build "
+                              "did not write, or whose size it cannot read")
+            elif (width, height) != (str(size[0]), str(size[1])):
+                errors.append(
+                    f"{where}: the card says {rel} is {width}x{height}, and it "
+                    f"is {size[0]}x{size[1]}")
+    return errors
+
+
+def on_post_build(config, **kwargs):
+    errors = check_cards(config["site_dir"], config["site_url"] or "")
+    if errors:
+        raise PluginError(
+            "seo: the card of %d page(s) does not match the image it names.\n    %s"
+            % (len(errors), "\n    ".join(errors)))
+
+
+# ── the selftest ─────────────────────────────────────────────────────────────
+#
+# The card's image only: what this file measures, what it refuses to measure,
+# and what it reads back out of the build. The rest of seo.py — the titles, the
+# descriptions and the dates — is exercised by every build there is, and its
+# gate on_nav names the page to fix; the size of an image is the one thing here
+# that nobody on this side of the wire would ever see go wrong.
+
+
+def _png(width: int, height: int) -> bytes:
+    """The first 24 bytes of a PNG, which is all _image_size reads."""
+    return (b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR"
+            + struct.pack(">II", width, height) + b"\x08\x06\x00\x00\x00")
+
+
+def _jpeg(width: int, height: int) -> bytes:
+    """SOI, one segment to skip, then the SOF0 that carries the size."""
+    return (b"\xff\xd8"
+            + b"\xff\xe0" + struct.pack(">H", 4) + b"\x00\x00"
+            + b"\xff\xc0" + struct.pack(">H", 17) + b"\x08"
+            + struct.pack(">HH", height, width) + b"\x03" + b"\x00" * 9)
+
+
+def _card(url: str, width, height) -> str:
+    return (f'<meta property="og:image" content="{url}">\n'
+            f'<meta property="og:image:width" content="{width}">\n'
+            f'<meta property="og:image:height" content="{height}">\n')
+
+
+def selftest() -> int:
+    failures: list[str] = []
+    site_url = "https://digline.dev/"
+
+    def expect(label, actual, wanted):
+        if actual != wanted:
+            failures.append(f"{label}: {actual!r}, wanted {wanted!r}")
+
+    def refused(label, call, needle):
+        try:
+            call()
+        except PluginError as error:
+            if needle not in str(error):
+                failures.append(f"{label}: refused, but not for this: {error}")
+            else:
+                print(f"seo selftest: refused, as it must — {label}")
+            return
+        failures.append(f"{label}: accepted, which it exists to refuse")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        docs = os.path.join(tmp, "docs", "assets")
+        os.makedirs(docs)
+        wide = os.path.join(tmp, "docs", *OG_IMAGE.split("/"))
+        with open(wide, "wb") as fh:
+            fh.write(_png(1800, 440))
+
+        # 1. The two formats, measured from their bytes.
+        expect("a PNG", _image_size(wide), (1800, 440))
+        jpeg = os.path.join(docs, "shot.jpg")
+        with open(jpeg, "wb") as fh:
+            fh.write(_jpeg(1200, 675))
+        expect("a JPEG", _image_size(jpeg), (1200, 675))
+
+        # 2. What the bytes do not say. _image_size answers None and its two
+        #    callers turn that into the refusal — it is not one itself.
+        short = os.path.join(docs, "truncated.png")
+        with open(short, "wb") as fh:
+            fh.write(_png(10, 10)[:16])
+        expect("a PNG cut short", _image_size(short), None)
+        prose = os.path.join(docs, "notes.png")
+        with open(prose, "w", encoding="utf-8") as fh:
+            fh.write("this is not an image")
+        expect("a file that is not an image", _image_size(prose), None)
+        expect("a file that is not there", _image_size(os.path.join(docs, "no.png")),
+               None)
+
+        # 3. The default card: measured, and refused when it cannot be.
+        expect("the default, measured", default_image(os.path.join(tmp, "docs")),
+               (1800, 440))
+        os.replace(prose, wide)
+        refused("a default image whose bytes say nothing",
+                lambda: default_image(os.path.join(tmp, "docs")),
+                "cannot read the pixel size")
+        os.remove(wide)
+        refused("a default image that is not there",
+                lambda: default_image(os.path.join(tmp, "docs")),
+                "the card every page falls back to is missing")
+
+    # 4. The card read back out of a built page, and each way it stops matching
+    #    the file it names.
+    with tempfile.TemporaryDirectory() as site:
+        assets = os.path.join(site, "assets")
+        os.makedirs(assets)
+        with open(os.path.join(assets, "wordmark.png"), "wb") as fh:
+            fh.write(_png(1800, 440))
+
+        def page(name: str, html: str) -> None:
+            folder = os.path.join(site, name)
+            os.makedirs(folder, exist_ok=True)
+            with open(os.path.join(folder, "index.html"), "w", encoding="utf-8") as fh:
+                fh.write(html)
+
+        right = _card(site_url + "assets/wordmark.png", 1800, 440)
+        expect("the card read back", card_of(right),
+               (site_url + "assets/wordmark.png", "1800", "440"))
+        expect("a page with no card", card_of("<title>x</title>"), None)
+
+        page("why", right)
+        page("start", right)
+        expect("two pages on one measured image", check_cards(site, site_url), [])
+
+        page("wrong-width", _card(site_url + "assets/wordmark.png", 1200, 440))
+        expect("a width that is not the image's",
+               check_cards(site, site_url),
+               ["wrong-width/index.html: the card says assets/wordmark.png is "
+                "1200x440, and it is 1800x440"])
+        os.remove(os.path.join(site, "wrong-width", "index.html"))
+
+        page("wrong-height", _card(site_url + "assets/wordmark.png", 1800, 630))
+        expect("a height that is not the image's",
+               check_cards(site, site_url),
+               ["wrong-height/index.html: the card says assets/wordmark.png is "
+                "1800x630, and it is 1800x440"])
+        os.remove(os.path.join(site, "wrong-height", "index.html"))
+
+        page("gone", _card(site_url + "assets/missing.png", 1200, 630))
+        expect("an image the build did not write",
+               check_cards(site, site_url),
+               ["gone/index.html: og:image names assets/missing.png, which the "
+                "build did not write, or whose size it cannot read"])
+        os.remove(os.path.join(site, "gone", "index.html"))
+
+        page("elsewhere", _card("https://example.com/card.png", 1200, 630))
+        expect("an image on another host",
+               check_cards(site, site_url),
+               ["elsewhere/index.html: og:image is https://example.com/card.png, "
+                "which is not under https://digline.dev/"])
+
+    # 5. The size of the default is nowhere but in the file. This is what the
+    #    change is: the name it was declared under is gone, and a wrong one
+    #    cannot be typed back in without the check above catching it.
+    expect("no declared size for the default",
+           "OG_IMAGE_SIZE" in globals(), False)
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    real = os.path.join(root, "docs", *OG_IMAGE.split("/"))
+    if os.path.isfile(real):
+        expect(f"docs/{OG_IMAGE} as the build measures it",
+               default_image(os.path.join(root, "docs")), _image_size(real))
+
+    for failure in failures:
+        print(f"seo selftest: {failure}", file=sys.stderr)
+    if failures:
+        return 1
+    print("seo selftest: a PNG and a JPEG measured from their bytes, the "
+          "default card measured and not declared, and a truncated image, a "
+          "missing default, an unreadable default, a wrong width, a wrong "
+          "height, an image the build did not write and one on another host "
+          "each refused")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(selftest())
