@@ -71,7 +71,7 @@ Put the pieces together and "under control" turns out to be three concrete thing
 
 In the newsletter project a run costs about seven cents: twenty-one articles, judged five times each. The project has a number it can state, with the runs to back it: the judge agrees with the reader on 16 of 21 articles in four of the six published runs, and on 15 and 14 in the other two.
 
-That is what [digline](index.md) does, and it is all it does. The reference lives in your repository. Nothing leaves your machine. `pip install digline` to try it; the newsletter project is [public](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) if you want to see the real thing first.
+That is what [digline](index.md) does, and it is all it does. The reference lives in your repository. The only call that leaves is the one your suite makes to your own model — digline has no server, no account and no telemetry. `pip install digline` to try it; the newsletter project is [public](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) if you want to see the real thing first.
 
 Where these numbers come from: six runs of the newsletter judge, committed as [fixtures](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures), [with a note on which number comes from which run](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), and [a script](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/recompute.py) that recomputes every number in this page from them.
 
