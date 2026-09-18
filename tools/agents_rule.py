@@ -7,7 +7,7 @@ touches it. The words are digline's, and they change there: so tools/sync-docs.s
 runs this against the checkout it copies from, and writes what it finds to
 .agents-rule.json beside .lastmod.tsv — the release tag it read (the latest v*
 tag the checkout's HEAD contains, not main), that tag's commit, and the rule's
-text as AGENTS.md writes it. tools/hooks/agents.py reads the file back: it
+text as AGENTS.md writes it. tools/hooks/sources.py reads the file back: it
 points the page's links to AGENTS.md and to the skill at that tag, and fails
 the build when the quotation on the page is not that text.
 

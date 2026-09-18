@@ -211,7 +211,7 @@ fi
 # closes /agents/ (overrides/agents.html). AGENTS.md is not copied — it is not a
 # page here — so this is the moment its words are in reach: tools/agents_rule.py
 # reads them at the latest v* tag the checkout's HEAD contains, and writes the
-# tag, its commit and the rule to .agents-rule.json. tools/hooks/agents.py
+# tag, its commit and the rule to .agents-rule.json. tools/hooks/sources.py
 # points the page's links at that tag and fails the build when the quotation is
 # not that text. The tags are fetched first: a clone older than the release has
 # not got its tag. Before anything is copied, because the links to AGENTS.md
@@ -287,7 +287,7 @@ perl -pi -e 's{\]\(docs/adr/\)}{](adr/index.md)}g'                              
 # is linked from docs/ and from an ADR, so from two depths, and a page may
 # already link it on GitHub at main. Every one of those links leads to AGENTS.md
 # at the release tag read above, not main: these pages document that release,
-# and main's AGENTS.md may have moved on, or moved. tools/hooks/agents.py fails
+# and main's AGENTS.md may have moved on, or moved. tools/hooks/sources.py fails
 # the build on a link to AGENTS.md at any other ref.
 perl -pi -e 's{\]\((?:\.\./)+AGENTS\.md\)}{](https://github.com/digline/digline/blob/'"$agents_tag"'/AGENTS.md)}g;
              s{https://github\.com/digline/digline/blob/main/AGENTS\.md}{https://github.com/digline/digline/blob/'"$agents_tag"'/AGENTS.md}g' \

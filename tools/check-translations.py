@@ -559,7 +559,9 @@ def selftest() -> int:
             ("b) an external link changed by a character", why,
              first_in_main(r'href="https://danluu\.com/exercise-7/"', 'href="https://danluu.com/exercise-8/"'), "link "),
             ("c) a decimal point made a comma", why, first_in_main(r"0\.91", "0,91"), "numbers differ"),
-            ("c) a number dropped", why, first_in_main(r"(<p[^>]*>[^<]*?)\b4\b", r"\1four"), "numbers differ"),
+            # Any number in a paragraph, written out in words instead: the page's
+            # own numbers change as the page is written, and the check does not.
+            ("c) a number dropped", why, first_in_main(r"(<p[^>]*>[^<]*?)\b\d+\b", r"\1a number"), "numbers differ"),
             ("d) a heading one level down", why, first_in_main(r"<h2([^>]*)>(.*?)</h2>", r"<h3\1>\2</h3>"), "heading "),
             ("h) two paragraphs merged into one", why,
              first_in_main(r"(<article class=\"essay\">.*?<p>(?:(?!</p>).)*)</p>\s*<p>", r"\1 "), "structure"),
