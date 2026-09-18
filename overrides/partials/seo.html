@@ -31,6 +31,15 @@
 {%- if page.canonical_url %}
 <meta property="og:url" content="{{ page.canonical_url }}">
 {%- endif %}
+{#- The two dates of a post, and only of a post: `date:` in its front matter,
+    and the day the page last changed — the same value seo.py gives the
+    sitemap. Both from tools/hooks/blog.py, which refuses a post declaring
+    neither, and which leaves /blog/ without them: a list of articles is not
+    one, and has no date of its own to state. -#}
+{%- if page.meta.article_published %}
+<meta property="article:published_time" content="{{ page.meta.article_published }}">
+<meta property="article:modified_time" content="{{ page.meta.article_modified }}">
+{%- endif %}
 {%- for alternate in page.meta.hreflang or [] %}
 <link rel="alternate" hreflang="{{ alternate.lang }}" href="{{ alternate.href }}">
 {%- endfor %}

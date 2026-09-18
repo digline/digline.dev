@@ -21,6 +21,15 @@
     {%- if opening.lede %}
     <p class="opening__lede">{{ opening.lede }}</p>
     {%- endif %}
+    {#- On a post, under its lede: the day it was published. `date:` in the
+        post's front matter, read by tools/hooks/blog.py, which is also where
+        the card's article:published_time and the list on /blog/ come from —
+        one line in one file, three places that say it. The attribute carries
+        the machine's spelling and the text the reader's. No other page has
+        one: a documentation page is not published on a day, it is current. -#}
+    {%- if page and page.meta and page.meta.published %}
+    <p class="opening__date"><time datetime="{{ page.meta.published }}">{{ page.meta.published_display }}</time></p>
+    {%- endif %}
     {%- set notice = page.meta.translation_notice if page and page.meta else none %}
     {%- if notice %}
     <p class="opening__notice{% if notice.stale %} opening__notice--stale{% endif %}" data-translation-notice>

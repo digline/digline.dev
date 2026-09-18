@@ -786,6 +786,11 @@ def on_page_content(html_content, page, config, files, **kwargs):
     site_url = (config["site_url"] or "").rstrip("/") + "/"
     meta["seo_title"] = _attr(full)
     meta["description"] = _attr(description)
+    # The same sentence before the escaping. Everything on this side of the
+    # site writes it into an attribute, so the escaped one is the useful form;
+    # a value read as data rather than written as HTML needs the other — the
+    # JSON-LD below, and the one blog.py builds for a post.
+    meta["description_text"] = description
     image, size, image_alt = OG_IMAGE, OG_IMAGE_SIZE, OG_IMAGE_ALT
     if meta.get("image"):
         rel = str(meta["image"]).strip().lstrip("/")

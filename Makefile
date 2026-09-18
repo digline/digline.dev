@@ -41,6 +41,9 @@ assets:          ## the asset-hash check against its own small site, refusals in
 indexes:         ## the Examples tiles and the Decisions table: every missing field refused — needs no build
 	uv run tools/hooks/indexes.py --selftest
 
+posts:           ## a post's date read once: the list on /blog/, and a missing, unparseable or future date refused — needs no build
+	uv run tools/hooks/blog.py --selftest
+
 glyphs:          ## the glyph check against its own four-page site, refusals included — needs no build
 	uv run tools/check-glyphs.py --selftest
 
@@ -62,7 +65,7 @@ translation-checks: docs  ## every translation against its original: the fake on
 agent: docs      ## the translating agent with a fake model — prompts, skipping, the fixed section, retries, the spending limit, the report, a real build — no network
 	uv run tools/translate.py --selftest
 
-build: docs css source home opening agents indexes glyphs assets bar translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, a search icon on a page without search or missing from one with it, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
+build: docs css source home opening agents indexes posts glyphs assets bar translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a post with no date or a date in the future, a character with no Plex glyph, a search icon on a page without search or missing from one with it, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site

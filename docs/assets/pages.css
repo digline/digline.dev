@@ -943,6 +943,18 @@ pre {
   .tile { padding: 1.375rem; }
 }
 
+/* ══ the day a post was published ═══════════════════════════════════════
+   Under the lede of a post, and on no other page (.opening__date,
+   overrides/partials/opening.html, from `date:` via tools/hooks/blog.py). It
+   sits where a translation's notice sits and is set like it — the same size,
+   the same --muted, the same distance under the lede — because it is the same
+   kind of line: something about the page rather than of it. The contrast is
+   the one already measured for --muted on a band, 5.69:1 in the light and
+   5.93:1 in the dark or more; no new colour is introduced here. The date is
+   kept whole, since one broken at its spaces reads as two. */
+.opening__date { margin: .875rem 0 0; font-size: .875rem; line-height: 1.5; color: var(--muted); }
+.opening__date time { white-space: nowrap; }
+
 /* ══ the notice on a translation ════════════════════════════════════════
    A translated page says that it is one: under the lede of a reading page
    (.opening__notice, overrides/partials/opening.html) and as the third item
