@@ -8,8 +8,8 @@ description: Ein Prompt ist kein Code, und das Modell verändert sich unter dir.
 search:
   exclude: true
 source: why.md
-source_sha: afbb4736477e
-source_commit: 9b352ff
+source_sha: d1952e7f33ac
+source_commit: 3f60b0d
 model: claude-opus-5
 ---
 
@@ -75,7 +75,7 @@ Setzt man die Teile zusammen, sind „unter Kontrolle“ drei konkrete Dinge, ke
 
 Im Newsletter-Projekt kostet ein run etwa sieben Cent: einundzwanzig Artikel, jeder fünfmal bewertet. Das Projekt hat eine Zahl, die es nennen kann, und die runs, die sie belegen: Der Judge stimmt in vier der sechs veröffentlichten runs bei 16 von 21 Artikeln mit dem Leser überein, in den anderen beiden bei 15 und 14.
 
-Genau das macht [digline](../index.md), und mehr macht es nicht. Die Referenz liegt in deinem Repository. Nichts verlässt deinen Rechner. Zum Ausprobieren: `pip install digline`; das Newsletter-Projekt ist [öffentlich](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), wenn du es erst einmal in der Praxis sehen willst.
+Genau das macht [digline](../index.md), und mehr macht es nicht. Die Referenz liegt in deinem Repository. Der einzige Aufruf, der nach außen geht, ist der, den deine Suite an dein eigenes Modell richtet — digline hat keinen Server, kein Konto und keine Telemetrie. Zum Ausprobieren: `pip install digline`; das Newsletter-Projekt ist [öffentlich](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), wenn du es erst einmal in der Praxis sehen willst.
 
 Woher diese Zahlen stammen: sechs runs des Newsletter-Judge, eingecheckt als [fixtures](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures), [mit einer Notiz dazu, welche Zahl aus welchem run stammt](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), und [ein Skript](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/recompute.py), das jede Zahl auf dieser Seite daraus neu berechnet.
 

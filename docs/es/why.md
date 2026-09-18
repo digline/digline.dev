@@ -8,8 +8,8 @@ description: Un prompt no es código, y el modelo se mueve bajo tus pies. Por qu
 search:
   exclude: true
 source: why.md
-source_sha: afbb4736477e
-source_commit: 9b352ff
+source_sha: d1952e7f33ac
+source_commit: 3f60b0d
 model: claude-opus-5
 ---
 
@@ -23,7 +23,7 @@ Los ejemplos que siguen provienen de un proyecto real y público: un pequeño pr
 
 Cuando cambias una línea de código, la misma entrada produce la misma salida, siempre. Eso es lo que hace posibles las pruebas: escribes lo que debería salir y la máquina te dice si salió.
 
-Un prompt no funciona así. Haz la misma pregunta al mismo modelo cinco veces, con el mismo prompt y el mismo artículo, y no siempre responde igual. Cada run del juez de boletines pregunta cinco veces por cada uno de los veintiún artículos. En entre dos y seis de ellos, según el run, las cinco respuestas no coinciden entre sí. Nada cambió entre esas cinco: ni el código, ni el modelo, ni la entrada. El modelo es una distribución de probabilidad y tú estás muestreando de ella.
+Un prompt no funciona así. Haz la misma pregunta al mismo modelo cinco veces, con el mismo prompt y el mismo artículo, y no siempre responde igual. Cada run del juez de boletines pregunta cinco veces por cada uno de los veintiún artículos. En dos a seis de ellos, según el run, las cinco respuestas no coinciden entre sí. Nada cambió entre esas cinco: ni el código, ni el modelo, ni la entrada. El modelo es una distribución de probabilidad y tú estás muestreando de ella.
 
 Pero significa que el reflejo habitual —*ejecutarlo una vez, parece correcto, publicar*— no es una prueba. Es una sola muestra.
 
@@ -75,7 +75,7 @@ Junta las piezas y «bajo control» resulta ser tres cosas concretas, ninguna de
 
 En el proyecto de los boletines, un run cuesta unos siete céntimos: veintiún artículos, juzgados cinco veces cada uno. El proyecto tiene una cifra que puede enunciar, con los runs que la respaldan: el juez coincide con el lector en 16 de 21 artículos en cuatro de los seis runs publicados, y en 15 y 14 en los otros dos.
 
-Eso es lo que hace [digline](../index.md), y es todo lo que hace. La referencia vive en tu repositorio. Nada sale de tu máquina. `pip install digline` para probarlo; el proyecto de los boletines es [público](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) si prefieres ver primero algo real.
+Eso es lo que hace [digline](../index.md), y es todo lo que hace. La referencia vive en tu repositorio. La única llamada que sale es la que tu suite hace a tu propio modelo: digline no tiene servidor, ni cuenta, ni telemetría. `pip install digline` para probarlo; el proyecto de los boletines es [público](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) si prefieres ver primero algo real.
 
 De dónde salen estas cifras: seis runs del juez de boletines, incluidos en el repositorio como [fixtures](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures), [con una nota sobre qué cifra viene de qué run](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), y [un script](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/recompute.py) que recalcula a partir de ellos todas las cifras de esta página.
 
@@ -83,4 +83,4 @@ De dónde salen estas cifras: seis runs del juez de boletines, incluidos en el r
 
 Si tienes treinta minutos en lugar de cinco: el [Manual](../handbook/01-what-you-are-shipping.md).
 
-¿Te preguntas en qué se diferencia de las herramientas que ya conoces? Consulta [En qué se diferencia digline](../comparison/index.md).
+¿Quieres saber en qué se diferencia de las herramientas que ya conoces? Consulta [En qué se diferencia digline](../comparison/index.md).
