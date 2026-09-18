@@ -542,12 +542,20 @@ def selftest() -> int:
             with open(os.path.join(root, path), "w", encoding="utf-8") as fh:
                 fh.write(before)
 
-        def first_in_main(pattern, replacement):
+        def first_from(mark, pattern, replacement):
             def change(html):
-                start = html.index("<main")
+                start = html.index(mark)
                 head, rest = html[:start], html[start:]
                 return head + re.sub(pattern, replacement, rest, count=1, flags=re.S)
             return change
+
+        def first_in_main(pattern, replacement):
+            return first_from("<main", pattern, replacement)
+
+        # The page's text, after the opening band: the notice's date is the first
+        # number in <main> and belongs to f), not to the checks a) to e).
+        def first_in_article(pattern, replacement):
+            return first_from('<article class="essay">', pattern, replacement)
 
         why = "site/it/why/index.html"
         planted = [
@@ -559,9 +567,17 @@ def selftest() -> int:
             ("b) an external link changed by a character", why,
              first_in_main(r'href="https://danluu\.com/exercise-7/"', 'href="https://danluu.com/exercise-8/"'), "link "),
             ("c) a decimal point made a comma", why, first_in_main(r"0\.91", "0,91"), "numbers differ"),
-            # Any number in a paragraph, written out in words instead: the page's
+            # Neither plant names a number the page happens to carry: the page's
             # own numbers change as the page is written, and the check does not.
-            ("c) a number dropped", why, first_in_main(r"(<p[^>]*>[^<]*?)\b\d+\b", r"\1a number"), "numbers differ"),
+            # The first digits of the article's text — after a tag, so the 1 of
+            # <h1> is not one — written out in words instead.
+            ("c) a number dropped", why, first_in_article(r"(>[^<]*?)\b\d+\b", r"\1a number"), "numbers differ"),
+            # A paragraph of the translation's own, with a number the original
+            # has not got. c) reports it; h) reports the paragraph as well, since
+            # a paragraph is a block — the needle below is c)'s message, so the
+            # case passes on c) and not on h).
+            ("c) a number the original has not got", why,
+             first_in_article(r"</article>", "<p>42</p></article>"), "numbers differ"),
             ("d) a heading one level down", why, first_in_main(r"<h2([^>]*)>(.*?)</h2>", r"<h3\1>\2</h3>"), "heading "),
             ("h) two paragraphs merged into one", why,
              first_in_main(r"(<article class=\"essay\">.*?<p>(?:(?!</p>).)*)</p>\s*<p>", r"\1 "), "structure"),
