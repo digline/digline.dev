@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css source home opening agents indexes glyphs assets translate i18n translations translation-checks agent build check clean
+.PHONY: docs preview serve css source home opening agents indexes glyphs assets bar translate i18n translations translation-checks agent build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -44,6 +44,9 @@ indexes:         ## the Examples tiles and the Decisions table: every missing fi
 glyphs:          ## the glyph check against its own four-page site, refusals included — needs no build
 	uv run tools/check-glyphs.py --selftest
 
+bar:             ## the bar check against its own four-page site, refusals included — needs no build
+	uv run tools/check-bar.py --selftest
+
 translate:       ## the translate="no" and lang check against its own two-page site, refusals included — needs no build
 	uv run tools/check-translate.py --selftest
 
@@ -59,12 +62,13 @@ translation-checks: docs  ## every translation against its original: the fake on
 agent: docs      ## the translating agent with a fake model — prompts, skipping, the fixed section, retries, the spending limit, the report, a real build — no network
 	uv run tools/translate.py --selftest
 
-build: docs css source home opening agents indexes glyphs assets translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
+build: docs css source home opening agents indexes glyphs assets bar translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an unreleased source, a home.json the home cannot stand behind, a character with no Plex glyph, a search icon on a page without search or missing from one with it, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
+	uv run tools/check-bar.py site
 	uv run tools/check-translate.py site
 	uv run tools/check-translations.py site
 
@@ -73,6 +77,7 @@ check: css source  ## the stylesheets, the source, the two generated indexes and
 	tools/check-llms.py site
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
+	uv run tools/check-bar.py site
 	uv run tools/check-translate.py site
 	uv run tools/check-translations.py site
 

@@ -91,14 +91,25 @@
     </nav>
 
     <div class="dg-actions">
-      {% if docs and "material/search" in config.plugins %}
-        {% set search = config.plugins["material/search"] | attr("config") %}
-        {% if search.enabled %}
-          <label class="md-header__button md-icon" for="__search" title="{{ 'bar.search_title' | t }}">
-            {% include ".icons/material/magnify.svg" %}
-          </label>
-          {% include "partials/search.html" %}
-        {% endif %}
+      {#- Search is one slot of the bar, always the same width, so the sections
+          do not move between a page that has it and a page that does not. The
+          documentation gets the icon, which spends Material's own checkbox and
+          overlay (theme.css); every other page spends that same slot on the
+          language menu below, so the row is three buttons wherever you are —
+          search or language, then GitHub, then the theme.
+
+          A presentation page without translations would leave the slot empty
+          and start the movement again; tools/check-bar.py refuses one, and the
+          answer then is to hold the space with something inert — a <span>,
+          never a <label for="__search">, which without the checkbox is a
+          control with nothing behind it. -#}
+      {% set searchable = docs and "material/search" in config.plugins
+                          and config.plugins["material/search"] | attr("config") | attr("enabled") %}
+      {% if searchable %}
+        <label class="md-header__button md-icon" for="__search" title="{{ 'bar.search_title' | t }}">
+          {% include ".icons/material/magnify.svg" %}
+        </label>
+        {% include "partials/search.html" %}
       {% endif %}
 
       {% if switch %}<details class="dg-lang">

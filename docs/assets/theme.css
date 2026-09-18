@@ -123,8 +123,39 @@ body {
   fill: currentColor;
 }
 
-/* Search sits between the sections and the two icons. */
+/* Search is an icon at every width, and the panel opens under the bar.
+
+   Material shows a field in the header above 60em and an icon below it, which
+   is what moved the sections by 196px between a documentation page and a
+   presentation one: the field is 234px wide and the icon is 38. Here the icon
+   stays at every width and the field is what the icon opens — Material's own
+   checkbox, overlay, shortcuts (/, s, f), focus and results, none of it
+   rewritten. Closed, .md-search takes no room in the row; open, the panel is
+   laid under the bar and pinned to its right edge, where the icon is, never
+   wider than the window allows. */
 .dg-bar .md-search { flex: none; }
+@media screen and (min-width: 60em) {
+  .dg-bar .md-header__button[for="__search"] { display: flex; }
+  /* Out of the row entirely: a flex item of zero width still takes the row's
+     gap, and that gap was four pixels of the very movement this is about. The
+     pill is what it is measured from, so the panel ends where the pill does. */
+  .dg-bar .dg-bar__in { position: relative; }
+  .dg-bar .md-search { position: absolute; top: 100%; right: 0; width: 0; }
+  .dg-bar .md-search__inner {
+    position: absolute; top: .5rem; right: 0; float: none;
+    width: min(26rem, calc(100vw - 3rem)); padding: 0;
+    opacity: 0; visibility: hidden;
+    transition: opacity .15s;
+  }
+  /* The results are as wide as the panel: Material sizes them in rem for the
+     field it draws in the row (23.4 here, 34.4 above 76.25em), and either one
+     would be cut off by a panel the window's width decides. */
+  .dg-bar .md-search__scrollwrap { width: 100%; }
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+    width: min(26rem, calc(100vw - 3rem));
+    opacity: 1; visibility: visible;
+  }
+}
 .dg-bar .md-search__form {
   background-color: var(--surface);
   border: 1px solid var(--rule);
