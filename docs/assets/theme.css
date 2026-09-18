@@ -156,13 +156,6 @@ body {
     opacity: 1; visibility: visible;
   }
 }
-/* The slot the other pages keep in its place: the icon's width and the row's
-   gap, and nothing in it. Gone under 454px, where the documentation's bar has
-   already dropped its sections (below). */
-.dg-actions__slot { flex: none; display: block; width: 38px; height: 38px; }
-@media (max-width: 453px) {
-  .dg-actions__slot { display: none; }
-}
 .dg-bar .md-search__form {
   background-color: var(--surface);
   border: 1px solid var(--rule);
