@@ -82,6 +82,16 @@ jobs:
           uv run tools/check-css.py --selftest
           uv run tools/check-css.py docs/assets
 
+      - name: Check the absolute claims
+        # tools/check-claims.py reads docs/ (but docs/product/, which digline
+        # checks) and i18n/: a tier-1 phrase, a tier-2 phrase with no anchored
+        # entry in tools/claims-register.toml, an entry whose quote or anchor is
+        # gone, or a calque of "Nothing leaves your machine" in its language.
+        # Before the build, because it reads the sources. --selftest first.
+        run: |
+          uv run tools/check-claims.py --selftest
+          uv run tools/check-claims.py
+
       - name: Check the home's hook
         # tools/hooks/home.py against tools/testdata/home/: the capture it was
         # written for computes to what the page shows, and every way home.json

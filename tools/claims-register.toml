@@ -1,0 +1,20 @@
+# The absolute claims this site makes about where data goes, each with the
+# code that makes it true. Read by tools/check-claims.py.
+#
+# An entry is admitted when the claim is anchored — `anchor.path` holds
+# `anchor.contains`, and that text is why the sentence is true — not because
+# the sentence is harmless. Both ends are checked on every run: a `quote` no
+# longer in its `file`, or an anchor that no longer holds its evidence, fails.
+# The anchor is a file in this repository: the gate does not read the sync.
+#
+# `quote` is compared the way the gate reads text: lowercased, whitespace
+# collapsed, Markdown's `*` dropped. Write it as the sentence reads.
+#
+#   [[claim]]
+#   file = "docs/why.md"
+#   quote = "the sentence, as it reads on the page"
+#   anchor = { path = "overrides/...", contains = "the text that makes it true" }
+#   why = "why that text makes the sentence true"
+#   since = "#NN"
+#
+# No entry yet: no page of the site makes a tier-2 claim today.
