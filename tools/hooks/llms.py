@@ -479,6 +479,16 @@ DESCRIPTIONS: dict[str, str] = {
         "part of the run, and the totals crossing a boundary while the per-call "
         "counts do not"
     ),
+    "product/adr/0026-the-thinking-a-model-charged-for.md": (
+        "The output tokens nobody reads, told apart from the ones they do: a "
+        "model that reasons before it answers is billed for both, so a reply "
+        "now records how many of its output tokens were thinking \u2014 a "
+        "breakdown of a count already paid for, never added to it, which is "
+        "the inverse of the cache-write case it will be mistaken for \u2014 "
+        "with not-reported kept distinct from a measured zero, a reply "
+        "claiming more thinking than output refused rather than clamped, and "
+        "any unreported side making the total unreported"
+    ),
     "product/adr/0027-the-run-reconciles.md": (
         "Whether a run recorded an answer to every question it asked: the "
         "driver reads its own dispatch back \u2014 a suspended case asked "
