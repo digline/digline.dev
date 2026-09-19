@@ -22,4 +22,5 @@ so Why has two translations, the home and About one each, and Start here and
 Contact none; and of the Handbook, on the documentation's shell, in Italian,
 the index — which links every chapter, chapters 2 and 3 translated and the
 others not — chapter 2, and chapter 3, which links a post that stays English
-and whose pager has a translated page before it and an English one after.
+and whose pager has a translated page before it and an English one after;
+and chapter 8, whose pager on a translation stops at the end of the Handbook.
