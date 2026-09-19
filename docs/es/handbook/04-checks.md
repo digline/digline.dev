@@ -25,7 +25,7 @@ La mayoría de los equipos recurre primero al juez, porque es la parte interesan
 
 ## Por qué primero los deterministas
 
-Piensa en el [juez del boletín](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/suite.py). Su salida es un objeto JSON pequeño: una puntuación del 1 al 5 y una razón de una frase. Antes de preguntar a ningún modelo si la puntuación es *buena*, se pueden comprobar tres cosas sin modelo alguno:
+Piensa en el [juez de la newsletter](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/suite.py). Su salida es un objeto JSON pequeño: una puntuación del 1 al 5 y una razón de una frase. Antes de preguntar a ningún modelo si la puntuación es *buena*, se pueden comprobar tres cosas sin modelo alguno:
 
 - ¿Es la salida JSON válido con exactamente esos dos campos? (`JsonSchema`)
 - ¿Es la puntuación un entero entre 1 y 5? (el mismo esquema)
@@ -33,7 +33,7 @@ Piensa en el [juez del boletín](https://github.com/digline/brief/blob/9507bb06f
 
 Esos tres detectan los fallos que de verdad ocurren en producción: que el modelo envuelva el JSON en prosa, que el modelo se invente una puntuación de 0, que el prompt crezca hasta que cada llamada cueste el triple que antes. Los detectan gratis, de forma determinista, en cada run. Y cuando uno falla, el error no es ambiguo: nadie discute un «no es JSON válido».
 
-Solo después viene la pregunta que necesita un juez —«¿coincide esta puntuación con lo que quería el lector?»— y en el proyecto del boletín hasta esa resultó responderse sin modelo, porque están registradas las propias marcas del lector. El check son catorce líneas de Python: *¿dijo el juez ≥4 exactamente cuando el lector lo marcó?* Sin un segundo modelo, sin ruido procedente del propio check.
+Solo después viene la pregunta que necesita un juez —«¿coincide esta puntuación con lo que quería el lector?»— y en el proyecto de la newsletter hasta esa resultó responderse sin modelo, porque están registradas las propias marcas del lector. El check son catorce líneas de Python: *¿dijo el juez ≥4 exactamente cuando el lector lo marcó?* Sin un segundo modelo, sin ruido procedente del propio check.
 
 La forma general: **cada check que puedas hacer determinista es una fuente de ruido menos entre tú y la respuesta.** Una suite con cinco checks deterministas y un juez tiene una señal ruidosa que calibrar. Una suite con seis jueces tiene seis.
 

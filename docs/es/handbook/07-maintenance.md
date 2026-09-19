@@ -59,7 +59,7 @@ Dos respuestas, y solo dos. Si el caso es genuinamente ambiguo —las muestras s
 
 Los disparadores son reactivos. La práctica que mantiene honesta a una suite es un acto pequeño, aburrido y programado:
 
-1. Abre la comparación del run programado. Esté en verde o en rojo, lee los agregados —precisión, exactitud— frente a la referencia. Dos números, treinta segundos.
+1. Abre la comparación del run programado. Esté en verde o en rojo, lee los agregados —precision, accuracy— frente a la referencia. Dos números, treinta segundos.
 2. Mira la lista de casos que se movieron, aunque sea dentro de la tolerancia. Un caso que se desvía un poco cada semana te está diciendo algo antes de cruzar la línea.
 3. Revisa el número de casos. Si no ha crecido desde la semana pasada, pregúntate si no salió nada mal en producción o si nadie lo anotó. Suele ser lo segundo.
 4. Revisa la antigüedad de la referencia. Una referencia de hace cuatro meses sobre una funcionalidad que cambió dos veces es una referencia que nadie volvió a aprobar.
@@ -75,9 +75,9 @@ Tres fallos lentos que ningún disparador detecta, porque cada paso es demasiado
 
 **Casos que se pudren.** Un caso cuya respuesta esperada era correcta en marzo puede ser incorrecta en septiembre porque el producto cambió: el plazo de devolución se movió, la taxonomía ganó una categoría. Una suite con casos podridos falla por razones equivocadas y enseña a la gente a ignorar el rojo. Cuando un caso falla y la salida parece correcta, revisa el caso antes que el prompt.
 
-**Deriva de la referencia por promoción.** Cada promoción acepta una pequeña pérdida: «un caso peor, pero el diff queda mejor». Diez promociones después, la referencia está diez pequeñas pérdidas por debajo de donde empezaste, y todas y cada una de las comparaciones estaban en verde. La defensa es el agregado en el archivo: compara la precisión de este mes no con la referencia de la semana pasada, sino con la primera que aprobaste. Git la tiene.
+**Deriva de la referencia por promoción.** Cada promoción acepta una pequeña pérdida: «un caso peor, pero el diff queda mejor». Diez promociones después, la referencia está diez pequeñas pérdidas por debajo de donde empezaste, y todas y cada una de las comparaciones estaban en verde. La defensa es el agregado en el archivo: compara la precision de este mes no con la referencia de la semana pasada, sino con la primera que aprobaste. Git la tiene.
 
-## Ponerlo en práctica hoy
+## Hazlo hoy
 
 1. Añade el run programado —con una vez por semana basta— con el juez real. Que sea el único trabajo que se ejecuta cuando nadie hizo push.
 2. Pon la revisión de diez minutos en el calendario, a cargo de la persona responsable de la funcionalidad.

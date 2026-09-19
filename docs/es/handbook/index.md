@@ -3,7 +3,7 @@ title: Manual
 seo_title: 'Manual: mantener bajo control una funcionalidad con LLM'
 lang: es
 translation_of: handbook/index.md
-description: 'Ocho capítulos sobre la evaluación de aplicaciones LLM en la práctica: casos, verdad de referencia, checks, el juez, la baseline, mantenimiento. Sobre el problema, no sobre la herramienta.'
+description: 'Ocho capítulos sobre la evaluación de aplicaciones LLM en la práctica: casos, verdad de referencia, checks, el juez, la referencia, mantenimiento. Sobre el problema, no sobre la herramienta.'
 search:
   exclude: true
 source: handbook/index.md

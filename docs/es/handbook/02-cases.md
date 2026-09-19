@@ -6,8 +6,8 @@ description: Todo equipo que publica una función con LLM tiene un prompt y casi
 search:
   exclude: true
 source: handbook/02-cases.md
-source_sha: 2132e031014b
-source_commit: 356a3c8
+source_sha: 67838bc398da
+source_commit: 48129ea
 model: claude-opus-5
 ---
 
@@ -61,23 +61,23 @@ No de tu imaginación. Los casos que inventas en tu escritorio prueban las entra
 
 **Fallos en producción.** Cualquier salida que fuera malformada, vacía, contraria a las políticas o vergonzosa. Ya las tienes en los logs; son los casos que menos te gustaría volver a ver.
 
-**Casos límite que notaste.** La entrada vacía. La entrada en el idioma equivocado. La entrada de 4,000 palabras. La entrada que menciona a tu competidor. Has visto al modelo manejar estas entradas de forma rara al menos una vez; anótalas mientras las recuerdas.
+**Casos límite que notaste.** La entrada vacía. La entrada en el idioma equivocado. La entrada de 4000 palabras. La entrada que menciona a tu competidor. Has visto al modelo manejar estas entradas de forma rara al menos una vez; anótalas mientras las recuerdas.
 
 El hábito que importa más que cualquier herramienta: **un fallo visto, un caso escrito, el mismo día.** No «habría que añadir pruebas para esto más adelante». Más adelante nunca llega; el fallo sí.
 
 ## Cuántos, y cuáles
 
-Veinte bastan para empezar. No doscientos: nunca escribirás doscientos, y veinte ya convierten una suposición en un número. En el proyecto de la newsletter, veintiún casos bastaron para medir el ruido del juez a lo largo de seis runs, y para mostrar que reducir cuánto lee el juez de cada artículo, de 1,500 caracteres a 400, [no empeoró nada](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
+Veinte bastan para empezar. No doscientos: nunca escribirás doscientos, y veinte ya convierten una suposición en un número. En el proyecto de la newsletter, veintiún casos bastaron para medir el ruido del juez a lo largo de seis runs, y para mostrar que reducir cuánto lee el juez de cada artículo, de 1500 caracteres a 400, [no empeoró nada](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
 
 Lo que necesitan esos veinte:
 
-**Las dos respuestas.** Si todos los casos esperan un «sí», un modelo que siempre dice que sí puntúa perfecto. La suite de la newsletter tiene diez artículos que el lector quería y once que no. Sin esos once, la mayor debilidad del juez —promover cosas que solo suenan relevantes— sería invisible.
+**Las dos respuestas.** Si todos los casos esperan un «sí», un modelo que siempre dice que sí obtiene una puntuación perfecta. La suite de la newsletter tiene diez artículos que el lector quería y once que no. Sin esos once, la mayor debilidad del juez —promover cosas que solo suenan relevantes— sería invisible.
 
-**El aburrido término medio, no solo los extremos.** Una suite de veinte entradas patológicas te dice cómo falla el sistema bajo presión y nada sobre cómo se comporta un martes cualquiera. Incluye entradas corrientes, con entidad propia, no como la mayor parte del conjunto.
+**El aburrido caso intermedio, no solo los extremos.** Una suite de veinte entradas patológicas te dice cómo falla el sistema bajo presión y nada sobre cómo se comporta un martes cualquiera. Incluye entradas corrientes, con entidad propia, no como la mayor parte del conjunto.
 
 **Entradas estables.** Un caso que descarga los datos de hoy es un caso distinto mañana. Congela la entrada en el archivo. El proyecto de la newsletter guarda el resumen del artículo en el caso, no una URL que haya que volver a descargar: las mismas veintiuna entradas, en cada run, desde agosto.
 
-**Una etiqueta, si puedes.** Para cualquier cosa que clasifique —positivo/negativo, aprobar/rechazar, relevante/no relevante—, añade la etiqueta. Con etiquetas, tu suite obtiene un agregado: *precisión entre 0.60 y 0.67 en seis runs de la suite de la newsletter*, un número lo bastante estable como para ponerle un umbral, mientras que los casos sueltos se movían por tres votos de cinco. Sin etiquetas tienes veinte veredictos y ningún resumen.
+**Una etiqueta, si puedes.** Para cualquier cosa que clasifique —positivo/negativo, aprobar/rechazar, relevante/no relevante—, añade la etiqueta. Con etiquetas, tu suite obtiene un agregado: *precision entre 0.60 y 0.67 en seis runs de la suite de la newsletter*, un número lo bastante estable como para ponerle un umbral, mientras que los casos sueltos se movían por tres votos de cinco. Sin etiquetas tienes veinte veredictos y ningún resumen.
 
 ## Lo que los casos no son
 
@@ -93,7 +93,7 @@ Todo lo demás en un proyecto con LLM pierde valor. El prompt que ajustaste cont
 
 Por eso el trabajo aburrido es el único que vale la pena hacer primero. Seis meses después, el equipo con el mejor prompt tiene un prompt. El equipo con doscientos casos reales tiene la capacidad de cambiar cualquier cosa —modelo, prompt, proveedor— y saber en menos de una hora si ha empeorado. El prompt es una opinión; los casos son la memoria.
 
-## Hacerlo hoy
+## Hazlo hoy
 
 1. Busca la corrección en tu producto: el punto donde una persona corrige al modelo. Si existe, empieza a registrarla. Si no existe, eso es lo primero que hay que construir, antes que cualquier suite.
 2. Abre tus logs. Toma las últimas diez entradas que produjeron una queja o una salida rara. Escribe la respuesta correcta de cada una. Ya son diez casos.

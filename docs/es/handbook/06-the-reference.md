@@ -1,5 +1,5 @@
 ---
-seo_title: 'La referencia: un umbral no es un baseline'
+seo_title: 'La referencia: un umbral no es un punto de comparación'
 lang: es
 translation_of: handbook/06-the-reference.md
 description: Una puntuación puede caer mucho y aun así pasar su umbral los dos días. Lo que lo detecta es el único número que anotas y frente al cual aceptas ser medido.
@@ -25,10 +25,10 @@ El umbral dice dónde está el suelo. La referencia dice dónde estabas parado. 
 
 ## Qué contiene una referencia
 
-Un archivo, en el repositorio, junto al código. En el [proyecto del newsletter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) es [`.digline/alessandro/baselines/brief-judge.json`](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/.digline/alessandro/baselines/brief-judge.json), incluido en un commit como cualquier otro archivo. Dentro:
+Un archivo, en el repositorio, junto al código. En el [proyecto de la newsletter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) es [`.digline/alessandro/baselines/brief-judge.json`](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/.digline/alessandro/baselines/brief-judge.json), incluido en un commit como cualquier otro archivo. Dentro:
 
 - **Los veredictos** — cada check en cada caso, con su puntuación, umbral y tolerancia. No un resumen: la tabla completa, para que una comparación posterior pueda decir *qué* caso se movió.
-- **Los agregados**, si los casos están etiquetados — precisión 0.667 y exactitud 0.762, diez de quince y dieciséis de veintiuno — con los recuentos que los produjeron.
+- **Los agregados**, si los casos están etiquetados — precision 0.667 y accuracy 0.762, diez de quince y dieciséis de veintiuno — con los recuentos que los produjeron.
 - **El texto del prompt** que produjo el run, literal, con su hash. No una referencia a un archivo que puede haber cambiado desde entonces; el texto mismo, congelado.
 - **El commit** en el que estaba el código, y si el árbol de trabajo estaba limpio.
 - **La configuración** de la suite — qué checks, qué umbrales — como un hash, para que una comparación contra una suite con reglas distintas se rechace en vez de carecer de sentido en silencio.
@@ -37,7 +37,7 @@ Del hecho de que el prompt esté *dentro* del archivo se siguen dos cosas. Prime
 
 ## Promover: un acto deliberado
 
-Un run no se convierte en la referencia por ser el último ni por estar en verde. Alguien lo promueve. Eso es una decisión — *esto es lo que considero un buen resultado, acepto que me midan con ello* — y debería sentirse como tal. En el proyecto del newsletter es un comando, `digline promote`, y el resultado es un commit con un archivo dentro que un revisor puede leer.
+Un run no se convierte en la referencia por ser el último ni por estar en verde. Alguien lo promueve. Eso es una decisión — *esto es lo que considero un buen resultado, acepto que me midan con ello* — y debería sentirse como tal. En el proyecto de la newsletter es un comando, `digline promote`, y el resultado es un commit con un archivo dentro que un revisor puede leer.
 
 Tres cosas que una promoción debería rechazar, porque cada una convertiría la referencia en una mentira:
 
@@ -51,7 +51,7 @@ Si tu herramienta no las rechaza, recházalas tú. Una referencia en la que no p
 
 El primer run que pasa es el más tentador de promover y el equivocado. Acabas de leer el capítulo 5: el juez oscila, y un único run es una sola muestra. Promuévelo y la referencia registra la muestra afortunada; cada run posterior se compara con la afortunada y parece peor de lo que es.
 
-Una sola muestra puede caer de cualquier lado. Tres runs de la suite del newsletter el 3 de septiembre, con once minutos de diferencia y sin cambiar nada, coincidieron con el lector en 16, 14 y 16 artículos de 21. Una referencia tomada del segundo de los tres presentaría los otros dos como dos artículos mejores — una *mejora* que nadie hizo.
+Una sola muestra puede caer de cualquier lado. Tres runs de la suite de la newsletter el 3 de septiembre, con once minutos de diferencia y sin cambiar nada, coincidieron con el lector en 16, 14 y 16 artículos de 21. Una referencia tomada del segundo de los tres presentaría los otros dos como dos artículos mejores — una *mejora* que nadie hizo.
 
 El procedimiento que lo sustituye cuesta tres runs:
 

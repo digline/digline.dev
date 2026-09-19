@@ -35,7 +35,7 @@ Piensa en un caso inventado, con números incluidos, en una herramienta de reclu
 
 - **El veredicto**: nombre del check, pasa o falla, puntuación 0.81, umbral 0.70, tolerancia, coste. Números sobre cómo se comportó el sistema.
 - **El payload**: el CV, el texto del ranking y la *razón* del juez, que cita el CV para explicar la puntuación.
-- **El agregado**: precisión 0.75 sobre el conjunto, 12 verdaderos positivos, 4 falsos.
+- **El agregado**: precision 0.75 sobre el conjunto, 12 verdaderos positivos, 4 falsos.
 
 La consultora necesita el primero y el tercero para hacer su trabajo. No tiene derecho al segundo, ni lo necesita. Así que la regla es mecánica: **un run que cruza la frontera entre el cliente y la consultora se depura antes** — se eliminan las razones, se eliminan los metadatos del payload, se conservan los veredictos y los números. No como una opción que alguien se acuerda de marcar al exportar, sino como una propiedad del run mismo, verificada al leer el archivo, de modo que un documento que dice estar depurado no pueda contener una razón.
 
@@ -57,7 +57,7 @@ Dos hábitos que hacen que el informe valga algo:
 
 **Una referencia por entrega.** Cuando el cliente acepta una release, esa aceptación es una promoción. El archivo de referencia registra el estado que aceptó; el siguiente informe compara contra él. «Empeoró desde que lo aceptaste» es una frase que ambas partes pueden verificar.
 
-**El agregado en el contrato.** Con casos etiquetados, una suite tiene un número —precisión 0.75, en el caso inventado de arriba— lo bastante estable como para dejarlo por escrito: *el clasificador coincide con tus revisores en al menos el 70% de los casos confirmados.* Fíjalo donde el sistema está, medido, en el momento de la aceptación, no donde a alguna de las partes le gustaría que estuviera. El umbral es el compromiso; la comparación es la forma en que ambas partes lo vigilan.
+**El agregado en el contrato.** Con casos etiquetados, una suite tiene un número —precision 0.75, en el caso inventado de arriba— lo bastante estable como para dejarlo por escrito: *el clasificador coincide con tus revisores en al menos el 70% de los casos confirmados.* Fíjalo donde el sistema está, medido, en el momento de la aceptación, no donde a alguna de las partes le gustaría que estuviera. El umbral es el compromiso; la comparación es la forma en que ambas partes lo vigilan.
 
 ## Qué conserva la consultora
 
@@ -71,7 +71,7 @@ Los capítulos anteriores ejecutan la suite sobre casos que escribiste tú. El s
 
 Eso cierra el ciclo que el capítulo 2 pedía a mano: *un fallo visto, un caso escrito* pasa a ser automático. También pone en vigor de golpe todas las reglas de este capítulo: el veredicto viaja a la consultora, la respuesta no; el juez se ejecuta donde están los datos; el caso generado tiene un id generado y una entrada reescrita. Si estableces esas reglas ahora, sobre la suite que ejecutas a mano, la versión automática son las mismas reglas sobre otra fuente. Si te las saltas ahora, las descubrirás la primera vez que un caso generado deje el CV de un candidato en un pull request.
 
-## Hacerlo hoy
+## Hazlo hoy
 
 1. Decide cuál será la pregunta del cliente y anota dónde está la respuesta. Si la respuesta es «en un dashboard contratado a un proveedor», no tienes respuesta.
 2. Marca cada check de tu suite: ¿su razón cita los datos? Si es así, la razón de ese check es payload y no puede salir del perímetro.

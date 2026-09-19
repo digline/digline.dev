@@ -13,13 +13,13 @@ model: claude-opus-5
 
 # 3. Verdad de referencia: cuando nadie te la da
 
-El capítulo 2 decía que había que encontrar el punto donde una persona corrige al modelo. Este capítulo trata del caso en que ese punto no existe — o existe y registra algo distinto de lo que crees. Está escrito a partir de tres sistemas: el [juez del boletín](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), cuyo código y casos son públicos pero cuyo registro de cada elemento que juzgó no lo es — las cifras de abajo se leen de ese registro, tal como lo muestra [Malas evaluaciones, las mías](../../blog/bad-evals-my-own.md); un segundo juez del mismo autor que elige hilos de Reddit que vale la pena responder (privado, descrito en la misma entrada); y una funcionalidad de producto descrita solo en su forma. Cada uno falló al producir verdad de referencia de una manera distinta.
+El capítulo 2 decía que había que encontrar el punto donde una persona corrige al modelo. Este capítulo trata del caso en que ese punto no existe — o existe y registra algo distinto de lo que crees. Está escrito a partir de tres sistemas: el [juez de la newsletter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), cuyo código y casos son públicos pero cuyo registro de cada elemento que juzgó no lo es — las cifras de abajo se leen de ese registro, tal como lo muestra [Bad evals, my own](../../blog/bad-evals-my-own.md); un segundo juez del mismo autor que elige hilos de Reddit que vale la pena responder (privado, descrito en la misma entrada); y una funcionalidad de producto descrita solo en su forma. Cada uno falló al producir verdad de referencia de una manera distinta.
 
 ## Congela la entrada, no el mundo
 
 Un caso es una fotografía de una situación. Que los datos de mañana sean distintos es irrelevante: estás probando qué hace el sistema ante esa situación, no los datos.
 
-Por eso la entrada va entera dentro del caso, tal como la vio el modelo ese día. Volver a descargar un artículo hoy pondría una entrada distinta bajo una etiqueta antigua. El proyecto del boletín guarda el resumen que juzgó — pero solo para los elementos que mostró a su lector, así que 144 elementos que juzgó y nunca mostró tienen puntuación y no tienen entrada. Aun estando etiquetados, no se podrían reproducir.
+Por eso la entrada va entera dentro del caso, tal como la vio el modelo ese día. Volver a descargar un artículo hoy pondría una entrada distinta bajo una etiqueta antigua. El proyecto de la newsletter guarda el resumen que juzgó — pero solo para los elementos que mostró a su lector, así que 144 elementos que juzgó y nunca mostró tienen puntuación y no tienen entrada. Aun estando etiquetados, no se podrían reproducir.
 
 ## Cubre formas, no muestrees
 
@@ -41,7 +41,7 @@ Esa división no elimina la ambigüedad, porque `declined` sigue preguntando qu�
 
 Releer salidas buenas no te enseña nada y te convence de mucho. El único momento que vale la pena capturar es aquel en que una persona habría respondido de otra forma que el modelo. Ninguno de los dos jueces hace eso todavía: ambos exportan todas las etiquetas explícitas, acuerdos incluidos.
 
-**El proyecto del boletín es el contraejemplo**, y resulta más útil que un éxito. A su lector se le muestran los elementos que el juez puntuó con 4 o 5, rellenados hasta cinco, y se le pregunta *¿cuáles te interesan? (enter = ninguno)*. La única respuesta explícita es *sí*, y solo se puede dar a elementos que el juez ya eligió. Los elementos no mostrados no tienen etiqueta; 265 de 446 ni siquiera se puntuaron. Enter es ambiguo. La única vía hacia un desacuerdo — marcar un elemento de relleno con puntuación baja — había estado abierta dieciséis veces a fecha de 6 de septiembre, y se tomó cero veces. El método no produce **ningún desacuerdo capturable**, no porque el lector nunca discrepara, sino porque nunca preguntó allí donde podía hacerlo.
+**El proyecto de la newsletter es el contraejemplo**, y resulta más útil que un éxito. A su lector se le muestran los elementos que el juez puntuó con 4 o 5, rellenados hasta cinco, y se le pregunta *¿cuáles te interesan? (enter = ninguno)*. La única respuesta explícita es *sí*, y solo se puede dar a elementos que el juez ya eligió. Los elementos no mostrados no tienen etiqueta; 265 de 446 ni siquiera se puntuaron. Enter es ambiguo. La única vía hacia un desacuerdo — marcar un elemento de relleno con puntuación baja — había estado abierta dieciséis veces a fecha de 6 de septiembre, y se tomó cero veces. El método no produce **ningún desacuerdo capturable**, no porque el lector nunca discrepara, sino porque nunca preguntó allí donde podía hacerlo.
 
 La verdad de referencia tiene que ser un subproducto del trabajo que la persona ya hace. Los dos jueces preguntan al final de una mañana que el lector iba a tener de todas formas; una pregunta que es un comando aparte para ejecutar más tarde es una tarea pesada. En un producto la persona no eres tú, que es el caso difícil, y aquí eso no se ha resuelto.
 
@@ -63,11 +63,11 @@ Con la selección como dato, la mayor parte de lo que importa es estable en cual
 
 ## Crecimiento, y el límite honesto
 
-Empieza con unas pocas formas elegidas. Deja que cada fallo en producción se convierta en un caso, y no borres ninguno: un caso que encontró un defecto es un muro que sostiene, y quitarlo es la única manera de averiguar qué sostenía. El exportador del proyecto del boletín hace lo contrario: regenera su archivo entero.
+Empieza con unas pocas formas elegidas. Deja que cada fallo en producción se convierta en un caso, y no borres ninguno: un caso que encontró un defecto es un muro que sostiene, y quitarlo es la única manera de averiguar qué sostenía. El exportador del proyecto de la newsletter hace lo contrario: regenera su archivo entero.
 
 Veinte casos no te dicen que el sistema sea correcto. Te dicen que no ha empeorado en veinte situaciones que alguien juzgó representativas. Un gate de regresión, no una demostración.
 
-## Hacerlo hoy
+## Hazlo hoy
 
 1. Averigua dónde vive la decisión de tu funcionalidad. Si solo está en la prosa, cambia la salida antes de escribir un solo caso. Si todavía no puedes cambiarla, no puedes evaluar la funcionalidad. Eso ya es un hallazgo en sí mismo, y lo que hay que hacer hoy es registrar el contexto armado y la respuesta, porque mañana ya no estarán.
 2. Comprueba que tus entradas sean deterministas. Una consulta que trunca sin ordenar es el primer error.

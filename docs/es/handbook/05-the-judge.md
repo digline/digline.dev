@@ -13,13 +13,13 @@ model: claude-opus-5
 
 # 5. El juez
 
-El capítulo 4 terminaba con una regla: como máximo un check juzgado, muestreado, con una tolerancia medida. Este capítulo trata sobre la palabra *medida*: qué pasa cuando te la saltas, y el procedimiento que sustituye la conjetura por un número. Las medidas provienen de los seis runs que publica el [juez del boletín](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), y puedes recalcularlas.
+El capítulo 4 terminaba con una regla: como máximo un check juzgado, muestreado, con una tolerancia medida. Este capítulo trata sobre la palabra *medida*: qué pasa cuando te la saltas, y el procedimiento que sustituye la conjetura por un número. Las medidas provienen de los seis runs que publica el [juez de la newsletter](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md), y puedes recalcularlas.
 
 ## Dos ruidos, no uno
 
 Hay dos lugares en los que un modelo puede cambiar de opinión, y cada uno requiere un remedio distinto.
 
-**El sistema bajo prueba** es un modelo. Pregúntale lo mismo dos veces y puede responder de forma distinta. En el proyecto del boletín el juez *es* el sistema: puntúa artículos. Ejecuta la suite dos veces, con quince minutos de diferencia y sin cambiar nada, y un artículo de cada veintiuno cambia de veredicto.
+**El sistema bajo prueba** es un modelo. Pregúntale lo mismo dos veces y puede responder de forma distinta. En el proyecto de la newsletter el juez *es* el sistema: puntúa artículos. Ejecuta la suite dos veces, con quince minutos de diferencia y sin cambiar nada, y un artículo de cada veintiuno cambia de veredicto.
 
 **El juez** —el modelo que usas dentro de un check para evaluar una salida— también es un modelo, y también cambia. Si tu rúbrica pregunta «¿es educada esta respuesta?», el juez puede decir 0.8 hoy y 0.7 mañana sobre la misma respuesta.
 
@@ -33,7 +33,7 @@ Bastan unas pocas de esas para que un equipo deje de leer las alarmas. Ese es el
 
 ## Muestreo
 
-La solución es preguntar más de una vez y combinar. La suite del boletín pregunta cinco veces por caso, lo que convierte el veredicto binario en una fracción —0, 0.2, 0.4, 0.6, 0.8 o 1— y el check en «el juez coincide con el lector en al menos tres votos de cinco».
+La solución es preguntar más de una vez y combinar. La suite de la newsletter pregunta cinco veces por caso, lo que convierte el veredicto binario en una fracción —0, 0.2, 0.4, 0.6, 0.8 o 1— y el check en «el juez coincide con el lector en al menos tres votos de cinco».
 
 El muestreo trae tres preguntas, y las respuestas importan más que el número cinco:
 
@@ -41,7 +41,7 @@ El muestreo trae tres preguntas, y las respuestas importan más que el número c
 
 **¿Y si no logran ponerse de acuerdo?** Entonces el juicio no era posible, y la respuesta honesta es *no se pudo juzgar*: un tercer estado, ni aprobado ni fallido. Un caso cuyas muestras se reparten por igual no es una regresión ni un éxito; es un caso que el juez no puede decidir, y una referencia construida sobre él sería una referencia a una moneda al aire. Fija un acuerdo mínimo (`"3/5"`, por ejemplo) por debajo del cual el veredicto es un error, y niégate a promover un run que contenga alguno.
 
-**Escribe las fracciones como fracciones.** «Dos de tres» escrito como `0.67` es una trampa: ⅔ es 0.666…, que está *por debajo* de 0.67, y todo caso con un voto discrepante de tres se convierte en un error. `"2/3"` dice lo que quieres decir y no puede desviarse por un redondeo; la suite del boletín escribe `"3/5"`.
+**Escribe las fracciones como fracciones.** «Dos de tres» escrito como `0.67` es una trampa: ⅔ es 0.666…, que está *por debajo* de 0.67, y todo caso con un voto discrepante de tres se convierte en un error. `"2/3"` dice lo que quieres decir y no puede desviarse por un redondeo; la suite de la newsletter escribe `"3/5"`.
 
 ## Medir la tolerancia
 
@@ -53,7 +53,7 @@ La tolerancia es el tamaño de cambio que aceptas ignorar como ruido. Todo el mu
 4. La tolerancia es esa diferencia mayor, más un pequeño margen.
 5. Si ese número es tan grande como las diferencias que quieres *detectar*, para: el check es demasiado ruidoso para servir de gate. Muestrea más, o cambia el check; no amplíes la tolerancia hasta que se lo trague todo.
 
-Esto es lo que muestra en el juez del boletín: seis runs, cinco muestras por caso, con los mismos prompts, los mismos casos y la misma configuración. Cada celda indica cuántas de las cinco muestras coincidieron con el lector; las horas están en UTC.
+Esto es lo que muestra en el juez de la newsletter: seis runs, cinco muestras por caso, con los mismos prompts, los mismos casos y la misma configuración. Cada celda indica cuántas de las cinco muestras coincidieron con el lector; las horas están en UTC.
 
 | caso | 1 sep 12:29 | 1 sep 12:44 | 3 sep 06:14 | 3 sep 06:18 | 3 sep 06:24 | 3 sep 06:30 |
 |---|---|---|---|---|---|---|
@@ -69,18 +69,18 @@ Dos casos oscilaron tres votos de cinco sobre un sistema que no había cambiado,
 
 Los mismos runs mostraron algo que cambia sobre qué conviene poner un umbral. Mientras que casos aislados saltaban tres votos de cinco, el número de artículos en los que juez y lector coincidieron fue 15, 16, 16, 14, 16 y 16 de 21 a lo largo de los seis runs: nunca con más de dos de diferencia.
 
-Ese es el patrón general, y es la razón por la que una suite con casos etiquetados debería aplicar el gate sobre un agregado —precisión, exactitud, exhaustividad— y usar los veredictos por caso para el diagnóstico. Un umbral del 60% de acuerdo no se habría disparado en ninguno de los seis. Frente a la referencia que guarda el proyecto, el check por caso, con sus dos votos de tolerancia, se puso en rojo en dos de los otros cinco.
+Ese es el patrón general, y es la razón por la que una suite con casos etiquetados debería aplicar el gate sobre un agregado —precision, accuracy, recall— y usar los veredictos por caso para el diagnóstico. Un umbral del 60% de acuerdo no se habría disparado en ninguno de los seis. Frente a la referencia que guarda el proyecto, el check por caso, con sus dos votos de tolerancia, se puso en rojo en dos de los otros cinco.
 
 ## El prompt del juez es un prompt
 
 Se desvía por las mismas razones que el tuyo y merece el mismo trato: un archivo, versionado, registrado con cada run. Cuando un check juzgado empieza a fallar, la primera pregunta no es «¿empeoró el sistema?» sino «¿cambió la regla de medir?», y si el prompt del juez es una cadena dentro de alguna función, no puedes responderla.
 
-Dos hábitos menores. Primero, en el prompt del juez pon la instrucción antes de la salida, y etiqueta la salida con claridad; un juez que lee una instrucción después del texto que se le pidió juzgar a veces juzgará la instrucción. Segundo, cuando pruebes tu suite con un juez falso —y deberías hacerlo—, construye el falso a partir de una respuesta *real*, no a partir de lo que crees que parece la respuesta. Un falso escrito a partir del código confirma el código; en el proyecto del boletín [se encontró un coste contabilizado 384× por debajo](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#the-fake-judge-and-ci) con todas las pruebas en verde, porque el falso y el código compartían la misma suposición equivocada sobre la forma de la API.
+Dos hábitos menores. Primero, en el prompt del juez pon la instrucción antes de la salida, y etiqueta la salida con claridad; un juez que lee una instrucción después del texto que se le pidió juzgar a veces juzgará la instrucción. Segundo, cuando pruebes tu suite con un juez falso —y deberías hacerlo—, construye el falso a partir de una respuesta *real*, no a partir de lo que crees que parece la respuesta. Un falso escrito a partir del código confirma el código; en el proyecto de la newsletter [se encontró un coste contabilizado 384× por debajo](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#the-fake-judge-and-ci) con todas las pruebas en verde, porque el falso y el código compartían la misma suposición equivocada sobre la forma de la API.
 
-## Hacerlo hoy
+## Hazlo hoy
 
 1. Decide qué ruido estás mirando: el del sistema o el del juez.
-2. Muestréalo —la suite del boletín pregunta cinco veces— y fija un acuerdo mínimo por debajo del cual el veredicto sea *no se pudo juzgar*.
+2. Muestréalo —la suite de la newsletter pregunta cinco veces— y fija un acuerdo mínimo por debajo del cual el veredicto sea *no se pudo juzgar*.
 3. Congela todo y ejecuta tres veces. Lee la mayor diferencia por caso. Esa es tu tolerancia, o tu señal para muestrear más.
 4. Si tienes etiquetas, pon el gate sobre el agregado.
 5. Mueve el prompt del juez a un archivo junto al del sistema, y registra ambos con cada run.
