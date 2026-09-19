@@ -312,6 +312,7 @@ nav:
           - ADR 0021 — The register: product/adr/0021-the-register.md
           - ADR 0022 — The declared price: product/adr/0022-the-declared-price.md
           - ADR 0024 — The judge as an instrument: product/adr/0024-the-judge-as-an-instrument.md
+          - ADR 0025 — The tokens and the bill: product/adr/0025-the-tokens-and-the-bill.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

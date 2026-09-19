@@ -469,6 +469,16 @@ DESCRIPTIONS: dict[str, str] = {
         "judged scores at exactly 0 or 1, and the run-to-run range, the last "
         "two printed without thresholds until data sizes them"
     ),
+    "product/adr/0025-the-tokens-and-the-bill.md": (
+        "What a run cost, recorded instead of thrown away: token counts had "
+        "never reached any document and the judge's spending had never reached "
+        "one at all, so run-level totals now stand on every run \u2014 target "
+        "and judge kept apart, because one is the thing measured and the other "
+        "the instrument \u2014 with per-call counts only where the suite "
+        "already records answers, a `counted` that admits when a total covers "
+        "part of the run, and the totals crossing a boundary while the per-call "
+        "counts do not"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
