@@ -59,7 +59,7 @@ Le risposte sono due, e solo due. Se il caso è davvero ambiguo — i campioni s
 
 Gli inneschi sono reattivi. La pratica che tiene onesta una suite è un gesto piccolo, noioso e pianificato:
 
-1. Apri il confronto della run pianificata. Verde o rosso, leggi gli aggregati — precisione, accuratezza — rispetto al riferimento. Due numeri, trenta secondi.
+1. Apri il confronto della run pianificata. Verde o rosso, leggi gli aggregati — precision, accuracy — rispetto al riferimento. Due numeri, trenta secondi.
 2. Guarda l'elenco dei casi che si sono spostati, anche entro la tolleranza. Un caso che si sposta un po' ogni settimana ti sta dicendo qualcosa prima di superare il limite.
 3. Controlla il numero di casi. Se non è cresciuto dalla settimana scorsa, chiediti se in produzione non è andato storto niente o se nessuno l'ha scritto. Di solito è la seconda.
 4. Controlla l'età del riferimento. Un riferimento di quattro mesi fa su una funzionalità che è cambiata due volte è un riferimento che nessuno ha riapprovato.
@@ -75,7 +75,7 @@ Tre guasti lenti che nessun innesco intercetta, perché ogni passo è troppo pic
 
 **Casi che marciscono.** Un caso la cui risposta attesa era giusta a marzo può essere sbagliata a settembre perché il prodotto è cambiato: la finestra per i rimborsi si è spostata, la tassonomia si è arricchita di una categoria. Una suite con casi marci fallisce per i motivi sbagliati e insegna alle persone a ignorare il rosso. Quando un caso fallisce e l'output sembra giusto, controlla il caso prima del prompt.
 
-**Deriva del riferimento per promozioni successive.** Ogni promozione accetta una piccola perdita: «un caso peggiore, ma il diff è più pulito». Dieci promozioni dopo, il riferimento è dieci piccole perdite sotto il punto di partenza, e ogni singolo confronto era verde. La difesa è l'aggregato nel file: confronta la precisione di questo mese non con il riferimento della settimana scorsa, ma con il primo che hai approvato. Git ce l'ha.
+**Deriva del riferimento per promozioni successive.** Ogni promozione accetta una piccola perdita: «un caso peggiore, ma il diff è più pulito». Dieci promozioni dopo, il riferimento è dieci piccole perdite sotto il punto di partenza, e ogni singolo confronto era verde. La difesa è l'aggregato nel file: confronta la precision di questo mese non con il riferimento della settimana scorsa, ma con il primo che hai approvato. Git ce l'ha.
 
 ## Da fare oggi
 

@@ -27,7 +27,7 @@ In un prodotto che sviluppi per te stesso c'è una sola parte interessata. Qui c
 
 > *Che cosa avete testato, quando, con quale versione, e chi lo ha approvato?*
 
-Una dashboard non risponde a questo. Una dashboard mostra l'oggi. La domanda riguarda una data, un commit, un artefatto che qualcuno possa aprire sei mesi dopo e che nel frattempo non sia cambiato. Il file di riferimento del capitolo 6 è quell'artefatto — ed è per questo che sta nel repository e non sul server di un fornitore: un file che puoi consegnare, con un hash e una data, è una prova; una schermata ospitata da qualcun altro no.
+Una dashboard non risponde a questo. Una dashboard mostra com'è oggi. La domanda riguarda una data, un commit, un artefatto che qualcuno possa aprire sei mesi dopo e che nel frattempo non sia cambiato. Il file di riferimento del capitolo 6 è quell'artefatto — ed è per questo che sta nel repository e non sul server di un fornitore: un file che puoi consegnare, con un hash e una data, è una prova; una schermata ospitata da qualcun altro no.
 
 ## La regola: il payload resta dov'è nato, il verdetto viaggia
 
@@ -69,7 +69,7 @@ Tra un cliente e l'altro, la società di consulenza vede solo ciò che viaggia: 
 
 Fin qui i capitoli eseguono la suite su casi scritti da te. Il passo successivo — ed è un passo, non un salto — è eseguire gli stessi check sulle risposte che il sistema dà in produzione, dentro il perimetro del cliente, e trasformare un fallimento lì in un caso della suite.
 
-Così si chiude il ciclo che il capitolo 2 chiedeva di fare a mano: *un fallimento visto, un caso scritto* diventa automatico. Porta anche in vigore tutte insieme le regole di questo capitolo — il verdetto viaggia verso la società di consulenza, la risposta no; il giudice viene eseguito dove stanno i dati; il caso generato ha un id generato e un input riscritto. Se imposti quelle regole adesso, sulla suite che esegui a mano, la versione automatica sono le stesse regole su una sorgente diversa. Se adesso le salti, le scoprirai la prima volta che un caso generato farà finire il CV di un candidato in una pull request.
+Così si chiude il ciclo che il capitolo 2 chiedeva di fare a mano: *un fallimento visto, un caso scritto* diventa automatico. Mette anche in pratica tutte insieme le regole di questo capitolo — il verdetto viaggia verso la società di consulenza, la risposta no; il giudice viene eseguito dove stanno i dati; il caso generato ha un id generato e un input riscritto. Se imposti quelle regole adesso, sulla suite che esegui a mano, la versione automatica sono le stesse regole su una sorgente diversa. Se adesso le salti, le scoprirai la prima volta che un caso generato farà finire il CV di un candidato in una pull request.
 
 ## Da fare oggi
 

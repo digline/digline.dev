@@ -67,7 +67,7 @@ Parti da poche forme scelte. Lascia che ogni fallimento in produzione diventi un
 
 Venti casi non ti dicono che il sistema è corretto. Ti dicono che non è peggiorato su venti situazioni che qualcuno ha giudicato rappresentative. Un gate di regressione, non una dimostrazione.
 
-## Farlo oggi
+## Da fare oggi
 
 1. Trova dove vive la decisione della tua funzionalità. Se sta solo nella prosa, cambia l'output prima di scrivere anche un solo caso. Se non puoi ancora cambiarlo, non puoi valutare la funzionalità. È già di per sé un risultato, e la cosa da fare oggi è registrare l'input assemblato e la risposta, perché domani non ci saranno più.
 2. Verifica che i tuoi input siano deterministici. Una query che tronca senza un ordinamento è il primo bug.

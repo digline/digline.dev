@@ -69,7 +69,7 @@ Qualunque tu usi, tre regole, che nascono tutte dallo stesso fatto — il giudic
 
 1. **Soglia e tolleranza sono obbligatorie**, non valori predefiniti. Un check giudicato con un implicito «passa qualsiasi cosa sopra 0» resta verde per sempre e non dice nulla. Imposta la soglia dove il sistema si trova in modo misurabile; imposta la tolleranza a partire dal rumore misurato (il capitolo 5 spiega come).
 2. **Campiona.** Un giudizio per caso è una sola estrazione. Chiedi tre o cinque volte e combina — altrimenti passerai il mese successivo a inseguire regressioni che sono solo il giudice che cambia idea.
-3. **Tieni il prompt del giudice fisso quanto quello del tuo sistema.** È un prompt. Deriva per gli stessi motivi. Deve stare in un file, essere versionato e venire registrato a ogni run, esattamente come il prompt sotto test.
+3. **Tieni il prompt del giudice fisso quanto quello del tuo sistema.** È un prompt. Va alla deriva per gli stessi motivi. Deve stare in un file, essere versionato e venire registrato a ogni run, esattamente come il prompt sotto test.
 
 ## Il giudice è tuo
 
@@ -86,7 +86,7 @@ Per una prima suite, lo schema che ha retto:
 
 Cinque o sei check su venti casi. Gira in pochi minuti, costa centesimi, ed è già più di quello che ha la stragrande maggioranza delle funzionalità LLM in produzione.
 
-## Farlo oggi
+## Da fare oggi
 
 1. Elenca gli ultimi cinque fallimenti prodotti dalla tua funzionalità. Per ciascuno, chiediti: *una regex, uno schema o un contatore avrebbero potuto intercettarlo?* La maggior parte delle volte la risposta è sì.
 2. Scrivili prima come check deterministici. Eseguili sui tuoi venti casi. Alcuni falliranno già oggi — è proprio questo il punto.

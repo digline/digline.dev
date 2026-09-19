@@ -69,15 +69,15 @@ Due casi hanno oscillato di tre voti su cinque su un sistema immutato, e in ogni
 
 Gli stessi run hanno mostrato qualcosa che cambia su cosa conviene mettere una soglia. Mentre i singoli casi saltavano di tre voti su cinque, il numero di articoli su cui giudice e lettore concordavano è stato 15, 16, 16, 14, 16 e 16 su 21 nei sei run — mai a più di due di distanza.
 
-È lo schema generale, ed è il motivo per cui una suite con casi etichettati dovrebbe mettere il gate su un aggregato — precisione, accuratezza, recall — e usare i verdetti per caso per la diagnosi. Una soglia del 60% di accordo non sarebbe scattata in nessuno dei sei. Rispetto al riferimento che il progetto conserva, il check per caso, con i suoi due voti di tolleranza, è diventato rosso in due degli altri cinque.
+È lo schema generale, ed è il motivo per cui una suite con casi etichettati dovrebbe mettere il gate su un aggregato — precision, accuracy, recall — e usare i verdetti per caso per la diagnosi. Una soglia del 60% di accordo non sarebbe scattata in nessuno dei sei. Rispetto al riferimento che il progetto conserva, il check per caso, con i suoi due voti di tolleranza, è diventato rosso in due degli altri cinque.
 
 ## Il prompt del giudice è un prompt
 
-Deriva per le stesse ragioni per cui deriva il tuo, e merita lo stesso trattamento: un file, versionato, registrato a ogni run. Quando un check giudicato inizia a fallire, la prima domanda non è «il sistema è peggiorato?» ma «è cambiato il metro?» — e se il prompt del giudice è una stringa dentro una funzione da qualche parte, non puoi rispondere.
+Va alla deriva per le stesse ragioni per cui ci va il tuo, e merita lo stesso trattamento: un file, versionato, registrato a ogni run. Quando un check giudicato inizia a fallire, la prima domanda non è «il sistema è peggiorato?» ma «è cambiato il metro?» — e se il prompt del giudice è una stringa dentro una funzione da qualche parte, non puoi rispondere.
 
 Due abitudini minori. Primo: nel prompt del giudice tieni l'istruzione prima dell'output, ed etichetta l'output in modo chiaro; un giudice che legge un'istruzione dopo il testo che gli è stato chiesto di giudicare a volte giudica l'istruzione. Secondo: quando provi la tua suite con un giudice finto — e dovresti farlo — costruisci il finto a partire da una risposta *reale*, non da come pensi che sia fatta la risposta. Un finto scritto a partire dal codice conferma il codice; nel progetto della newsletter [è emerso un costo contato per difetto di 384×](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#the-fake-judge-and-ci) con tutti i test verdi, perché il finto e il codice condividevano la stessa assunzione sbagliata sulla forma dell'API.
 
-## Farlo oggi
+## Da fare oggi
 
 1. Decidi quale rumore stai osservando: quello del sistema o quello del giudice.
 2. Campionalo — la suite della newsletter interroga cinque volte — e imposta un accordo minimo sotto il quale il verdetto è *giudizio impossibile*.

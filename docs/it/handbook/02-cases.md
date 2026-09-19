@@ -6,8 +6,8 @@ description: Ogni team che rilascia una funzionalità LLM ha un prompt e quasi n
 search:
   exclude: true
 source: handbook/02-cases.md
-source_sha: 2132e031014b
-source_commit: 356a3c8
+source_sha: 67838bc398da
+source_commit: 48129ea
 model: claude-opus-5
 ---
 
@@ -19,7 +19,7 @@ Ogni team che rilascia una funzionalità basata su un LLM ha un prompt. Quasi ne
 
 Un caso è un input che ti interessa, abbinato a ciò che sai sulla risposta giusta.
 
-Tutto qui. Per un bot di assistenza: una domanda posta davvero da un cliente, e se la risposta avrebbe dovuto citare la politica di rimborso. Per un classificatore: un annuncio di lavoro, e la famiglia professionale a cui un recruiter ha confermato che appartiene. Per il [giudice della newsletter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) che attraversa tutto questo manuale: il titolo e il riassunto di un articolo, e se il lettore ha indicato che valeva la pena leggerlo.
+Tutto qui. Per un bot di assistenza: una domanda posta davvero da un cliente, e se la risposta avrebbe dovuto citare la politica di rimborso. Per un classificatore: un annuncio di lavoro, e la famiglia professionale a cui un recruiter ha confermato che appartiene. Per il [giudice della newsletter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) che ricorre in tutto questo manuale: il titolo e il riassunto di un articolo, e se il lettore ha indicato che valeva la pena leggerlo.
 
 ```json
 {
@@ -61,13 +61,13 @@ Non dalla tua immaginazione. I casi che inventi alla scrivania mettono alla prov
 
 **Errori in produzione.** Qualsiasi output malformato, vuoto, fuori dalle regole o imbarazzante. Li hai già nei log; sono i casi che meno vorresti rivedere.
 
-**Casi limite che hai notato.** L'input vuoto. L'input nella lingua sbagliata. L'input da 4,000 parole. L'input che nomina il tuo concorrente. Hai visto il modello gestirli in modo strano almeno una volta; scrivili finché te ne ricordi.
+**Casi limite che hai notato.** L'input vuoto. L'input nella lingua sbagliata. L'input da 4000 parole. L'input che nomina il tuo concorrente. Hai visto il modello gestirli in modo strano almeno una volta; scrivili finché te ne ricordi.
 
-L'abitudine che conta più di qualsiasi strumento: **un errore visto, un caso scritto, lo stesso giorno.** Non «più avanti bisognerebbe aggiungere dei test». Il più avanti non arriva mai; l'errore sì.
+L'abitudine che conta più di qualsiasi strumento: **un errore visto, un caso scritto, lo stesso giorno.** Non «più avanti bisognerebbe aggiungere dei test». Quel momento non arriva mai; l'errore sì.
 
 ## Quanti, e quali
 
-Venti bastano per cominciare. Non duecento — duecento non li scriverai mai, e venti trasformano già una supposizione in un numero. Nel progetto della newsletter, ventuno casi sono bastati a misurare il rumore del giudice su sei run, e a mostrare che ridurre la porzione di ciascun articolo letta dal giudice, da 1,500 caratteri a 400, [non ha peggiorato nulla](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
+Venti bastano per cominciare. Non duecento — duecento non li scriverai mai, e venti trasformano già una supposizione in un numero. Nel progetto della newsletter, ventuno casi sono bastati a misurare il rumore del giudice su sei run, e a mostrare che ridurre la porzione di ciascun articolo letta dal giudice, da 1500 caratteri a 400, [non ha peggiorato nulla](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
 
 Cosa serve ai venti:
 
@@ -93,7 +93,7 @@ Tutto il resto, in un progetto LLM, si deprezza. Il prompt che hai calibrato su 
 
 Per questo il lavoro noioso è l'unico che valga la pena fare per primo. Dopo sei mesi, il team con il prompt migliore ha un prompt. Il team con duecento casi reali ha la possibilità di cambiare qualsiasi cosa — modello, prompt, fornitore — e di sapere entro un'ora se è peggiorato. Il prompt è un'opinione; i casi sono la memoria.
 
-## Farlo oggi
+## Da fare oggi
 
 1. Trova il punto di correzione nel tuo prodotto — il punto in cui una persona corregge il modello. Se esiste, inizia a registrarlo. Se non esiste, è la prima cosa da costruire, prima di qualsiasi suite.
 2. Apri i log. Prendi gli ultimi dieci input che hanno prodotto un reclamo o un output strano. Scrivi per ciascuno la risposta giusta. Sono dieci casi.
