@@ -1363,15 +1363,15 @@ def selftest() -> int:
                ("](../../blog/bad-evals-my-own.md)" in chapter, "](../blog/" in chapter.replace("](../../", ""),
                 "title" in chapter_meta, "template" in chapter_meta, chapter_meta["translation_of"]),
                (True, False, False, False, "handbook/03-ground-truth.md"))
-        # The same checks refuse what they must: a decimal point made a comma, twice.
+        # The same checks refuse what they must: a number changed, twice.
         comma = _fake_answer(workspace.root, "it")
         wrong = FakeModel(lambda system, prompt, schema: (
-            {**comma(system, prompt, schema), "body": comma(system, prompt, schema)["body"].replace("0.88", "0,88")}
+            {**comma(system, prompt, schema), "body": comma(system, prompt, schema)["body"].replace("0.88", "0.89")}
             if schema is PAGE_SCHEMA else comma(system, prompt, schema)))
         refused = Translator(wrong, Ledger(5.0), workspace)
         refused.page("it", "start")
         outcome = refused.outcomes[-1]
-        expect("built and checked for real: 0,88 for 0.88 refused twice, the page not written",
+        expect("built and checked for real: 0.89 for 0.88 refused twice, the page not written",
                (outcome.status, outcome.attempts, any("numbers differ" in p for p in outcome.problems),
                 "numbers differ" in wrong.prompts[1][1],
                 os.path.exists(os.path.join(workspace.root, "docs", "it", "start.md"))),
