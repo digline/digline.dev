@@ -69,7 +69,7 @@ Whichever you use, three rules, all of which come from the same fact — the jud
 
 ## The judge is yours
 
-One thing worth stating plainly, because tools differ here: the judge is a function you supply. It calls whatever model you choose, in whatever way you choose, and the evaluation tool only composes the question and reads the score. Two consequences. In tests, you inject a fake judge and every judged check becomes deterministic. And the judge's reasoning — which quotes the output it judged — stays wherever the output was allowed to be; it is never sent anywhere on your behalf.
+One thing worth stating plainly, because tools differ here: the judge is a function you supply. It calls whatever model you choose, in whatever way you choose, and the evaluation tool only composes the question and reads the score. Two consequences. In tests, you inject a fake judge and every judged check becomes deterministic. And the judge's reasoning, which quotes the output it judged, is written to the run, next to the output. The only call it takes part in is the judge's own, to the model you chose; the tool has no server of its own to send it to. Chapter 8 is about when even that run must not travel.
 
 ## Putting a suite together
 
@@ -80,7 +80,7 @@ For a first suite, the pattern that has held up:
 - **The budgets**, always, graded.
 - **At most one judged check**, sampled, for the thing that genuinely needs judgement. If you find yourself wanting three, ask whether two of them could be cases with a known answer instead.
 
-Five or six checks on twenty cases. It runs in a minute, costs cents, and it is already more than the vast majority of LLM features in production have.
+Five or six checks on twenty cases. It runs in a few minutes, costs cents, and it is already more than the vast majority of LLM features in production have.
 
 ## Doing it today
 

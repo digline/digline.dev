@@ -2,7 +2,7 @@
 seo_title: >-
   The reference: a threshold is not a baseline
 description: >-
-  A run that fell from 0.91 to 0.78 passes a 0.7 threshold on both days.
+  A score can fall a long way and still pass its threshold on both days.
   The one number you write down and agree to be measured against is what
   catches it.
 ---
@@ -15,7 +15,7 @@ Everything so far produces numbers. This chapter is about the one number that ma
 
 Most teams that test an LLM feature at all have a threshold: the score must be above 0.7. It answers one question — *is it acceptable?* — and it is blind to the other one — *is it what it was?*
 
-A feature that scored 0.91 on release and 0.78 today passes the threshold on both days. Nothing turns red. And yet something changed by thirteen points, and the person using it felt the change before any test did. To see it you need to have written down the 0.91. That is the reference: a run of your suite that you looked at, judged right, and recorded — scores, the prompt that produced them, the commit, the date — so that every later run can be compared against it instead of against a line.
+Here it is with made-up numbers. A feature that scored 0.91 on release and 0.78 today passes the threshold on both days. Nothing turns red. And yet something changed by thirteen points, and the person using it felt the change before any test did. To see it you need to have written down the 0.91. That is the reference: a run of your suite that you looked at, judged right, and recorded — scores, the prompt that produced them, the commit, the date — so that every later run can be compared against it instead of against a line.
 
 The threshold says where the floor is. The reference says where you were standing. You need both, and the second is the one almost nobody keeps.
 
@@ -24,7 +24,7 @@ The threshold says where the floor is. The reference says where you were standin
 A file, in the repository, next to the code. In the [newsletter project](https://github.com/digline/brief) it is `.digline/alessandro/baselines/brief-judge.json`, committed like any other file. Inside:
 
 - **The verdicts** — every check on every case, with its score, threshold and tolerance. Not a summary: the full table, so a later comparison can say *which* case moved.
-- **The aggregates**, if the cases are labelled — precision 0.625, accuracy 0.714 — with the counts that produced them.
+- **The aggregates**, if the cases are labelled — precision 0.667 and accuracy 0.762, ten of fifteen and sixteen of twenty-one — with the counts that produced them.
 - **The prompt text** that produced the run, verbatim, with its hash. Not a reference to a file that may have changed since; the text itself, frozen.
 - **The commit** the code was at, and whether the working tree was clean.
 - **The configuration** of the suite — which checks, which thresholds — as a hash, so that a comparison against a suite with different rules is refused rather than silently meaningless.
@@ -47,7 +47,7 @@ If your tool does not refuse these, refuse them yourself. A reference you cannot
 
 The first run that passes is the most tempting one to promote and the wrong one. You have just read chapter 5: the judge wobbles, and a single run is one draw. Promote it and the reference records the lucky sample; every later run is compared to the lucky one, and looks worse than it is.
 
-In the newsletter project this was found the hard way. The first reference was promoted from the first good run. Three calibration runs later, two cases that the reference recorded at ⅔ agreement were at 1.0 in every subsequent run — the reference had caught them on a bad draw, and would have reported an *improvement* on every future run for no reason.
+One draw can land on either side. Three runs of the newsletter suite on 3 September, eleven minutes apart with nothing changed, agreed with the reader on 16, 14 and 16 articles out of 21. A reference taken from the middle one would report the runs on either side of it as two articles better — an *improvement* nobody made.
 
 The procedure that replaces it costs three runs:
 
