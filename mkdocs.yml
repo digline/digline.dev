@@ -131,7 +131,8 @@ hooks:
   - tools/hooks/opening.py
   # The repositories the site cites as a source, pinned: every link to digline's
   # AGENTS.md at the release tag the sync read (.agents-rule.json), every link to
-  # digline/brief at a full commit sha, and the quotation of rule 1 that closes
+  # digline/brief at a full commit sha but the [[link]] exceptions of
+  # tools/claims-register.toml, and the quotation of rule 1 that closes
   # /agents/ held to AGENTS.md at that tag. See the file's docstring.
   - tools/hooks/sources.py
   # This site's own stylesheets and fonts, linked with a hash of their content,
@@ -277,7 +278,7 @@ nav:
           - A LlamaIndex query engine: product/examples/llamaindex.md
           - A team that does not write Python: product/examples/quickstart-toml.md
           - A suite watched on a schedule: product/examples/operator.md
-          - A whole product (digline/brief): https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f
+          - A whole product (digline/brief): https://github.com/digline/brief
       # A new ADR does not get its line here on main. Its three entries — this
       # line, PRODUCT in tools/hooks/seo.py, DESCRIPTIONS in tools/hooks/llms.py —
       # go on a branch adr-NNNN-site, merged only once the record is on digline
