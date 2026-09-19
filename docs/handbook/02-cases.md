@@ -56,13 +56,13 @@ Not from your imagination. Cases you invent at your desk test the inputs you alr
 
 **Production failures.** Any output that was malformed, empty, off-policy, or embarrassing. You already have these in logs; they are the cases you would least like to see again.
 
-**Edges you noticed.** The empty input. The input in the wrong language. The 4,000-word input. The input that mentions your competitor. You have seen the model handle these strangely at least once; write them down while you remember.
+**Edges you noticed.** The empty input. The input in the wrong language. The 4000-word input. The input that mentions your competitor. You have seen the model handle these strangely at least once; write them down while you remember.
 
 The habit that matters more than any tool: **one failure seen, one case written, the same day.** Not "we should add tests for this later." Later never comes; the failure does.
 
 ## How many, and which
 
-Twenty is enough to start. Not two hundred — you will never write two hundred, and twenty already turns a guess into a number. In the newsletter project, twenty-one cases were enough to measure the judge's noise across six runs, and to show that cutting how much of each article the judge reads, from 1,500 characters to 400, [made nothing worse](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
+Twenty is enough to start. Not two hundred — you will never write two hundred, and twenty already turns a guess into a number. In the newsletter project, twenty-one cases were enough to measure the judge's noise across six runs, and to show that cutting how much of each article the judge reads, from 1500 characters to 400, [made nothing worse](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
 
 What the twenty need:
 
