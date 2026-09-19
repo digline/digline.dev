@@ -74,6 +74,8 @@ translations of an earlier dry run (its --out) over the repository first, so
 a second run skips what the first translated.
 
     usage: tools/translate.py --langs it,de,es --pages index,start,why,about,contact
+           tools/translate.py --langs it --pages handbook      # the Handbook's nine
+           tools/translate.py --langs it --pages handbook/02-cases
                               --out DIR [--dry-run] [--existing DIR] [--max-cost 12]
            tools/translate.py --langs it,de,es --pages ... --plan
            tools/translate.py --selftest
@@ -126,7 +128,15 @@ MAX_TOKENS = 64000
 LANGUAGE_NAMES = {"it": "Italian", "de": "German", "es": "Spanish"}
 ADDRESS = {"it": 'the informal "tu"', "de": 'the informal "du"', "es": 'the informal "tú"'}
 WE = {"it": '"noi"', "de": '"wir"', "es": '"nosotros"'}
+# A page by its path under docs/ without .md: "why", "handbook/02-cases". The
+# presentation pages keep the names they always had, and "index" is the home,
+# never the Handbook's index, which is "handbook/index".
 PAGE_FILES = {os.path.splitext(page)[0]: page for page in languages.PAGES}
+# Names that stand for several pages, in the nav's order.
+PAGE_GROUPS = {"handbook": [os.path.splitext(page)[0] for page in languages.HANDBOOK_PAGES]}
+# What a run translates when it is not told: the presentation pages. The
+# Handbook is asked for by name (RUNBOOK.md, Translations).
+DEFAULT_PAGES = [os.path.splitext(page)[0] for page in languages.PRESENTATION_PAGES]
 
 # The front matter a translation translates; the rest is copied or stamped.
 TRANSLATED_FIELDS = ("title", "seo_title", "description", "kicker", "accent")
@@ -282,7 +292,7 @@ Write as a careful technical writer whose first language is {LANGUAGE_NAMES[lang
 - Never write in the first person plural ({WE[lang]}). Where the English says "I", keep the first person singular. Where it says "we" or "our", use the first person singular or an impersonal form. Everywhere else stay as impersonal as the English is.
 - Address the reader with {ADDRESS[lang]}.
 - Leave exactly as written: code spans and code blocks, commands, program output, URLs and link targets, HTML tags and attributes, HTML entities' meaning, Markdown structure, numbers (a decimal point stays a point: 0.88, never 0,88), and headings with their level — translate a heading's words, keep its number of # signs and its place.
-- Leave these terms in English, exactly as written, wherever the English uses them: {", ".join(words["keep"])}.
+- These terms name concepts of digline: {", ".join(words["keep"])}. Where the English uses one as a noun for that concept — a check, a run, the baseline, a gate, the noise floor — leave it in English, exactly as written. Where the same word is an ordinary verb or an everyday word — "check your inputs", "run the suite three times" — translate it, as a native writer would.
 - Leave these names exactly as written: the commands digline {", digline ".join(names["commands"])}; the checks {", ".join(names["checks"])}; the packages {", ".join(names["packages"])}; the frameworks {", ".join(names["frameworks"])}.
 - Never use these words: {", ".join(words["forbidden"].get(lang, [])) or "(none)"}.
 - Write idiomatic {LANGUAGE_NAMES[lang]}, never a calque: do not carry English syntax, idioms or collocations across word for word. Say what a native technical writer would say in their place.
@@ -527,12 +537,14 @@ class Workspace:
             # merged one, perhaps corrected by hand) is never replaced by a run's.
             for lang in languages.LANGUAGES:
                 pages = os.path.join(existing, "docs", lang)
-                if os.path.isdir(pages):
-                    for name in os.listdir(pages):
-                        target = os.path.join(self.root, "docs", lang, name)
+                # Every folder down: the Handbook's translations are in handbook/.
+                for folder, _, names in os.walk(pages):
+                    for name in names:
+                        source = os.path.join(folder, name)
+                        target = os.path.join(self.root, "docs", lang, os.path.relpath(source, pages))
                         if not os.path.exists(target):
                             os.makedirs(os.path.dirname(target), exist_ok=True)
-                            shutil.copy(os.path.join(pages, name), target)
+                            shutil.copy(source, target)
                 words = os.path.join(existing, "i18n", f"{lang}.yml")
                 target = os.path.join(self.root, "i18n", f"{lang}.yml")
                 if os.path.isfile(words) and not catalog_entries(target):
@@ -668,25 +680,19 @@ def english_diff(root: str, page: str, commit: str | None) -> str:
     return out.stdout if out.returncode == 0 else ""
 
 
-_RELATIVE = re.compile(r"\]\((?![a-z]+:|/|#|\.\./)([^)\s]+)\)")
-
-
-def one_folder_down(body: str) -> str:
-    """Relative Markdown links, written from the English page's folder, as seen
-    from the translation's, one folder down."""
-    return _RELATIVE.sub(lambda m: f"](../{m.group(1)})", body)
-
-
 def page_text(root: str, lang: str, page: str, answer: dict, model: str) -> str:
     english, _ = translation.read_page(os.path.join(root, "docs", page))
+    # Only what the English has: a Handbook chapter has no title: (its <h1> is
+    # its title) and no template:, and a null one would be written as one.
     meta = {"title": answer["title"] or english.get("title"), "template": english.get("template")}
+    meta = {field: value for field, value in meta.items() if value}
     for field in ("seo_title", "kicker", "accent"):
         if english.get(field):
             meta[field] = answer[field]
     meta.update(lang=lang, translation_of=page, description=answer["description"], search={"exclude": True})
     stamped = translation.stamp(meta, root, model=model)
     front = yaml.safe_dump(stamped, allow_unicode=True, sort_keys=False, width=1000)
-    return f"---\n{front}---\n\n{one_folder_down(answer['body']).strip()}\n"
+    return f"---\n{front}---\n\n{translation.relink(answer['body'], page, lang).strip()}\n"
 
 
 # ── the run ──────────────────────────────────────────────────────────────────
@@ -968,12 +974,23 @@ def write_out(translator: Translator, out: str) -> None:
             shutil.copy(words, os.path.join(out, "i18n", f"{lang}.yml"))
 
 
+def expand_pages(text: str) -> list[str]:
+    """--pages as the page names it stands for: each name, and each group's
+    pages in its place, once each, in the order asked."""
+    out: list[str] = []
+    for name in (part.strip() for part in text.split(",")):
+        for page in PAGE_GROUPS.get(name, [name] if name else []):
+            if page not in out:
+                out.append(page)
+    return out
+
+
 def main(argv: list[str]) -> int:
     if argv == ["--selftest"]:
         return selftest()
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--langs", default=",".join(languages.LANGUAGES))
-    parser.add_argument("--pages", default=",".join(PAGE_FILES))
+    parser.add_argument("--pages", default=",".join(DEFAULT_PAGES))
     parser.add_argument("--out")
     parser.add_argument("--plan", action="store_true",
                         help="print what would be translated, as JSON, and call nothing")
@@ -982,7 +999,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--max-cost", type=float, default=DEFAULT_MAX_COST)
     args = parser.parse_args(argv)
     langs = [lang.strip() for lang in args.langs.split(",") if lang.strip()]
-    pages = [page.strip() for page in args.pages.split(",") if page.strip()]
+    pages = expand_pages(args.pages)
     wrong = [lang for lang in langs if lang not in languages.LANGUAGES] + [p for p in pages if p not in PAGE_FILES]
     if wrong:
         parser.error(f"not a language or a page: {', '.join(wrong)}")
@@ -1062,7 +1079,7 @@ def _fake_answer(root: str, lang: str, meaning_ok=True):
                                    prompt.split("<english>")[0], re.M))
             corrected = "\n\nCorrected." if "A reviewer read your translation" in prompt else ""
             return {field: meta.get(field, "") for field in TRANSLATED_FIELDS} | {
-                "body": translation.pseudo_translate(body, lang, root).replace("](../", "](") + corrected}
+                "body": translation.pseudo_translate(body, lang, root) + corrected}
         said = readings.pop(0) if readings is not None else meaning_ok
         ok = said is not False
         return {"ok": ok, "issues": [] if ok else [
@@ -1118,6 +1135,17 @@ def selftest() -> int:
     expect("the reading of meaning: a term in another sense is an error, never a note",
            ('"abschreiben"' in meaning_system("de"), 'kind "sense"' in meaning_system("it"),
             "sense" in MEANING_SCHEMA["properties"]["issues"]["items"]["properties"]["kind"]["enum"]), (True, True, True))
+    expect("the rules: a kept term stays English as digline's noun, and is translated as a verb or an everyday word",
+           ("as a noun for that concept" in system, '"check your inputs"' in system, "translate it" in system,
+            "wherever the English uses them" in system), (True, True, True, False))
+    expect("the page names: the six by their old names, the Handbook by path, a group expanded once, in order",
+           (DEFAULT_PAGES, PAGE_FILES["index"], PAGE_FILES["handbook/index"],
+            expand_pages("why, handbook,handbook/02-cases,why"), expand_pages("")),
+           (["index", "start", "why", "about", "contact", "agents"], "index.md", "handbook/index.md",
+            ["why"] + PAGE_GROUPS["handbook"], []))
+    expect("the page names: no bare folder, no page the site does not translate",
+           [name in PAGE_FILES for name in ("handbook", "handbook/", "handbook/99-x", "product/guide")],
+           [False, False, False, False])
     expect("the rules in Italian address the reader with tu, and never noi",
            ('the informal "tu"' in rules("it", ROOT), '"noi"' in rules("it", ROOT)), (True, True))
     english_meta, english_body = translation.read_page(os.path.join(ROOT, "docs", "why.md"))
@@ -1298,10 +1326,16 @@ def selftest() -> int:
                 first["pages"]), (True, True, {"it": ["why"]}))
         fake = FakeModel(_fake_answer(workspace.root, "it"))
         translator = Translator(fake, Ledger(5.0), workspace)
-        translator.run(["it"], ["why"])
-        expect("built and checked for real: the catalog and Why translated at the first attempt",
+        translator.run(["it"], ["why", "handbook/03-ground-truth"])
+        expect("built and checked for real: the catalog, Why and a Handbook chapter translated at the first attempt",
                [(o.subject, o.status, o.attempts) for o in translator.outcomes],
-               [("i18n/it.yml", "translated", 1), ("docs/it/why.md", "translated", 1)])
+               [("i18n/it.yml", "translated", 1), ("docs/it/why.md", "translated", 1),
+                ("docs/it/handbook/03-ground-truth.md", "translated", 1)])
+        chapter_meta, chapter = translation.read_page(workspace.path("docs", "it", "handbook", "03-ground-truth.md"))
+        expect("the chapter as written: its links from one folder deeper, no title: or template: it has not got",
+               ("](../../blog/bad-evals-my-own.md)" in chapter, "](../blog/" in chapter.replace("](../../", ""),
+                "title" in chapter_meta, "template" in chapter_meta, chapter_meta["translation_of"]),
+               (True, False, False, False, "handbook/03-ground-truth.md"))
         # The same checks refuse what they must: a decimal point made a comma, twice.
         comma = _fake_answer(workspace.root, "it")
         wrong = FakeModel(lambda system, prompt, schema: (
@@ -1317,15 +1351,16 @@ def selftest() -> int:
                ("failed", 2, True, True, False))
         with tempfile.TemporaryDirectory() as out:
             write_out(translator, out)
-            expect("written out: the catalog and the page", sorted(
+            expect("written out: the catalog and the pages, the chapter in its folder", sorted(
                 os.path.relpath(os.path.join(d, n), out) for d, _, ns in os.walk(out) for n in ns),
-                ["docs/it/why.md", "i18n/it.yml"])
+                ["docs/it/handbook/03-ground-truth.md", "docs/it/why.md", "i18n/it.yml"])
             with open(os.path.join(out, "docs", "it", "why.md"), "a", encoding="utf-8") as fh:
                 fh.write("\nA line only the run's output has.\n")
             second = Workspace(ROOT, out, english_only=True)
             try:
-                expect("the plan over the first run's output: nothing for Why, Start still to translate",
-                       (plan(second.root, ["it"], ["why"]), plan(second.root, ["it"], ["why", "start"])),
+                expect("the plan over the first run's output: nothing for Why or the chapter, Start still to translate",
+                       (plan(second.root, ["it"], ["why", "handbook/03-ground-truth"]),
+                        plan(second.root, ["it"], ["why", "start"])),
                        ({"work": False, "catalogs": {}, "pages": {}},
                         {"work": True, "catalogs": {}, "pages": {"it": ["start"]}}))
                 again = FakeModel(_fake_answer(second.root, "it"))

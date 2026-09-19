@@ -14,9 +14,11 @@ every key as it is, and the site is built there.
 So the fake translations follow the English pages wherever they go, and
 nothing here is a translation to publish. None of these files is ever in docs/.
 
-  it: index.md, why.md, about.md
+  it: index.md, why.md, about.md, handbook/index.md, handbook/03-ground-truth.md
   de: why.md
   es: none
 
 so Why has two translations, the home and About one each, and Start here and
-Contact none.
+Contact none; and of the Handbook, on the documentation's shell, in Italian,
+the index — which links every chapter, chapter 3 translated and the others
+not — and chapter 3, which links a post that stays English.

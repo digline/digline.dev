@@ -1,12 +1,14 @@
 """Which languages the site is translated into, and which of its pages.
 
 English is the original, and the only language of the documentation, the
-Handbook, the comparison and the blog. The six presentation pages may have a
-translation in each of LANGUAGES, written in docs/<lang>/ at the same path as
-the English page it translates, and served at the same path under /<lang>/:
+comparison and the blog. The six presentation pages and the Handbook's nine
+may have a translation in each of LANGUAGES, written in docs/<lang>/ at the
+same path as the English page it translates, and served at the same path under
+/<lang>/:
 
-    docs/why.md        →  /why/
-    docs/it/why.md     →  /it/why/
+    docs/why.md                   →  /why/
+    docs/it/why.md                →  /it/why/
+    docs/it/handbook/02-cases.md  →  /it/handbook/02-cases/
 
 A translation's front matter says what it is:
 
@@ -35,9 +37,24 @@ LANGUAGES = ("it", "de", "es")
 # in one language; these say the same thing in every page.
 NAMES = {"en": "English", "it": "Italiano", "de": "Deutsch", "es": "Español"}
 
-# The pages that may be translated: the six presentation pages, by their
-# source path under docs/.
-PAGES = ("index.md", "start.md", "why.md", "about.md", "contact.md", "agents.md")
+# The pages that may be translated, by their source path under docs/: the six
+# presentation pages, and the Handbook's index and eight chapters, in the
+# nav's order. The presentation pages carry the language menu in the bar; the
+# Handbook is documentation, whose bar holds search in that slot, and says its
+# other languages elsewhere.
+PRESENTATION_PAGES = ("index.md", "start.md", "why.md", "about.md", "contact.md", "agents.md")
+HANDBOOK_PAGES = (
+    "handbook/index.md",
+    "handbook/01-what-you-are-shipping.md",
+    "handbook/02-cases.md",
+    "handbook/03-ground-truth.md",
+    "handbook/04-checks.md",
+    "handbook/05-the-judge.md",
+    "handbook/06-the-reference.md",
+    "handbook/07-maintenance.md",
+    "handbook/08-for-teams-building-for-others.md",
+)
+PAGES = PRESENTATION_PAGES + HANDBOOK_PAGES
 
 
 def language_of(path: str) -> str | None:

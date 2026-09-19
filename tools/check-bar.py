@@ -169,7 +169,7 @@ DOCS_PAGE = ('<!doctype html><html lang="en"><body>'
              '<a class="dg-icon" href="https://github.com/digline/digline"></a>'
              '<button class="dg-icon" id="__dg_palette"></button>'
              "</div></header>"
-             '<div class="md-content" data-md-component="content"><article>Handbook</article></div>'
+             '<div class="md-content" data-md-component="content"><article>Guide</article></div>'
              "</body></html>")
 
 PAGE = ('<!doctype html><html lang="{lang}"><body>'
@@ -185,12 +185,12 @@ PAGE = ('<!doctype html><html lang="{lang}"><body>'
 def selftest() -> int:
     failures: list[str] = []
     with tempfile.TemporaryDirectory() as site:
-        for folder in ("handbook", "start", "contact", os.path.join("it", "start")):
+        for folder in (os.path.join("product", "guide"), "start", "contact", os.path.join("it", "start")):
             os.makedirs(os.path.join(site, folder))
         start = PAGE.format(lang="en", title="Start here")
         contact = PAGE.format(lang="en", title="Contact")
         translated = PAGE.format(lang="it", title="Da qui")
-        pages = {"handbook": DOCS_PAGE, "start": start, "contact": contact, "it/start": translated}
+        pages = {"product/guide": DOCS_PAGE, "start": start, "contact": contact, "it/start": translated}
 
         def write(**changed: str) -> None:
             for where, html in {**pages, **changed}.items():
@@ -215,8 +215,8 @@ def selftest() -> int:
              {"it/start": translated.replace(MENU, ICON + MENU)},
              'it/start/index.html: 1 <label for="__search"> in the bar'),
             ("a documentation page without the icon",
-             {"handbook": DOCS_PAGE.replace(ICON, "")},
-             "handbook/index.html: 0 search icon(s)"),
+             {"product/guide": DOCS_PAGE.replace(ICON, "")},
+             "product/guide/index.html: 0 search icon(s)"),
             ('a <label for="__search"> below the bar of a page without search',
              {"contact": contact.replace("<h1>Contact</h1>", f'<label for="{TOGGLE}">Search</label>')},
              'contact/index.html: 1 <label for="__search"> below the bar'),
@@ -230,10 +230,10 @@ def selftest() -> int:
              {"contact": contact.replace(MENU, "").replace("<h1>Contact</h1>", MENU)},
              "contact/index.html: 0 language menu(s)"),
             ("the language menu on a page that has search",
-             {"handbook": DOCS_PAGE.replace(ICON, ICON + MENU)},
+             {"product/guide": DOCS_PAGE.replace(ICON, ICON + MENU)},
              "the language menu on a page that has search"),
             ("a documentation page without the checkbox the icon toggles",
-             {"handbook": DOCS_PAGE.replace(
+             {"product/guide": DOCS_PAGE.replace(
                  f'<input class="md-toggle" type="checkbox" id="{TOGGLE}" autocomplete="off">', "")},
              f"0 #{TOGGLE} checkbox(es), not 1"),
             ("a presentation page carrying the checkbox",
@@ -258,7 +258,7 @@ def selftest() -> int:
         # A site with only one kind of page counts nothing worth counting.
         for label, kept, needle in (
             ("a site with no documentation page", ("start", "contact", "it/start"), "no documentation page at all"),
-            ("a site with no presentation page", ("handbook",), "no presentation page at all"),
+            ("a site with no presentation page", ("product/guide",), "no presentation page at all"),
         ):
             write()
             for where in pages:
