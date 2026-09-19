@@ -131,7 +131,8 @@ hooks:
   - tools/hooks/opening.py
   # The repositories the site cites as a source, pinned: every link to digline's
   # AGENTS.md at the release tag the sync read (.agents-rule.json), every link to
-  # digline/brief at a full commit sha, and the quotation of rule 1 that closes
+  # digline/brief at a full commit sha but the [[link]] exceptions of
+  # tools/claims-register.toml, and the quotation of rule 1 that closes
   # /agents/ held to AGENTS.md at that tag. See the file's docstring.
   - tools/hooks/sources.py
   # This site's own stylesheets and fonts, linked with a hash of their content,

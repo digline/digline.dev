@@ -21,7 +21,7 @@ Most teams reach for the judge first, because it is the interesting part. This c
 
 ## Why deterministic first
 
-Take the [newsletter judge](https://github.com/digline/brief). Its output is a small JSON object: a score from 1 to 5 and a one-sentence reason. Before asking any model whether the score is *good*, three things can be checked with no model at all:
+Take the [newsletter judge](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/suite.py). Its output is a small JSON object: a score from 1 to 5 and a one-sentence reason. Before asking any model whether the score is *good*, three things can be checked with no model at all:
 
 - Is the output valid JSON with exactly those two fields? (`JsonSchema`)
 - Is the score an integer between 1 and 5? (the same schema)

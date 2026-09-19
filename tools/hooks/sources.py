@@ -8,10 +8,15 @@ both checked on the built site:
     the sync read (tools/sync-docs.sh, .agents-rule.json). A link at main, or at
     any other ref, fails the build (agents_md_link_problems).
   * **digline/brief**: every link leads to a full 40-character commit, the runs
-    /why/ reads its numbers from. main, a branch, a tag and a short sha all fail
-    the build (brief_link_problems): a tag can be moved and a branch moves by
-    itself, and the files a reader is sent to verify would not be the ones the
-    page was written from.
+    /why/ and the Handbook read their numbers from. main, a branch, a tag, a
+    short sha and the repository's front page all fail the build
+    (brief_link_problems): a tag can be moved, a branch moves by itself, and the
+    front page is main's; the files a reader is sent to verify would not be the
+    ones the page was written from. The one way past it is an entry in
+    tools/claims-register.toml, [[link]]: a link that points at the project
+    rather than supporting a number, named by its exact href and its exact text,
+    with the file that writes it and why. The build fails on an entry whose
+    quote is no longer in its file, or that no page of the site uses.
 
 ── the quotation on /agents/ and its translations ────────────────────────────
 That page closes on rule 1 of digline's AGENTS.md, quoted in
@@ -59,10 +64,13 @@ no translated page (search_problems).
 
 from __future__ import annotations
 
+import html as htmllib
 import json
 import os
 import re
 import sys
+import tomllib
+from dataclasses import dataclass
 from html.parser import HTMLParser
 
 from mkdocs.exceptions import PluginError
@@ -232,26 +240,105 @@ def agents_md_link_problems(site: str, tag: str) -> tuple[list[str], int]:
 
 
 BRIEF = "https://github.com/digline/brief"
-_BRIEF = re.compile(r'href="' + re.escape(BRIEF) + r'(?:/(?:blob|tree|commit)/([^/"]+)[^"]*)?"')
-_SHA = re.compile(r"\A[0-9a-f]{40}\Z")
+# Every href into the repository — its front page, with or without a slash, a
+# #fragment or a ?query, and any path under it. Not digline/brief-something.
+_BRIEF = re.compile(r'href="' + re.escape(BRIEF) + r'((?:[/#?][^"]*)?)"')
+# The one shape that passes: a file, a folder or a commit at a full sha.
+_PINNED = re.compile(r"\A/(?:blob|tree|commit)/[0-9a-f]{40}(?:[/#?]|\Z)")
+# An <a> element, for the text a registered exception is known by.
+_ANCHOR = re.compile(r'<a\b[^>]*?(href="[^"]*")[^>]*>(.*?)</a>', re.S)
+
+REGISTER = os.path.join("tools", "claims-register.toml")
 
 
-def brief_link_problems(site: str) -> tuple[list[str], int]:
-    """Every link to digline/brief in site/'s pages, at anything but a full
-    commit sha: (problems, links read). The repository's own front page — no
-    /blob/ or /tree/ — is a link to the project, not to a file, and passes."""
+@dataclass(frozen=True)
+class LinkException:
+    """A link into a cited repository that is admitted unpinned: the file that
+    writes it, the line there that writes it, its exact href, the exact text it
+    is shown with, and why."""
+    file: str
+    quote: str
+    href: str
+    text: str
+    why: str
+    since: str
+
+
+def load_link_exceptions(path: str) -> list[LinkException]:
+    """The register's [[link]] entries. Every field required: an exception that
+    does not say why is the thing the register exists to refuse."""
+    with open(path, "rb") as fh:
+        document = tomllib.load(fh)
+    found = []
+    for index, entry in enumerate(document.get("link", []), start=1):
+        values = {}
+        for name in ("file", "quote", "href", "text", "why", "since"):
+            value = entry.get(name)
+            if not isinstance(value, str) or not value.strip():
+                raise PluginError(f"sources: {os.path.basename(path)}, link {index}: `{name}` is missing or empty")
+            values[name] = value
+        found.append(LinkException(**values))
+    return found
+
+
+def _words(text: str) -> str:
+    return " ".join(htmllib.unescape(re.sub(r"<[^>]+>", " ", text)).split())
+
+
+def link_exception_problems(root: str, exceptions: list[LinkException]) -> list[str]:
+    """The file end of each exception: its quote still in its file, whitespace
+    normalized, as whole words."""
+    problems = []
+    for entry in exceptions:
+        try:
+            with open(os.path.join(root, entry.file), encoding="utf-8") as fh:
+                text = fh.read()
+        except FileNotFoundError:
+            problems.append(f"{REGISTER}: link {entry.href!r}: {entry.file} does not exist")
+            continue
+        # Whole words at both ends: a quote ending on the front page's URL is
+        # not found in a line that goes on to /tree/<sha>.
+        quote = re.escape(" ".join(entry.quote.split()))
+        if not re.search(r"(?<!\S)" + quote + r"(?!\S)", " ".join(text.split())):
+            problems.append(f"{REGISTER}: link {entry.href!r}: the quote is no longer in {entry.file} — "
+                            f"{entry.quote!r}; remove the entry")
+    return problems
+
+
+def brief_link_problems(site: str, exceptions: list[LinkException] = ()) -> tuple[list[str], int]:
+    """Every link to digline/brief in site/'s pages that is not a file, a
+    folder or a commit at a full sha: (problems, links read). The repository's
+    front page is refused too: it shows main, and a reader sent to it to see the
+    project sees whatever main holds today, not what the page was written from.
+    A link that is an entry of `exceptions` — its href and its text, both exact
+    — passes; an entry no page uses is a problem."""
     problems: list[str] = []
     read = 0
+    used: set[LinkException] = set()
     for folder, dirs, names in os.walk(site):
         dirs.sort()
         for name in sorted(n for n in names if n.endswith(".html")):
             relative = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
             with open(os.path.join(folder, name), encoding="utf-8") as fh:
-                for ref in _BRIEF.findall(fh.read()):
-                    read += 1
-                    if ref and not _SHA.match(ref):
-                        problems.append(f"{relative}: a link to digline/brief at {ref!r}, and a source is cited at a "
-                                        "full commit sha — a tag can be moved and a branch moves by itself")
+                page = fh.read()
+            texts = {m.start(1): _words(m.group(2)) for m in _ANCHOR.finditer(page)}
+            for match in _BRIEF.finditer(page):
+                rest = match.group(1)
+                read += 1
+                if not _PINNED.match(rest):
+                    admitted = [e for e in exceptions
+                                if e.href == BRIEF + rest and e.text == texts.get(match.start())]
+                    if admitted:
+                        used.update(admitted)
+                        continue
+                    where = repr(rest) if rest.strip("/") else "its front page"
+                    problems.append(f"{relative}: a link to digline/brief at {where}, and a source is cited at a "
+                                    "full commit sha — a tag can be moved, a branch moves by itself, and the "
+                                    "front page is main")
+    for entry in exceptions:
+        if entry not in used:
+            problems.append(f"{REGISTER}: link {entry.href!r} shown as {entry.text!r}: no page of the site has it — "
+                            "remove the entry")
     return problems, read
 
 
@@ -339,7 +426,9 @@ def on_post_build(config, **kwargs):
         problems += [p.replace("agents/index.html", where, 1) for p in
                      quotation_problems(html, rule) + caption_problems(html, rule)]
     problems += agents_md_link_problems(config["site_dir"], rule["tag"])[0]
-    problems += brief_link_problems(config["site_dir"])[0]
+    exceptions = load_link_exceptions(os.path.join(ROOT, REGISTER))
+    problems += link_exception_problems(ROOT, exceptions)
+    problems += brief_link_problems(config["site_dir"], exceptions)[0]
     with open(os.path.join(config["site_dir"], "search", "search_index.json"), encoding="utf-8") as fh:
         problems += search_problems(json.load(fh), page_html)
     if problems:
@@ -468,16 +557,60 @@ def selftest() -> int:
         def brief_page(*refs):
             with open(os.path.join(site, "why", "index.html"), "w", encoding="utf-8") as fh:
                 fh.write("".join(f'<a href="{BRIEF}{r}">x</a>' for r in refs))
-        brief_page(f"/tree/{sha}", f"/blob/{sha}/fixtures/README.md", f"/blob/{sha}/fixtures/recompute.py", "")
-        expect("links to digline/brief at a full sha, and its front page", brief_link_problems(site), ([], 4))
+        brief_page(f"/tree/{sha}", f"/blob/{sha}/fixtures/README.md", f"/blob/{sha}/fixtures/recompute.py",
+                   f"/blob/{sha}/README.md#reporthtml", f"/commit/{sha}")
+        expect("links to digline/brief at a full sha: a folder, files, an anchor, a commit",
+               brief_link_problems(site), ([], 5))
         for label, ref in (("main", "/blob/main/fixtures/README.md"),
                            ("a tag", "/tree/why-2026-09/fixtures"),
                            ("a short sha", f"/blob/{sha[:7]}/fixtures/README.md"),
-                           ("a branch", "/tree/why-fixtures/fixtures")):
+                           ("a branch", "/tree/why-fixtures/fixtures"),
+                           ("its front page", ""),
+                           ("its front page, with a slash", "/"),
+                           ("its front page, at an anchor", "#readme"),
+                           ("a sha with more after it", f"/blob/{sha}0/README.md"),
+                           ("its issues", "/issues")):
             brief_page(ref)
             found, _ = brief_link_problems(site)
             expect(f"a link to digline/brief at {label}: refused",
                    (len(found), "and a source is cited at a full commit sha" in (found[0] if found else "")), (1, True))
+
+        # A registered exception: its href and its text, exact, and nothing else.
+        nav = LinkException("mkdocs.yml", "- A whole product (digline/brief): https://github.com/digline/brief",
+                            BRIEF, "A whole product (digline/brief)", "a pointer to the project", "selftest")
+        def page_with(*anchors):
+            with open(os.path.join(site, "why", "index.html"), "w", encoding="utf-8") as fh:
+                fh.write("".join(anchors))
+        nav_html = (f'<li class="md-nav__item">\n  <a href="{BRIEF}" class="md-nav__link">\n'
+                    '    <span class="md-ellipsis">\n      A whole product (digline/brief)\n    </span>\n  </a></li>')
+        page_with(nav_html, f'<p><a href="{BRIEF}">A whole product (digline/brief)</a></p>')
+        expect("the registered front-page link, in the nav and in a line of text, passes",
+               brief_link_problems(site, [nav]), ([], 2))
+        page_with(nav_html, f'<a href="{BRIEF}">newsletter judge</a>')
+        found, _ = brief_link_problems(site, [nav])
+        expect("the same href with other text: refused", (len(found), "its front page" in found[0]), (1, True))
+        page_with(f'<a href="{BRIEF}/">A whole product (digline/brief)</a>')
+        found, _ = brief_link_problems(site, [nav])
+        expect("the registered text at another href: refused, and the entry unused",
+               (len(found), "its front page" in found[0], "no page of the site has it" in found[1]), (2, True, True))
+        page_with(f'<a href="{BRIEF}/tree/{sha}">x</a>')
+        found, _ = brief_link_problems(site, [nav])
+        expect("an entry no page uses: refused", found and "no page of the site has it" in found[0], True)
+        with open(os.path.join(site, "mkdocs.yml"), "w", encoding="utf-8") as fh:
+            fh.write("nav:\n  - A whole\n    product (digline/brief): https://github.com/digline/brief\n")
+        expect("an entry whose quote is in its file passes", link_exception_problems(site, [nav]), [])
+        with open(os.path.join(site, "mkdocs.yml"), "w", encoding="utf-8") as fh:
+            fh.write(f"nav:\n  - A whole product (digline/brief): {BRIEF}/tree/{sha}\n")
+        found = link_exception_problems(site, [nav])
+        expect("an entry whose quote is gone: refused", (len(found), "no longer in mkdocs.yml" in found[0]), (1, True))
+        register = os.path.join(site, "register.toml")
+        with open(register, "w", encoding="utf-8") as fh:
+            fh.write('[[link]]\nfile = "mkdocs.yml"\nquote = "q"\nhref = "h"\ntext = "t"\nsince = "#68"\n')
+        try:
+            load_link_exceptions(register)
+            expect("an entry that does not say why: refused", False, True)
+        except PluginError as error:
+            expect("an entry that does not say why: refused", "`why` is missing" in str(error), True)
 
     # The search index.
     tiles_html = ('<div class="tile">\n<h3 id="the-mcp-server">The MCP server</h3>'

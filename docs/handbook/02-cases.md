@@ -14,7 +14,7 @@ Every team that ships an LLM feature has a prompt. Almost none has cases. This c
 
 A case is one input you care about, paired with what you know about the right answer.
 
-That is all. For a support bot: a question a customer actually asked, and whether the reply should have mentioned the refund policy. For a classifier: a job description, and the family a recruiter confirmed it belongs to. For the [newsletter judge](https://github.com/digline/brief) that runs through this handbook: an article title and summary, and whether the reader marked it worth reading.
+That is all. For a support bot: a question a customer actually asked, and whether the reply should have mentioned the refund policy. For a classifier: a job description, and the family a recruiter confirmed it belongs to. For the [newsletter judge](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) that runs through this handbook: an article title and summary, and whether the reader marked it worth reading.
 
 ```json
 {

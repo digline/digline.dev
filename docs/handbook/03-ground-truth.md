@@ -9,7 +9,7 @@ description: >-
 
 # 3. Ground truth: when nobody gives you one
 
-Chapter 2 said to find the place where a person corrects the model. This chapter is for when that place does not exist — or exists and records something other than what you think. It is written from three systems: the [newsletter judge](https://github.com/digline/brief), whose code and cases are public but whose record of every item it judged is not — the figures below are read from that record, as [Bad evals, my own](../blog/bad-evals-my-own.md) shows it; a second judge by the same author that picks Reddit threads worth answering (private, described in the same post); and a product feature described in shape only. Each of them failed to produce ground truth in a different way.
+Chapter 2 said to find the place where a person corrects the model. This chapter is for when that place does not exist — or exists and records something other than what you think. It is written from three systems: the [newsletter judge](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), whose code and cases are public but whose record of every item it judged is not — the figures below are read from that record, as [Bad evals, my own](../blog/bad-evals-my-own.md) shows it; a second judge by the same author that picks Reddit threads worth answering (private, described in the same post); and a product feature described in shape only. Each of them failed to produce ground truth in a different way.
 
 ## Freeze the input, not the world
 

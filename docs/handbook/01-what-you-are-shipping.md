@@ -23,7 +23,7 @@ You can turn the temperature to zero and reduce the variation. You cannot remove
 
 ## What this does to your intuitions
 
-**"I tried it and it works."** You ran it once. You drew one sample from the distribution. The next sample may differ. In the [newsletter judge](https://github.com/digline/brief) this handbook uses as its running example, the same twenty-one articles scored twice with an identical prompt produced twenty identical verdicts and one different one. One in twenty-one is not a bug. It is the shape of the thing.
+**"I tried it and it works."** You ran it once. You drew one sample from the distribution. The next sample may differ. In the [newsletter judge](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) this handbook uses as its running example, the same twenty-one articles scored twice with an identical prompt produced twenty identical verdicts and one different one. One in twenty-one is not a bug. It is the shape of the thing.
 
 **"I fixed the prompt."** You changed the distribution. It now produces the answer you wanted for the input you tried. It also produces slightly different answers for every other input, and you have not looked at those. Prompt changes are global; your attention was local.
 

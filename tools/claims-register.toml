@@ -18,3 +18,33 @@
 #   since = "#NN"
 #
 # No entry yet: no page of the site makes a tier-2 claim today.
+
+# ── Links admitted unpinned ───────────────────────────────────────────────────
+#
+# tools/hooks/sources.py holds every link to digline/brief to a full commit
+# sha: a page that cites the project as a source leads to the state it read.
+# A [[link]] entry admits one link that is not a source but a pointer to the
+# project as it is today. It names the link exactly — its href and the text it
+# is shown with, both as the built page has them — the file and the line that
+# write it, and why. The build fails on an entry whose quote is no longer in
+# its file, or that no page of the site uses; a link with the same href and
+# other text is still refused.
+#
+#   [[link]]
+#   file = "mkdocs.yml"
+#   quote = "the line, as the file has it"
+#   href = "https://github.com/digline/brief"
+#   text = "the link's text on the page"
+#   why = "why this link is a pointer, not a source"
+#   since = "#NN"
+
+[[link]]
+file = "mkdocs.yml"
+quote = "- A whole product (digline/brief): https://github.com/digline/brief"
+href = "https://github.com/digline/brief"
+text = "A whole product (digline/brief)"
+why = """The nav's entry under Examples, and the External line tools/hooks/indexes.py \
+writes from it on the Examples page: it sends a reader to the project to look \
+at it, not to verify a number, so it leads to the project as it is now. No \
+sentence of the site stands on it."""
+since = "#68"
