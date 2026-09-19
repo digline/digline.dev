@@ -24,11 +24,12 @@
   /why/. tools/hooks/translations.py fails the build on any href starting with
   //, the 404 included.
 
-  The language menu, before GitHub, only on a page with translations — the
-  English page and each translation: page.meta.language_switch, which
+  The language menu, in the bar's second slot, only on a page with
+  translations — the English page and each translation, a presentation page
+  or a Handbook page: page.meta.language_switch, which
   tools/hooks/translations.py builds from the page's hreflang links. A
   <details>, whole without a script; the script after the bar adds Esc and a
-  click outside to close it. Nothing of it is written on any other page.
+  click outside to close it. Every other page holds the slot empty.
 -#}
 {% set docs = not plain_page %}
 {#- The page the bar is on, as its English source: a translation is where its
@@ -74,35 +75,37 @@
 
     <nav class="dg-nav" aria-label="{{ 'bar.sections_label' | t }}">
       <a href="{{ base_url.rstrip('/') }}/start/"{% if here == "start.md" %} aria-current="page"{% endif %}>{{ "bar.start" | t }}</a>
-      {#- The entry that yields when the bar runs out of room: Why is reachable
-          from Start here, which is the entry beside it, and from the landing.
-          Hidden by .dg-nav__optional: under 500px in chrome.css, and on the
-          documentation pages under 670px in theme.css. -#}
+      {#- The entries that yield when the bar runs out of room (chrome.css,
+          measured): Writing first, then Why and Agents. Why is reachable from
+          Start here, which is the entry beside it, and from the landing. -#}
       <a class="dg-nav__optional" href="{{ base_url.rstrip('/') }}/why/"{% if here == "why.md" %} aria-current="page"{% endif %}>{{ "bar.why" | t }}</a>
       {#- Yields with Why: the footer carries it in the Docs column, beside Why. -#}
       <a class="dg-nav__optional" href="{{ base_url.rstrip('/') }}/agents/"{% if here == "agents.md" %} aria-current="page"{% endif %}>{{ "bar.agents" | t }}</a>
       <a href="{{ base_url.rstrip('/') }}/handbook/"{% if here.startswith("handbook/") %} aria-current="true"{% endif %}>{{ "bar.handbook" | t }}</a>
       <a href="{{ base_url.rstrip('/') }}/product/guide/"{% if here.startswith("product/") %} aria-current="true"{% endif %}>{{ "bar.docs" | t }}</a>
-      {#- The second entry that yields when the bar runs out of room, and it
-          yields for the same reason Why does: the footer carries it in the
-          Docs column, so losing it on a narrow phone costs a scroll, not a
-          destination. -#}
-      <a class="dg-nav__optional" href="{{ base_url.rstrip('/') }}/blog/"{% if here.startswith("blog/") %} aria-current="true"{% endif %}>{{ "bar.writing" | t }}</a>
+      {#- The first entry to yield, and for the same reason Why does: the
+          footer carries it in the Docs column, so losing it costs a scroll,
+          not a destination. -#}
+      <a class="dg-nav__optional dg-nav__optional--first" href="{{ base_url.rstrip('/') }}/blog/"{% if here.startswith("blog/") %} aria-current="true"{% endif %}>{{ "bar.writing" | t }}</a>
     </nav>
 
     <div class="dg-actions">
-      {#- Search is one slot of the bar, always the same width, so the sections
-          do not move between a page that has it and a page that does not. The
-          documentation gets the icon, which spends Material's own checkbox and
-          overlay (theme.css); every other page spends that same slot on the
-          language menu below, so the row is three buttons wherever you are —
-          search or language, then GitHub, then the theme.
+      {#- Four slots, on every page, in this order: search, language, GitHub,
+          the theme. Each is one round button, 38px, so the sections never move
+          between a page that fills a slot and a page that does not; a slot the
+          page has nothing for holds an inert <span class="dg-slot"> of the same
+          size — never a <label for="__search"> without the checkbox behind it,
+          never a language menu with one language in it.
 
-          A presentation page without translations would leave the slot empty
-          and start the movement again; tools/check-bar.py refuses one, and the
-          answer then is to hold the space with something inert — a <span>,
-          never a <label for="__search">, which without the checkbox is a
-          control with nothing behind it. -#}
+          Search: the icon on a page with an index to search, the documentation,
+          spending Material's own checkbox and overlay (theme.css); an empty
+          slot on the presentation pages. Language: the menu on a page with
+          translations (page.meta.language_switch, tools/hooks/translations.py),
+          whichever shell it is drawn in; an empty slot on every other page.
+          tools/check-bar.py reads the build and refuses any other bar.
+
+          On a phone the slots that are empty, and GitHub, give way before the
+          sections do (chrome.css): the language menu and the theme never. -#}
       {% set searchable = docs and "material/search" in config.plugins
                           and config.plugins["material/search"] | attr("config") | attr("enabled") %}
       {% if searchable %}
@@ -110,6 +113,7 @@
           {% include ".icons/material/magnify.svg" %}
         </label>
         {% include "partials/search.html" %}
+      {% else %}<span class="dg-slot dg-slot--search" aria-hidden="true"></span>
       {% endif %}
 
       {% if switch %}<details class="dg-lang">
@@ -122,7 +126,7 @@
           {%- endfor %}
         </ul>
       </details>
-
+      {% else %}<span class="dg-slot dg-slot--lang" aria-hidden="true"></span>
       {% endif %}<a class="dg-icon" href="{{ config.repo_url }}" title="{{ 'bar.github' | t }}" aria-label="{{ 'bar.github' | t }}">
         {% include ".icons/fontawesome/brands/github.svg" %}
       </a>
