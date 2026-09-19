@@ -618,6 +618,9 @@ body {
    tools/hooks/translations.py and overrides/main.html after the English
    words, which carry lang="en"; aria-hidden, since that lang is what a
    screen reader needs, and "E N" read aloud is not. */
+/* The last word of the title and the mark together: a title that wraps
+   takes the mark with its last word, never alone on a line of its own. */
+.dg-nowrap { white-space: nowrap; }
 .dg-en {
   display: inline-block;
   margin-left: .5em;

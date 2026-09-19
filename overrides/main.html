@@ -140,7 +140,8 @@
         <div class="md-footer__title">
           <span class="md-footer__direction">{{ "pager.previous" | t }}</span>
           {%- if translated and here.previous_page.file.src_uri not in titles %}
-          <div class="md-ellipsis"><span lang="en">{{ title }}</span><span class="dg-en" aria-hidden="true">EN</span></div>
+          {%- set head, last = (title.rsplit(" ", 1) if " " in title else ["", title]) %}
+          <div class="md-ellipsis"><span lang="en">{{ head ~ " " if head }}</span><span class="dg-nowrap"><span lang="en">{{ last }}</span><span class="dg-en" aria-hidden="true">EN</span></span></div>
           {%- else %}
           <div class="md-ellipsis">{{ title }}</div>
           {%- endif %}
@@ -153,7 +154,8 @@
         <div class="md-footer__title">
           <span class="md-footer__direction">{{ "pager.next" | t }}</span>
           {%- if translated and here.next_page.file.src_uri not in titles %}
-          <div class="md-ellipsis"><span lang="en">{{ title }}</span><span class="dg-en" aria-hidden="true">EN</span></div>
+          {%- set head, last = (title.rsplit(" ", 1) if " " in title else ["", title]) %}
+          <div class="md-ellipsis"><span lang="en">{{ head ~ " " if head }}</span><span class="dg-nowrap"><span lang="en">{{ last }}</span><span class="dg-en" aria-hidden="true">EN</span></span></div>
           {%- else %}
           <div class="md-ellipsis">{{ title }}</div>
           {%- endif %}

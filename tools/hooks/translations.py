@@ -61,7 +61,7 @@ the pages translated into its language, in the nav's order, under their own
 titles; the Handbook whole — each chapter under its translated title, or in
 English, marked EN, until it is translated — open, the page itself current,
 with its table of contents; and last, the documentation, which is English,
-marked so. A page translated tomorrow is in it the day it is, with nothing to
+which its words say. A page translated tomorrow is in it the day it is, with nothing to
 change: the tree is read from the translations there are.
 
 The same pages, English and translated, get ``page.meta.language_links``: the
@@ -361,8 +361,12 @@ class NavEntry:
 
 def english(title: str) -> Markup:
     """A title that leads to an English page, from a page in another language:
-    the words marked English, and the mark the reader sees."""
-    return Markup('<span lang="en">{}</span><span class="dg-en" aria-hidden="true">EN</span>').format(title)
+    the words marked English, and the mark the reader sees, held to the last
+    word (.dg-nowrap) so that a title that wraps never leaves it alone on a
+    line. overrides/main.html writes the pager's the same way."""
+    head, _, last = str(title).rpartition(" ")
+    return Markup('<span lang="en">{}</span><span class="dg-nowrap"><span lang="en">{}</span>'
+                  '<span class="dg-en" aria-hidden="true">EN</span></span>').format(head + " " if head else "", last)
 
 
 def translation_nav(nav, page, lang: str) -> list[NavEntry]:
@@ -389,8 +393,8 @@ def translation_nav(nav, page, lang: str) -> list[NavEntry]:
                     children.append(NavEntry(english(child.title), child.url, is_index=child.is_index))
             tree.append(NavEntry(catalog.t("bar.handbook", lang=lang), children=children,
                                  active=any(isinstance(child, Current) for child in children)))
-    tree.append(NavEntry(Markup('{}<span class="dg-en" aria-hidden="true">EN</span>').format(
-        catalog.t("nav.english_docs", lang=lang)), "product/guide/"))
+    # Its words say it is English; no mark after them.
+    tree.append(NavEntry(catalog.t("nav.english_docs", lang=lang), "product/guide/"))
     return tree
 
 
@@ -1123,9 +1127,10 @@ def selftest() -> int:
                                found.group(0), re.S)
             out = []
             for href, side, direction, title in links:
-                marked = re.fullmatch(r'<span lang="en">([^<]*)</span><span class="dg-en" aria-hidden="true">EN</span>', title)
+                marked = re.fullmatch(r'<span lang="en">([^<]*)</span><span class="dg-nowrap"><span lang="en">([^<]*)</span>'
+                                      r'<span class="dg-en" aria-hidden="true">EN</span></span>', title)
                 out.append((side, href, direction.strip(), "EN" if marked else "",
-                            " ".join((marked.group(1) if marked else title).split())))
+                            " ".join((marked.group(1) + marked.group(2) if marked else title).split())))
             return out
 
         chapter_2 = short_title(open(os.path.join(root, "docs", "it", "handbook", "02-cases.md"), encoding="utf-8").read())
@@ -1169,13 +1174,13 @@ def selftest() -> int:
                 ("../../../handbook/06-the-reference/", "6. The reference EN"),
                 ("../../../handbook/07-maintenance/", "7. Maintenance EN"),
                 ("../../../handbook/08-for-teams-building-for-others/", "8. For teams building for others EN"),
-                ("../../about/", links_title("it/about.md")), ("../../../product/guide/", "Documentation, in English EN")])
+                ("../../about/", links_title("it/about.md")), ("../../../product/guide/", "Documentation, in English")])
         titles_seen = [t for h, t, a, e in it_drawer if "#" not in h]
         expect("the Italian chapter 3's drawer: Italian pages, the Handbook whole, the English docs last",
                (titles_seen[-1].endswith("EN"), any(t.startswith("1. What you are actually shipping") and t.endswith("EN") for t in titles_seen),
                 [a for h, t, a, e in it_drawer if a], len([t for t in titles_seen if t.endswith("EN")]),
                 any("How digline compares" in t for t in titles_seen)),
-               (True, True, [True], 7, False))
+               (False, True, [True], 6, False))
         expect("the Italian chapter 3's drawer: itself current, under its title up to the colon, the chapter 2 translated",
                ([t for h, t, a, e in it_drawer if a], chapter_2 in titles_seen),
                ([short_title(open(os.path.join(root, "docs", "it", "handbook", "03-ground-truth.md"), encoding="utf-8").read())],
