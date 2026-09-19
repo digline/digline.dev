@@ -452,6 +452,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "known partial answer must score inside a band, repeatability beside "
         "it, and the suite's shape and spread.",
     ),
+    "product/adr/0025-the-tokens-and-the-bill.md": (
+        "ADR 0025: The tokens and the bill",
+        "Why a run now states what it consumed, as two lines \u2014 the target's "
+        "and the judge's \u2014 and why the totals leave the perimeter while the "
+        "per-call counts stay with the answer they belong to.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
