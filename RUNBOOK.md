@@ -91,14 +91,14 @@ Two neighbours of the same failure:
 
 ## Translations
 
-The six presentation pages (`docs/index.md`, `start`, `why`, `about`, `contact`, `agents`) and the catalog (`i18n/en.yml`) are translated into Italian, German and Spanish by `.github/workflows/translate.yml`, which runs `tools/translate.py`. Its docstring has how a translation is made and checked; this is what happens around it.
+The six presentation pages (`docs/index.md`, `start`, `why`, `about`, `contact`, `agents`), the catalog (`i18n/en.yml`) and the Handbook's nine pages (`docs/handbook/`) are translated into Italian, German and Spanish by `.github/workflows/translate.yml`, which runs `tools/translate.py`. Its docstring has how a translation is made and checked; this is what happens around it. The presentation pages and the catalog follow every push; the Handbook is translated by hand (below).
 
-**What starts a run.** A push to `main` that touches one of those pages, `i18n/en.yml`, or a template that writes catalog words (`overrides/home.html`, `404.html`, `partials/header.html`, `footer.html`, `opening.html`, `closing.html`). The Plan job asks `tools/translate.py --plan` what is behind English on `main` as it is: nothing, and the run stops there — no call, no pull request opened or touched. Otherwise only what changed is translated: an English sentence changed in `about.md` costs three pages, not fifteen. One run at a time; a newer push replaces a pending run, never the one in progress. The bot's own merges touch only `docs/<lang>/` and `i18n/<lang>.yml`, which start nothing.
+**What starts a run.** A push to `main` that touches one of those pages, `i18n/en.yml`, or a template that writes catalog words (`overrides/home.html`, `404.html`, `partials/header.html`, `footer.html`, `opening.html`, `closing.html`). The Plan job asks `tools/translate.py --plan` what is behind English on `main` as it is: nothing, and the run stops there — no call, no pull request opened or touched. Otherwise only what changed is translated: an English sentence changed in `about.md` costs three pages, not fifteen. One run at a time; a newer push replaces a pending run, never the one in progress. The bot's own merges touch only `docs/<lang>/` and `i18n/<lang>.yml`, which start nothing. `docs/handbook/` is not among the paths either: a change to the Handbook's English starts nothing and costs nothing.
 
-**What it produces.** A commit by `digline-translation-bot[bot]` on `i18n/auto`, rewritten on top of `main` at every run, and a pull request into `main` (opened, or updated if one is open) whose description is the run's report: what was translated or skipped, the checks, the reading of meaning, the calques noted, tokens and cost. docs.yml runs on it like on any other.
+**What it produces.** A commit by `digline-translation-bot[bot]` on `i18n/auto` — on `i18n/auto-<lang>` for a run of one language, so that one run per language is one pull request per language, and a later run never rewrites an earlier one's branch before it is merged — rewritten on top of `main` at every run, and a pull request into `main` (opened, or updated if one is open) whose description is the run's report: what was translated or skipped, the checks, the reading of meaning, the calques noted, tokens and cost. docs.yml runs on it like on any other.
 
 - **No page needs attention**: the run enables auto-merge with a merge commit. The ruleset on `main` requires the Build check, so the pull request merges itself when Build is green, and the push deploys.
-- **A page needs attention** (an error of meaning still there after the correction round): no auto-merge, the label `translation: needs attention`, and the report in the description says which page, the English, the translation and why. A person reads it and either pushes a fix onto `i18n/auto` and merges by hand once Build is green (before any other run, which would rewrite the branch), or closes the pull request and corrects on `main` as below.
+- **A page needs attention** (an error of meaning still there after the correction round): no auto-merge, the label `translation: needs attention`, and the report in the description says which page, the English, the translation and why. A person reads it and either pushes a fix onto its branch and merges by hand once Build is green (before any other run, which would rewrite the branch), or closes the pull request and corrects on `main` as below.
 
 A page whose translation failed the checks twice is not written, and the job fails; what passed is still proposed.
 
@@ -108,9 +108,17 @@ A page whose translation failed the checks twice is not written, and the job fai
 
 **A run by hand.** From `main` only — the federation rule refuses any other ref:
 
-    gh workflow run translate.yml --ref main -f langs=it,de,es -f pages=index,start,why,about,contact -f dry_run=false -f max_cost=12
+    gh workflow run translate.yml --ref main -f langs=it,de,es -f pages=index,start,why,about,contact,agents -f dry_run=false -f max_cost=12
 
 `dry_run` defaults to true: the translations, the report and the bill go to the run's artifact, nothing to `docs/` or a pull request.
+
+**The Handbook, by hand.** One language per run — nine pages fit a run's time and its 12 USD, three languages do not — and a pull request per language on `i18n/auto-<lang>`:
+
+    gh workflow run translate.yml --ref main -f langs=it -f pages=handbook -f dry_run=false -f max_cost=12
+
+`pages=handbook` is the nine; a single page is `handbook/02-cases`. `uv run tools/translate.py --plan --langs it --pages handbook` says first what the run would translate, and `--summary` says, per language, how many of the Handbook's pages are translated and how many of those are behind the English. docs.yml writes that summary into every build's run summary ("The Handbook's translations"), so a Handbook fallen behind is seen without a run: its pages keep the stale notice meanwhile, and `tools/check-translations.py` reports them and does not compare them, never fails on them.
+
+**Renumbering or renaming a Handbook chapter.** A translation stands at its original's path and its links reach the English pages by path (`tools/translation.py`, `relink()`), so a `git mv` of `docs/handbook/<chapter>.md` is also a `git mv` of `docs/<lang>/handbook/<chapter>.md` in every language that has it — with its `translation_of` and `source` set to the new path — and the relative links to it in every translation change with it, in the same pull request. Otherwise the build stops — a translation whose `translation_of` names a page the build does not have, or a link to a file that is not there — which is the point: nothing reaches `main` half-renamed. A renumbering changes the English text too (the `# 4.` of its title, the "chapter 4" of its neighbours), so the translations are then behind their originals, and the next run by hand brings them up to date.
 
 **The spending limit.** Per run. By hand, the `max_cost` input (12 USD by default); after a push, 12 USD, set by `MAX_COST` in the Translate step of `translate.yml`; locally, `DEFAULT_MAX_COST` in `tools/translate.py`. The log has the estimate before the first call, and the run stops before the call that would pass the limit.
 

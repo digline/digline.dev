@@ -42,6 +42,11 @@ quantified statements kept at their strength ("most" is not "almost all").
 --plan prints what a run would translate, as JSON, and calls nothing:
 translate.yml starts no run when there is nothing.
 
+--summary prints, for the Handbook, which is translated by hand and never on
+a push, one line per language: how many of its pages are translated, and how
+many of those are behind the English. docs.yml writes it into every build's
+summary, so a Handbook that has fallen behind is seen without a run.
+
 ── the model and the bill ───────────────────────────────────────────────────
 claude-opus-5 for both calls, adaptive thinking, structured JSON output, and
 server-side fallbacks ("default"): a request the model declines is run again
@@ -78,6 +83,7 @@ a second run skips what the first translated.
            tools/translate.py --langs it --pages handbook/02-cases
                               --out DIR [--dry-run] [--existing DIR] [--max-cost 12]
            tools/translate.py --langs it,de,es --pages ... --plan
+           tools/translate.py --summary
            tools/translate.py --selftest
 
 --selftest makes no network call: a fake model and, where it needs one, a fake
@@ -960,6 +966,22 @@ def plan(root: str, langs: list[str], pages: list[str]) -> dict:
     return {"work": bool(catalogs or changed), "catalogs": catalogs, "pages": changed}
 
 
+def summary(root: str, langs: list[str] = list(languages.LANGUAGES)) -> str:
+    """The Handbook's translations, one Markdown line per language: how many of
+    its pages are translated, and how many of those are behind the English."""
+    names = PAGE_GROUPS["handbook"]
+    lines = []
+    for lang in langs:
+        states = [page_plan(root, lang, PAGE_FILES[name]) for name in names]
+        translated = sum(state != "new" for state in states)
+        behind = [name for name, state in zip(names, states) if state == "changed"]
+        line = f"- Handbook, {lang}: {translated} of {len(names)} page(s) translated"
+        if translated:
+            line += f", {len(behind)} behind the English" + (f" ({', '.join(behind)})" if behind else "")
+        lines.append(line)
+    return "\n".join(lines) + "\n"
+
+
 def write_out(translator: Translator, out: str) -> None:
     """Every translation the copy now holds, for the languages run: what this
     run translated and what it carried over unchanged."""
@@ -994,6 +1016,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--out")
     parser.add_argument("--plan", action="store_true",
                         help="print what would be translated, as JSON, and call nothing")
+    parser.add_argument("--summary", action="store_true",
+                        help="print the Handbook's translations and how many are behind the English, and call nothing")
     parser.add_argument("--existing")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--max-cost", type=float, default=DEFAULT_MAX_COST)
@@ -1005,6 +1029,9 @@ def main(argv: list[str]) -> int:
         parser.error(f"not a language or a page: {', '.join(wrong)}")
     if args.plan:
         print(json.dumps(plan(ROOT, langs, pages)))
+        return 0
+    if args.summary:
+        print(summary(ROOT, langs), end="")
         return 0
     if not args.out:
         parser.error("--out is required, except with --plan")
@@ -1369,6 +1396,15 @@ def selftest() -> int:
                 expect("a second run over the first one's output: nothing to translate, no call",
                        ([(o.subject, o.status) for o in rerun.outcomes], len(again.prompts)),
                        ([("i18n/it.yml", "unchanged"), ("docs/it/why.md", "unchanged")], 0))
+                expect("the summary over the first run's output: the chapter translated and up to date",
+                       summary(second.root, ["it", "de"]).splitlines(),
+                       ["- Handbook, it: 1 of 9 page(s) translated, 0 behind the English",
+                        "- Handbook, de: 0 of 9 page(s) translated"])
+                with open(second.path("docs", "handbook", "03-ground-truth.md"), "a", encoding="utf-8") as fh:
+                    fh.write("\nOne more sentence in English.\n")
+                expect("the summary after the English chapter changed: behind, and named",
+                       summary(second.root, ["it"]),
+                       "- Handbook, it: 1 of 9 page(s) translated, 1 behind the English (handbook/03-ground-truth)\n")
                 # One English sentence changed: the plan has that page, in that language, and nothing else.
                 with open(second.path("docs", "why.md"), "a", encoding="utf-8") as fh:
                     fh.write("\nOne more sentence.\n")

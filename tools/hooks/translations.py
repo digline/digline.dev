@@ -1055,7 +1055,8 @@ def selftest() -> int:
         groups = {"index.md": {"it": "it/index.md"}, "why.md": {"it": "it/why.md", "de": "de/why.md"},
                   "about.md": {"it": "it/about.md"}, "handbook/index.md": {"it": "it/handbook/index.md"},
                   "handbook/02-cases.md": {"it": "it/handbook/02-cases.md"},
-                  "handbook/03-ground-truth.md": {"it": "it/handbook/03-ground-truth.md"}}
+                  "handbook/03-ground-truth.md": {"it": "it/handbook/03-ground-truth.md"},
+                  "handbook/08-for-teams-building-for-others.md": {"it": "it/handbook/08-for-teams-building-for-others.md"}}
 
         def links(path):
             head = _Head()
@@ -1123,6 +1124,11 @@ def selftest() -> int:
         expect("no pager on the Italian Handbook index, as on the English one",
                (pager(it_index), pager(_read(site, "handbook/index.html"))), (None, None))
         expect("no pager on an Italian presentation page", pager(it_why), None)
+        expect("the Italian chapter 8's pager stops at the end of the Handbook; the English one goes on to the Guide",
+               (pager(_read(site, "it/handbook/08-for-teams-building-for-others/index.html")),
+                [side for side, *_ in pager(_read(site, "handbook/08-for-teams-building-for-others/index.html"))],
+                pager(_read(site, "handbook/08-for-teams-building-for-others/index.html"))[-1][-1]),
+               ([("prev", "../../../handbook/07-maintenance/", "Previous", "EN", "7. Maintenance")], ["prev", "next"], "Guide"))
         expect("the pager's label, from the catalog, on an English chapter and an Italian one",
                ['aria-label="Previous and next"' in _read(site, p) for p in
                 ("handbook/03-ground-truth/index.html", "it/handbook/03-ground-truth/index.html")], [True, True])
@@ -1151,14 +1157,15 @@ def selftest() -> int:
                 ("../../../handbook/04-checks/", "4. Checks EN"), ("../../../handbook/05-the-judge/", "5. The judge EN"),
                 ("../../../handbook/06-the-reference/", "6. The reference EN"),
                 ("../../../handbook/07-maintenance/", "7. Maintenance EN"),
-                ("../../../handbook/08-for-teams-building-for-others/", "8. For teams building for others EN"),
+                ("../08-for-teams-building-for-others/", short_title(open(os.path.join(
+                    root, "docs", "it", "handbook", "08-for-teams-building-for-others.md"), encoding="utf-8").read())),
                 ("../../about/", links_title("it/about.md")), ("../../../product/guide/", "Documentation, in English")])
         titles_seen = [t for h, t, a, e in it_drawer if "#" not in h]
         expect("the Italian chapter 3's drawer: Italian pages, the Handbook whole, the English docs last",
                (titles_seen[-1].endswith("EN"), any(t.startswith("1. What you are actually shipping") and t.endswith("EN") for t in titles_seen),
                 [a for h, t, a, e in it_drawer if a], len([t for t in titles_seen if t.endswith("EN")]),
                 any("How digline compares" in t for t in titles_seen)),
-               (False, True, [True], 6, False))
+               (False, True, [True], 5, False))
         expect("the Italian chapter 3's drawer: itself current, under its title up to the colon, the chapter 2 translated",
                ([t for h, t, a, e in it_drawer if a], chapter_2 in titles_seen),
                ([short_title(open(os.path.join(root, "docs", "it", "handbook", "03-ground-truth.md"), encoding="utf-8").read())],
@@ -1281,7 +1288,7 @@ def selftest() -> int:
         expect("the translations in the sitemap",
                sorted(re.findall(r"<loc>https://digline\.dev/((?:it|de)/[^<]*)</loc>", sitemap)),
                ["de/why/", "it/", "it/about/", "it/handbook/", "it/handbook/02-cases/", "it/handbook/03-ground-truth/",
-                "it/why/"])
+                "it/handbook/08-for-teams-building-for-others/", "it/why/"])
 
         for script in ("check-llms.py", "check-translate.py", "check-sitemap.py", "check-glyphs.py", "check-bar.py"):
             run = subprocess.run([sys.executable, os.path.join(root, "tools", script), site],
@@ -1292,13 +1299,13 @@ def selftest() -> int:
 
         problems, counted = check_site(site, groups, SITE_URL)
         expect("the post-build check on the built fixture", problems, [])
-        expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2 + 3 * (2 * 3))
+        expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2 + 4 * (2 * 3))
 
-        # The language menu: on the thirteen pages with alternatives — seven
-        # presentation pages, six of the Handbook — with the languages each
+        # The language menu: on the fifteen pages with alternatives — seven
+        # presentation pages, eight of the Handbook — with the languages each
         # exists in, and on no other page.
         expect("language menus and their entries counted", (counted["menus"], counted["entries"]),
-               (13, 3 * 3 + 2 * 2 + 2 * 2 + 6 * 2))
+               (15, 3 * 3 + 2 * 2 + 2 * 2 + 8 * 2))
         de_why = links("de/why/index.html")
         expect("the German Why's menu: its summary", tuple(de_why.summary), ("Sprache: Deutsch", "DE"))
         expect("the German Why's menu: its entries", [tuple(e) for e in de_why.entries],
@@ -1588,11 +1595,11 @@ def selftest() -> int:
     if failures:
         return 1
     print("translations selftest: refusals on front matter; the fixture builds with --strict — hreflang on "
-          "the six translated pages and their seven translations and on nothing else, their languages, the "
+          "the seven translated pages and their eight translations and on nothing else, their languages, the "
           "bar, the footer and the closing band on a translation, the Handbook's index and chapter 3 in Italian "
           "with their links, their <html lang>, the bar's current entry and the pager, out of search and llms.txt, in the "
           "sitemap, and check-llms, check-translate, check-sitemap, check-glyphs and check-bar pass on it; the "
-          "language menu on the thirteen pages with alternatives, the Handbook's six included, right, and on "
+          "language menu on the fifteen pages with alternatives, the Handbook's eight included, right, and on "
           "no other; tamperings refused; a translation with no description stops the build")
     return 0
 

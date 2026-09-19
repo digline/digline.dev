@@ -7,17 +7,25 @@ name: translate
 # bill to an artifact. tools/translate.py has the rest.
 #
 # It runs on its own after a push to main that touches what it translates —
-# the five English pages, i18n/en.yml, the templates that write catalog words —
-# as a real run of every language and page; and by hand (workflow_dispatch),
-# as a dry run or a real one. A push's run, or a real run by hand, first asks
+# the six presentation pages, i18n/en.yml, the templates that write catalog
+# words — as a real run of every language and those pages; and by hand
+# (workflow_dispatch), as a dry run or a real one. The Handbook is translated
+# by hand only: its nine pages are not among the paths below, so a change to
+# its English, a front matter or a renumbering included, starts nothing and
+# costs nothing. Each build of the site says how far behind it is
+# (docs.yml, tools/translate.py --summary); a run by hand asks for it with
+# pages=handbook, or a chapter by name. A push's run, or a real run by hand, first asks
 # tools/translate.py --plan what there is to translate on main as it is now: when
 # nothing, no job runs, no token is exchanged, no pull request is opened or
 # touched. RUNBOOK.md has the procedure around it.
 #
 # A dry run stops there. A real run (dry_run false) also commits the
-# translations to the fixed branch i18n/auto, as the GitHub App, on top of main,
-# and opens a pull request into main with the report as its description — or
-# updates the one already open. The push and the pull request use the App's
+# translations to a fixed branch, as the GitHub App, on top of main, and opens a
+# pull request into main with the report as its description — or updates the
+# one already open. A run of one language has a branch and a pull request of its
+# own, i18n/auto-<lang>, so that three runs, one per language, are three pull
+# requests and a later one never rewrites an earlier one before it is merged;
+# a run of several languages uses i18n/auto. The push and the pull request use the App's
 # token, not GITHUB_TOKEN: what GITHUB_TOKEN pushes or opens starts no workflow,
 # and the pull request has to run docs.yml like any other. Nothing reaches main
 # but through that pull request.
@@ -43,6 +51,7 @@ name: translate
 on:
   push:
     branches: [main]
+    # Not docs/handbook/: the Handbook is translated by hand (above).
     paths:
       - docs/index.md
       - docs/start.md
@@ -65,7 +74,7 @@ on:
         type: string
         default: "it,de,es"
       pages:
-        description: "Pages, comma-separated: index, start, why, about, contact, agents"
+        description: "Pages, comma-separated: index, start, why, about, contact, agents; the Handbook as handbook (all nine) or handbook/02-cases"
         type: string
         default: "index,start,why,about,contact,agents"
       dry_run:
@@ -256,34 +265,49 @@ jobs:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           APP_SLUG: ${{ steps.app.outputs.app-slug }}
           REPOSITORY: ${{ github.repository }}
+          LANGS: ${{ inputs.langs || 'it,de,es' }}
         run: |
           set -euo pipefail
+          # One language: its own branch and pull request, and it may write only
+          # its own folder and catalog. Several: i18n/auto, and theirs.
+          langs=$(tr -d ' ' <<<"$LANGS")
+          if [[ "$langs" =~ ^(it|de|es)$ ]]; then
+            branch="i18n/auto-${langs}"
+            allowed="$langs"
+            title="Translations (${langs}): the pages asked for and the catalog"
+          else
+            branch="i18n/auto"
+            allowed="it|de|es"
+            title="Translations: the presentation pages and the catalog"
+          fi
           bot="${APP_SLUG}[bot]"
           id=$(gh api "/users/${bot}" --jq .id)
           git config user.name "$bot"
           git config user.email "${id}+${bot}@users.noreply.github.com"
           git add -A -- docs i18n
-          # Translations and catalogs only; anything else staged is a mistake.
-          if git diff --cached --name-only | grep -vE '^(docs/(it|de|es)/[^/]+\.md|i18n/(it|de|es)\.yml)$'; then
-            echo "::error::The run changed something other than translations (above)."
+          # Translations and catalogs only, of the languages asked for — a page
+          # at the root of a language's folder, or a Handbook page in its
+          # handbook/; anything else staged is a mistake.
+          if git diff --cached --name-only | grep -vE "^(docs/(${allowed})/(handbook/)?[^/]+\.md|i18n/(${allowed})\.yml)$"; then
+            echo "::error::The run changed something other than the translations it was asked for (above)."
             exit 1
           fi
           if git diff --cached --quiet; then
             echo "Nothing translated differs from main: no commit, no pull request."
             exit 0
           fi
-          git commit -q -m "Translate the presentation pages and the catalog" \
+          git commit -q -m "$title" \
             -m "Run ${GITHUB_SERVER_URL}/${REPOSITORY}/actions/runs/${GITHUB_RUN_ID}; the report is the pull request's description."
           # The branch is the bot's alone: each run rewrites it on top of main.
-          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git" HEAD:refs/heads/i18n/auto
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git" "HEAD:refs/heads/${branch}"
           body="$RUNNER_TEMP/translation/pr-body.md"
-          number=$(gh pr list --repo "$REPOSITORY" --head i18n/auto --base main --state open --json number --jq '.[0].number // empty')
+          number=$(gh pr list --repo "$REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')
           if [ -n "$number" ]; then
             gh pr edit "$number" --repo "$REPOSITORY" --body-file "$body"
             echo "Updated pull request #${number}" | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            url=$(gh pr create --repo "$REPOSITORY" --base main --head i18n/auto \
-              --title "Translations: the presentation pages and the catalog" --body-file "$body")
+            url=$(gh pr create --repo "$REPOSITORY" --base main --head "$branch" \
+              --title "$title" --body-file "$body")
             number=${url##*/}
             echo "Opened ${url}" | tee -a "$GITHUB_STEP_SUMMARY"
           fi

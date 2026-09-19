@@ -111,8 +111,15 @@
   title for a page that has not — marked, as every link from a translation to
   an English page is: lang="en" on the words, and the EN mark after them.
   "Previous", "Next" and the pager's label are the catalog's (i18n/<lang>.yml,
-  pager). Where there is no pager the band follows <main> directly, starting
-  where the pager would have started.
+  pager).
+
+  A translation's pager stays inside its original's group: the English
+  Handbook's last chapter leads on to the Guide, because Material reads the
+  whole nav as one list, and the translation's stops at chapter 8 — after it
+  there is another part of the site and another language, which its drawer's
+  last entry already offers. The English pages keep theirs as they are. Where
+  there is no pager the band follows <main> directly, starting where the pager
+  would have started.
 
   The closing band is the presentation pages' closing band with nothing in it:
   the same class, so the same ground and glow (chrome.css), faded into the body
@@ -130,16 +137,24 @@
   {%- set translated = page and page.meta and page.meta.translation_of %}
   {%- set top = here.ancestors[-1].title if here and here.ancestors else none %}
   {%- set in_sequence = here and top in sequences and not here.is_index %}
+  {%- set previous = here.previous_page if here else none %}
+  {%- set next = here.next_page if here else none %}
+  {%- if translated and previous and (previous.ancestors[-1].title if previous.ancestors else none) != top %}
+    {%- set previous = none %}
+  {%- endif %}
+  {%- if translated and next and (next.ancestors[-1].title if next.ancestors else none) != top %}
+    {%- set next = none %}
+  {%- endif %}
   <div class="dg-docfoot">
-  {%- if in_sequence and (here.previous_page or here.next_page) and "navigation.footer" in (config.theme.features or []) %}
+  {%- if in_sequence and (previous or next) and "navigation.footer" in (config.theme.features or []) %}
     <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="{{ 'pager.label' | t }}">
-      {%- if here.previous_page %}
-      {%- set title = titles.get(here.previous_page.file.src_uri) or here.previous_page.title %}
-      <a href="{{ here.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="{{ 'pager.previous' | t }}: {{ title | e }}">
+      {%- if previous %}
+      {%- set title = titles.get(previous.file.src_uri) or previous.title %}
+      <a href="{{ previous.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="{{ 'pager.previous' | t }}: {{ title | e }}">
         <div class="md-footer__button md-icon">{% include ".icons/material/arrow-left.svg" %}</div>
         <div class="md-footer__title">
           <span class="md-footer__direction">{{ "pager.previous" | t }}</span>
-          {%- if translated and here.previous_page.file.src_uri not in titles %}
+          {%- if translated and previous.file.src_uri not in titles %}
           {%- set head, last = (title.rsplit(" ", 1) if " " in title else ["", title]) %}
           <div class="md-ellipsis"><span lang="en">{{ head ~ " " if head }}</span><span class="dg-nowrap"><span lang="en">{{ last }}</span><span class="dg-en" aria-hidden="true">EN</span></span></div>
           {%- else %}
@@ -148,12 +163,12 @@
         </div>
       </a>
       {%- endif %}
-      {%- if here.next_page %}
-      {%- set title = titles.get(here.next_page.file.src_uri) or here.next_page.title %}
-      <a href="{{ here.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="{{ 'pager.next' | t }}: {{ title | e }}">
+      {%- if next %}
+      {%- set title = titles.get(next.file.src_uri) or next.title %}
+      <a href="{{ next.url | url }}" class="md-footer__link md-footer__link--next" aria-label="{{ 'pager.next' | t }}: {{ title | e }}">
         <div class="md-footer__title">
           <span class="md-footer__direction">{{ "pager.next" | t }}</span>
-          {%- if translated and here.next_page.file.src_uri not in titles %}
+          {%- if translated and next.file.src_uri not in titles %}
           {%- set head, last = (title.rsplit(" ", 1) if " " in title else ["", title]) %}
           <div class="md-ellipsis"><span lang="en">{{ head ~ " " if head }}</span><span class="dg-nowrap"><span lang="en">{{ last }}</span><span class="dg-en" aria-hidden="true">EN</span></span></div>
           {%- else %}

@@ -256,6 +256,14 @@ jobs:
           uv run tools/check-translations.py --selftest
           uv run tools/check-translations.py site
 
+      - name: The Handbook's translations, in the run's summary
+        # The Handbook is translated by hand, never on a push (translate.yml),
+        # so nothing starts a run when its English changes. This says, on every
+        # build, how many of its pages each language has and how many of those
+        # are behind the English (tools/translate.py --summary). Never a failure.
+        run: |
+          { echo "### The Handbook's translations"; echo; uv run tools/translate.py --summary; } | tee -a "$GITHUB_STEP_SUMMARY"
+
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.
       - uses: actions/upload-pages-artifact@v4
