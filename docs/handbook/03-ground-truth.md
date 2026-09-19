@@ -25,13 +25,13 @@ Choose cases for their shape instead: the crowded input, the empty one, the urge
 
 ## A label is not a judgment
 
-The Reddit judge asked its reader, each morning, what they did: `c` commented, `u` upvoted, Enter ignored. `ignored` became `skip` in the suite. Then the reader looked at nine threads they had ignored and the judge had marked `comment`, and found that on at least five the judge was right by its own rules. They had been ignored because it was the fourth thread that morning, or because the reader had already commented twice in that forum that day.
+The Reddit judge asked its reader, each morning, what they did with each thread: commented, upvoted, or ignored. `ignored` became `skip` in the suite. Then the reader looked at nine threads they had ignored and the judge had marked `comment`, and found that on at least five the judge was right by its own rules. They had been ignored because it was the fourth thread that morning, or because the reader had already commented twice in that forum that day.
 
 So `ignored` meant *the judge was wrong* and *no time*, and every case built on it was a reading of an answer that never said which. **Do not reinterpret it afterwards** — by date, by the judge's confidence, by what you must have meant. That is inventing an expected value on your own behalf. The old records stay ambiguous, and no new case is minted from them.
 
-The fix was made at the keyboard on 2026-09-16: `n` for *declined*, Enter for *deferred*. The key that empties a list of forty had to mean the value that claims nothing, or the ambiguous label would have been rebuilt under a new name in one morning. Enter wrote `ignored` from September 7 to 16. Those negatives cannot be recovered, and every later morning would have gone the same way.
+The fix is at the keyboard, and it has one constraint: the key that empties the morning's list has to mean the value that claims nothing — *deferred*, not *declined* — or the ambiguous label is rebuilt under a new name in one morning. The negatives written before the fix cannot be recovered.
 
-That split did not remove the ambiguity, because `declined` still asks what you *did*. A thread left because the reader had already commented twice in that forum is still a `declined`, still a negative. Removing it takes a question about the rule — not *did you comment?* but *should this have been a comment?* — and neither judge asks one. The only place in these systems that asks about the rule is the same author's monitoring loop, *would you have wanted to be woken?*, and nobody has answered it yet.
+That split does not remove the ambiguity, because `declined` still asks what you *did*. A thread left because the reader had already commented twice in that forum is still a `declined`, still a negative. Removing it takes a question about the rule — not *did you comment?* but *should this have been a comment?* — and neither judge asks one.
 
 ## Disagreement is the event
 
@@ -39,7 +39,7 @@ Rereading good outputs teaches you nothing and convinces you of a lot. The only 
 
 **The newsletter project is the counter-example**, and it is more useful than a success. Its reader is shown the items the judge scored 4 or 5, padded to five, and asked *which ones interest you? (enter = none)*. The only explicit answer is *yes*, and it can only be given to items the judge already chose. Unshown items have no label; 265 of 446 were never even scored. Enter is ambiguous. The one route to a disagreement — marking a padded low-scoring item — had been open sixteen times by September 6, and taken zero. The method yields **no capturable disagreement at all**, not because the reader never disagreed, but because it never asked where they could.
 
-The ground truth has to be a by-product of work the person already does. Both judges ask at the end of a morning the reader was having anyway. The monitoring loop's question is a separate command to run later, and its empty record is too young to explain — but that is the shape of a chore. In a product the person is not you, which is the hard case, and nothing here has solved it.
+The ground truth has to be a by-product of work the person already does. Both judges ask at the end of a morning the reader was having anyway; a question that is a separate command to run later is a chore. In a product the person is not you, which is the hard case, and nothing here has solved it.
 
 ## When the selection was never a datum
 
@@ -59,7 +59,7 @@ With the selection as data, most of what matters is stable across every possible
 
 ## Growth, and the honest limit
 
-Start from a few chosen forms. Let every failure in production become a case, and never delete one: a case that found a defect is a wall that holds, and removing it is the one way to learn what it was holding. The Reddit judge's exporter was changed on 2026-09-16 to append and never remove; the newsletter's still regenerates its file wholesale.
+Start from a few chosen forms. Let every failure in production become a case, and never delete one: a case that found a defect is a wall that holds, and removing it is the one way to learn what it was holding. The newsletter project's exporter does the opposite: it regenerates its file wholesale.
 
 Twenty cases do not tell you the system is correct. They tell you it has not got worse on twenty situations somebody judged representative. A regression gate, not a proof.
 

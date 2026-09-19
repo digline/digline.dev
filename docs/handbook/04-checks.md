@@ -29,7 +29,7 @@ Take the [newsletter judge](https://github.com/digline/brief). Its output is a s
 
 Those three catch the failures that actually happen in production: the model wrapping the JSON in prose, the model inventing a score of 0, the prompt growing until every call costs three times what it did. They catch them for free, deterministically, on every run. And when one of them fails, the error is unambiguous — nobody argues with "not valid JSON".
 
-Only after those comes the question that needs a judge — "does this score agree with what the reader wanted?" — and in the newsletter project even that one turned out to be answerable without a model, because the reader's own marks are recorded. The check is a ten-line comparison: *did the judge say ≥4 exactly when the reader marked it?* No second model, no noise from the check itself.
+Only after those comes the question that needs a judge — "does this score agree with what the reader wanted?" — and in the newsletter project even that one turned out to be answerable without a model, because the reader's own marks are recorded. The check is a fourteen-line comparison: *did the judge say ≥4 exactly when the reader marked it?* No second model, no noise from the check itself.
 
 The general shape: **every check you can make deterministic is one fewer source of noise between you and the answer.** A suite with five deterministic checks and one judge has one noisy signal to calibrate. A suite with six judges has six.
 
@@ -87,6 +87,6 @@ Five or six checks on twenty cases. It runs in a few minutes, costs cents, and i
 1. List the last five failures your feature produced. For each, ask: *could a regex, a schema or a counter have caught this?* Most of the time the answer is yes.
 2. Write those as deterministic checks first. Run them on your twenty cases. Some will fail today — that is the point.
 3. Only then write the one judged check for the question that genuinely needs a model. Give it a threshold and a tolerance. Sample it.
-4. If a judged check fails on a case, look at the reason before you look at the prompt. Half the time the case was mislabelled.
+4. If a judged check fails on a case, look at the reason before you look at the prompt. The case may be the thing that is wrong.
 
 The next chapter is about that one judged check: how much it wobbles, how to measure the wobble, and how to keep it from turning every Tuesday into a false alarm.
