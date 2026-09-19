@@ -27,11 +27,11 @@ A dashboard does not answer that. A dashboard shows today. The question is about
 
 ## The rule: the payload stays where it was born, the verdict travels
 
-Take one case in a recruiting tool: a candidate's CV goes in, a ranking comes out, and a judged check asks whether the ranking is justified. The run now contains three kinds of thing:
+Take an invented case in a recruiting tool, numbers included: a candidate's CV goes in, a ranking comes out, and a judged check asks whether the ranking is justified. The run now contains three kinds of thing:
 
 - **The verdict**: check name, pass or fail, score 0.81, threshold 0.70, tolerance, cost. Numbers about how the system behaved.
 - **The payload**: the CV, the ranking text, and the judge's *reason* — which quotes the CV to explain the score.
-- **The aggregate**: precision 0.74 across the set, 12 true positives, 4 false.
+- **The aggregate**: precision 0.75 across the set, 12 true positives, 4 false.
 
 The consultancy needs the first and the third to do its job. It has no right to the second, and no need for it. So the rule is mechanical: **a run that crosses the boundary between the customer and the consultancy is redacted first** — reasons removed, payload metadata removed, the verdicts and the numbers kept. Not as an option someone remembers to set on the export; as a property of the run itself, verified when the file is read, so that a document claiming to be redacted cannot contain a reason.
 
@@ -53,7 +53,7 @@ Two habits that make the report worth something:
 
 **One reference per delivery.** When the customer accepts a release, that acceptance is a promotion. The reference file records the state they accepted; the next report compares against it. "It got worse since you accepted it" is a sentence both sides can verify.
 
-**The aggregate in the contract.** With labelled cases, a suite has a number — precision 0.74 — stable enough to write down: *the classifier agrees with your reviewers on at least 70% of confirmed cases.* Set it where the system measurably is at acceptance, not where either side wishes it were. The threshold is the commitment; the comparison is how both sides watch it.
+**The aggregate in the contract.** With labelled cases, a suite has a number — precision 0.75, in the invented case above — stable enough to write down: *the classifier agrees with your reviewers on at least 70% of confirmed cases.* Set it where the system measurably is at acceptance, not where either side wishes it were. The threshold is the commitment; the comparison is how both sides watch it.
 
 ## What the consultancy keeps
 

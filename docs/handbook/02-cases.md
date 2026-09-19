@@ -20,15 +20,21 @@ That is all. For a support bot: a question a customer actually asked, and whethe
 {
   "id": "2026-08-24-controlling-reasoning-effort-in-llms",
   "vars": {
-    "source": "Ahead of AI",
-    "title": "Controlling reasoning effort in LLMs",
-    "summary": "…the first 400 characters of the article…"
+    "source": "Ahead of AI (Raschka)",
+    "title": "Controlling Reasoning Effort in LLMs",
+    "summary": "How LLMs Learn Low-, Medium-, and High-Effort Reasoning Modes"
   },
-  "expected": { "marked": true }
+  "expected": {
+    "marked": true
+  },
+  "metadata": {
+    "link": "https://magazine.sebastianraschka.com/p/controlling-reasoning-effort-in-llms",
+    "original_score": 4
+  }
 }
 ```
 
-Three fields. The `id` names it. The `vars` are what the system receives. The `expected` is what you know. You do not always know the exact right output — for a summary or a free-text answer, nobody does — but you always know *something*: it should mention X, it should not exceed N words, a person you trust rated it acceptable. Whatever you know goes in `expected`. Whatever you do not know, you leave out and check with something weaker.
+Three fields do the work. The `id` names it. The `vars` are what the system receives. The `expected` is what you know. The `metadata` is for whoever reads the case later — where the article came from, and the score the judge gave it that morning — and no check reads it. You do not always know the exact right output — for a summary or a free-text answer, nobody does — but you always know *something*: it should mention X, it should not exceed N words, a person you trust rated it acceptable. Whatever you know goes in `expected`. Whatever you do not know, you leave out and check with something weaker.
 
 ## Why the prompt gets all the attention and the cases get none
 
@@ -56,7 +62,7 @@ The habit that matters more than any tool: **one failure seen, one case written,
 
 ## How many, and which
 
-Twenty is enough to start. Not two hundred — you will never write two hundred, and twenty already turns a guess into a number. In the newsletter project, twenty-one cases were enough to measure the judge's noise, calibrate its sampling, evaluate four prompt versions and pick one with confidence.
+Twenty is enough to start. Not two hundred — you will never write two hundred, and twenty already turns a guess into a number. In the newsletter project, twenty-one cases were enough to measure the judge's noise across six runs, and to show that cutting how much of each article the judge reads, from 1,500 characters to 400, [made nothing worse](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml).
 
 What the twenty need:
 
@@ -64,9 +70,9 @@ What the twenty need:
 
 **The boring middle, not just the edges.** A suite of twenty pathological inputs tells you how the system fails under stress and nothing about how it behaves on Tuesday. Include ordinary ones — as a shape of their own, not as most of the set.
 
-**Stable inputs.** A case that fetches today's data is a different case tomorrow. Snapshot the input into the file. The newsletter project stores the article summary in the case, not a URL to re-fetch: the same twenty-one inputs, every run, for months.
+**Stable inputs.** A case that fetches today's data is a different case tomorrow. Snapshot the input into the file. The newsletter project stores the article summary in the case, not a URL to re-fetch: the same twenty-one inputs, every run, since August.
 
-**A label, if you can.** For anything that classifies — positive/negative, approve/reject, relevant/not — add the label. With labels, your suite gets an aggregate: *precision 0.62 across the set*, one number stable enough to put a threshold on, where individual cases wobble. Without labels you have twenty verdicts and no summary.
+**A label, if you can.** For anything that classifies — positive/negative, approve/reject, relevant/not — add the label. With labels, your suite gets an aggregate: *precision between 0.60 and 0.67 across six runs of the newsletter suite*, one number steady enough to put a threshold on, while single cases moved by three votes out of five. Without labels you have twenty verdicts and no summary.
 
 ## What cases are not
 

@@ -12,7 +12,7 @@ seo_title: >-
 
 Eight chapters on keeping an LLM feature under control, for people who have one
 in production and have not yet had the bad week. They are about the problem, not
-about the tool: nothing here needs digline installed, and almost all the numbers
+about the tool: nothing here needs digline installed, and most of the numbers
 come from one small public project you can go and read. Start at the first chapter
 and read them in order — each one leans on the one before it.
 
@@ -28,7 +28,7 @@ and read them in order — each one leans on the one before it.
   an output into a verdict, and the rule that saves the most time: use a model
   to judge only what nothing else can.
 - **[5. The judge](05-the-judge.md)** — the two noises, why you have to measure
-  the judge's before you can read your system's, and the forty-minute procedure
+  the judge's before you can read your system's, and the procedure
   that replaces guessing with a number.
 - **[6. The reference](06-the-reference.md)** — a threshold is not a reference.
   The one number you write down and agree to be measured against.

@@ -29,7 +29,7 @@ You can turn the temperature to zero and reduce the variation. You cannot remove
 
 **"Nothing changed, so it still works."** Your code did not change. The model behind the API did — providers update, retrain, deprecate, and re-point aliases without a changelog you will read. Your git history says the system is unchanged. Your users say it got worse. Both are right.
 
-**"It's above the threshold."** A threshold catches *below the line*. It does not catch *worse than last month*. A score that drifts from 0.91 to 0.78 is still above 0.7, still green, and thirteen points worse to the person receiving the answer.
+**"It's above the threshold."** A threshold catches *below the line*. It does not catch *worse than last month*. Take made-up numbers: a score that drifts from 0.91 to 0.78 is still above 0.7, still green, and thirteen points worse to the person receiving the answer.
 
 ## What you are actually shipping, then
 

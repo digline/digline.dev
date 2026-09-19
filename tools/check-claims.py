@@ -50,6 +50,7 @@ TIER_1 = (
     "nothing ever leaves",
     "no data ever leaves",
     "data never leaves",
+    "never sent anywhere",
 )
 
 TIER_2 = (
@@ -233,6 +234,10 @@ def selftest() -> int:
         ("tier 1 inside a registered quote still fails",
          {"docs/why.md": "The payload never leaves.\n"},
          [claim("The payload never leaves.")], False),
+        ("tier 1 about the judge's reasoning fails",
+         {"docs/handbook/04-checks.md": "It is never sent\nanywhere on your behalf.\n"}, [], False),
+        ("the reasoning written to the run passes",
+         {"docs/handbook/04-checks.md": "It is written to the run, next to the output.\n"}, [], True),
         ("a phrase inside a longer word does not match",
          {"docs/why.md": "Its metadata never leaves a trace.\n"}, [], True),
         ("tier 2 with no entry fails",
