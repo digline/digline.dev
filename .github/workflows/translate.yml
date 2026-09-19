@@ -25,7 +25,15 @@ name: translate
 # one already open. A run of one language has a branch and a pull request of its
 # own, i18n/auto-<lang>, so that three runs, one per language, are three pull
 # requests and a later one never rewrites an earlier one before it is merged;
-# a run of several languages uses i18n/auto. The push and the pull request use the App's
+# a run of several languages uses i18n/auto — unless it is asked for one pull
+# request per language (one_pr_per_language): then each language is a job of
+# its own, one after the other, with its own branch, pull request and
+# artifact, and a language that fails stops neither the others nor their pull
+# requests.
+#
+# auto_merge, on by default and always after a push, lets a pull request with
+# no page needing attention merge itself once Build is green. Unticked by hand,
+# every pull request of the run waits for a person, needing attention or not. The push and the pull request use the App's
 # token, not GITHUB_TOKEN: what GITHUB_TOKEN pushes or opens starts no workflow,
 # and the pull request has to run docs.yml like any other. Nothing reaches main
 # but through that pull request.
@@ -82,9 +90,17 @@ on:
         type: boolean
         default: true
       max_cost:
-        description: "Most this run may spend, in USD; the estimate is in the log before the first call"
+        description: "Most this run may spend, in USD — per language when one_pr_per_language; the estimate is in the log before the first call"
         type: number
         default: 12
+      one_pr_per_language:
+        description: "One job, branch and pull request per language, one after the other; a language that fails does not stop the others"
+        type: boolean
+        default: false
+      auto_merge:
+        description: "Merge by itself when no page needs attention; unticked, every pull request waits for a person"
+        type: boolean
+        default: true
 
 # GITHUB_TOKEN only reads: the branch and the pull request are written with the
 # App's token.
@@ -112,6 +128,9 @@ jobs:
       contents: read
     outputs:
       work: ${{ steps.plan.outputs.work }}
+      # The languages of each Translate job: every language on its own, or all
+      # of them in one.
+      matrix: ${{ steps.plan.outputs.matrix }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
@@ -130,8 +149,16 @@ jobs:
           LANGS: ${{ inputs.langs || 'it,de,es' }}
           PAGES: ${{ inputs.pages || 'index,start,why,about,contact,agents' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          PER_LANGUAGE: ${{ github.event_name == 'workflow_dispatch' && inputs.one_pr_per_language }}
         run: |
           set -euo pipefail
+          if [ "$PER_LANGUAGE" = "true" ]; then
+            matrix=$(jq -cn --arg l "$LANGS" '$l | gsub(" "; "") | split(",") | map(select(length > 0))')
+          else
+            matrix=$(jq -cn --arg l "$LANGS" '[$l | gsub(" "; "")]')
+          fi
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "Translate jobs: $matrix"
           plan=$(uv run tools/translate.py --plan --langs "$LANGS" --pages "$PAGES")
           echo "$plan"
           work=$(jq -r .work <<<"$plan")
@@ -142,13 +169,26 @@ jobs:
           echo "work=$work" >> "$GITHUB_OUTPUT"
 
   translate:
-    name: Translate
+    name: Translate (${{ matrix.langs }})
     needs: plan
     if: needs.plan.outputs.work == 'true'
     runs-on: ubuntu-latest
-    # Three languages of five pages and a catalog, each built and checked after
-    # every answer: the first run took four and a half minutes for one page.
+    # One job per language, one after the other, when a run is asked for one
+    # pull request per language; one job for all of them otherwise. A job that
+    # fails leaves the others running (fail-fast off).
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        langs: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    # Each job: its languages, each page built and checked after every answer.
+    # The first run took four and a half minutes for one page; a Handbook
+    # chapter in one language, 2'11" (2026-09-19).
     timeout-minutes: 120
+    env:
+      # Where this job's translations, report and bill are kept: one artifact
+      # per language when the run has one job per language.
+      ARTIFACT: ${{ inputs.one_pr_per_language && format('translation-{0}', matrix.langs) || 'translation' }}
     steps:
       # fetch-depth: 0 — a translation records the commit of its original, and
       # its notice is dated by it: the copy the checks build needs the history.
@@ -191,10 +231,14 @@ jobs:
               const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
                 owner: context.repo.owner, repo: context.repo.repo, run_id: run.id,
               });
-              if (artifacts.data.artifacts.some(a => a.name === 'translation' && !a.expired)) {
-                core.info(`Starting from run ${run.id} (${run.html_url})`);
-                core.setOutput('run_id', String(run.id));
-                return;
+              // This job's own artifact name first, then a run of every language.
+              for (const name of [process.env.ARTIFACT, 'translation']) {
+                if (artifacts.data.artifacts.some(a => a.name === name && !a.expired)) {
+                  core.info(`Starting from run ${run.id}, artifact ${name} (${run.html_url})`);
+                  core.setOutput('run_id', String(run.id));
+                  core.setOutput('name', name);
+                  return;
+                }
               }
             }
             core.info('No earlier successful run with translations: starting from the repository');
@@ -203,16 +247,16 @@ jobs:
         if: steps.previous.outputs.run_id != ''
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          name: translation
+          name: ${{ steps.previous.outputs.name }}
           path: ${{ runner.temp }}/previous
           run-id: ${{ steps.previous.outputs.run_id }}
           github-token: ${{ github.token }}
 
       - name: Translate
         env:
-          LANGS: ${{ inputs.langs || 'it,de,es' }}
+          LANGS: ${{ matrix.langs }}
           PAGES: ${{ inputs.pages || 'index,start,why,about,contact,agents' }}
-          # The spending limit of a run: the input by hand, 12 USD after a push.
+          # The spending limit of a job: the input by hand, 12 USD after a push.
           MAX_COST: ${{ inputs.max_cost || 12 }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
           ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORG_ID }}
@@ -258,14 +302,14 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
 
-      - name: Commit to i18n/auto and open the pull request
+      - name: Commit to its branch and open the pull request
         id: pr
         if: ${{ !cancelled() && steps.app.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           APP_SLUG: ${{ steps.app.outputs.app-slug }}
           REPOSITORY: ${{ github.repository }}
-          LANGS: ${{ inputs.langs || 'it,de,es' }}
+          LANGS: ${{ matrix.langs }}
         run: |
           set -euo pipefail
           # One language: its own branch and pull request, and it may write only
@@ -322,10 +366,20 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           NUMBER: ${{ steps.pr.outputs.number }}
           LABEL: "translation: needs attention"
+          # Off only by hand: after a push it is always on.
+          AUTO_MERGE: ${{ github.event_name != 'workflow_dispatch' || inputs.auto_merge }}
         run: |
           set -euo pipefail
           attention=$(jq -r .needs_attention "$RUNNER_TEMP/translation/summary.json")
-          if [ "$attention" = "0" ]; then
+          if [ "$AUTO_MERGE" != "true" ]; then
+            gh pr merge "$NUMBER" --repo "$REPOSITORY" --disable-auto >/dev/null 2>&1 || true
+            if [ "$attention" = "0" ]; then
+              gh pr edit "$NUMBER" --repo "$REPOSITORY" --remove-label "$LABEL" >/dev/null 2>&1 || true
+            else
+              gh pr edit "$NUMBER" --repo "$REPOSITORY" --add-label "$LABEL"
+            fi
+            echo "Auto-merge off for this run: #${NUMBER} waits for a person (${attention} page(s) need attention)." | tee -a "$GITHUB_STEP_SUMMARY"
+          elif [ "$attention" = "0" ]; then
             gh pr edit "$NUMBER" --repo "$REPOSITORY" --remove-label "$LABEL" >/dev/null 2>&1 || true
             gh pr merge "$NUMBER" --repo "$REPOSITORY" --auto --merge
             echo "No page needs attention: #${NUMBER} merges itself once Build is green." | tee -a "$GITHUB_STEP_SUMMARY"
@@ -339,6 +393,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: translation
+          name: ${{ env.ARTIFACT }}
           path: ${{ runner.temp }}/translation
           if-no-files-found: warn

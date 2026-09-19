@@ -112,9 +112,15 @@ A page whose translation failed the checks twice is not written, and the job fai
 
 `dry_run` defaults to true: the translations, the report and the bill go to the run's artifact, nothing to `docs/` or a pull request.
 
-**The Handbook, by hand.** One language per run — nine pages fit a run's time and its 12 USD, three languages do not — and a pull request per language on `i18n/auto-<lang>`:
+**The Handbook, by hand.** One language per job — nine pages fit a job's time and its 12 USD, three languages in one job do not — and a pull request per language on `i18n/auto-<lang>`. One language:
 
     gh workflow run translate.yml --ref main -f langs=it -f pages=handbook -f dry_run=false -f max_cost=12
+
+All three in one dispatch, one job after the other, each with its own branch, pull request and artifact (`translation-<lang>`), a language that fails leaving the others running, and every pull request left open for a person to read (`auto_merge=false`) even when no page needs attention:
+
+    gh workflow run translate.yml --ref main -f langs=it,de,es -f pages=handbook -f one_pr_per_language=true -f auto_merge=false -f dry_run=false -f max_cost=12
+
+`max_cost` is then per language.
 
 `pages=handbook` is the nine; a single page is `handbook/02-cases`. `uv run tools/translate.py --plan --langs it --pages handbook` says first what the run would translate, and `--summary` says, per language, how many of the Handbook's pages are translated and how many of those are behind the English. docs.yml writes that summary into every build's run summary ("The Handbook's translations"), so a Handbook fallen behind is seen without a run: its pages keep the stale notice meanwhile, and `tools/check-translations.py` reports them and does not compare them, never fails on them.
 
