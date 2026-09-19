@@ -5,8 +5,11 @@
   latest release on every page load, from the reader's browser, and this site
   asks that of no one. The counter in `partials/analytics.html` is the only
   outside request there is.
+
+  Its title is Material's own words for it, in the page's language
+  (partials/language.html): "Go to repository", "Apri repository".
 -#}
-<a href="{{ config.repo_url }}" title="Go to repository" class="md-source">
+<a href="{{ config.repo_url }}" title="{{ lang.t('source') }}" class="md-source">
   <div class="md-source__icon md-icon">
     {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
     {% include ".icons/" ~ icon ~ ".svg" %}

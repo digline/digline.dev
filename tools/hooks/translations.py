@@ -37,6 +37,45 @@ Only the presentation pages: on a documentation page — the Handbook — that
 slot of the bar holds search, and the bar is the same on every page
 (tools/check-bar.py), so its other languages are said elsewhere.
 
+── previous and next on a translation (on_files, on_nav, on_page_context) ────
+A translation is not in the nav (not_in_nav), so it has no place of its own
+in a sequence. overrides/main.html gives it its original's: the same previous
+and next, which localize() below then sends to their
+translations where they exist. What the template cannot know is what those
+pages are called in the page's language, so each translation of a page read
+in order gets ``page.meta.pager_titles``: the English source path of every
+page translated into its language → its title there. That title is the
+translation's <h1> up to its first colon — "2. Casi", not the whole of "2. Casi:
+l'asset che nessuno costruisce" — because that is how the English names its
+pages in the nav, and the build fails on a Handbook chapter whose nav title is
+not its <h1> up to the colon (on_nav): the rule is read off the English, not
+assumed. A page with no translation in the language keeps its English title,
+marked lang="en".
+
+── the drawer and the sidebar on a translation (on_page_context) ─────────────
+Material draws the site's nav in the drawer, and on a wide screen the part of
+it the page is in, in the sidebar; for a translation that is 93 English
+entries. So a translation of a Handbook page gets ``page.meta.translation_nav``
+instead, and overrides/partials/nav.html draws it with Material's own macro:
+the pages translated into its language, in the nav's order, under their own
+titles; the Handbook whole — each chapter under its translated title, or in
+English, marked EN, until it is translated — open, the page itself current,
+with its table of contents; and last, the documentation, which is English,
+which its words say. A page translated tomorrow is in it the day it is, with nothing to
+change: the tree is read from the translations there are.
+
+The same pages, English and translated, get ``page.meta.language_links``: the
+line under the title (overrides/partials/opening.html) that a documentation
+page has in place of the bar's language menu — every other language the page
+exists in, each as languages.READ_IN says it in that language, hreflang and
+lang on each link. On a translation English is left out: its notice already
+leads to the original.
+
+Wherever a link leaves the page's language for English — an entry of that
+tree, the pager's previous or next — its title says so: lang="en" on the
+words, and the EN mark after them, which the reader sees and a screen reader
+does not read (the link's lang says it).
+
 ── the ids of a translation's headings (on_page_content, on_page_context) ───
 A link written for an English page's section — /why/#a-prompt-is-not-code —
 leads, once sent to the translation, to the same section. A translation up to
@@ -123,6 +162,7 @@ from html.parser import HTMLParser
 from urllib.parse import unquote, urljoin, urlsplit
 
 import yaml
+from markupsafe import Markup, escape
 from mkdocs.exceptions import PluginError
 
 TOOLS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -217,6 +257,19 @@ def language_switch(links: list[dict[str, str]], lang: str, site_url: str) -> di
 
 # original → {language → translation}, for the originals that have any.
 _groups: dict[str, dict[str, str]] = {}
+# language → {original → the short title of its translation}: the pager's words.
+_titles: dict[str, dict[str, str]] = {}
+
+_H1 = re.compile(r"(?m)^# +(.+?)\s*#*\s*$")
+
+
+def short_title(markdown: str) -> str | None:
+    """A page's <h1>, from its Markdown, up to its first colon: what the nav
+    calls a chapter. None for a page with no # heading."""
+    found = _H1.search(markdown)
+    if not found:
+        return None
+    return found.group(1).split(":", 1)[0].strip()
 
 
 def translations_in(files) -> dict[str, dict[str, str]]:
@@ -244,7 +297,123 @@ def on_files(files, config, **kwargs):
     _behind.clear()
     _groups.clear()
     _groups.update(translations_in(files))
+    _titles.clear()
+    sources = {f.src_uri: f for f in files.documentation_pages()}
+    for original, group in _groups.items():
+        for lang, src_uri in group.items():
+            with open(sources[src_uri].abs_src_path, encoding="utf-8") as fh:
+                text = fh.read()
+            # Its own title: a presentation page's title:, a Handbook page's
+            # <h1> up to the colon.
+            title = str(front_matter(sources[src_uri].abs_src_path).get("title") or "").strip() or short_title(text)
+            if title:
+                _titles.setdefault(lang, {})[original] = title
     return files
+
+
+class Current:
+    """The page itself, in its translation's drawer: Material's macro knows it
+    for the page (== page) and draws it current, with its table of contents,
+    under its title up to the colon, as the other entries are."""
+
+    def __init__(self, page, title):
+        self._page = page
+        self.title = title
+
+    def __getattr__(self, name):
+        return getattr(self._page, name)
+
+    def __eq__(self, other):
+        return other is self._page or other is self
+
+    def __hash__(self):
+        return hash(self._page)
+
+
+def language_links(links: list[dict[str, str]], lang: str, site_url: str) -> list[dict[str, str]]:
+    """The line under a Handbook page's title: the other languages it exists in,
+    English left out of a translation's, from its hreflang links."""
+    base = site_url.rstrip("/") + "/"
+    return [{"lang": link["lang"], "path": link["href"][len(base):], "text": languages.READ_IN[link["lang"]]}
+            for link in links
+            if link["lang"] not in (X_DEFAULT, lang) and not (lang != languages.ORIGINAL and link["lang"] == languages.ORIGINAL)]
+
+
+class NavEntry:
+    """What Material's partials/nav-item.html reads of an item of the nav, for
+    the tree a translation's drawer is drawn from: a page (url), or a section
+    (children), open when it holds the page."""
+
+    def __init__(self, title, url=None, children=None, active=False, is_index=False):
+        self.title = title
+        self.url = url
+        self.children = children
+        self.active = active
+        self.is_index = is_index
+        self.is_page = children is None
+        self.is_section = children is not None
+        self.is_link = False
+        self.meta = {}
+        self.typeset = None
+        self.encrypted = False
+        self.pages = None
+
+
+def english(title: str) -> Markup:
+    """A title that leads to an English page, from a page in another language:
+    the words marked English, and the mark the reader sees, held to the last
+    word (.dg-nowrap) so that a title that wraps never leaves it alone on a
+    line. overrides/main.html writes the pager's the same way."""
+    head, _, last = str(title).rpartition(" ")
+    return Markup('<span lang="en">{}</span><span class="dg-nowrap"><span lang="en">{}</span>'
+                  '<span class="dg-en" aria-hidden="true">EN</span></span>').format(head + " " if head else "", last)
+
+
+def translation_nav(nav, page, lang: str) -> list[NavEntry]:
+    """The tree of a translation's drawer: the module's docstring."""
+    translated = {original: group[lang] for original, group in _groups.items() if lang in group}
+    titles = _titles.get(lang, {})
+    here = page.meta.get("translation_of")
+    tree: list[NavEntry] = []
+    for item in nav.items:
+        if item.is_page and item.file.src_uri in translated:
+            original = item.file.src_uri
+            tree.append(NavEntry(titles.get(original) or item.title, languages.page_url(translated[original])))
+        elif item.is_section and any(child.is_page and child.file.src_uri in languages.HANDBOOK_PAGES
+                                     for child in item.children):
+            children = []
+            for child in item.children:
+                original = child.file.src_uri
+                if original == here:
+                    children.append(Current(page, titles.get(original) or page.title))
+                elif original in translated:
+                    children.append(NavEntry(titles.get(original) or child.title,
+                                             languages.page_url(translated[original]), is_index=child.is_index))
+                else:
+                    children.append(NavEntry(english(child.title), child.url, is_index=child.is_index))
+            tree.append(NavEntry(catalog.t("bar.handbook", lang=lang), children=children,
+                                 active=any(isinstance(child, Current) for child in children)))
+    # Its words say it is English; no mark after them.
+    tree.append(NavEntry(catalog.t("nav.english_docs", lang=lang), "product/guide/"))
+    return tree
+
+
+def on_nav(nav, config, files, **kwargs):
+    """The rule the pager's titles rest on, held to the English: every Handbook
+    chapter's nav title is its <h1> up to the colon."""
+    problems = []
+    for page in nav.pages:
+        src_uri = page.file.src_uri
+        if src_uri not in languages.HANDBOOK_PAGES or not page.title:
+            continue
+        with open(page.file.abs_src_path, encoding="utf-8") as fh:
+            short = short_title(fh.read())
+        if short != page.title:
+            problems.append(f"{src_uri}: its nav title is {page.title!r} and its <h1> up to the colon {short!r} — "
+                            "a translation's pager names it by the second, so they must be the same")
+    if problems:
+        raise PluginError("translations: " + "\n  ".join(problems))
+    return nav
 
 
 def notice(meta: dict, repo: str, original: str) -> dict:
@@ -272,9 +441,16 @@ def on_page_context(context, page, config, nav, **kwargs):
             page.meta["language_switch"] = language_switch(page.meta["hreflang"],
                                                            languages.language_of(src_uri) or languages.ORIGINAL,
                                                            config["site_url"])
+        else:
+            page.meta["language_links"] = language_links(page.meta["hreflang"],
+                                                         languages.language_of(src_uri) or languages.ORIGINAL,
+                                                         config["site_url"])
     if languages.is_translation(src_uri):
         repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
         page.meta["translation_notice"] = notice(page.meta, repo, original)
+        page.meta["pager_titles"] = dict(_titles.get(languages.language_of(src_uri), {}))
+        if original in languages.HANDBOOK_PAGES:
+            page.meta["translation_nav"] = translation_nav(nav, page, languages.language_of(src_uri))
         # Up to date: its original's heading ids, so a #link written for the
         # English page lands on the same section. Behind: its own, whatever
         # its headings — they may not be the original's any more.
@@ -900,6 +1076,7 @@ def selftest() -> int:
         site = os.path.join(root, "site")
         groups = {"index.md": {"it": "it/index.md"}, "why.md": {"it": "it/why.md", "de": "de/why.md"},
                   "about.md": {"it": "it/about.md"}, "handbook/index.md": {"it": "it/handbook/index.md"},
+                  "handbook/02-cases.md": {"it": "it/handbook/02-cases.md"},
                   "handbook/03-ground-truth.md": {"it": "it/handbook/03-ground-truth.md"}}
 
         def links(path):
@@ -940,6 +1117,88 @@ def selftest() -> int:
         # The Handbook, on the documentation's shell: the index and chapter 3 in
         # Italian, the other chapters not.
         it_index, it_chapter = _read(site, "it/handbook/index.html"), _read(site, "it/handbook/03-ground-truth/index.html")
+        def pager(html):
+            """The pager of a built page as (side, href, direction, lang, title), None without one."""
+            found = re.search(r'<nav class="md-footer__inner[^"]*dg-docfoot__pager".*?</nav>', html, re.S)
+            if not found:
+                return None
+            links = re.findall(r'<a href="([^"]*)" class="md-footer__link md-footer__link--(prev|next)".*?'
+                               r'md-footer__direction">([^<]*)</span>\s*<div class="md-ellipsis">(.*?)</div>',
+                               found.group(0), re.S)
+            out = []
+            for href, side, direction, title in links:
+                marked = re.fullmatch(r'<span lang="en">([^<]*)</span><span class="dg-nowrap"><span lang="en">([^<]*)</span>'
+                                      r'<span class="dg-en" aria-hidden="true">EN</span></span>', title)
+                out.append((side, href, direction.strip(), "EN" if marked else "",
+                            " ".join((marked.group(1) + marked.group(2) if marked else title).split())))
+            return out
+
+        chapter_2 = short_title(open(os.path.join(root, "docs", "it", "handbook", "02-cases.md"), encoding="utf-8").read())
+        expect("the Italian chapter 3's pager: the Italian chapter 2 before it, in its words; chapter 4, English, marked",
+               pager(it_chapter),
+               # The fixture's Italian catalog is the English one: "Previous" here.
+               [("prev", "../../../it/handbook/02-cases/", "Previous", "", chapter_2),
+                ("next", "../../../handbook/04-checks/", "Next", "EN", "4. Checks")])
+        expect("the English chapter 3's pager: as it was, no lang",
+               pager(_read(site, "handbook/03-ground-truth/index.html")),
+               [("prev", "../02-cases/", "Previous", "", "2. Cases"), ("next", "../04-checks/", "Next", "", "4. Checks")])
+        expect("no pager on the Italian Handbook index, as on the English one",
+               (pager(it_index), pager(_read(site, "handbook/index.html"))), (None, None))
+        expect("no pager on an Italian presentation page", pager(it_why), None)
+        expect("the pager's label, from the catalog, on an English chapter and an Italian one",
+               ['aria-label="Previous and next"' in _read(site, p) for p in
+                ("handbook/03-ground-truth/index.html", "it/handbook/03-ground-truth/index.html")], [True, True])
+
+        # The drawer of a translated chapter: the pages translated into Italian,
+        # the Handbook whole — its own chapter current, under its short title,
+        # translated ones in Italian, the rest in English marked EN — and the
+        # English documentation last. An English page keeps Material's nav.
+        def links_title(src_uri):
+            return front_matter(os.path.join(root, "docs", src_uri))["title"]
+
+        def drawer(html):
+            nav = re.search(r'<nav class="md-nav md-nav--primary.*?</ul>\s*</nav>\s*</div>', html, re.S).group(0)
+            nav = re.sub(r'<nav class="md-nav md-nav--secondary".*?</nav>', "", nav, flags=re.S)  # its toc
+            return [(href, " ".join(re.sub(r"<[^>]+>", " ", text).split()), "md-nav__link--active" in cls,
+                     'class="dg-en"' in text)
+                    for href, cls, text in re.findall(r'<a href="([^"]*)" class="(md-nav__link[^"]*)"[^>]*>(.*?)</a>', nav, re.S)]
+
+        it_drawer = drawer(it_chapter)
+        expect("the Italian chapter 3's drawer, in the nav's order (the fixture's Italian catalog is the English one)",
+               [(h, t) for h, t, a, e in it_drawer if "#" not in h],
+               [("../../", "Home"), ("../../why/", links_title("it/why.md")), ("../", "Handbook"),
+                ("../../../handbook/01-what-you-are-shipping/", "1. What you are actually shipping EN"),
+                ("../02-cases/", chapter_2), ("./", short_title(open(os.path.join(root, "docs", "it", "handbook", "03-ground-truth.md"),
+                                                                     encoding="utf-8").read())),
+                ("../../../handbook/04-checks/", "4. Checks EN"), ("../../../handbook/05-the-judge/", "5. The judge EN"),
+                ("../../../handbook/06-the-reference/", "6. The reference EN"),
+                ("../../../handbook/07-maintenance/", "7. Maintenance EN"),
+                ("../../../handbook/08-for-teams-building-for-others/", "8. For teams building for others EN"),
+                ("../../about/", links_title("it/about.md")), ("../../../product/guide/", "Documentation, in English")])
+        titles_seen = [t for h, t, a, e in it_drawer if "#" not in h]
+        expect("the Italian chapter 3's drawer: Italian pages, the Handbook whole, the English docs last",
+               (titles_seen[-1].endswith("EN"), any(t.startswith("1. What you are actually shipping") and t.endswith("EN") for t in titles_seen),
+                [a for h, t, a, e in it_drawer if a], len([t for t in titles_seen if t.endswith("EN")]),
+                any("How digline compares" in t for t in titles_seen)),
+               (False, True, [True], 6, False))
+        expect("the Italian chapter 3's drawer: itself current, under its title up to the colon, the chapter 2 translated",
+               ([t for h, t, a, e in it_drawer if a], chapter_2 in titles_seen),
+               ([short_title(open(os.path.join(root, "docs", "it", "handbook", "03-ground-truth.md"), encoding="utf-8").read())],
+                True))
+        expect("an English chapter keeps Material's nav: every group, no EN mark",
+               (any("How digline compares" in t for h, t, a, e in drawer(_read(site, "handbook/03-ground-truth/index.html"))),
+                any(e for h, t, a, e in drawer(_read(site, "handbook/03-ground-truth/index.html")))), (True, False))
+
+        # The line of other languages under the title of a Handbook page.
+        def languages_line(html):
+            found = re.search(r'<p class="opening__languages" data-translation-languages>(.*?)</p>', html, re.S)
+            return re.findall(r'<a href="([^"]*)" hreflang="([^"]*)" lang="([^"]*)">([^<]*)</a>', found.group(1)) if found else None
+
+        expect("the languages line: on English chapter 3, to Italian; none on Italian chapter 3 (the notice leads to English); "
+               "none on chapter 4, which has no translation, nor on Why, which has the menu",
+               (languages_line(_read(site, "handbook/03-ground-truth/index.html")), languages_line(it_chapter),
+                languages_line(_read(site, "handbook/04-checks/index.html")), languages_line(_read(site, "why/index.html"))),
+               ([("../../it/handbook/03-ground-truth/", "it", "it", "Leggi in italiano")], None, None, None))
         expect("the Italian Handbook index: chapter 3 to its translation, chapter 1 in English, from /it/handbook/",
                ('href="../../it/handbook/03-ground-truth/"' in it_index, 'href="../../handbook/01-what-you-are-shipping/"' in it_index,
                 'href="../../handbook/03-ground-truth/"' in it_index), (True, True, False))
@@ -1048,7 +1307,8 @@ def selftest() -> int:
         sitemap = _read(site, "sitemap.xml")
         expect("the translations in the sitemap",
                sorted(re.findall(r"<loc>https://digline\.dev/((?:it|de)/[^<]*)</loc>", sitemap)),
-               ["de/why/", "it/", "it/about/", "it/handbook/", "it/handbook/03-ground-truth/", "it/why/"])
+               ["de/why/", "it/", "it/about/", "it/handbook/", "it/handbook/02-cases/", "it/handbook/03-ground-truth/",
+                "it/why/"])
 
         for script in ("check-llms.py", "check-translate.py", "check-sitemap.py", "check-glyphs.py"):
             run = subprocess.run([sys.executable, os.path.join(root, "tools", script), site],
@@ -1059,7 +1319,7 @@ def selftest() -> int:
 
         problems, counted = check_site(site, groups, SITE_URL)
         expect("the post-build check on the built fixture", problems, [])
-        expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2 + 2 * 3 + 2 * 3)
+        expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2 + 3 * (2 * 3))
 
         # The language menu: on the seven pages with alternatives, with the
         # languages each exists in, and on no other page.
@@ -1086,6 +1346,28 @@ def selftest() -> int:
             expect(f"no language menu, and no script for one, on {path}",
                    (links(path).switches, "details.dg-lang" in html), (0, False))
         expect("the menu's script on a page with the menu", 'querySelector("details.dg-lang")' in _read(site, "why/index.html"), True)
+
+        # The rule under the pager's titles, on the English: a chapter's nav
+        # title is its <h1> up to the colon, and a chapter that breaks it stops
+        # the build.
+        expect("short_title: up to the first colon, trimmed; none without a # heading",
+               (short_title("---\nx: 1\n---\n\n# 2. Cases: the asset nobody builds\n\nText: more.\n"),
+                short_title("# 5. The judge\n"), short_title("No heading.\n")), ("2. Cases", "5. The judge", None))
+        mkdocs_yml = os.path.join(root, "mkdocs.yml")
+        with open(mkdocs_yml, encoding="utf-8") as fh:
+            config_text = fh.read()
+        with open(mkdocs_yml, "w", encoding="utf-8") as fh:
+            fh.write(config_text.replace("- 4. Checks: handbook/04-checks.md", "- 4. Checks first: handbook/04-checks.md", 1))
+        renamed = _build(root)
+        with open(mkdocs_yml, "w", encoding="utf-8") as fh:
+            fh.write(config_text)
+        if renamed.returncode == 0 or "handbook/04-checks.md: its nav title is '4. Checks first'" not in renamed.stdout + renamed.stderr:
+            failures.append("a chapter whose nav title is not its <h1> up to the colon: the build was not refused")
+        else:
+            print("translations selftest: refused, as it must — a chapter whose nav title is not its <h1> up to the colon")
+        rebuilt_clean = _build(root)
+        if rebuilt_clean.returncode:
+            failures.append("the fixture did not build again after the nav title was put back")
 
         # 4. The built site, tampered with.
         def tampered(path, change):
@@ -1329,9 +1611,9 @@ def selftest() -> int:
     if failures:
         return 1
     print("translations selftest: refusals on front matter; the fixture builds with --strict — hreflang on "
-          "the five translated pages and their six translations and on nothing else, their languages, the "
+          "the six translated pages and their seven translations and on nothing else, their languages, the "
           "bar, the footer and the closing band on a translation, the Handbook's index and chapter 3 in Italian "
-          "with their links, their <html lang> and the bar's current entry, out of search and llms.txt, in the "
+          "with their links, their <html lang>, the bar's current entry and the pager, out of search and llms.txt, in the "
           "sitemap, and check-llms, check-translate, check-sitemap and check-glyphs pass on it; the "
           "language menu on the seven presentation pages with alternatives, right, and on no other, the "
           "Handbook's included; tamperings refused; a translation with no description stops the build")

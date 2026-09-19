@@ -37,6 +37,11 @@ LANGUAGES = ("it", "de", "es")
 # in one language; these say the same thing in every page.
 NAMES = {"en": "English", "it": "Italiano", "de": "Deutsch", "es": "Español"}
 
+# "Read this page in …", each in its own language, for the line under the title
+# of a Handbook page that has translations (overrides/partials/opening.html):
+# a documentation page has no language menu, so this is where its languages are.
+READ_IN = {"en": "Read in English", "it": "Leggi in italiano", "de": "Auf Deutsch lesen", "es": "Leer en español"}
+
 # The pages that may be translated, by their source path under docs/: the six
 # presentation pages, and the Handbook's index and eight chapters, in the
 # nav's order. The presentation pages carry the language menu in the bar; the

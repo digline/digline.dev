@@ -73,6 +73,18 @@ footer:
     about: "About"
     contact: "Contact"
 
+# overrides/main.html — previous / next at the foot of a page read in order:
+# a Handbook chapter, a comparison, a page of the docs.
+pager:
+  previous: "Previous"
+  next: "Next"
+  label: "Previous and next"
+
+# tools/hooks/translations.py — the drawer of a translated Handbook page: its
+# last entry, the documentation, which is in English.
+nav:
+  english_docs: "Documentation, in English"
+
 # overrides/partials/closing.html — the closing band of the home, Why and Start here.
 closing:
   title: "Start with one suite and"

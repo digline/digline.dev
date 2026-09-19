@@ -20,5 +20,6 @@ nothing here is a translation to publish. None of these files is ever in docs/.
 
 so Why has two translations, the home and About one each, and Start here and
 Contact none; and of the Handbook, on the documentation's shell, in Italian,
-the index — which links every chapter, chapter 3 translated and the others
-not — and chapter 3, which links a post that stays English.
+the index — which links every chapter, chapters 2 and 3 translated and the
+others not — chapter 2, and chapter 3, which links a post that stays English
+and whose pager has a translated page before it and an English one after.

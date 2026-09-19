@@ -30,6 +30,16 @@
     {%- if page and page.meta and page.meta.published %}
     <p class="opening__date"><time datetime="{{ page.meta.published }}">{{ page.meta.published_display }}</time></p>
     {%- endif %}
+    {#- On a Handbook page with translations: its other languages, each in its
+        own words, where a presentation page has the bar's menu. The page's own
+        text is not this line, so tools/check-translations.py leaves it out of
+        what it compares (data-translation-languages). -#}
+    {%- set others = page.meta.language_links if page and page.meta else none %}
+    {%- if others %}
+    <p class="opening__languages" data-translation-languages>
+      {%- for other in others %}{% if not loop.first %} · {% endif %}<a href="{{ base_url.rstrip('/') }}/{{ other.path }}" hreflang="{{ other.lang }}" lang="{{ other.lang }}">{{ other.text }}</a>{% endfor -%}
+    </p>
+    {%- endif %}
     {%- set notice = page.meta.translation_notice if page and page.meta else none %}
     {%- if notice %}
     <p class="opening__notice{% if notice.stale %} opening__notice--stale{% endif %}" data-translation-notice>

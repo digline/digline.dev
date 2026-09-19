@@ -100,7 +100,18 @@
       each lists its sequence rather than standing in it), the blog's posts
       (Writing is not a sequence) and the 404 (no page).
   The titles are the nav's, in mkdocs.yml: a group renamed there is renamed
-  here. Where there is no pager the band follows <main> directly, starting
+  here.
+
+  A translation is not in the nav (not_in_nav), so it stands where its
+  original stands: `here` is the English page it translates, and its previous
+  and next are that page's. The links are written to the English pages, and
+  tools/hooks/translations.py sends each to its translation where the page's
+  language has one; the titles are page.meta.pager_titles, from the same hook,
+  the translation's own words for each page that has one, and the English
+  title for a page that has not — marked, as every link from a translation to
+  an English page is: lang="en" on the words, and the EN mark after them.
+  "Previous", "Next" and the pager's label are the catalog's (i18n/<lang>.yml,
+  pager). Where there is no pager the band follows <main> directly, starting
   where the pager would have started.
 
   The closing band is the presentation pages' closing band with nothing in it:
@@ -111,25 +122,43 @@
 -#}
 {% block footer %}
   {%- set sequences = ["Handbook", "How digline compares", "Docs"] %}
-  {%- set top = page.ancestors[-1].title if page and page.ancestors else none %}
-  {%- set in_sequence = page and top in sequences and not page.is_index %}
+  {%- set here = page %}
+  {%- if page and page.meta and page.meta.translation_of %}
+    {%- set here = nav.pages | selectattr("file.src_uri", "equalto", page.meta.translation_of) | first %}
+  {%- endif %}
+  {%- set titles = (page.meta.pager_titles if page and page.meta and page.meta.pager_titles) or {} %}
+  {%- set translated = page and page.meta and page.meta.translation_of %}
+  {%- set top = here.ancestors[-1].title if here and here.ancestors else none %}
+  {%- set in_sequence = here and top in sequences and not here.is_index %}
   <div class="dg-docfoot">
-  {%- if in_sequence and (page.previous_page or page.next_page) and "navigation.footer" in (config.theme.features or []) %}
-    <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="Footer">
-      {%- if page.previous_page %}
-      <a href="{{ page.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="Previous: {{ page.previous_page.title | e }}">
+  {%- if in_sequence and (here.previous_page or here.next_page) and "navigation.footer" in (config.theme.features or []) %}
+    <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="{{ 'pager.label' | t }}">
+      {%- if here.previous_page %}
+      {%- set title = titles.get(here.previous_page.file.src_uri) or here.previous_page.title %}
+      <a href="{{ here.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="{{ 'pager.previous' | t }}: {{ title | e }}">
         <div class="md-footer__button md-icon">{% include ".icons/material/arrow-left.svg" %}</div>
         <div class="md-footer__title">
-          <span class="md-footer__direction">Previous</span>
-          <div class="md-ellipsis">{{ page.previous_page.title }}</div>
+          <span class="md-footer__direction">{{ "pager.previous" | t }}</span>
+          {%- if translated and here.previous_page.file.src_uri not in titles %}
+          {%- set head, last = (title.rsplit(" ", 1) if " " in title else ["", title]) %}
+          <div class="md-ellipsis"><span lang="en">{{ head ~ " " if head }}</span><span class="dg-nowrap"><span lang="en">{{ last }}</span><span class="dg-en" aria-hidden="true">EN</span></span></div>
+          {%- else %}
+          <div class="md-ellipsis">{{ title }}</div>
+          {%- endif %}
         </div>
       </a>
       {%- endif %}
-      {%- if page.next_page %}
-      <a href="{{ page.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="Next: {{ page.next_page.title | e }}">
+      {%- if here.next_page %}
+      {%- set title = titles.get(here.next_page.file.src_uri) or here.next_page.title %}
+      <a href="{{ here.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="{{ 'pager.next' | t }}: {{ title | e }}">
         <div class="md-footer__title">
-          <span class="md-footer__direction">Next</span>
-          <div class="md-ellipsis">{{ page.next_page.title }}</div>
+          <span class="md-footer__direction">{{ "pager.next" | t }}</span>
+          {%- if translated and here.next_page.file.src_uri not in titles %}
+          {%- set head, last = (title.rsplit(" ", 1) if " " in title else ["", title]) %}
+          <div class="md-ellipsis"><span lang="en">{{ head ~ " " if head }}</span><span class="dg-nowrap"><span lang="en">{{ last }}</span><span class="dg-en" aria-hidden="true">EN</span></span></div>
+          {%- else %}
+          <div class="md-ellipsis">{{ title }}</div>
+          {%- endif %}
         </div>
         <div class="md-footer__button md-icon">{% include ".icons/material/arrow-right.svg" %}</div>
       </a>

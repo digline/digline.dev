@@ -95,6 +95,9 @@ import translation  # noqa: E402  tools/translation.py
 # the home's status line.
 DISCLAIMER_REQUIRED = True
 DISCLAIMER_ATTRIBUTE = "data-translation-notice"
+# The line of a Handbook page's other languages, under its title: the site's,
+# not the page's, and different on each side by design — never compared.
+LANGUAGES_ATTRIBUTE = "data-translation-languages"
 
 # The fixed words, as approved: tools/translation.py's fixed_digest() of the
 # do_not_translate section of i18n/it.yml, de.yml and es.yml. A change to any of
@@ -128,7 +131,8 @@ class Main(HTMLParser):
         self.pre = 0
         self.code = 0
         self.yes = 0
-        self.skip = 0           # script, style
+        self.skip = 0           # script, style, and the languages line
+        self.skip_depths: list[int] = []   # the depth each languages line opened at
         self.buffer: list[str] | None = None
         self.buffer_kind = ""
         self.code_texts: list[tuple[str, str]] = []
@@ -155,6 +159,15 @@ class Main(HTMLParser):
                     self.depth, self.root = 1, tag
             elif tag == "main":
                 self.depth, self.root = 1, tag
+            return
+        # Inside the languages line nothing is read; the line itself is left out.
+        if self.skip_depths or LANGUAGES_ATTRIBUTE in attrs:
+            if tag not in VOID:
+                self.stack.append((tag, False, False))
+                self.depth += 1
+                if LANGUAGES_ATTRIBUTE in attrs:
+                    self.skip += 1
+                    self.skip_depths.append(self.depth)
             return
         # The notice is the site's, not the translation's: it is read on its
         # own, and none of it — its date, its link — counts in a) to e).
@@ -212,6 +225,9 @@ class Main(HTMLParser):
             return  # an end tag with no start: nothing to close
         while self.stack:
             open_tag, yes, notice = self.stack.pop()
+            if self.skip_depths and self.depth == self.skip_depths[-1]:
+                self.skip_depths.pop()
+                self.skip -= 1
             self.depth -= 1
             if self.in_notice:
                 self.in_notice -= int(notice)
