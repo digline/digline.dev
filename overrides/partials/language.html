@@ -1,0 +1,17 @@
+{#-
+  Material's own words — "Table of contents", the copy button, search's
+  placeholder, <html lang> itself — in the page's language: a translation's
+  `lang:` from its front matter, the theme's language on every other page.
+
+  Material's base.html imports this file with the page in context and writes
+  <html lang="{{ lang.t('language') }}"> from it, so a translation of a
+  documentation page — the Handbook — says what it is written in, as the
+  presentation pages do in _shell.html; tools/hooks/translations.py fails the
+  build on a translation whose <html lang> is not its language. The rest is
+  Material's own partials/language.html: the language's words, English where
+  it has none.
+-#}
+{% set code = page.meta.lang if page and page.meta and page.meta.lang else config.theme.language %}
+{% import "partials/languages/" ~ code ~ ".html" as lang %}
+{% import "partials/languages/en.html" as fallback %}
+{% macro t(key) %}{{ lang.t(key) or fallback.t(key) or key }}{% endmacro %}

@@ -33,17 +33,29 @@ than written there (``data_terms()``): digline's command names, as
 frameworks of the worked examples. ``forbidden``, per language, lists
 translations of the glossary that a translation must not use.
 
+── the links of a translation ──────────────────────────────────────────────
+A translation stands at docs/<lang>/<page>, one folder deeper than its
+original, and its Markdown's relative links are the original's. ``relink()``
+rewrites each so that it still reaches the English page it reached, from
+where the translation stands, at any depth: from docs/it/handbook/02-cases.md,
+``01-what-you-are-shipping.md`` is ``../../handbook/01-what-you-are-shipping.md``
+and ``../blog/x.md`` is ``../../blog/x.md``. mkdocs --strict then checks every
+one against a page the build has, and tools/hooks/translations.py sends a link
+to a page translated into the language to that translation — one rule for a
+link to a translated page and to an English-only one.
+
 ── the fake translations ────────────────────────────────────────────────────
 ``pseudo_translate()`` turns an English page into a translation that keeps
 everything the checks compare — code, links, numbers, headings, the kept
 words — and changes every other word, so that the selftests can build a
-translation of each presentation page as it is today, whatever it says.
+translation of each translatable page as it is today, whatever it says.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import posixpath
 import re
 import subprocess
 import sys
@@ -262,6 +274,39 @@ def kept_terms(root: str) -> list[tuple[str, str]]:
     return terms
 
 
+# ── the links of a translation ───────────────────────────────────────────────
+
+# A Markdown link's or image's target: ](target) — up to the first space, so a
+# title after it ("…" or '…') is left where it is.
+_TARGET = re.compile(r"\]\(([^)\s]+)")
+# Left as they are: a scheme (https:, mailto:), a path from the root, a #fragment.
+_KEPT = re.compile(r"\A(?:[A-Za-z][A-Za-z0-9+.-]*:|/|#)")
+
+
+def relink(body: str, page: str, lang: str) -> str:
+    """The Markdown of the English page docs/<page>, its relative links
+    rewritten to reach the same English pages from docs/<lang>/<page>. A link's
+    #fragment and ?query are kept, and so is a final slash."""
+    folder = posixpath.dirname(page)
+    here = posixpath.join(lang, folder) if folder else lang
+
+    def one(match: re.Match) -> str:
+        target = match.group(1)
+        if _KEPT.match(target):
+            return match.group(0)
+        cut = min((i for i in (target.find("#"), target.find("?")) if i >= 0), default=len(target))
+        path, tail = target[:cut], target[cut:]
+        if not path:
+            return match.group(0)
+        english = posixpath.normpath(posixpath.join(folder, path))
+        moved = posixpath.relpath(english, here)
+        if path.endswith("/") and not moved.endswith("/"):
+            moved += "/"
+        return f"]({moved}{tail}"
+
+    return _TARGET.sub(one, body)
+
+
 # ── the fake translations ────────────────────────────────────────────────────
 
 SUFFIX = {"it": "o", "de": "ẞ", "es": "ñ"}
@@ -270,8 +315,8 @@ SUFFIX = {"it": "o", "de": "ẞ", "es": "ñ"}
 def pseudo_translate(body: str, lang: str, root: str) -> str:
     """An English page's Markdown as a fake translation in ``lang``: every word
     outside what the checks compare gets a suffix (ẞ in German, so a German
-    page draws it), and every relative link is made to reach the English page
-    from one folder down."""
+    page draws it). Its links are left as the English writes them, as the model
+    returns them; ``relink()`` is what moves them."""
     protected = [
         r"```.*?```", r"<!--.*?-->", r"`[^`\n]+`", r"<[^>\n]+>", r"\]\([^)\n]*\)", r"&\w+;",
         r"https?://\S+", r"\d+(?:\.\d+)*",
@@ -279,15 +324,11 @@ def pseudo_translate(body: str, lang: str, root: str) -> str:
     protected += [pattern for _, pattern in sorted(kept_terms(root), key=lambda t: -len(t[0]))]
     protected.append(r"(?<![\w-])digline(?![\w-])")
     splitter = re.compile("(" + "|".join(protected) + ")", re.S)
-    link = re.compile(r"\]\(([^)\n]*)\)")
     out = []
     for i, part in enumerate(splitter.split(body)):
         if part is None or part == "":
             continue
         if splitter.fullmatch(part):
-            match = link.fullmatch(part)
-            if match and not re.match(r"^(?:[a-z]+:|/|#)", match.group(1)):
-                part = f"](../{match.group(1)})"
             out.append(part)
         else:
             out.append(re.sub(r"[^\W\d_]+", lambda m: m.group(0) + SUFFIX[lang], part))
@@ -300,4 +341,5 @@ def fake_translation(root: str, lang: str, meta: dict) -> str:
     _, body = read_page(os.path.join(root, "docs", meta["translation_of"]))
     stamped = stamp(meta, root, model="selftest (tools/translation.py, pseudo_translate)")
     front = yaml.safe_dump(stamped, allow_unicode=True, sort_keys=False, width=1000)
-    return f"---\n{front}---\n{pseudo_translate(body, lang, root)}"
+    page = meta["translation_of"]
+    return f"---\n{front}---\n{relink(pseudo_translate(body, lang, root), page, lang)}"

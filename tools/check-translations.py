@@ -1,9 +1,10 @@
 #!/usr/bin/env -S uv run python
 """Every translation against its original: what a translator must not change.
 
-For every translation of a presentation page — docs/<lang>/<page>.md, built
-into site/<lang>/…/index.html — this reads the <main> of the translation and
-of its English original as they were built, and fails when
+For every translation — docs/<lang>/<page>.md, a presentation page or a
+Handbook chapter, built into site/<lang>/…/index.html — this reads the text of
+the translation and of its English original as they were built, and fails
+when
 
   a) code: the text of each <pre>, and of each <code> outside one, is not the
      same sequence, in the same order. A line inside a <pre> that says
@@ -26,8 +27,8 @@ of its English original as they were built, and fails when
   e) the glossary, tools/i18n/glossary.yml: a term to keep that the original
      shows is not in the translation, or the translation uses one of its
      language's forbidden words outside code (tools/translation.py);
-  f) the translation does not hold together: its original is not one of the
-     five, its lang is not its folder's, it has no description, or it does not
+  f) the translation does not hold together: its original is not one of
+     languages.PAGES, its lang is not its folder's, it has no description, or it does not
      record what it was made from — source (its original), source_sha,
      source_commit, model, and for the home its catalog's source_keys; or its page does not
      carry exactly one notice (DISCLAIMER_REQUIRED) that it was translated by
@@ -38,6 +39,13 @@ of its English original as they were built, and fails when
   g) the fixed words themselves — every language's do_not_translate section —
      are not the ones FIXED_TEXTS_DIGEST pins. The translating agent never
      changes them; a person who means to changes the digest with them.
+
+What is read is the page's own text, and nothing the site puts round it. On a
+presentation page that is its <main>. On a documentation page — the Material
+shell, which the Handbook's pages are — <main> holds the two sidebars too, the
+site's nav and the table of contents, and the opening band, with the title,
+the lede and the notice, is above it: so there it is the band
+(<header class="opening">) and the <article>, in that order.
 
 It also says, for every translation, whether its original has changed since it
 was translated (tools/translation.py, status()), and that is never a failure:
@@ -107,11 +115,14 @@ NUMBER = re.compile(r"\d+(?:\.\d+)*")
 
 
 class Main(HTMLParser):
-    """What the checks read out of a page's <main>."""
+    """What the checks read out of a page: its <main>, or on a documentation
+    page its opening band and its <article> (the module's docstring)."""
 
-    def __init__(self) -> None:
+    def __init__(self, docs: bool = False) -> None:
         super().__init__(convert_charrefs=True)
-        self.depth = 0          # open elements inside <main>; 0 outside it
+        self.docs = docs
+        self.root = ""          # the tag of the element being read: main, header or article
+        self.depth = 0          # open elements inside it; 0 outside it
         self.done = False
         self.stack: list[tuple[str, bool, bool]] = []   # (tag, says translate="yes", is the notice)
         self.pre = 0
@@ -138,8 +149,12 @@ class Main(HTMLParser):
         if self.done:
             return
         if not self.depth:
-            if tag == "main":
-                self.depth = 1
+            if self.docs:
+                opening = tag == "header" and "opening" in (attrs.get("class") or "").split()
+                if opening or tag == "article":
+                    self.depth, self.root = 1, tag
+            elif tag == "main":
+                self.depth, self.root = 1, tag
             return
         # The notice is the site's, not the translation's: it is read on its
         # own, and none of it — its date, its link — counts in a) to e).
@@ -193,7 +208,7 @@ class Main(HTMLParser):
     def handle_endtag(self, tag):
         if not self.depth or self.done or tag in VOID:
             return
-        if tag != "main" and all(entry[0] != tag for entry in self.stack):
+        if tag != self.root and all(entry[0] != tag for entry in self.stack):
             return  # an end tag with no start: nothing to close
         while self.stack:
             open_tag, yes, notice = self.stack.pop()
@@ -221,8 +236,10 @@ class Main(HTMLParser):
                 break
         self.prose.append(" ")
         self.everything.append(" ")
-        if self.depth <= 1 and tag == "main":
-            self.done = True
+        if self.depth <= 1 and tag == self.root:
+            # A presentation page has one <main>; a documentation page, the band
+            # and then the article, so the parser waits for the next.
+            self.done = not self.docs
             self.depth = 0
 
     def handle_data(self, data):
@@ -239,10 +256,16 @@ class Main(HTMLParser):
             self.prose.append(data)
 
 
+# What only the Material shell writes: tools/check-bar.py tells the two shells
+# apart by the same marker.
+DOCS_MARKER = 'data-md-component="content"'
+
+
 def read_main(path: str) -> Main:
-    parser = Main()
     with open(path, encoding="utf-8") as fh:
-        parser.feed(fh.read())
+        html = fh.read()
+    parser = Main(docs=DOCS_MARKER in html)
+    parser.feed(html)
     parser.close()
     return parser
 
@@ -338,8 +361,11 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
     sources = []
     for lang in languages.LANGUAGES:
         folder = os.path.join(docs, lang)
-        if os.path.isdir(folder):
-            sources += [f"{lang}/{name}" for name in sorted(os.listdir(folder)) if name.endswith(".md")]
+        # Every folder down: the Handbook's translations are in <lang>/handbook/.
+        for here, dirs, names in os.walk(folder):
+            dirs.sort()
+            sources += [os.path.relpath(os.path.join(here, name), docs).replace(os.sep, "/")
+                        for name in sorted(names) if name.endswith(".md")]
     built = []
     for lang in languages.LANGUAGES:
         for folder, dirs, names in os.walk(os.path.join(site, lang)):
@@ -371,7 +397,7 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
         # f) holding together
         original = meta.get("translation_of")
         if original not in languages.PAGES or src_uri.split("/", 1)[1] != original:
-            problems.append(f"{where}: translation_of {original!r} is not the presentation page at its path")
+            problems.append(f"{where}: translation_of {original!r} is not the page that may be translated at its path")
             continue
         if meta.get("lang") != lang:
             problems.append(f"{where}: lang {meta.get('lang')!r}, and it is in the {lang}/ folder")
@@ -562,8 +588,10 @@ def selftest() -> int:
             ("a) a code span rewritten", why, first_in_main(r"(<code[^>]*>)pip install digline", r"\1pip installa digline"),
              "code "),
             ("a) a code span dropped", why, first_in_main(r"<code[^>]*>[^<]*</code>", ""), "code"),
-            ("b) a link sent elsewhere", why, first_in_main(r'href="\.\./\.\./handbook/01-what-you-are-shipping/"',
-                                                             'href="../../handbook/"'), "link "),
+            # To a page that stays English — a post — so the plant does not depend
+            # on which Handbook pages the fixture translates.
+            ("b) a link sent elsewhere", why, first_in_main(r'href="\.\./\.\./blog/bad-evals-my-own/"',
+                                                             'href="../../blog/"'), "link "),
             ("b) an external link changed by a character", why,
              first_in_main(r'href="https://danluu\.com/exercise-7/"', 'href="https://danluu.com/exercise-8/"'), "link "),
             ("c) a decimal point made a comma", why, first_in_main(r"0\.91", "0,91"), "numbers differ"),
@@ -603,7 +631,7 @@ def selftest() -> int:
              "lang 'es', and it is in the it/ folder"),
             ("f) an original that is not one of the six", "docs/it/about.md",
              lambda t: t.replace("translation_of: about.md", "translation_of: comparison/index.md", 1),
-             "translation_of 'comparison/index.md' is not the presentation page at its path"),
+             "translation_of 'comparison/index.md' is not the page that may be translated at its path"),
             ("f) no record of what it was made from", "docs/it/about.md",
              lambda t: re.sub(r"\nmodel:[^\n]*", "", t, count=1), "no model"),
             ("f) the home without its catalog digests", "i18n/it.yml",
@@ -689,6 +717,43 @@ def selftest() -> int:
                 failures.append(f"{label}: not refused ({found})")
             else:
                 print(f"translations selftest: refused, as it must — {label}")
+
+        # A Handbook chapter, on the Material shell: its opening band and its
+        # article are what is read, and the sidebars round them are not.
+        chapter = "site/it/handbook/03-ground-truth/index.html"
+        chapter_page = read_main(os.path.join(root, chapter))
+        english_chapter = read_main(os.path.join(site, "handbook", "03-ground-truth", "index.html"))
+        expect_chapter = (chapter_page.notices, chapter_page.headings[:1], len(chapter_page.hrefs) == len(english_chapter.hrefs),
+                          len(chapter_page.hrefs) < 40, bool(chapter_page.blocks))
+        if expect_chapter != (1, ["h1"], True, True, True):
+            failures.append(f"the chapter as read: notices, first heading, links as the original's, "
+                            f"no sidebar, blocks — {expect_chapter}")
+        chapter_planted = [
+            # The chapter's first paragraph is its lede, in the opening band.
+            ("a link of the chapter's lede dropped",
+             first_from('<header class="opening"', r'<a href="[^"]*bad-evals-my-own/"[^>]*>(.*?)</a>', r"\1"), "link"),
+            ("a paragraph of the chapter's article dropped", first_from("<article", r"<p>.*?</p>", ""), "structure"),
+            ("the chapter's notice dropped from its opening band",
+             lambda h: re.sub(r'<p class="opening__notice[^"]*" data-translation-notice>.*?</p>', "", h, count=1, flags=re.S),
+             "no notice that the page"),
+        ]
+        for label, change, needle in chapter_planted:
+            before = edit(chapter, change)
+            try:
+                found, _, _ = check(site, root)
+            finally:
+                restore(chapter, before)
+            if not any(needle in p and "03-ground-truth" in p for p in found):
+                failures.append(f"{label}: not refused ({found})")
+            else:
+                print(f"translations selftest: refused, as it must — {label}")
+        before = edit(chapter, first_from('md-sidebar--primary', r'<li class="md-nav__item">.*?</li>', ""))
+        found, _, _ = check(site, root)
+        restore(chapter, before)
+        if found:
+            failures.append(f"an entry taken out of the chapter's sidebar was refused: {found}")
+        else:
+            print("translations selftest: passes, as it must — an entry taken out of a Handbook chapter's sidebar")
 
         # The original changed, and the site built again: reported with exit
         # status 0, and the notices of its translations say so, marked.

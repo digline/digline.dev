@@ -1,5 +1,5 @@
-"""The translations of the presentation pages: refused unless they hold together,
-and linked to their originals with hreflang.
+"""The translations of the presentation pages and the Handbook: refused unless
+they hold together, and linked to their originals with hreflang.
 
 tools/languages.py says which languages and which pages, and how a translation
 is written: docs/<lang>/<page>, its front matter naming its language and its
@@ -8,9 +8,10 @@ original. This hook does three things with them.
 ── before anything renders (on_files) ───────────────────────────────────────
 Every file under a language's folder is read, and the build fails when
 
-  * it is not one of the six presentation pages (languages.PAGES), at the
-    path of its original: docs/it/why.md, not docs/it/perche.md nor
-    docs/it/handbook/index.md;
+  * it is not one of the pages that may be translated (languages.PAGES: the
+    six presentation pages and the Handbook's nine), at the path of its
+    original: docs/it/why.md and docs/it/handbook/02-cases.md, not
+    docs/it/perche.md nor docs/it/product/guide.md;
   * its ``lang:`` is not the name of its folder, or that language has no
     catalog, i18n/<lang>.yml, for the words the templates show around it;
   * its ``translation_of:`` is missing, is not the path it stands at, or names
@@ -32,6 +33,9 @@ The same pages get ``page.meta.language_switch``, the language menu in the
 bar (overrides/partials/header.html): one entry per hreflang link but
 x-default — the same list, so the menu and the links cannot disagree — each
 language by its own name (languages.NAMES), the page's own marked current.
+Only the presentation pages: on a documentation page — the Handbook — that
+slot of the bar holds search, and the bar is the same on every page
+(tools/check-bar.py), so its other languages are said elsewhere.
 
 ── the ids of a translation's headings (on_page_content, on_page_context) ───
 A link written for an English page's section — /why/#a-prompt-is-not-code —
@@ -157,7 +161,7 @@ def refusals(src_uri: str, meta: dict, originals: dict[str, dict], catalogs: set
     lang = languages.language_of(src_uri)
     rest = src_uri.split("/", 1)[1]
     if rest not in languages.PAGES:
-        return [f"{where}: only the presentation pages are translated ({', '.join(languages.PAGES)}), "
+        return [f"{where}: only the presentation pages and the Handbook are translated ({', '.join(languages.PAGES)}), "
                 f"each at its original's path, and {rest} is not one of them"]
     problems = []
     if meta.get("lang") != lang:
@@ -264,9 +268,10 @@ def on_page_context(context, page, config, nav, **kwargs):
     original = src_uri.split("/", 1)[1] if languages.is_translation(src_uri) else src_uri
     if original in _groups:
         page.meta["hreflang"] = hreflang(original, _groups[original], config["site_url"])
-        page.meta["language_switch"] = language_switch(page.meta["hreflang"],
-                                                       languages.language_of(src_uri) or languages.ORIGINAL,
-                                                       config["site_url"])
+        if original in languages.PRESENTATION_PAGES:
+            page.meta["language_switch"] = language_switch(page.meta["hreflang"],
+                                                           languages.language_of(src_uri) or languages.ORIGINAL,
+                                                           config["site_url"])
     if languages.is_translation(src_uri):
         repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
         page.meta["translation_notice"] = notice(page.meta, repo, original)
@@ -342,7 +347,8 @@ def check_site(site: str, groups: dict[str, dict[str, str]], site_url: str) -> t
             path = languages.page_url(src_uri) + "index.html"
             expected[path] = [(link["lang"], link["href"]) for link in links]
             language[path] = languages.language_of(src_uri) or languages.ORIGINAL
-            switches[path] = language_switch(links, language[path], site_url)
+            if original in languages.PRESENTATION_PAGES:
+                switches[path] = language_switch(links, language[path], site_url)
     problems: list[str] = []
     counted = {"pages": 0, "links": 0, "menus": 0, "entries": 0}
     for folder, dirs, names in os.walk(site):
@@ -375,7 +381,7 @@ def _switch_problems(path: str, head: "_Head", switch: dict | None, site_url: st
     """A page's language menu against the one its hreflang group gives it: none
     on a page without translations."""
     if switch is None:
-        return [f"{path}: a language menu, and the page has no translation"] if head.switches else []
+        return [f"{path}: a language menu, and the page is not a presentation page with translations"] if head.switches else []
     if head.switches != 1:
         return [f"{path}: {head.switches} language menus, and a page with translations has one"]
     problems = []
@@ -729,6 +735,13 @@ def _refusal_cases() -> list[tuple[str, str, dict, str | None]]:
         ("a page that is not a presentation page", "it/comparison/index.md",
          dict(good, translation_of="comparison/index.md"), "comparison/index.md is not one of them"),
         ("a presentation page at another path", "it/perche.md", good, "perche.md is not one of them"),
+        ("a Handbook chapter at another chapter's path", "it/handbook/02-cases.md",
+         dict(good, translation_of="handbook/03-ground-truth.md", template=None),
+         "translation_of is 'handbook/03-ground-truth.md', and a translation stands at its original's path, handbook/02-cases.md"),
+        ("a Handbook chapter under a name of its own", "it/handbook/perche.md",
+         dict(good, translation_of="handbook/perche.md"), "handbook/perche.md is not one of them"),
+        ("a documentation page that is not the Handbook's", "it/product/guide.md",
+         dict(good, translation_of="product/guide.md"), "product/guide.md is not one of them"),
         ("a lang that is not its folder's", "it/why.md", dict(good, lang="de"), "lang is 'de', and the page is in the it/ folder"),
         ("a language with no catalog", "es/why.md", dict(good, lang="es"), "lang es has no catalog"),
         ("no translation_of", "it/why.md", {k: v for k, v in good.items() if k != "translation_of"}, "no translation_of"),
@@ -773,10 +786,16 @@ def _copy_site(into: str) -> None:
     subprocess.run(git + ["commit", "-q", "-m", "selftest: the English site"], check=True, env=past)
     for lang in sorted(os.listdir(FIXTURE)):
         os.makedirs(os.path.join(into, "docs", lang))
-        for name in sorted(os.listdir(os.path.join(FIXTURE, lang))):
-            meta, _ = translation.read_page(os.path.join(FIXTURE, lang, name))
-            with open(os.path.join(into, "docs", lang, name), "w", encoding="utf-8") as fh:
-                fh.write(translation.fake_translation(into, lang, meta))
+        # Every folder down: the Handbook's are in <lang>/handbook/.
+        for folder, dirs, names in os.walk(os.path.join(FIXTURE, lang)):
+            dirs.sort()
+            for name in sorted(names):
+                source = os.path.join(folder, name)
+                target = os.path.join(into, "docs", lang, os.path.relpath(source, os.path.join(FIXTURE, lang)))
+                meta, _ = translation.read_page(source)
+                os.makedirs(os.path.dirname(target), exist_ok=True)
+                with open(target, "w", encoding="utf-8") as fh:
+                    fh.write(translation.fake_translation(into, lang, meta))
         # A fake catalog: the English words, over them the fixture's own words
         # for the language where it has any (the German bar), and the language's
         # real fixed section.
@@ -817,6 +836,7 @@ def selftest() -> int:
     # 1. The refusals, on front matter alone.
     originals = {page: {"template": page.replace(".md", ".html").replace("index.html", "home.html")}
                  for page in ("index.md", "start.md", "why.md", "about.md")}
+    originals.update({page: {} for page in ("handbook/02-cases.md", "handbook/03-ground-truth.md")})
     for label, src_uri, meta, needle in _refusal_cases():
         found = refusals(src_uri, meta, originals, {"it", "de"})
         if needle is None:
@@ -879,7 +899,8 @@ def selftest() -> int:
             return 1
         site = os.path.join(root, "site")
         groups = {"index.md": {"it": "it/index.md"}, "why.md": {"it": "it/why.md", "de": "de/why.md"},
-                  "about.md": {"it": "it/about.md"}}
+                  "about.md": {"it": "it/about.md"}, "handbook/index.md": {"it": "it/handbook/index.md"},
+                  "handbook/03-ground-truth.md": {"it": "it/handbook/03-ground-truth.md"}}
 
         def links(path):
             head = _Head()
@@ -913,8 +934,37 @@ def selftest() -> int:
         expect("the footer marks About on /it/about/, and leads to it",
                bool(re.search(r'href="\.\./\.\./it/about/" aria-current="page"', _read(site, "it/about/index.html"))), True)
         expect("the Italian home is the home", 'class="hero__title"' in _read(site, "it/index.html"), True)
-        expect("the Italian Why links the Handbook in English",
-               'href="../../handbook/01-what-you-are-shipping/"' in it_why, True)
+        expect("the Italian Why links a post, which stays English, in English",
+               'href="../../blog/bad-evals-my-own/"' in it_why, True)
+
+        # The Handbook, on the documentation's shell: the index and chapter 3 in
+        # Italian, the other chapters not.
+        it_index, it_chapter = _read(site, "it/handbook/index.html"), _read(site, "it/handbook/03-ground-truth/index.html")
+        expect("the Italian Handbook index: chapter 3 to its translation, chapter 1 in English, from /it/handbook/",
+               ('href="../../it/handbook/03-ground-truth/"' in it_index, 'href="../../handbook/01-what-you-are-shipping/"' in it_index,
+                'href="../../handbook/03-ground-truth/"' in it_index), (True, True, False))
+        expect("the Italian chapter 3: the post in English, three folders up (in its lede, in the opening band)",
+               'href="../../../blog/bad-evals-my-own/"' in it_chapter, True)
+        expect("the Italian Handbook pages hold the bar's first slot with search, as the English ones do",
+               [re.search(r'<div class="dg-actions">\s*<label class="md-header__button md-icon" for="__search"', _read(site, p))
+                is not None for p in ("it/handbook/index.html", "it/handbook/03-ground-truth/index.html",
+                                      "handbook/03-ground-truth/index.html")], [True, True, True])
+        expect("the Italian chapter 3 and index: their language, their hreflang, the notice",
+               (links("it/handbook/03-ground-truth/index.html").lang, links("it/handbook/index.html").lang,
+                links("it/handbook/03-ground-truth/index.html").links,
+                it_chapter.count("data-translation-notice"), "Indice" in it_chapter or "Sommario" in it_chapter),
+               ("it", "it", [("en", SITE_URL + "handbook/03-ground-truth/"), ("it", SITE_URL + "it/handbook/03-ground-truth/"),
+                             ("x-default", SITE_URL + "handbook/03-ground-truth/")], 1, True))
+        expect("the English chapter 3: English, with the Italian as its alternative",
+               (links("handbook/03-ground-truth/index.html").lang, len(links("handbook/03-ground-truth/index.html").links)),
+               ("en", 3))
+        def current_in_bar(html):
+            nav = re.search(r'<nav class="dg-nav".*?</nav>', html, re.S).group(0)
+            return re.findall(r'href="([^"]*)"[^>]*\saria-current=', nav)
+
+        expect("the bar marks the Handbook, and only it, on /it/handbook/03-ground-truth/; not on /it/why/",
+               (current_in_bar(it_chapter), current_in_bar(it_why)),
+               (["../../../it/handbook/"], ["../../it/why/"]))
 
         # The links of a translation: to a page translated into its language, the
         # translation; to one that is not, the English page. The fixture has
@@ -998,7 +1048,7 @@ def selftest() -> int:
         sitemap = _read(site, "sitemap.xml")
         expect("the translations in the sitemap",
                sorted(re.findall(r"<loc>https://digline\.dev/((?:it|de)/[^<]*)</loc>", sitemap)),
-               ["de/why/", "it/", "it/about/", "it/why/"])
+               ["de/why/", "it/", "it/about/", "it/handbook/", "it/handbook/03-ground-truth/", "it/why/"])
 
         for script in ("check-llms.py", "check-translate.py", "check-sitemap.py", "check-glyphs.py"):
             run = subprocess.run([sys.executable, os.path.join(root, "tools", script), site],
@@ -1009,7 +1059,7 @@ def selftest() -> int:
 
         problems, counted = check_site(site, groups, SITE_URL)
         expect("the post-build check on the built fixture", problems, [])
-        expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2)
+        expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2 + 2 * 3 + 2 * 3)
 
         # The language menu: on the seven pages with alternatives, with the
         # languages each exists in, and on no other page.
@@ -1027,7 +1077,11 @@ def selftest() -> int:
                                               ("de", "de", "../de/why/", "Deutsch", None)]))
         expect("the Italian home's menu", [tuple(e) for e in links("it/index.html").entries],
                [("en", "en", "../", "English", None), ("it", "it", "../it/", "Italiano", "page")])
-        for path in ("start/index.html", "contact/index.html", "product/guide/index.html", "404.html"):
+        # The Handbook has translations and no menu: on the documentation's shell
+        # that slot of the bar is search's, in English and in Italian alike.
+        for path in ("start/index.html", "contact/index.html", "product/guide/index.html", "404.html",
+                     "handbook/03-ground-truth/index.html", "it/handbook/03-ground-truth/index.html",
+                     "it/handbook/index.html"):
             html = _read(site, path)
             expect(f"no language menu, and no script for one, on {path}",
                    (links(path).switches, "details.dg-lang" in html), (0, False))
@@ -1072,10 +1126,16 @@ def selftest() -> int:
             ("a menu whose summary shows another language", "it/about/index.html",
              lambda h: re.sub(r'(<summary class="dg-icon dg-lang__summary"[^>]*>)IT', r"\1EN", h, count=1),
              "the menu's summary is"),
+            ("a language menu on a Handbook page, which has translations", "handbook/03-ground-truth/index.html",
+             lambda h: h.replace('<div class="dg-actions">',
+                                 '<div class="dg-actions"><details class="dg-lang"><summary class="dg-icon dg-lang__summary">EN</summary></details>', 1),
+             "handbook/03-ground-truth/index.html: a language menu, and the page is not a presentation page with translations"),
+            ("an Italian Handbook page that says it is English", "it/handbook/03-ground-truth/index.html",
+             lambda h: re.sub(r'<html lang="it"', '<html lang="en"', h, count=1), "<html lang='en'>, and the page is it"),
             ("a language menu on a page with no translation", "start/index.html",
              lambda h: h.replace('<div class="dg-actions">',
                                  '<div class="dg-actions"><details class="dg-lang"><summary class="dg-icon dg-lang__summary">EN</summary></details>', 1),
-             "start/index.html: a language menu, and the page has no translation"),
+             "start/index.html: a language menu, and the page is not a presentation page with translations"),
         ]
         for label, path, change, needle in tampering:
             found = tampered(path, change)
@@ -1268,12 +1328,13 @@ def selftest() -> int:
         print(f"translations selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print("translations selftest: 11 refusals on front matter; the fixture builds with --strict — hreflang on "
-          "the three translated pages and their four translations and on nothing else, their languages, the "
-          "bar, the footer and the closing band on a translation, out of search and llms.txt, in the sitemap, "
-          "and check-llms, check-translate, check-sitemap and check-glyphs pass on it; the language menu on the "
-          "seven pages with alternatives, right, and on no other; 12 tamperings refused; a translation with no "
-          "description stops the build")
+    print("translations selftest: refusals on front matter; the fixture builds with --strict — hreflang on "
+          "the five translated pages and their six translations and on nothing else, their languages, the "
+          "bar, the footer and the closing band on a translation, the Handbook's index and chapter 3 in Italian "
+          "with their links, their <html lang> and the bar's current entry, out of search and llms.txt, in the "
+          "sitemap, and check-llms, check-translate, check-sitemap and check-glyphs pass on it; the "
+          "language menu on the seven presentation pages with alternatives, right, and on no other, the "
+          "Handbook's included; tamperings refused; a translation with no description stops the build")
     return 0
 
 
