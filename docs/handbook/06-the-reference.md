@@ -47,7 +47,7 @@ If your tool does not refuse these, refuse them yourself. A reference you cannot
 
 The first run that passes is the most tempting one to promote and the wrong one. You have just read chapter 5: the judge wobbles, and a single run is one draw. Promote it and the reference records the lucky sample; every later run is compared to the lucky one, and looks worse than it is.
 
-One draw can land on either side. Three runs of the newsletter suite on 3 September, eleven minutes apart with nothing changed, agreed with the reader on 16, 14 and 16 articles out of 21. A reference taken from the middle one would report the runs on either side of it as two articles better — an *improvement* nobody made.
+One draw can land on either side. Three runs of the newsletter suite on 3 September, eleven minutes apart with nothing changed, agreed with the reader on 16, 14 and 16 articles out of 21. A reference taken from the second of the three would report the other two as two articles better — an *improvement* nobody made.
 
 The procedure that replaces it costs three runs:
 
