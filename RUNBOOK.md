@@ -8,6 +8,8 @@ One branch per change, merged into `main` with `--no-ff` (`Merge branch '<name>'
 
 The diff is read before the commit, not after.
 
+`gh pr merge` is a call of its own: never chained with `gh run watch`, a poll or a sleep. Stopping a chained call during the wait leaves the merge done. That is how #72 reached `main` on 19 September at a commit older than the one under review.
+
 ## One session, one worktree
 
 Several sessions — people, agents — may work on this repository at once, and they share one checkout. So a session does not change branch in that checkout. It works in a worktree of its own, on a branch from `origin/main`:
