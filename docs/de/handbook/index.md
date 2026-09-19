@@ -3,7 +3,7 @@ title: Handbuch
 seo_title: 'Handbuch: ein LLM-Feature unter Kontrolle behalten'
 lang: de
 translation_of: handbook/index.md
-description: 'Acht Kapitel zur Bewertung von LLM-Anwendungen in der Praxis: Fälle, Ground Truth, checks, der Richter, die baseline, Wartung. Über das Problem, nicht über das Werkzeug.'
+description: 'Acht Kapitel zur Bewertung von LLM-Anwendungen in der Praxis: Fälle, Ground Truth, checks, der Richter, die Referenz, Wartung. Über das Problem, nicht über das Werkzeug.'
 search:
   exclude: true
 source: handbook/index.md
@@ -21,13 +21,13 @@ eine Installation von digline voraus, und die meisten Zahlen stammen aus einem
 kleinen öffentlichen Projekt, das du nachlesen kannst. Fang beim ersten Kapitel
 an und lies sie der Reihe nach — jedes baut auf dem vorherigen auf.
 
-- **[1. Was du eigentlich auslieferst](../../handbook/01-what-you-are-shipping.md)** — warum
+- **[1. Was du tatsächlich auslieferst](../../handbook/01-what-you-are-shipping.md)** — warum
   ein Modellaufruf wie eine Funktion aussieht und keine ist, und was dich das
   kostet.
-- **[2. Fälle: das Asset, das niemand aufbaut](../../handbook/02-cases.md)** — jedes Team hat
+- **[2. Fälle: das Kapital, das niemand aufbaut](../../handbook/02-cases.md)** — jedes Team hat
   einen Prompt, fast keines hat Fälle. Was ein Fall ist und wie du bis heute
   Nachmittag zwanzig davon hast.
-- **[3. Ground Truth: wenn dir niemand eine liefert](../../handbook/03-ground-truth.md)** —
+- **[3. Ground Truth: wenn dir niemand eine gibt](../../handbook/03-ground-truth.md)** —
   woher die richtigen Antworten kommen, wenn es keine gelabelten Daten gibt, und
   warum sich das entscheidet, während du das Feature schreibst.
 - **[4. Checks: erst deterministisch, der Richter zuletzt](../../handbook/04-checks.md)** — wie
@@ -41,6 +41,6 @@ an und lies sie der Reihe nach — jedes baut auf dem vorherigen auf.
 - **[7. Wartung](../../handbook/07-maintenance.md)** — wann die Suite läuft, was dich hinsehen
   lassen sollte, und was an dem Morgen zu tun ist, an dem sie rot wird und du
   nichts geändert hast.
-- **[8. Für Teams, die für andere bauen](../../handbook/08-for-teams-building-for-others.md)**
+- **[8. Für Teams, die für andere entwickeln](../../handbook/08-for-teams-building-for-others.md)**
   — dieselbe Suite mit zwei weiteren Aufgaben, wenn das LLM-Feature einem Kunden
   gehört, und die eine Regel, von der nicht abgewichen werden darf.

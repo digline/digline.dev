@@ -67,7 +67,7 @@ Beginne mit einigen wenigen ausgewählten Formen. Lass jeden Fehler im Produktiv
 
 Zwanzig Fälle sagen dir nicht, dass das System korrekt ist. Sie sagen dir, dass es sich bei zwanzig Situationen, die jemand für repräsentativ hielt, nicht verschlechtert hat. Ein gate gegen Regressionen, kein Beweis.
 
-## Heute damit anfangen
+## Heute umsetzen
 
 1. Finde heraus, wo die Entscheidung deines Features steckt. Steckt sie nur im Fließtext, ändere die Ausgabe, bevor du einen einzigen Fall schreibst. Kannst du sie noch nicht ändern, kannst du das Feature nicht evaluieren. Das ist für sich genommen ein Befund, und was heute zu tun ist: den zusammengestellten Input und die Antwort aufzeichnen, denn morgen sind sie weg.
 2. Prüfe, ob deine Inputs deterministisch sind. Eine Abfrage, die ohne Sortierung abschneidet, ist der erste Bug.

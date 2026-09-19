@@ -1,5 +1,5 @@
 ---
-seo_title: 'Die Referenz: Ein Schwellenwert ist keine baseline'
+seo_title: 'Die Referenz: Ein Schwellenwert ist keine Referenz'
 lang: de
 translation_of: handbook/06-the-reference.md
 description: Ein Score kann weit fallen und liegt an beiden Tagen trotzdem über seinem Schwellenwert. Bemerkt wird das nur durch die eine Zahl, die du aufschreibst und an der du dich messen lässt.
@@ -83,7 +83,7 @@ Sie lässt sich **reviewen**. Eine Promotion ist ein Pull Request. Jemand andere
 
 Sie lässt sich **vorzeigen**. Wenn ein Kunde — oder ein Prüfer, oder dein eigenes Team in sechs Monaten — fragt, was wann getestet und freigegeben wurde, ist die Antwort eine Datei mit Commit-Hash und Datum, kein Screenshot.
 
-## Heute damit anfangen
+## Heute umsetzen
 
 1. Friere deinen Prompt und deine Fälle ein. Lass die Suite dreimal laufen.
 2. Wähle nach dem obigen Verfahren den mittleren run aus. Promote ihn. Committe die Datei.

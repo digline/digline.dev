@@ -6,8 +6,8 @@ description: Jedes Team, das ein LLM-Feature ausliefert, hat einen Prompt, und f
 search:
   exclude: true
 source: handbook/02-cases.md
-source_sha: 2132e031014b
-source_commit: 356a3c8
+source_sha: 67838bc398da
+source_commit: 48129ea
 model: claude-opus-5
 ---
 
@@ -49,7 +49,7 @@ Also bekommt der Prompt vierzig Iterationen und die Fälle keine, und das Team l
 
 Diese Schleife ist der Normalfall. Es ist kein Mangel an Disziplin; es ist das, was passiert, wenn die einzige Rückmeldung die nächste Antwort des Modells ist.
 
-Fälle verändern die Schleife. Mit zwanzig Fällen ist die einundvierzigste Iteration eine Zahl: *vorher neunzehn von zwanzig, nachher siebzehn*. Die Korrektur, die zwei Dinge kaputt gemacht hat, ist in derselben Minute sichtbar, in der sie gemacht wurde.
+Fälle verändern die Schleife. Mit zwanzig Fällen ist die einundvierzigste Iteration eine Zahl: *vorher neunzehn von zwanzig, nachher siebzehn*. Die Korrektur, die zwei Dinge kaputt gemacht hat, wird noch in derselben Minute sichtbar, in der sie entsteht.
 
 ## Woher Fälle kommen
 
@@ -61,13 +61,13 @@ Nicht aus deiner Vorstellung. Fälle, die du am Schreibtisch erfindest, prüfen 
 
 **Fehler aus der Produktion.** Jede Ausgabe, die fehlerhaft formatiert, leer, regelwidrig oder peinlich war. Diese hast du bereits in den Logs; es sind die Fälle, die du am wenigsten wiedersehen möchtest.
 
-**Randfälle, die dir aufgefallen sind.** Die leere Eingabe. Die Eingabe in der falschen Sprache. Die Eingabe mit 4,000 Wörtern. Die Eingabe, die deinen Wettbewerber erwähnt. Du hast mindestens einmal gesehen, wie das Modell damit seltsam umgegangen ist; schreib sie auf, solange du dich erinnerst.
+**Randfälle, die dir aufgefallen sind.** Die leere Eingabe. Die Eingabe in der falschen Sprache. Die Eingabe mit 4000 Wörtern. Die Eingabe, die deinen Wettbewerber erwähnt. Du hast mindestens einmal gesehen, wie das Modell damit seltsam umgegangen ist; schreib sie auf, solange du dich erinnerst.
 
 Die Gewohnheit, die mehr zählt als jedes Werkzeug: **ein gesehener Fehler, ein geschriebener Fall, am selben Tag.** Nicht „dafür sollte man später Tests ergänzen“. Später kommt nie; der Fehler schon.
 
 ## Wie viele und welche
 
-Zwanzig reichen für den Anfang. Nicht zweihundert — zweihundert wirst du nie schreiben, und zwanzig machen aus einer Vermutung bereits eine Zahl. In diesem Newsletter-Projekt reichten einundzwanzig Fälle, um das Rauschen des Richters über sechs runs hinweg zu messen und um zu zeigen, dass es [nichts verschlechtert hat](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml), den gelesenen Anteil jedes Artikels von 1,500 Zeichen auf 400 zu kürzen.
+Zwanzig reichen für den Anfang. Nicht zweihundert — zweihundert wirst du nie schreiben, und zwanzig machen aus einer Vermutung bereits eine Zahl. In diesem Newsletter-Projekt reichten einundzwanzig Fälle, um das Rauschen des Richters über sechs runs hinweg zu messen und um zu zeigen, dass es [nichts verschlechtert hat](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#reporthtml), den gelesenen Anteil jedes Artikels von 1500 Zeichen auf 400 zu kürzen.
 
 Was die zwanzig brauchen:
 
@@ -77,7 +77,7 @@ Was die zwanzig brauchen:
 
 **Stabile Eingaben.** Ein Fall, der die heutigen Daten abruft, ist morgen ein anderer Fall. Halte die Eingabe als Momentaufnahme in der Datei fest. Das Newsletter-Projekt speichert die Zusammenfassung des Artikels im Fall, nicht eine URL zum erneuten Abrufen: dieselben einundzwanzig Eingaben, in jedem run, seit August.
 
-**Ein Label, wenn möglich.** Bei allem, was klassifiziert — positiv/negativ, freigeben/ablehnen, relevant/nicht relevant —, ergänze das Label. Mit Labels bekommt deine Suite einen Gesamtwert: *Precision zwischen 0.60 und 0.67 über sechs runs der Newsletter-Suite hinweg*, eine Zahl, die stabil genug ist, um einen Schwellenwert darauf zu setzen, während einzelne Fälle um drei von fünf Stimmen schwankten. Ohne Labels hast du zwanzig Urteile und keine Zusammenfassung.
+**Ein Label, wenn möglich.** Bei allem, was klassifiziert — positiv/negativ, freigeben/ablehnen, relevant/nicht relevant —, ergänze das Label. Mit Labels bekommt deine Suite einen Gesamtwert: *Precision zwischen 0.60 und 0.67 über sechs runs der Newsletter-Suite hinweg*, eine Zahl, die stabil genug ist, um daran einen Schwellenwert festzumachen, während einzelne Fälle um drei von fünf Stimmen schwankten. Ohne Labels hast du zwanzig Urteile und keine Zusammenfassung.
 
 ## Was Fälle nicht sind
 
@@ -93,7 +93,7 @@ Alles andere in einem LLM-Projekt verliert an Wert. Der Prompt, den du auf ein M
 
 Deshalb ist die langweilige Arbeit die einzige, die es sich lohnt, zuerst zu tun. Nach einem halben Jahr hat das Team mit dem besten Prompt einen Prompt. Das Team mit zweihundert echten Fällen kann alles ändern — Modell, Prompt, Anbieter — und weiß innerhalb einer Stunde, ob es schlechter geworden ist. Der Prompt ist eine Meinung; die Fälle sind das Gedächtnis.
 
-## Heute damit anfangen
+## Heute umsetzen
 
 1. Finde die Überstimmung in deinem Produkt — die Stelle, an der ein Mensch das Modell korrigiert. Wenn es sie gibt, fang an, sie aufzuzeichnen. Wenn nicht, ist das das Erste, was zu bauen ist, vor jeder Suite.
 2. Öffne deine Logs. Nimm die letzten zehn Eingaben, die zu einer Beschwerde oder einer merkwürdigen Ausgabe geführt haben. Schreibe für jede die richtige Antwort auf. Das sind zehn Fälle.

@@ -33,25 +33,25 @@ In deinem Repository hat sich nichts bewegt. Das Modell hinter der API schon –
 
 Im [Newsletter-Projekt](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) ist das ein wöchentlicher Workflow, der den echten Richter laufen lässt und vergleicht. Er kostet etwa sieben Cent pro Woche. Er ist die billigste Versicherung im Repository.
 
-Die Reaktion unterscheidet sich von der bei Auslöser 1: Du hast das nicht verursacht, also kannst du es auch nicht rückgängig machen. Möglichkeiten, der Reihe nach: die Modellversion festschreiben, falls der Anbieter das zulässt und du auf einem Alias warst; den Prompt an das neue Verhalten anpassen und übernehmen, wenn du wieder auf dem alten Stand bist; oder das neue Verhalten bewusst als Referenz akzeptieren, wobei die Übernahme der Beleg dafür ist, dass du es gesehen und entschieden hast.
+Die Reaktion unterscheidet sich von der bei Auslöser 1: Du hast das nicht verursacht, also kannst du es auch nicht rückgängig machen. Möglichkeiten, der Reihe nach: die Modellversion festschreiben, falls der Anbieter das zulässt und du auf einem Alias warst; den Prompt an das neue Verhalten anpassen und promoten, wenn du wieder auf dem alten Stand bist; oder das neue Verhalten bewusst als Referenz akzeptieren, wobei die Promotion der Beleg dafür ist, dass du es gesehen und entschieden hast.
 
 ### 3. Ein echter Fall ist schiefgegangen
 
 Ein Nutzer meldet es. Ein Log zeigt es. Jemand im Team bemerkt eine Antwort, die nicht hätte vorkommen dürfen. Die Suite hat es nicht abgefangen, weil ihr diese Eingabe fehlte.
 
-Die Reaktion ist die Gewohnheit aus Kapitel 2, und sie ist der wichtigste Satz in diesem Handbuch: **ein gesehener Fehler, ein geschriebener Fall, am selben Tag.** Bevor du den Prompt anfasst, speichere die Eingabe und die richtige Antwort als Fall. Lass die Suite laufen – der neue Fall schlägt fehl, und das ist richtig so; er erscheint als *neu*, ohne Vergleichspunkt. Dann korrigiere den Prompt. Dann lass sie erneut laufen: Der neue Fall besteht, und die anderen zwanzig sagen dir, ob die Korrektur etwas kaputt gemacht hat. Dann übernimm.
+Die Reaktion ist die Gewohnheit aus Kapitel 2, und sie ist der wichtigste Satz in diesem Handbuch: **ein gesehener Fehler, ein geschriebener Fall, am selben Tag.** Bevor du den Prompt anfasst, speichere die Eingabe und die richtige Antwort als Fall. Lass die Suite laufen – der neue Fall schlägt fehl, und das ist richtig so; er erscheint als *neu*, ohne Vergleichspunkt. Dann korrigiere den Prompt. Dann lass sie erneut laufen: Der neue Fall besteht, und die anderen zwanzig sagen dir, ob die Korrektur etwas kaputt gemacht hat. Dann promote.
 
 Lässt du den ersten Schritt aus, hast du eine Eingabe geflickt und nichts gelernt. Machst du ihn, wird aus dem Fehler dauerhafter Schutz.
 
 ### 4. Die Regeln haben sich verschoben
 
-Jemand hat einen Schwellenwert angehoben, eine Toleranz verschärft, einen check hinzugefügt, einen entfernt. Der Vergleich läuft weiterhin – und er sagt dir, dass sich die Konfiguration von der Referenz unterscheidet, sodass ein Fall, der von bestanden auf fehlgeschlagen gekippt ist, als Regeländerung zu lesen ist und nicht als Modelländerung. Die Übernahme wird verweigert, bis die Referenz unter den neuen Regeln neu festgelegt ist.
+Jemand hat einen Schwellenwert angehoben, eine Toleranz verschärft, einen check hinzugefügt, einen entfernt. Der Vergleich läuft weiterhin – und er sagt dir, dass sich die Konfiguration von der Referenz unterscheidet, sodass ein Fall, der von bestanden auf fehlgeschlagen gekippt ist, als Regeländerung zu lesen ist und nicht als Modelländerung. Die Promotion wird verweigert, bis die Referenz unter den neuen Regeln neu festgelegt ist.
 
-Die Reaktion ist kurz: unter den neuen Regeln laufen lassen, hinsehen, übernehmen. Der Sinn der Verweigerung ist, dass eine Regeländerung nie unsichtbar bleibt – sie erzeugt immer eine Übernahme, die jemand im Review sehen kann.
+Die Reaktion ist kurz: unter den neuen Regeln laufen lassen, hinsehen, promoten. Der Sinn der Verweigerung ist, dass eine Regeländerung nie unsichtbar bleibt – sie erzeugt immer eine Promotion, die jemand im Review sehen kann.
 
 ### 5. Ein Fall lässt sich nicht mehr beurteilen
 
-Ein check liefert *konnte nicht beurteilen* – die Stichproben des Richters gehen auseinander, die Ausgabe hatte die falsche Form, beim Anbieter lief eine Zeitüberschreitung auf. Das ist weder bestanden noch fehlgeschlagen, und es blockiert die Übernahme.
+Ein check liefert *konnte nicht beurteilen* – die Stichproben des Richters gehen auseinander, die Ausgabe hatte die falsche Form, beim Anbieter lief eine Zeitüberschreitung auf. Das ist weder bestanden noch fehlgeschlagen, und es blockiert die Promotion.
 
 Zwei Reaktionen, und nur zwei. Ist der Fall wirklich mehrdeutig – die Stichproben gehen auseinander, weil ein Mensch sich ebenfalls nicht entscheiden würde –, dann setze ihn aus, mit schriftlicher Begründung, damit er als sichtbare Lücke in der Suite bleibt, statt stillschweigend zu verschwinden. Liegt es am check – falsche Form, falscher Prompt im Richter –, dann behebe den check. Was du nicht tust: die Mindestübereinstimmung so weit senken, bis aus dem geteilten Ergebnis ein Bestehen wird. Das macht aus *unbekannt* ein *in Ordnung*, ohne dass jemand darüber entschieden hat.
 
@@ -63,7 +63,7 @@ Die Auslöser sind reaktiv. Was eine Suite ehrlich hält, ist eine kleine, langw
 2. Sieh dir die Liste der Fälle an, die sich bewegt haben, auch innerhalb der Toleranz. Ein Fall, der jede Woche ein wenig driftet, sagt dir etwas, bevor er die Grenze überschreitet.
 3. Prüfe die Zahl der Fälle. Ist sie seit letzter Woche nicht gewachsen, frage dich, ob in der Produktion nichts schiefgegangen ist oder ob es niemand aufgeschrieben hat. Meist ist es das Zweite.
 4. Prüfe das Alter der Referenz. Eine vier Monate alte Referenz für ein Feature, das sich zweimal geändert hat, ist eine Referenz, die niemand erneut freigegeben hat.
-5. Wenn in 1–4 etwas eine Entscheidung verlangt, triff sie jetzt – übernehmen, aussetzen, einen Fall hinzufügen – und committe.
+5. Wenn in 1–4 etwas eine Entscheidung verlangt, triff sie jetzt – promoten, aussetzen, einen Fall hinzufügen – und committe.
 
 Zehn Minuten, einmal pro Woche, von der Person, die das Feature verantwortet. Lass es einen Monat lang aus, und die Suite ist immer noch da; lass es ein Quartal lang aus, und sie ist wieder eine Demo.
 
@@ -75,7 +75,7 @@ Drei langsame Fehlentwicklungen, die kein Auslöser abfängt, weil jeder einzeln
 
 **Verrottende Fälle.** Ein Fall, dessen erwartete Antwort im März richtig war, kann im September falsch sein, weil sich das Produkt geändert hat – die Erstattungsfrist wurde verschoben, die Taxonomie hat eine Kategorie dazubekommen. Eine Suite mit verrotteten Fällen schlägt aus den falschen Gründen fehl und gewöhnt die Leute daran, Rot zu ignorieren. Wenn ein Fall fehlschlägt und die Ausgabe richtig aussieht, prüfe den Fall, bevor du den Prompt prüfst.
 
-**Abdriften der Referenz durch Übernahmen.** Jede Übernahme akzeptiert einen kleinen Verlust – „ein Fall schlechter, aber der Diff ist schöner“. Zehn Übernahmen später liegt die Referenz zehn kleine Verluste unter dem Ausgangspunkt, und jeder einzelne Vergleich war grün. Der Schutz ist der aggregierte Wert in der Datei: Vergleiche die Precision dieses Monats nicht mit der Referenz von letzter Woche, sondern mit der allerersten, die du je freigegeben hast. Git hat sie.
+**Abdriften der Referenz durch Promotions.** Jede Promotion akzeptiert einen kleinen Verlust – „ein Fall schlechter, aber der Diff ist schöner“. Zehn Promotions später liegt die Referenz zehn kleine Verluste unter dem Ausgangspunkt, und jeder einzelne Vergleich war grün. Der Schutz ist der aggregierte Wert in der Datei: Vergleiche die Precision dieses Monats nicht mit der Referenz von letzter Woche, sondern mit der allerersten, die du je freigegeben hast. Git hat sie.
 
 ## Heute umsetzen
 

@@ -17,23 +17,23 @@ Wenn du aus der gewöhnlichen Softwareentwicklung kommst, musst du als Erstes ve
 
 ## Eine Funktion und das, was wie eine aussieht
 
-Seit dreißig Jahren gilt: Bei gleicher Eingabe erzeugt derselbe Code dieselbe Ausgabe. Alles in der Softwareentwicklung ruht darauf – Tests, Debugging, Code-Review, „bei mir läuft es". Über eine Funktion lässt sich nachdenken, weil sie eine feste Abbildung von Eingaben auf Ausgaben ist.
+Seit dreißig Jahren gilt: Bei gleicher Eingabe erzeugt derselbe Code dieselbe Ausgabe. Alles in der Softwareentwicklung ruht darauf – Tests, Debugging, Code-Review, „bei mir läuft es“. Über eine Funktion lässt sich nachdenken, weil sie eine feste Abbildung von Eingaben auf Ausgaben ist.
 
 Ein Aufruf eines Sprachmodells sieht aus wie eine Funktion. Er hat eine Eingabe (den Prompt) und eine Ausgabe (die Completion). Er steht in deinem Code zwischen zwei gewöhnlichen Funktionen. Er ist keine.
 
-Ein Sprachmodell erzeugt eine *Wahrscheinlichkeitsverteilung* über mögliche nächste Token und zieht daraus eine Stichprobe. Genau darin liegt der Sinn: Es ist der Grund, warum dasselbe Modell ein Gedicht und eine SQL-Abfrage schreiben kann. Es bedeutet aber auch, dass derselbe Prompt, zweimal geschickt, mit zwei verschiedenen Antworten zurückkommen kann – und beide sind „richtig" in dem einzigen Sinn, den das Modell kennt: Beide waren wahrscheinlich.
+Ein Sprachmodell erzeugt eine *Wahrscheinlichkeitsverteilung* über mögliche nächste Token und zieht daraus eine Stichprobe. Genau darin liegt der Sinn: Es ist der Grund, warum dasselbe Modell ein Gedicht und eine SQL-Abfrage schreiben kann. Es bedeutet aber auch, dass derselbe Prompt, zweimal geschickt, mit zwei verschiedenen Antworten zurückkommen kann – und beide sind „richtig“ in dem einzigen Sinn, den das Modell kennt: Beide waren wahrscheinlich.
 
 Du kannst die Temperatur auf null setzen und die Streuung verringern. Beseitigen kannst du sie nicht, und bei den meisten nützlichen Aufgaben willst du das auch nicht: Ein Modell bei Temperatur null ist genau in dem schlechter, wofür du es angeschafft hast.
 
 ## Was das mit deinen Intuitionen macht
 
-**„Ich habe es ausprobiert, und es funktioniert."** Du hast es einmal ausgeführt. Du hast eine Stichprobe aus der Verteilung gezogen. Die nächste kann anders ausfallen. Im [Newsletter-Richter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), den dieses Handbuch als durchgehendes Beispiel verwendet, ergaben dieselben einundzwanzig Artikel, zweimal mit identischem Prompt bewertet, zwanzig gleiche Urteile und ein abweichendes. Eins von einundzwanzig ist kein Fehler. So ist die Sache beschaffen.
+**„Ich habe es ausprobiert, und es funktioniert.“** Du hast es einmal ausgeführt. Du hast eine Stichprobe aus der Verteilung gezogen. Die nächste kann anders ausfallen. Im [Newsletter-Richter](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f), den dieses Handbuch als durchgehendes Beispiel verwendet, ergaben dieselben einundzwanzig Artikel, zweimal mit identischem Prompt bewertet, zwanzig gleiche Urteile und ein abweichendes. Eins von einundzwanzig ist kein Fehler. So ist die Sache beschaffen.
 
-**„Ich habe den Prompt repariert."** Du hast die Verteilung verändert. Sie liefert jetzt für die Eingabe, die du ausprobiert hast, die gewünschte Antwort. Sie liefert auch für jede andere Eingabe leicht andere Antworten, und die hast du dir nicht angesehen. Prompt-Änderungen wirken global; deine Aufmerksamkeit war lokal.
+**„Ich habe den Prompt repariert.“** Du hast die Verteilung verändert. Sie liefert jetzt für die Eingabe, die du ausprobiert hast, die gewünschte Antwort. Sie liefert auch für jede andere Eingabe leicht andere Antworten, und die hast du dir nicht angesehen. Prompt-Änderungen wirken global; deine Aufmerksamkeit war lokal.
 
-**„Nichts hat sich geändert, also funktioniert es noch."** Dein Code hat sich nicht geändert. Das Modell hinter der API schon – Anbieter aktualisieren, trainieren neu, markieren Versionen als veraltet und lassen Aliase auf andere Ziele zeigen, ohne ein Changelog, das du lesen würdest. Deine Git-Historie sagt, das System sei unverändert. Deine Nutzer sagen, es sei schlechter geworden. Beide haben recht.
+**„Nichts hat sich geändert, also funktioniert es noch.“** Dein Code hat sich nicht geändert. Das Modell hinter der API schon – Anbieter aktualisieren, trainieren neu, markieren Versionen als veraltet und lassen Aliase auf andere Ziele zeigen, ohne ein Changelog, das du lesen würdest. Deine Git-Historie sagt, das System sei unverändert. Deine Nutzer sagen, es sei schlechter geworden. Beide haben recht.
 
-**„Es liegt über dem Schwellenwert."** Ein Schwellenwert fängt ab, was *unter dem Schwellenwert* liegt. Er fängt nicht ab, was *schlechter als letzten Monat* ist. Nimm erfundene Zahlen: Ein Score, der von 0.91 auf 0.78 abdriftet, liegt immer noch über 0.7, ist immer noch grün – und für die Person, die die Antwort bekommt, dreizehn Punkte schlechter.
+**„Es liegt über dem Schwellenwert.“** Ein Schwellenwert fängt ab, was *unter dem Schwellenwert* liegt. Er fängt nicht ab, was *schlechter als letzten Monat* ist. Nimm erfundene Zahlen: Ein Score, der von 0.91 auf 0.78 abdriftet, liegt immer noch über 0.7, ist immer noch grün – und für die Person, die die Antwort bekommt, dreizehn Punkte schlechter.
 
 ## Was du also tatsächlich auslieferst
 
