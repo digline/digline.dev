@@ -29,7 +29,7 @@ The Reddit judge asked its reader, each morning, what they did with each thread:
 
 So `ignored` meant *the judge was wrong* and *no time*, and every case built on it was a reading of an answer that never said which. **Do not reinterpret it afterwards** — by date, by the judge's confidence, by what you must have meant. That is inventing an expected value on your own behalf. The old records stay ambiguous, and no new case is minted from them.
 
-The fix is at the keyboard, and it has one constraint: the key that empties the morning's list has to mean the value that claims nothing — *deferred*, not *declined* — or the ambiguous label is rebuilt under a new name in one morning. The negatives written before the fix cannot be recovered.
+The fix is at the keyboard. Whatever key clears the morning's list has to write *deferred*, the value that claims nothing, not *declined*. Otherwise the ambiguous label is back under a new name within a morning. The negatives written before the fix can't be recovered.
 
 That split does not remove the ambiguity, because `declined` still asks what you *did*. A thread left because the reader had already commented twice in that forum is still a `declined`, still a negative. Removing it takes a question about the rule — not *did you comment?* but *should this have been a comment?* — and neither judge asks one.
 
