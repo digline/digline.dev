@@ -8,10 +8,11 @@ both checked on the built site:
     the sync read (tools/sync-docs.sh, .agents-rule.json). A link at main, or at
     any other ref, fails the build (agents_md_link_problems).
   * **digline/brief**: every link leads to a full 40-character commit, the runs
-    /why/ reads its numbers from. main, a branch, a tag and a short sha all fail
-    the build (brief_link_problems): a tag can be moved and a branch moves by
-    itself, and the files a reader is sent to verify would not be the ones the
-    page was written from.
+    /why/ and the Handbook read their numbers from. main, a branch, a tag, a
+    short sha and the repository's front page all fail the build
+    (brief_link_problems): a tag can be moved, a branch moves by itself, and the
+    front page is main's; the files a reader is sent to verify would not be the
+    ones the page was written from.
 
 ── the quotation on /agents/ and its translations ────────────────────────────
 That page closes on rule 1 of digline's AGENTS.md, quoted in
@@ -232,14 +233,18 @@ def agents_md_link_problems(site: str, tag: str) -> tuple[list[str], int]:
 
 
 BRIEF = "https://github.com/digline/brief"
-_BRIEF = re.compile(r'href="' + re.escape(BRIEF) + r'(?:/(?:blob|tree|commit)/([^/"]+)[^"]*)?"')
-_SHA = re.compile(r"\A[0-9a-f]{40}\Z")
+# Every href into the repository — its front page, with or without a slash, a
+# #fragment or a ?query, and any path under it. Not digline/brief-something.
+_BRIEF = re.compile(r'href="' + re.escape(BRIEF) + r'((?:[/#?][^"]*)?)"')
+# The one shape that passes: a file, a folder or a commit at a full sha.
+_PINNED = re.compile(r"\A/(?:blob|tree|commit)/[0-9a-f]{40}(?:[/#?]|\Z)")
 
 
 def brief_link_problems(site: str) -> tuple[list[str], int]:
-    """Every link to digline/brief in site/'s pages, at anything but a full
-    commit sha: (problems, links read). The repository's own front page — no
-    /blob/ or /tree/ — is a link to the project, not to a file, and passes."""
+    """Every link to digline/brief in site/'s pages that is not a file, a
+    folder or a commit at a full sha: (problems, links read). The repository's
+    front page is refused too: it shows main, and a reader sent to it to see the
+    project sees whatever main holds today, not what the page was written from."""
     problems: list[str] = []
     read = 0
     for folder, dirs, names in os.walk(site):
@@ -247,11 +252,13 @@ def brief_link_problems(site: str) -> tuple[list[str], int]:
         for name in sorted(n for n in names if n.endswith(".html")):
             relative = os.path.relpath(os.path.join(folder, name), site).replace(os.sep, "/")
             with open(os.path.join(folder, name), encoding="utf-8") as fh:
-                for ref in _BRIEF.findall(fh.read()):
+                for rest in _BRIEF.findall(fh.read()):
                     read += 1
-                    if ref and not _SHA.match(ref):
-                        problems.append(f"{relative}: a link to digline/brief at {ref!r}, and a source is cited at a "
-                                        "full commit sha — a tag can be moved and a branch moves by itself")
+                    if not _PINNED.match(rest):
+                        where = repr(rest) if rest.strip("/") else "its front page"
+                        problems.append(f"{relative}: a link to digline/brief at {where}, and a source is cited at a "
+                                        "full commit sha — a tag can be moved, a branch moves by itself, and the "
+                                        "front page is main")
     return problems, read
 
 
@@ -468,12 +475,19 @@ def selftest() -> int:
         def brief_page(*refs):
             with open(os.path.join(site, "why", "index.html"), "w", encoding="utf-8") as fh:
                 fh.write("".join(f'<a href="{BRIEF}{r}">x</a>' for r in refs))
-        brief_page(f"/tree/{sha}", f"/blob/{sha}/fixtures/README.md", f"/blob/{sha}/fixtures/recompute.py", "")
-        expect("links to digline/brief at a full sha, and its front page", brief_link_problems(site), ([], 4))
+        brief_page(f"/tree/{sha}", f"/blob/{sha}/fixtures/README.md", f"/blob/{sha}/fixtures/recompute.py",
+                   f"/blob/{sha}/README.md#reporthtml", f"/commit/{sha}")
+        expect("links to digline/brief at a full sha: a folder, files, an anchor, a commit",
+               brief_link_problems(site), ([], 5))
         for label, ref in (("main", "/blob/main/fixtures/README.md"),
                            ("a tag", "/tree/why-2026-09/fixtures"),
                            ("a short sha", f"/blob/{sha[:7]}/fixtures/README.md"),
-                           ("a branch", "/tree/why-fixtures/fixtures")):
+                           ("a branch", "/tree/why-fixtures/fixtures"),
+                           ("its front page", ""),
+                           ("its front page, with a slash", "/"),
+                           ("its front page, at an anchor", "#readme"),
+                           ("a sha with more after it", f"/blob/{sha}0/README.md"),
+                           ("its issues", "/issues")):
             brief_page(ref)
             found, _ = brief_link_problems(site)
             expect(f"a link to digline/brief at {label}: refused",

@@ -9,7 +9,7 @@ description: >-
 
 # 5. The judge
 
-Chapter 4 ended with a rule: at most one judged check, sampled, with a measured tolerance. This chapter is about the word *measured* — what happens when you skip it, and the procedure that replaces guessing with a number. The measurements are from the six runs the [newsletter judge](https://github.com/digline/brief) publishes, and you can recompute them.
+Chapter 4 ended with a rule: at most one judged check, sampled, with a measured tolerance. This chapter is about the word *measured* — what happens when you skip it, and the procedure that replaces guessing with a number. The measurements are from the six runs the [newsletter judge](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/fixtures/README.md) publishes, and you can recompute them.
 
 ## Two noises, not one
 
@@ -71,7 +71,7 @@ That is the general pattern, and it is the reason a suite with labelled cases sh
 
 It drifts for the same reasons yours does, and it deserves the same treatment: a file, versioned, recorded with every run. When a judged check starts failing, the first question is not "did the system get worse?" but "did the ruler change?" — and if the judge's prompt is a string inside a function somewhere, you cannot answer it.
 
-Two smaller habits. First, keep the instruction before the output in the judge's prompt, and label the output clearly; a judge that reads an instruction after the text it was asked to judge will sometimes judge the instruction. Second, when you test your suite with a fake judge — and you should — build the fake from one *real* reply, not from what you think the reply looks like. A fake written from the code confirms the code; the newsletter project found a cost under-counted by 384× with every test green, because the fake and the code shared the same wrong assumption about the API's shape.
+Two smaller habits. First, keep the instruction before the output in the judge's prompt, and label the output clearly; a judge that reads an instruction after the text it was asked to judge will sometimes judge the instruction. Second, when you test your suite with a fake judge — and you should — build the fake from one *real* reply, not from what you think the reply looks like. A fake written from the code confirms the code; the newsletter project [found a cost under-counted by 384×](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/README.md#the-fake-judge-and-ci) with every test green, because the fake and the code shared the same wrong assumption about the API's shape.
 
 ## Doing it today
 

@@ -21,7 +21,7 @@ The threshold says where the floor is. The reference says where you were standin
 
 ## What a reference contains
 
-A file, in the repository, next to the code. In the [newsletter project](https://github.com/digline/brief) it is `.digline/alessandro/baselines/brief-judge.json`, committed like any other file. Inside:
+A file, in the repository, next to the code. In the [newsletter project](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f) it is [`.digline/alessandro/baselines/brief-judge.json`](https://github.com/digline/brief/blob/9507bb06f7dd90a4b6a624dbe77725e50819a02f/.digline/alessandro/baselines/brief-judge.json), committed like any other file. Inside:
 
 - **The verdicts** — every check on every case, with its score, threshold and tolerance. Not a summary: the full table, so a later comparison can say *which* case moved.
 - **The aggregates**, if the cases are labelled — precision 0.667 and accuracy 0.762, ten of fifteen and sixteen of twenty-one — with the counts that produced them.
