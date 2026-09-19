@@ -1,0 +1,13 @@
+{#-
+  The logo in the drawer's title, Material's own partial with one change: the
+  image's alt is empty. The link round it already carries the site's name
+  (aria-label="digline" in Material's partials/nav.html), so the image is
+  decoration, and "logo" — English on every page, the translations' included —
+  was a word read aloud for nothing.
+-#}
+{% if config.theme.logo %}
+  <img src="{{ config.theme.logo | url }}" alt="">
+{% else %}
+  {% set icon = config.theme.icon.logo or "material/library" %}
+  {% include ".icons/" ~ icon ~ ".svg" %}
+{% endif %}

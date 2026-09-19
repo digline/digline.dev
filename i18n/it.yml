@@ -58,6 +58,10 @@ footer:
     label: Questo sito
     about: Informazioni
     contact: Contatti
+pager:
+  previous: "Precedente"
+  next: "Successivo"
+
 closing:
   title: Inizia con una suite e
   title_accent: un run approvato.
@@ -459,6 +463,9 @@ source_keys:
     '7': 3ba8d02b16fd
     '8': c195d2d87562
     '9': edcd8e701a2d
+  pager:
+    next: 1ff57a29d7c9
+    previous: a57b08a480b8
 
 # ── DO NOT TRANSLATE ─────────────────────────────────────────────────────────
 # Written by hand, and never by the translating agent: the notice a translated

@@ -73,6 +73,12 @@ footer:
     about: "About"
     contact: "Contact"
 
+# overrides/main.html — previous / next at the foot of a page read in order:
+# a Handbook chapter, a comparison, a page of the docs.
+pager:
+  previous: "Previous"
+  next: "Next"
+
 # overrides/partials/closing.html — the closing band of the home, Why and Start here.
 closing:
   title: "Start with one suite and"
