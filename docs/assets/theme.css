@@ -134,6 +134,12 @@ body {
    laid under the bar and pinned to its right edge, where the icon is, never
    wider than the window allows. */
 .dg-bar .md-search { flex: none; }
+/* Below 60em Material keeps .md-search in the row, where an item of zero width
+   still takes the row's 4px gap: the documentation's four slots were 4px wider
+   than the presentation pages', and every section 4px to the left. */
+@media screen and (max-width: 59.984375em) {
+  .dg-bar .md-search { margin-left: -4px; }
+}
 @media screen and (min-width: 60em) {
   .dg-bar .md-header__button[for="__search"] { display: flex; }
   /* Out of the row entirely: a flex item of zero width still takes the row's
@@ -437,17 +443,13 @@ body {
   color: var(--muted);
 }
 .md-container > .opening .opening__lede a { color: var(--link); }
-/* Under the lede: on a translation, the notice that a model translated it
-   (pages.css has the reading pages' and its contrast); on a Handbook page with
-   translations, the line of its other languages. The same size, the same
-   muted words, links whole. */
-.md-container > .opening .opening__notice,
-.md-container > .opening .opening__languages {
+/* Under the lede, on a translation: the notice that a model translated it, as
+   pages.css has it on the reading pages (and its contrast, measured there). */
+.md-container > .opening .opening__notice {
   margin: 14px 0 0; max-width: 640px;
   font-size: 14px; line-height: 1.5; color: var(--muted);
 }
-.md-container > .opening .opening__notice a,
-.md-container > .opening .opening__languages a { color: var(--link); white-space: nowrap; }
+.md-container > .opening .opening__notice a { color: var(--link); white-space: nowrap; }
 .md-container > .opening .opening__notice--stale { color: var(--amber); font-weight: 500; }
 .md-container > .opening .opening__lede code {
   font-family: var(--mono-page);
@@ -583,8 +585,8 @@ body {
 .md-typeset .dg-decisions td:last-child { white-space: nowrap; }
 
 /* ── the bar on a phone ──────────────────────────────────────────────────
-   The sections leave the bar entirely at 453px and under, on the documentation
-   pages and there only — this file is the half of the site Material renders,
+   The sections leave the bar entirely at 495px and under (503 in German), on
+   the documentation pages and there only — this file is the half of the site Material renders,
    and the presentation pages never load it. What is left, the drawer button,
    the mark, search, GitHub and the theme, sits at the two ends of the pill.
 
@@ -593,22 +595,17 @@ body {
    mkdocs.yml's nav, Start here included. On the presentation pages there is no
    drawer, which is why chrome.css drops one entry there instead of all of them.
 
-   Measured in Chrome on the pill, which also holds the drawer and search
-   buttons here: the three entries that stay need 185px, and the pill gives
-   the nav that from 454px of viewport. */
-@media (max-width: 453px) {
+   Measured in Chrome on the pill, which also holds the drawer button and the
+   four slots here: the three entries that stay fit from 496px of viewport
+   (504 in German). The rest of the arithmetic, and the same rules for both
+   shells, are in chrome.css. */
+@media (max-width: 503px) {
+  :where(html[lang="de"]) .dg-bar .dg-nav { display: none; }
+  :where(html[lang="de"]) .dg-bar .dg-actions { margin-left: auto; }
+}
+@media (max-width: 495px) {
   .dg-bar .dg-nav { display: none; }
   .dg-bar .dg-actions { margin-left: auto; }
-}
-
-/* Above 453px the nav is back, with less room than the presentation pages'
-   pill at the same width. Six entries need 342px at 13px, which this pill
-   gives them from 697px: until then the three optional
-   ones go, as they do on a phone in chrome.css, and the three that remain fit
-   from 454px. At 960px Material widens search into a field; the 18px gap
-   chrome.css keeps up to 1000px is what lets all six stay there. */
-@media (max-width: 696px) {
-  .dg-bar .dg-nav__optional { display: none; }
 }
 
 /* ── EN: a link from a translation to an English page ─────────────────────

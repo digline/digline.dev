@@ -33,9 +33,9 @@ The same pages get ``page.meta.language_switch``, the language menu in the
 bar (overrides/partials/header.html): one entry per hreflang link but
 x-default — the same list, so the menu and the links cannot disagree — each
 language by its own name (languages.NAMES), the page's own marked current.
-Only the presentation pages: on a documentation page — the Handbook — that
-slot of the bar holds search, and the bar is the same on every page
-(tools/check-bar.py), so its other languages are said elsewhere.
+Every page with translations, a presentation page or a Handbook page: the menu
+has a slot of its own in the bar, the second, on every page of the site
+(tools/check-bar.py).
 
 ── previous and next on a translation (on_files, on_nav, on_page_context) ────
 A translation is not in the nav (not_in_nav), so it has no place of its own
@@ -63,13 +63,6 @@ English, marked EN, until it is translated — open, the page itself current,
 with its table of contents; and last, the documentation, which is English,
 which its words say. A page translated tomorrow is in it the day it is, with nothing to
 change: the tree is read from the translations there are.
-
-The same pages, English and translated, get ``page.meta.language_links``: the
-line under the title (overrides/partials/opening.html) that a documentation
-page has in place of the bar's language menu — every other language the page
-exists in, each as languages.READ_IN says it in that language, hreflang and
-lang on each link. On a translation English is left out: its notice already
-leads to the original.
 
 Wherever a link leaves the page's language for English — an entry of that
 tree, the pager's previous or next — its title says so: lang="en" on the
@@ -330,15 +323,6 @@ class Current:
         return hash(self._page)
 
 
-def language_links(links: list[dict[str, str]], lang: str, site_url: str) -> list[dict[str, str]]:
-    """The line under a Handbook page's title: the other languages it exists in,
-    English left out of a translation's, from its hreflang links."""
-    base = site_url.rstrip("/") + "/"
-    return [{"lang": link["lang"], "path": link["href"][len(base):], "text": languages.READ_IN[link["lang"]]}
-            for link in links
-            if link["lang"] not in (X_DEFAULT, lang) and not (lang != languages.ORIGINAL and link["lang"] == languages.ORIGINAL)]
-
-
 class NavEntry:
     """What Material's partials/nav-item.html reads of an item of the nav, for
     the tree a translation's drawer is drawn from: a page (url), or a section
@@ -437,14 +421,9 @@ def on_page_context(context, page, config, nav, **kwargs):
     original = src_uri.split("/", 1)[1] if languages.is_translation(src_uri) else src_uri
     if original in _groups:
         page.meta["hreflang"] = hreflang(original, _groups[original], config["site_url"])
-        if original in languages.PRESENTATION_PAGES:
-            page.meta["language_switch"] = language_switch(page.meta["hreflang"],
-                                                           languages.language_of(src_uri) or languages.ORIGINAL,
-                                                           config["site_url"])
-        else:
-            page.meta["language_links"] = language_links(page.meta["hreflang"],
-                                                         languages.language_of(src_uri) or languages.ORIGINAL,
-                                                         config["site_url"])
+        page.meta["language_switch"] = language_switch(page.meta["hreflang"],
+                                                       languages.language_of(src_uri) or languages.ORIGINAL,
+                                                       config["site_url"])
     if languages.is_translation(src_uri):
         repo = os.path.dirname(os.path.abspath(config["config_file_path"]))
         page.meta["translation_notice"] = notice(page.meta, repo, original)
@@ -523,8 +502,7 @@ def check_site(site: str, groups: dict[str, dict[str, str]], site_url: str) -> t
             path = languages.page_url(src_uri) + "index.html"
             expected[path] = [(link["lang"], link["href"]) for link in links]
             language[path] = languages.language_of(src_uri) or languages.ORIGINAL
-            if original in languages.PRESENTATION_PAGES:
-                switches[path] = language_switch(links, language[path], site_url)
+            switches[path] = language_switch(links, language[path], site_url)
     problems: list[str] = []
     counted = {"pages": 0, "links": 0, "menus": 0, "entries": 0}
     for folder, dirs, names in os.walk(site):
@@ -557,7 +535,7 @@ def _switch_problems(path: str, head: "_Head", switch: dict | None, site_url: st
     """A page's language menu against the one its hreflang group gives it: none
     on a page without translations."""
     if switch is None:
-        return [f"{path}: a language menu, and the page is not a presentation page with translations"] if head.switches else []
+        return [f"{path}: a language menu, and the page has no translation"] if head.switches else []
     if head.switches != 1:
         return [f"{path}: {head.switches} language menus, and a page with translations has one"]
     problems = []
@@ -1189,25 +1167,20 @@ def selftest() -> int:
                (any("How digline compares" in t for h, t, a, e in drawer(_read(site, "handbook/03-ground-truth/index.html"))),
                 any(e for h, t, a, e in drawer(_read(site, "handbook/03-ground-truth/index.html")))), (True, False))
 
-        # The line of other languages under the title of a Handbook page.
-        def languages_line(html):
-            found = re.search(r'<p class="opening__languages" data-translation-languages>(.*?)</p>', html, re.S)
-            return re.findall(r'<a href="([^"]*)" hreflang="([^"]*)" lang="([^"]*)">([^<]*)</a>', found.group(1)) if found else None
-
-        expect("the languages line: on English chapter 3, to Italian; none on Italian chapter 3 (the notice leads to English); "
-               "none on chapter 4, which has no translation, nor on Why, which has the menu",
-               (languages_line(_read(site, "handbook/03-ground-truth/index.html")), languages_line(it_chapter),
-                languages_line(_read(site, "handbook/04-checks/index.html")), languages_line(_read(site, "why/index.html"))),
-               ([("../../it/handbook/03-ground-truth/", "it", "it", "Leggi in italiano")], None, None, None))
         expect("the Italian Handbook index: chapter 3 to its translation, chapter 1 in English, from /it/handbook/",
                ('href="../../it/handbook/03-ground-truth/"' in it_index, 'href="../../handbook/01-what-you-are-shipping/"' in it_index,
                 'href="../../handbook/03-ground-truth/"' in it_index), (True, True, False))
         expect("the Italian chapter 3: the post in English, three folders up (in its lede, in the opening band)",
                'href="../../../blog/bad-evals-my-own/"' in it_chapter, True)
-        expect("the Italian Handbook pages hold the bar's first slot with search, as the English ones do",
-               [re.search(r'<div class="dg-actions">\s*<label class="md-header__button md-icon" for="__search"', _read(site, p))
-                is not None for p in ("it/handbook/index.html", "it/handbook/03-ground-truth/index.html",
-                                      "handbook/03-ground-truth/index.html")], [True, True, True])
+        expect("the Handbook's bar, English and Italian: search in the first slot, the language menu in the second",
+               [bool(re.search(r'<div class="dg-actions">\s*<label class="md-header__button md-icon" for="__search"'
+                               r'.*?</div>\s*<details class="dg-lang">', _read(site, p), re.S))
+                for p in ("it/handbook/index.html", "it/handbook/03-ground-truth/index.html",
+                          "handbook/03-ground-truth/index.html")], [True, True, True])
+        expect("a documentation page with no translation: search, then the language slot held empty",
+               bool(re.search(r'<div class="dg-actions">\s*<label class="md-header__button md-icon" for="__search"'
+                              r'.*?</div>\s*<span class="dg-slot dg-slot--lang" aria-hidden="true"></span>',
+                              _read(site, "handbook/04-checks/index.html"), re.S)), True)
         expect("the Italian chapter 3 and index: their language, their hreflang, the notice",
                (links("it/handbook/03-ground-truth/index.html").lang, links("it/handbook/index.html").lang,
                 links("it/handbook/03-ground-truth/index.html").links,
@@ -1310,7 +1283,7 @@ def selftest() -> int:
                ["de/why/", "it/", "it/about/", "it/handbook/", "it/handbook/02-cases/", "it/handbook/03-ground-truth/",
                 "it/why/"])
 
-        for script in ("check-llms.py", "check-translate.py", "check-sitemap.py", "check-glyphs.py"):
+        for script in ("check-llms.py", "check-translate.py", "check-sitemap.py", "check-glyphs.py", "check-bar.py"):
             run = subprocess.run([sys.executable, os.path.join(root, "tools", script), site],
                                  capture_output=True, text=True)
             expect(f"{script} on the built fixture", run.returncode, 0)
@@ -1321,10 +1294,11 @@ def selftest() -> int:
         expect("the post-build check on the built fixture", problems, [])
         expect("hreflang links counted", counted["links"], 4 * 3 + 3 * 2 + 3 * 2 + 3 * (2 * 3))
 
-        # The language menu: on the seven pages with alternatives, with the
-        # languages each exists in, and on no other page.
+        # The language menu: on the thirteen pages with alternatives — seven
+        # presentation pages, six of the Handbook — with the languages each
+        # exists in, and on no other page.
         expect("language menus and their entries counted", (counted["menus"], counted["entries"]),
-               (7, 3 * 3 + 2 * 2 + 2 * 2))
+               (13, 3 * 3 + 2 * 2 + 2 * 2 + 6 * 2))
         de_why = links("de/why/index.html")
         expect("the German Why's menu: its summary", tuple(de_why.summary), ("Sprache: Deutsch", "DE"))
         expect("the German Why's menu: its entries", [tuple(e) for e in de_why.entries],
@@ -1337,11 +1311,11 @@ def selftest() -> int:
                                               ("de", "de", "../de/why/", "Deutsch", None)]))
         expect("the Italian home's menu", [tuple(e) for e in links("it/index.html").entries],
                [("en", "en", "../", "English", None), ("it", "it", "../it/", "Italiano", "page")])
-        # The Handbook has translations and no menu: on the documentation's shell
-        # that slot of the bar is search's, in English and in Italian alike.
+        expect("the Italian chapter 3's menu", [tuple(e) for e in links("it/handbook/03-ground-truth/index.html").entries],
+               [("en", "en", "../../../handbook/03-ground-truth/", "English", None),
+                ("it", "it", "../../../it/handbook/03-ground-truth/", "Italiano", "page")])
         for path in ("start/index.html", "contact/index.html", "product/guide/index.html", "404.html",
-                     "handbook/03-ground-truth/index.html", "it/handbook/03-ground-truth/index.html",
-                     "it/handbook/index.html"):
+                     "handbook/04-checks/index.html"):
             html = _read(site, path)
             expect(f"no language menu, and no script for one, on {path}",
                    (links(path).switches, "details.dg-lang" in html), (0, False))
@@ -1408,16 +1382,19 @@ def selftest() -> int:
             ("a menu whose summary shows another language", "it/about/index.html",
              lambda h: re.sub(r'(<summary class="dg-icon dg-lang__summary"[^>]*>)IT', r"\1EN", h, count=1),
              "the menu's summary is"),
-            ("a language menu on a Handbook page, which has translations", "handbook/03-ground-truth/index.html",
-             lambda h: h.replace('<div class="dg-actions">',
-                                 '<div class="dg-actions"><details class="dg-lang"><summary class="dg-icon dg-lang__summary">EN</summary></details>', 1),
-             "handbook/03-ground-truth/index.html: a language menu, and the page is not a presentation page with translations"),
+            ("a Handbook page with translations and no menu", "handbook/03-ground-truth/index.html",
+             lambda h: re.sub(r'<details class="dg-lang">.*?</details>', "", h, count=1, flags=re.S),
+             "handbook/03-ground-truth/index.html: 0 language menus"),
+            ("a language menu on a Handbook chapter with no translation", "handbook/04-checks/index.html",
+             lambda h: h.replace('<span class="dg-slot dg-slot--lang" aria-hidden="true"></span>',
+                                 '<details class="dg-lang"><summary class="dg-icon dg-lang__summary">EN</summary></details>', 1),
+             "handbook/04-checks/index.html: a language menu, and the page has no translation"),
             ("an Italian Handbook page that says it is English", "it/handbook/03-ground-truth/index.html",
              lambda h: re.sub(r'<html lang="it"', '<html lang="en"', h, count=1), "<html lang='en'>, and the page is it"),
             ("a language menu on a page with no translation", "start/index.html",
              lambda h: h.replace('<div class="dg-actions">',
                                  '<div class="dg-actions"><details class="dg-lang"><summary class="dg-icon dg-lang__summary">EN</summary></details>', 1),
-             "start/index.html: a language menu, and the page is not a presentation page with translations"),
+             "start/index.html: a language menu, and the page has no translation"),
         ]
         for label, path, change, needle in tampering:
             found = tampered(path, change)
@@ -1614,9 +1591,9 @@ def selftest() -> int:
           "the six translated pages and their seven translations and on nothing else, their languages, the "
           "bar, the footer and the closing band on a translation, the Handbook's index and chapter 3 in Italian "
           "with their links, their <html lang>, the bar's current entry and the pager, out of search and llms.txt, in the "
-          "sitemap, and check-llms, check-translate, check-sitemap and check-glyphs pass on it; the "
-          "language menu on the seven presentation pages with alternatives, right, and on no other, the "
-          "Handbook's included; tamperings refused; a translation with no description stops the build")
+          "sitemap, and check-llms, check-translate, check-sitemap, check-glyphs and check-bar pass on it; the "
+          "language menu on the thirteen pages with alternatives, the Handbook's six included, right, and on "
+          "no other; tamperings refused; a translation with no description stops the build")
     return 0
 
 

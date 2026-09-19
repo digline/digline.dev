@@ -152,7 +152,7 @@ html { scroll-padding-top: var(--bar-room); }
   text-underline-offset: 7px;
 }
 
-/* GitHub, the light/dark toggle, and — in the documentation — search */
+/* The four slots: search, language, GitHub, the light/dark toggle */
 .dg-actions {
   display: flex;
   align-items: center;
@@ -219,34 +219,46 @@ html { scroll-padding-top: var(--bar-room); }
   .dg-brand span { display: none; }
 }
 
-/* A phone, on the presentation pages. They have no drawer to fall back on, so
-   the bar stays the navigation and the entries that can afford to go, go: Why,
-   Agents and Writing. None is a destination this costs you. Why is the only
-   entry whose page another one links to — Start here opens by pointing at it
-   and closes with it under "Where to go next" — and Agents and Writing are in
-   the footer's Docs column on every page of the site.
+/* The sections when the bar runs out of room.
 
-   The arithmetic, measured in Chrome on the pill (--bar-side off each edge, a
-   1px border, 14px of padding before the mark and 6px after the last icon)
-   rather than estimated. Six entries at 13px with 14px between them need
-   342px, and the pill gives the nav 342px from 519px of viewport: hence 518.
-   Below it the three that remain need 185px, which they have from 362px; at
-   390px they fit with room to spare, and under 362px .dg-nav scrolls inside
-   the pill rather than widening the page.
+   The bar is the same on every page: four slots in .dg-actions (search,
+   language, GitHub, theme, each 38px, held empty where a page has nothing for
+   one), so what decides the room the sections have is the shell — the
+   documentation's has the drawer button on the left, below 76.25em — and the
+   language of the labels, not whether the page has search or translations.
+   The rules below are the documentation's needs, applied to both shells, so
+   that between two pages in the same language the sections never move.
 
-   Two ranges above it are held by the spacing, not by a breakpoint: from 601px
-   the wordmark is back and costs 10px, which the 14px gap up to 640px pays;
-   and at 1000px and under the gap is 18px, not 24px.
+   Measured in Chrome on the pill, every width from 1300 down to 300, on an
+   English Handbook chapter with and without translations, the blog, Why and
+   Start here, and on a Handbook chapter and Why in Italian, German and
+   Spanish (the real catalogs). Where the documentation's sections fit without
+   scrolling inside the pill:
 
-   Two classes in the selector, not one: `.dg-nav a` above sets display: block
-   and outranks a lone `.dg-nav__optional`, which is how this rule matched and
-   hid nothing until Agents made the bar measured instead of estimated.
+                   six entries   five (no Writing)   three
+     English          739+           680+             496+
+     Italian          within the English at every width
+     German           762+           712+             504+
+     Spanish          771+           705+             496+
 
-   The documentation pages solve the same problem the other way, in theme.css:
-   they have a drawer, so the whole nav goes rather than two entries of it. */
-@media (max-width: 518px) {
-  .dg-nav .dg-nav__optional { display: none; }
-}
+   So: Writing goes first, at 738px and under (761 in German, 770 in Spanish)
+   — the footer carries it in its Docs column; Why and Agents follow at 679px
+   and under (711, 704) — Why is reachable from Start here, Agents from the
+   footer. Three remain on a presentation page down to a phone; on a
+   documentation page the drawer takes them all under 496px (504 in German),
+   in theme.css. At every width, between any two pages in one language, the
+   sections are at the same x and the page never scrolls sideways.
+
+   `:where()` round the language keeps each rule as specific as the English
+   one, so the phone's rules further down still win over it. Two classes in
+   the selector, not one: `.dg-nav a` above sets display: block and outranks a
+   lone `.dg-nav__optional`. */
+@media (max-width: 738px) { .dg-nav .dg-nav__optional--first { display: none; } }
+@media (max-width: 761px) { :where(html[lang="de"]) .dg-nav .dg-nav__optional--first { display: none; } }
+@media (max-width: 770px) { :where(html[lang="es"]) .dg-nav .dg-nav__optional--first { display: none; } }
+@media (max-width: 679px) { .dg-nav .dg-nav__optional { display: none; } }
+@media (max-width: 711px) { :where(html[lang="de"]) .dg-nav .dg-nav__optional { display: none; } }
+@media (max-width: 704px) { :where(html[lang="es"]) .dg-nav .dg-nav__optional { display: none; } }
 
 /* ── the language menu ──────────────────────────────────────────────────
    On a page with translations only (overrides/partials/header.html): a
@@ -296,45 +308,40 @@ html { scroll-padding-top: var(--bar-room); }
 .dg-lang__item[aria-current] { color: var(--ink); font-weight: 600; }
 .dg-lang__item:focus:not(:focus-visible) { outline: none; }
 
-/* The bar with the language menu in it: one round button more in .dg-actions,
-   38px and the 4px between the buttons, so the sections get 42px less. It is
-   only ever on a page with translations, so these rules ask for it
-   (:has(.dg-lang)) and leave every other page's bar as measured above.
+/* An empty slot of the bar: the size of the round buttons, nothing in it
+   (overrides/partials/header.html, tools/check-bar.py). */
+.dg-slot { display: block; flex: none; width: 38px; height: 38px; }
 
-   Measured in Chrome on the pill, every width from 1100 down to 300. First
-   with the English labels (/why/ in the translations fixture) and with German
-   ones the fixture made up, which set the rules below; then again, on
-   2026-09-17, on /why/ and its three translations with the real catalogs
-   (German "Hier starten", "Warum", "Agenten", "Handbuch", "Doku", "Texte";
-   Italian and Spanish "Docs" for docs, since "Documentazione" and
-   "Documentación" fitted at no phone width). Where the sections fit without
-   scrolling inside the pill:
-
-                          six entries     three entries
-     no menu, English     519px and up    362px and up   (the rules above)
-     menu, English        647px and up    404px and up   (before these rules)
-     menu, fixture German 691px and up    427px and up   (before these rules)
-     with these rules     647px (en), 673px (de), 624px (it), 682px (es) and up;
-                          334px (en), 346px (de), 315px (it), 335px (es) and up
-
-   So: at 690px and under, the three optional entries go, as they do at 518px
-   without the menu. At 426px and under, GitHub goes from the bar — the footer
-   carries it in its Product column — and the sections close up to 10px. At
-   376px and under, the bar's own gaps close up too, and the sections to 6px:
-   every language's three entries fit from 346px, so a 360px phone reads them
-   whole. Under that they scroll inside the pill, as the bar without the menu
-   does under 362px. At no width does the page scroll sideways. */
-@media (max-width: 690px) {
-  .dg-bar:has(.dg-lang) .dg-nav .dg-nav__optional { display: none; }
+/* A phone. Four slots and three sections do not fit: the presentation pages'
+   sections scrolled inside the pill from 445px down (457 in German, 446 in
+   Spanish). So there, and on every page, GitHub goes from the bar — the
+   footer carries it in its Product column — and so does the empty search
+   slot of a presentation page: it is empty, and it is left of the language
+   menu, so taking it out moves no button, only gives the sections its room.
+   The language menu and the theme never go. The sections close up to 10px.
+   At 376px and under the bar's own gaps close up too, and the sections to
+   6px: three entries fit from 334px in English, 315 in Italian, 335 in
+   Spanish and 346 in German, so a 360px phone reads them whole; under that
+   they scroll inside the pill, and the page still does not. */
+@media (max-width: 445px) {
+  .dg-actions > a.dg-icon,
+  .dg-actions > .dg-slot--search { display: none; }
+  .dg-nav { gap: 10px; }
 }
-@media (max-width: 426px) {
-  .dg-bar:has(.dg-lang) .dg-actions > a.dg-icon { display: none; }
-  .dg-bar:has(.dg-lang) .dg-nav { gap: 10px; }
+@media (max-width: 457px) {
+  :where(html[lang="de"]) .dg-actions > a.dg-icon,
+  :where(html[lang="de"]) .dg-actions > .dg-slot--search { display: none; }
+  :where(html[lang="de"]) .dg-nav { gap: 10px; }
+}
+@media (max-width: 446px) {
+  :where(html[lang="es"]) .dg-actions > a.dg-icon,
+  :where(html[lang="es"]) .dg-actions > .dg-slot--search { display: none; }
+  :where(html[lang="es"]) .dg-nav { gap: 10px; }
 }
 @media (max-width: 376px) {
-  .dg-bar:has(.dg-lang) .dg-bar__in { gap: 8px; }
-  .dg-bar:has(.dg-lang) .dg-actions { padding-left: 4px; }
-  .dg-bar:has(.dg-lang) .dg-nav { gap: 6px; }
+  .dg-bar__in { gap: 8px; }
+  .dg-actions { padding-left: 4px; }
+  .dg-nav { gap: 6px; }
 }
 
 /* ══ the glow ══════════════════════════════════════════════════════════
