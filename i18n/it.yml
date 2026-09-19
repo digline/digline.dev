@@ -61,6 +61,10 @@ footer:
 pager:
   previous: "Precedente"
   next: "Successivo"
+  label: "Precedente e successivo"
+
+nav:
+  english_docs: "Documentazione, in inglese"
 
 closing:
   title: Inizia con una suite e
@@ -463,7 +467,10 @@ source_keys:
     '7': 3ba8d02b16fd
     '8': c195d2d87562
     '9': edcd8e701a2d
+  nav:
+    english_docs: 33b9aad6b620
   pager:
+    label: 4ff43b195361
     next: 1ff57a29d7c9
     previous: a57b08a480b8
 

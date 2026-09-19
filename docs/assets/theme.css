@@ -437,6 +437,18 @@ body {
   color: var(--muted);
 }
 .md-container > .opening .opening__lede a { color: var(--link); }
+/* Under the lede: on a translation, the notice that a model translated it
+   (pages.css has the reading pages' and its contrast); on a Handbook page with
+   translations, the line of its other languages. The same size, the same
+   muted words, links whole. */
+.md-container > .opening .opening__notice,
+.md-container > .opening .opening__languages {
+  margin: 14px 0 0; max-width: 640px;
+  font-size: 14px; line-height: 1.5; color: var(--muted);
+}
+.md-container > .opening .opening__notice a,
+.md-container > .opening .opening__languages a { color: var(--link); white-space: nowrap; }
+.md-container > .opening .opening__notice--stale { color: var(--amber); font-weight: 500; }
 .md-container > .opening .opening__lede code {
   font-family: var(--mono-page);
   font-size: .875em;
@@ -597,4 +609,25 @@ body {
    chrome.css keeps up to 1000px is what lets all six stay there. */
 @media (max-width: 696px) {
   .dg-bar .dg-nav__optional { display: none; }
+}
+
+/* ── EN: a link from a translation to an English page ─────────────────────
+   In the drawer and the sidebar of a translated Handbook page, and in its
+   pager: the page the link leads to has no translation in the page's
+   language, and says so before the reader is there. Written by
+   tools/hooks/translations.py and overrides/main.html after the English
+   words, which carry lang="en"; aria-hidden, since that lang is what a
+   screen reader needs, and "E N" read aloud is not. */
+.dg-en {
+  display: inline-block;
+  margin-left: .5em;
+  padding: 0 .35em;
+  font-size: .62rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: .04em;
+  vertical-align: .1em;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
 }

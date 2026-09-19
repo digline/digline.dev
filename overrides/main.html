@@ -108,8 +108,10 @@
   tools/hooks/translations.py sends each to its translation where the page's
   language has one; the titles are page.meta.pager_titles, from the same hook,
   the translation's own words for each page that has one, and the English
-  title, marked lang="en", for a page that has not. "Previous" and "Next" are
-  the catalog's (i18n/<lang>.yml, pager). Where there is no pager the band follows <main> directly, starting
+  title for a page that has not — marked, as every link from a translation to
+  an English page is: lang="en" on the words, and the EN mark after them.
+  "Previous", "Next" and the pager's label are the catalog's (i18n/<lang>.yml,
+  pager). Where there is no pager the band follows <main> directly, starting
   where the pager would have started.
 
   The closing band is the presentation pages' closing band with nothing in it:
@@ -130,14 +132,18 @@
   {%- set in_sequence = here and top in sequences and not here.is_index %}
   <div class="dg-docfoot">
   {%- if in_sequence and (here.previous_page or here.next_page) and "navigation.footer" in (config.theme.features or []) %}
-    <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="Footer">
+    <nav class="md-footer__inner md-grid dg-docfoot__pager" aria-label="{{ 'pager.label' | t }}">
       {%- if here.previous_page %}
       {%- set title = titles.get(here.previous_page.file.src_uri) or here.previous_page.title %}
       <a href="{{ here.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="{{ 'pager.previous' | t }}: {{ title | e }}">
         <div class="md-footer__button md-icon">{% include ".icons/material/arrow-left.svg" %}</div>
         <div class="md-footer__title">
           <span class="md-footer__direction">{{ "pager.previous" | t }}</span>
-          <div class="md-ellipsis"{% if translated and here.previous_page.file.src_uri not in titles %} lang="en"{% endif %}>{{ title }}</div>
+          {%- if translated and here.previous_page.file.src_uri not in titles %}
+          <div class="md-ellipsis"><span lang="en">{{ title }}</span><span class="dg-en" aria-hidden="true">EN</span></div>
+          {%- else %}
+          <div class="md-ellipsis">{{ title }}</div>
+          {%- endif %}
         </div>
       </a>
       {%- endif %}
@@ -146,7 +152,11 @@
       <a href="{{ here.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="{{ 'pager.next' | t }}: {{ title | e }}">
         <div class="md-footer__title">
           <span class="md-footer__direction">{{ "pager.next" | t }}</span>
-          <div class="md-ellipsis"{% if translated and here.next_page.file.src_uri not in titles %} lang="en"{% endif %}>{{ title }}</div>
+          {%- if translated and here.next_page.file.src_uri not in titles %}
+          <div class="md-ellipsis"><span lang="en">{{ title }}</span><span class="dg-en" aria-hidden="true">EN</span></div>
+          {%- else %}
+          <div class="md-ellipsis">{{ title }}</div>
+          {%- endif %}
         </div>
         <div class="md-footer__button md-icon">{% include ".icons/material/arrow-right.svg" %}</div>
       </a>

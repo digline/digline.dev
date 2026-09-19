@@ -78,6 +78,12 @@ footer:
 pager:
   previous: "Previous"
   next: "Next"
+  label: "Previous and next"
+
+# tools/hooks/translations.py — the drawer of a translated Handbook page: its
+# last entry, the documentation, which is in English.
+nav:
+  english_docs: "Documentation, in English"
 
 # overrides/partials/closing.html — the closing band of the home, Why and Start here.
 closing:
