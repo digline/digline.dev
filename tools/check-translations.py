@@ -18,8 +18,11 @@ when
      character for character. A heading's own permalink, and a link to a
      #fragment of the page itself, count only as being there;
   c) numbers: the numbers written in digits in the text outside code are not
-     the same numbers, as many times each. 0.88 stays 0.88: a decimal comma is
-     another number, and nothing is normalized;
+     the same numbers, as many times each. A number is its value, however its
+     language groups and separates it: the English writes 4,000 and 4.5, and a
+     translation may write 4.000 and 4,5 (numbers(), number_differences()).
+     Every other difference is another number: 4.001, 4,6, and 1500 for an
+     English 1.500 are refused, and so is a number dropped or added;
   d) headings: the levels of h1–h6, in order, are not the same;
   h) structure: the blocks of the content — every p, li, blockquote, hr, pre,
      table and heading, in order — are not the same sequence: a paragraph
@@ -111,7 +114,54 @@ BLOCK = {"p", "li", "ul", "ol", "dl", "dt", "dd", "div", "section", "header", "f
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 # The blocks h) compares, in the order the page has them.
 STRUCTURE = {"p", "li", "blockquote", "hr", "pre", "table"} | HEADINGS
-NUMBER = re.compile(r"\d+(?:\.\d+)*")
+# A number as written, its separators included: 4,000 and 4.000 and 0.15.3 are
+# one token each. A comma or a point followed by a space ends it, so a list —
+# 15, 16, 16 — is three.
+NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
+_EN_GROUPED = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?")      # 4,000   1,500.5
+_GROUPED = re.compile(r"[1-9]\d{0,2}(?:\.\d{3})+(?:,\d+)?")     # 4.000   1.500,5 — it, de, es
+_DECIMAL_COMMA = re.compile(r"\d+,\d+")                        # 4,5     0,91
+
+
+def english_number(token: str) -> str:
+    """An English number as its value: its thousands' commas taken out. Any
+    other token — 4.5, 2026, a version, 0.15.3 — is its own value, as written."""
+    return token.replace(",", "") if _EN_GROUPED.fullmatch(token) else token
+
+
+def translated_numbers(token: str) -> set[str]:
+    """What a number in a translation may stand for: as written, as an English
+    writer would group it, or as Italian, German and Spanish do — a point for
+    the thousands, a comma for the decimals. 4.000 is 4000 or the English
+    4.000; 4,5 is 4.5; 1500 is 1500 and nothing else."""
+    values = {token}
+    if _EN_GROUPED.fullmatch(token):
+        values.add(token.replace(",", ""))
+    if _GROUPED.fullmatch(token):
+        values.add(token.replace(".", "").replace(",", "."))
+    if _DECIMAL_COMMA.fullmatch(token):
+        values.add(token.replace(",", "."))
+    return values
+
+
+def number_differences(english: list[str], translated: list[str]) -> tuple[list[str], list[str]]:
+    """(missing, not in the original): the English numbers no number of the
+    translation stands for, as written in the English, and the translation's
+    numbers that stand for none of the English ones, as written there. The
+    translation's numbers that can mean one thing only are matched first."""
+    wanted = Counter(english_number(token) for token in english)
+    written: dict[str, list[str]] = {}
+    for token in english:
+        written.setdefault(english_number(token), []).append(token)
+    added = []
+    for token in sorted(translated, key=lambda token: len(translated_numbers(token))):
+        value = next((v for v in sorted(translated_numbers(token), key=lambda v: v != token) if wanted[v] > 0), None)
+        if value is None:
+            added.append(token)
+        else:
+            wanted[value] -= 1
+    missing = [written[value][0] for value, count in wanted.items() for _ in range(count)]
+    return sorted(missing), sorted(added)
 
 
 class Main(HTMLParser):
@@ -451,13 +501,12 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
         counted["links"] += len(english.hrefs)
 
         # c) numbers
-        numbers = Counter(NUMBER.findall("".join(english.prose)))
-        found = Counter(NUMBER.findall("".join(page.prose)))
-        if numbers != found:
-            lost, added = numbers - found, found - numbers
-            problems.append(f"{here}: numbers differ from the original's — missing {sorted(lost.elements()) or 'none'}, "
-                            f"not in the original {sorted(added.elements()) or 'none'}")
-        counted["numbers"] += sum(numbers.values())
+        numbers = NUMBER.findall("".join(english.prose))
+        lost, added = number_differences(numbers, NUMBER.findall("".join(page.prose)))
+        if lost or added:
+            problems.append(f"{here}: numbers differ from the original's — missing {lost or 'none'}, "
+                            f"not in the original {added or 'none'}")
+        counted["numbers"] += len(numbers)
 
         # h) structure
         problem = _sequence_problem(here, "block", english.blocks, page.blocks)
@@ -532,6 +581,30 @@ def _hooks_translations():
 
 def selftest() -> int:
     failures: list[str] = []
+
+    # c) on its own: a number is its value, however its language writes it.
+    for label, english, translated, wanted in (
+        ("4.000 in Italian for the English 4,000", ["4,000"], ["4.000"], ([], [])),
+        ("4,5 for the English 4.5", ["4.5"], ["4,5"], ([], [])),
+        ("0,91 for 0.91, and 0.91 as it is", ["0.91", "0.91"], ["0,91", "0.91"], ([], [])),
+        ("4000 for 4,000, and 1.500 for 1500", ["4,000", "1500"], ["4000", "1.500"], ([], [])),
+        ("1.500,5 for 1,500.5", ["1,500.5"], ["1.500,5"], ([], [])),
+        ("a version, 0.15.3, as it is", ["0.15.3"], ["0.15.3"], ([], [])),
+        ("4.001 for 4,000: another number", ["4,000"], ["4.001"], (["4,000"], ["4.001"])),
+        ("4,6 for 4.5: another number", ["4.5"], ["4,6"], (["4.5"], ["4,6"])),
+        ("1500 for the English 1.500, which is one and a half", ["1.500"], ["1500"], (["1.500"], ["1500"])),
+        ("a version with commas: another token", ["0.15.3"], ["0,15,3"], (["0.15.3"], ["0,15,3"])),
+        ("4,000 twice, written once", ["4,000", "4,000"], ["4.000"], (["4,000"], [])),
+        ("a number added", ["16"], ["16", "42"], ([], ["42"])),
+    ):
+        got = number_differences(english, translated)
+        if got != wanted:
+            failures.append(f"c) {label}: got {got}, wanted {wanted}")
+        else:
+            print(f"translations selftest: c) as it must — {label}")
+    if NUMBER.findall("15, 16, 16 and 4,000 words, 2026-09-11") != ["15", "16", "16", "4,000", "2026", "09", "11"]:
+        failures.append(f"c) the tokens: {NUMBER.findall('15, 16, 16 and 4,000 words, 2026-09-11')}")
+
     if not os.path.isfile(os.path.join(ROOT, "docs", "product", "guide.md")):
         print("translations selftest: docs/product/ is not synced; run `make docs` first.", file=sys.stderr)
         return 1
@@ -594,7 +667,8 @@ def selftest() -> int:
                                                              'href="../../blog/"'), "link "),
             ("b) an external link changed by a character", why,
              first_in_main(r'href="https://danluu\.com/exercise-7/"', 'href="https://danluu.com/exercise-8/"'), "link "),
-            ("c) a decimal point made a comma", why, first_in_main(r"0\.91", "0,91"), "numbers differ"),
+            ("c) a number changed: 0.91 written 0.92", why, first_in_main(r"0\.91", "0.92"), "numbers differ"),
+            ("c) a number changed behind a decimal comma: 0.91 written 0,92", why, first_in_main(r"0\.91", "0,92"), "numbers differ"),
             # Neither plant names a number the page happens to carry: the page's
             # own numbers change as the page is written, and the check does not.
             # The first digits of the article's text — after a tag, so the 1 of
@@ -647,6 +721,16 @@ def selftest() -> int:
                 failures.append(f"{label}: not refused ({found})")
             else:
                 print(f"translations selftest: refused, as it must — {label}")
+
+        # c) the other half on the built site: the Italian Why with a decimal
+        # comma where the English has a point, passes.
+        before = edit(why, first_in_main(r"0\.91", "0,91"))
+        found, _, _ = check(site, root)
+        restore(why, before)
+        if found:
+            failures.append(f"c) 0,91 for 0.91 on the Italian Why was refused: {found}")
+        else:
+            print("translations selftest: passes, as it must — c) 0,91 for 0.91 on the Italian Why")
 
         # b) the other half: a translation that links to a page translated into
         # its language — /it/why/ to the Italian home, /it/, where Why links to
