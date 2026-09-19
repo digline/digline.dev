@@ -65,7 +65,7 @@ Twenty cases do not tell you the system is correct. They tell you it has not got
 
 ## Doing it today
 
-1. Find where your feature's decision lives. If it is only in prose, change the output before you write a single case. If you cannot change it yet, you cannot evaluate the feature — and that is already a finding: start by recording the assembled input and the reply, because they exist only if you write them down today.
+1. Find where your feature's decision lives. If it is only in prose, change the output before you write a single case. If you cannot change it yet, you cannot evaluate the feature. That is a finding in itself, and the thing to do today is record the assembled input and the reply, because tomorrow they are gone.
 2. Check your inputs are deterministic. A query that truncates without an order is the first bug.
 3. Look at the answer your users give by doing nothing. Make sure it claims nothing.
 4. Ask about the rule, not the behaviour, and only where the person would have answered differently.
