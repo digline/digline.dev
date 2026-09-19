@@ -1,5 +1,5 @@
 ---
-seo_title: 'Il riferimento: una soglia non è una baseline'
+seo_title: 'Il riferimento: una soglia non è un riferimento'
 lang: it
 translation_of: handbook/06-the-reference.md
 description: Un punteggio può calare parecchio e superare comunque la sua soglia in entrambi i giorni. A intercettarlo è l'unico numero che metti per iscritto e rispetto al quale accetti di essere misurato.
