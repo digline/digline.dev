@@ -15,8 +15,10 @@ This reads the workflows and fails on:
   * a tag (`@v5`), a branch (`@main`) or a short sha — anything that is not
     40 hexadecimal characters;
   * a pinned action with no comment after it, or a comment that does not name
-    a version (`# v5.1.0`, `# v5`): the sha is then a number no one can read,
-    and RUNBOOK.md's procedure for updating it has nothing to check against.
+    an exact version — `# v5.1.0`, never `# v5`: the sha is then a number no
+    one can read, and a major is a name that moves, so a comment naming one
+    says nothing about the commit it sits beside. That is what RUNBOOK.md's
+    procedure for updating a pin reads, and compares the new sha against.
 
 A local action (`uses: ./…`) and a container (`uses: docker://…`) are not
 pinned this way and are left alone; there are none here today.
@@ -39,8 +41,10 @@ import tempfile
 # `uses:` as a workflow writes it, with whatever follows on the line.
 USES = re.compile(r"^\s*(?:-\s*)?uses:\s*(?P<ref>\S+)\s*(?P<rest>.*?)\s*$")
 SHA = re.compile(r"\A[0-9a-f]{40}\Z")
-# The comment after it: a version, as the other repository tags it.
-VERSION = re.compile(r"\A#\s*(?P<tag>v?\d+(?:\.\d+)*(?:[-.][0-9A-Za-z.]+)?)\s*$")
+# The comment after it: the exact version the other repository tags that
+# commit — major, minor and patch, and whatever it appends (v1.14.2, v3.0.0-beta.6).
+# A major alone (v4) is not one: it names a moving tag, not this commit.
+VERSION = re.compile(r"\A#\s*v?\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.]+)?\s*$")
 LOCAL = ("./", "docker://")
 
 
@@ -67,8 +71,9 @@ def problems(folder: str) -> tuple[list[str], int]:
                     found.append(f"{where}: {action} is used at {what}, and an action is used at a full "
                                  "40-character commit — a tag and a branch move under us")
                 elif not VERSION.match(rest):
-                    found.append(f"{where}: {action} is pinned, and the version it is at is not written after "
-                                 f"it — {rest!r}, wanted a comment naming the tag, as in `# v5.1.0`")
+                    found.append(f"{where}: {action} is pinned, and the exact version it is at is not "
+                                 f"written after it — {rest!r}, wanted a comment naming the tag, as in "
+                                 "`# v5.1.0`; a major on its own, `# v5`, is a tag that moves")
     return found, read
 
 
@@ -89,13 +94,22 @@ def selftest() -> int:
          "is used at 'fbc6f3992d24b796d5a048ff273f7fcc4a7b6c0'"),
         ("no version at all", "      - uses: actions/checkout\n", "is used at nothing"),
         ("a full sha with no comment", "      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09\n",
-         "the version it is at is not written"),
+         "the exact version it is at is not written"),
         ("a full sha with a comment that names no version",
          "      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # the checkout\n",
-         "the version it is at is not written"),
+         "the exact version it is at is not written"),
+        ("a full sha commented with a major alone",
+         "      - uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4\n",
+         "the exact version it is at is not written"),
+        ("a full sha commented with a major and a minor",
+         "      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8\n",
+         "the exact version it is at is not written"),
+        ("a full sha commented with an exact version and a prerelease",
+         "      - uses: actions/create-github-app-token@a0d050558c7a879dddc07b2160b9a07eb0e9ebc7 # v3.0.0-beta.6\n",
+         None),
         ("a full sha commented with a branch",
          "      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # main\n",
-         "the version it is at is not written"),
+         "the exact version it is at is not written"),
     ]
     with tempfile.TemporaryDirectory() as folder:
         for label, step, needle in cases:
@@ -127,9 +141,9 @@ def selftest() -> int:
         print(f"actions selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print("actions selftest: a pinned action with its tag, a local action and a command pass; a tag, a "
-          "branch, a short sha, a sha one character short, no version, and a pin with no version after it "
-          "are refused")
+    print("actions selftest: a pinned action with its exact version, a prerelease, a local action and a "
+          "command pass; a tag, a branch, a short sha, a sha one character short, no version, a pin with no "
+          "comment, and a comment naming a major, a major and a minor, or a branch are refused")
     return 0
 
 
