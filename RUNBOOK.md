@@ -142,7 +142,7 @@ To move one to a newer version, read the sha from the action's own repository, n
 
 An annotated tag prints twice: `refs/tags/v5.1.0` is the tag object and `refs/tags/v5.1.0^{}` the commit it points at. **The commit is the one with `^{}`**, and it is what goes in the workflow; when a tag prints only once, that line is the commit. The same commit usually carries the moving major (`v5`) and the exact version (`v5.1.0`): the comment names the exact one, so that a reader knows what they are on and the next update has something to compare with.
 
-The sha and the comment move together, in the same commit here: a comment left on the old version is worse than none, and nothing can catch it — the gate reads that a version is written, not which. Two things it is worth checking by hand when you update: that the version you wrote is the one the sha belongs to, and that the same action is at the same version in every workflow that uses it.
+The comment names the exact version — `# v5.1.0`, never `# v5`: a major is a tag that moves, so beside a fixed commit it says nothing, and `tools/check-actions.py` refuses it. The sha and the comment move together, in the same commit here: a comment left on an older version is worse than none, and nothing can catch it — the gate reads that an exact version is written, not that it is this commit's. Two things it is worth checking by hand when you update: that the version you wrote is the one the sha belongs to, and that the same action is at the same version in every workflow that uses it.
 
 ## The gates, before any merge into `main`
 
