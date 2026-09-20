@@ -1,16 +1,17 @@
 ---
 title: How digline compares
 seo_title: >-
-  How digline compares to promptfoo, DeepEval and observability
+  How digline compares: five questions, five families
 description: >-
-  Four questions, four families of tool: snapshot testing, observability,
-  exploration, and regression testing against an approved baseline. digline
-  answers the last one: did it get worse than what I approved?
+  Five questions, five families of tool: snapshot testing, observability,
+  exploration, benchmarking, and regression testing against an approved
+  baseline. digline answers the last one: did it get worse than what I
+  approved?
 ---
 
 # How digline compares
 
-The space around "testing LLM applications" is crowded. The useful question is not which tool to rank first, but which question each tool answers. There are four.
+The space around "testing LLM applications" is crowded. The useful question is not which tool to rank first, but which question each tool answers. There are five.
 
 ## "Did the output change?" — snapshot and replay testing
 
@@ -37,20 +38,35 @@ Two things digline will never do, by design: no hosted service that receives you
 
 ## "Which of these should I ship?" — exploration
 
-Exploration frameworks put prompts, models and configurations side by side, and give you a wide library of metrics to score them with. When the question is which variant wins, that layout is the answer. It is a different job from holding the one you chose: a sweep tells you what is best today, not whether today is worse than the day someone approved.
+Exploration frameworks — promptfoo and DeepEval among them — put prompts, models and configurations side by side, and give you a wide library of metrics to score them with. When the question is which variant wins, that layout is the answer. It is a different job from holding the one you chose: a sweep tells you what is best today, not whether today is worse than the day someone approved.
+
+## "Is this model good enough for the job?" — benchmarking
+
+Inspect AI and the harnesses around it evaluate a model or a capability against a target: benchmarks, comparisons across providers, agentic tasks that need a sandbox, safety and security evaluations. The sample carries the right answer, and the question is how often the model reaches it.
+
+What that measures is the model, not your application. A benchmark tells you whether a model is good enough to build on; it does not know what you built, what you approved, or that this morning the same model answered your case differently.
 
 ## How digline compares to specific tools
 
-One page per tool. Each one says what that tool does well, in its own vocabulary and with its own feature names, before it says what digline does instead — and what is written there about another tool is checked against that tool's documentation first.
+One page per tool. Each one says what that tool does well, in its own vocabulary and with its own feature names, before it says what digline does instead — and what is written there about another tool is checked against that tool's documentation first. Several of them answer more than one of these questions — the platforms especially, which run from tracing to experiments to dashboards — so each is tagged with the families it covers, and its page says where the weight sits.
 
-- [promptfoo](promptfoo.md) — the prompt and provider matrix, the assertion library, `promptfoo redteam`
-- [DeepEval](deepeval.md) — the metric library, `assert_test` in pytest, DeepTeam, the official run on Confident AI
-- [Braintrust](braintrust.md) — `Eval()`, experiments against a persistent baseline, Loop, autoevals
-- [LangSmith](langsmith.md) — tracing, datasets and experiments, `evaluate()`, annotation queues, online evaluation
-- [Langfuse](langfuse.md) — OpenTelemetry tracing, prompt management, batch evaluation, an MIT self-hosted core
-- [Inspect AI](inspect-ai.md) — `Task`, solvers and scorers, sandboxing, epochs and reducers
-- [Opik](opik.md) — Apache-2.0 tracing, experiments, guardrails, the Agent Optimizer
+<!-- naming: a family section names examples of the family, whichever tools
+     make it recognisable — proveai and EvalView have no page here and are the
+     only way a reader knows what snapshot testing is. The list here names the
+     tools that have a page, and nothing else. The two sets overlap on purpose:
+     promptfoo, DeepEval, LangSmith and Langfuse are in both, once as an
+     example and once as a page. -->
+
+- [promptfoo](promptfoo.md) — the prompt and provider matrix, the assertion library, `promptfoo redteam` — *exploration*
+- [DeepEval](deepeval.md) — the metric library, `assert_test` in pytest, DeepTeam, the official run on Confident AI — *exploration*
+- [Braintrust](braintrust.md) — `Eval()`, experiments against a persistent baseline, Loop, autoevals — *regression testing, exploration, observability*
+- [LangSmith](langsmith.md) — tracing, datasets and experiments, `evaluate()`, annotation queues, online evaluation — *observability, exploration*
+- [Langfuse](langfuse.md) — OpenTelemetry tracing, prompt management, batch evaluation, an MIT self-hosted core — *observability*
+- [Inspect AI](inspect-ai.md) — `Task`, solvers and scorers, sandboxing, epochs and reducers — *benchmarking*
+- [Opik](opik.md) — Apache-2.0 tracing, experiments, guardrails, the Agent Optimizer — *observability, exploration*
 
 ## Using them together
 
-Three of these four families complement each other. A reasonable production setup is: an exploration framework while developing, digline as the gate in CI before deploy, and observability watching live traffic after. Snapshot and replay testing is the family missing from that line, and the first section says why: when outputs are sampled, a hash answers a question nobody asked. digline's only strong opinion is about its own layer: the verdict on regressions belongs in your repo, next to your code, before the deploy — never in someone else's cloud.
+Three of these five families fit together in one pipeline. A reasonable production setup is an exploration framework while you develop, digline as the gate in CI before deploy, and observability watching live traffic after. Two families sit outside that line. Benchmarking comes earlier, when the question is still which model to build on. Snapshot and replay testing is the one the first section argues against: when outputs are sampled, a hash answers a question nobody asked.
+
+digline only has a strong opinion about its own layer: the verdict on regressions belongs in your repo, next to your code, before the deploy. Not in someone else's cloud.
