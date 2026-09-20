@@ -276,7 +276,13 @@ jobs:
 
       # Not for a pull request: nothing will deploy it, and an artifact named
       # github-pages from a PR is one mistake away from being deployed.
-      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+      #
+      # v5 for its runtime and nothing else: it is the same composite action,
+      # wrapping actions/upload-artifact v7.0.0 (node24) where v4 wrapped
+      # v4.6.2 (node20). Its one new input, `include-hidden-files`, defaults to
+      # false, which is what v4 did unconditionally and what this site wants —
+      # `site/` has no dotfiles, and a stray one is not something to ship.
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.event_name != 'pull_request'
         with:
           path: site
@@ -300,5 +306,11 @@ jobs:
       name: github-pages
       url: ${{ steps.pages.outputs.page_url }}
     steps:
+      # v5 is v4 on node24. Input for input and output for output the two are
+      # the same action — `token`, `timeout`, `error_count`,
+      # `reporting_interval`, `artifact_name`, `preview`, and `page_url` out —
+      # and the only behaviour that moved is the deployment poll, which now
+      # backs off with jitter instead of asking at a fixed interval. The major
+      # is the runtime, and node20 is the one being retired.
       - id: pages
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
