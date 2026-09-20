@@ -1023,11 +1023,16 @@ def selftest() -> int:
         docs = os.path.join(tmp, "docs", "assets")
         os.makedirs(docs)
         wide = os.path.join(tmp, "docs", *OG_IMAGE.split("/"))
+        # Deliberately not a card shape, and deliberately not the real
+        # image's: these bytes exist to be measured, and a fixture that
+        # echoes the size of docs/assets/digline-wordmark.png reads like
+        # a declaration of it — the second copy this file exists to avoid.
+        # The real one is measured at the end of this selftest instead.
         with open(wide, "wb") as fh:
-            fh.write(_png(1800, 440))
+            fh.write(_png(640, 480))
 
         # 1. The two formats, measured from their bytes.
-        expect("a PNG", _image_size(wide), (1800, 440))
+        expect("a PNG", _image_size(wide), (640, 480))
         jpeg = os.path.join(docs, "shot.jpg")
         with open(jpeg, "wb") as fh:
             fh.write(_jpeg(1200, 675))
@@ -1048,7 +1053,7 @@ def selftest() -> int:
 
         # 3. The default card: measured, and refused when it cannot be.
         expect("the default, measured", default_image(os.path.join(tmp, "docs")),
-               (1800, 440))
+               (640, 480))
         os.replace(prose, wide)
         refused("a default image whose bytes say nothing",
                 lambda: default_image(os.path.join(tmp, "docs")),
@@ -1064,7 +1069,7 @@ def selftest() -> int:
         assets = os.path.join(site, "assets")
         os.makedirs(assets)
         with open(os.path.join(assets, "wordmark.png"), "wb") as fh:
-            fh.write(_png(1800, 440))
+            fh.write(_png(640, 480))
 
         def page(name: str, html: str) -> None:
             folder = os.path.join(site, name)
@@ -1072,27 +1077,27 @@ def selftest() -> int:
             with open(os.path.join(folder, "index.html"), "w", encoding="utf-8") as fh:
                 fh.write(html)
 
-        right = _card(site_url + "assets/wordmark.png", 1800, 440)
+        right = _card(site_url + "assets/wordmark.png", 640, 480)
         expect("the card read back", card_of(right),
-               (site_url + "assets/wordmark.png", "1800", "440"))
+               (site_url + "assets/wordmark.png", "640", "480"))
         expect("a page with no card", card_of("<title>x</title>"), None)
 
         page("why", right)
         page("start", right)
         expect("two pages on one measured image", check_cards(site, site_url), [])
 
-        page("wrong-width", _card(site_url + "assets/wordmark.png", 1200, 440))
+        page("wrong-width", _card(site_url + "assets/wordmark.png", 320, 480))
         expect("a width that is not the image's",
                check_cards(site, site_url),
                ["wrong-width/index.html: the card says assets/wordmark.png is "
-                "1200x440, and it is 1800x440"])
+                "320x480, and it is 640x480"])
         os.remove(os.path.join(site, "wrong-width", "index.html"))
 
-        page("wrong-height", _card(site_url + "assets/wordmark.png", 1800, 630))
+        page("wrong-height", _card(site_url + "assets/wordmark.png", 640, 240))
         expect("a height that is not the image's",
                check_cards(site, site_url),
                ["wrong-height/index.html: the card says assets/wordmark.png is "
-                "1800x630, and it is 1800x440"])
+                "640x240, and it is 640x480"])
         os.remove(os.path.join(site, "wrong-height", "index.html"))
 
         page("gone", _card(site_url + "assets/missing.png", 1200, 630))
