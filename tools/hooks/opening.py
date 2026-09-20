@@ -63,14 +63,26 @@ READING = {"why.html", "start.html", "about.html", "contact.html", "agents.html"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+#: An HTML comment between the title and the paragraph. It renders as nothing,
+#: so the paragraph still *visually* follows the title — but it used to break
+#: both patterns below, which look for the <p> immediately after the <h1>, and
+#: the page silently lost its opening band. That is how the comparison index
+#: lost its lede: a comment carrying an editorial rule was put under the `# H1`
+#: and `make build` stayed green, because a documentation page is allowed to
+#: have none. Skipped here rather than gated, and kept in the body so nothing
+#: that reads a marker comment out of the built page loses it.
+_COMMENTS = r"(?P<comments>(?:\s*<!--.*?-->)*)"
+
 _READING = re.compile(
-    r"\A\s*<h1(?P<attrs>[^>]*)>(?P<title>.*?)</h1>\s*<p>(?P<lede>.*?)</p>(?P<body>.*)\Z",
+    r"\A\s*<h1(?P<attrs>[^>]*)>(?P<title>.*?)</h1>" + _COMMENTS +
+    r"\s*<p>(?P<lede>.*?)</p>(?P<body>.*)\Z",
     re.S,
 )
 _H1 = re.compile(r"<h1(?P<attrs>[^>]*)>(?P<title>.*?)</h1>", re.S)
-_LEDE = re.compile(r"\A\s*<p>(?P<lede>.*?)</p>", re.S)
+_LEDE = re.compile(r"\A" + _COMMENTS + r"\s*<p>(?P<lede>.*?)</p>", re.S)
 _ID = re.compile(r'\bid="([^"]*)"')
 _ONLY_CODE = re.compile(r"\A(?P<before>[^<]*)<code\b[^>]*>(?P<code>.*?)</code>(?P<after>[^<]*)\Z", re.S)
+_ONLY_IMG = re.compile(r"\A(?P<before>[^<]*)<img\b[^>]*>(?P<after>[^<]*)\Z", re.S)
 
 
 def _title_id(attrs: str) -> str | None:
@@ -81,6 +93,12 @@ def _title_id(attrs: str) -> str | None:
 def split(content: str, source: str) -> tuple[dict, str]:
     """A reading page: an <h1> and a paragraph, first, or the build fails."""
     match = _READING.match(content)
+    # A paragraph that only labels the page is not a first paragraph: the
+    # layout of a reading page is built round a line of prose, and a lone
+    # <code> or <img> in the band is markup where a sentence should be. A
+    # documentation page is allowed to have none; these five are not.
+    if match and labels_only(match.group("lede")):
+        match = None
     if not match:
         raise PluginError(
             f"opening: {source} must start with `# Title` and a first paragraph — "
@@ -90,7 +108,7 @@ def split(content: str, source: str) -> tuple[dict, str]:
         "title": match.group("title"),
         "title_id": _title_id(match.group("attrs")),
         "lede": match.group("lede"),
-    }, match.group("body")
+    }, match.group("comments") + match.group("body")
 
 
 _HEADERLINK = re.compile(r'(?P<text>.*?)(?P<link>\s*<a class="headerlink"[^>]*>.*?</a>)?\s*\Z', re.S)
@@ -148,19 +166,38 @@ def upstream(src_uri: str, native: set[str]) -> str | None:
     return f"docs/{rest}"
 
 
-def only_code(paragraph: str) -> bool:
-    """Whether a paragraph is a single <code> and, around it, nothing but
-    spaces and punctuation: `ghcr.io/digline/digline` under a title."""
-    match = _ONLY_CODE.match(paragraph.strip())
-    if not match or "<code" in match.group("code"):
-        return False
-    around = match.group("before") + match.group("after")
-    return all(ch.isspace() or unicodedata.category(ch).startswith("P") for ch in around)
+def _bare(before: str, after: str) -> bool:
+    """Nothing around the tag but spaces and punctuation."""
+    return all(
+        ch.isspace() or unicodedata.category(ch).startswith("P")
+        for ch in before + after
+    )
+
+
+def labels_only(paragraph: str) -> bool:
+    """Whether a paragraph labels the page rather than opening it.
+
+    Two shapes, and around either of them nothing but spaces and punctuation:
+    a single <code>, which is `ghcr.io/digline/digline` under the Docker
+    page's title; and a single <img>, which is a screenshot carrying a caption
+    and not a sentence. Either one in the band would put markup where the
+    layout expects a line of prose.
+    """
+    stripped = paragraph.strip()
+    code = _ONLY_CODE.match(stripped)
+    if code and "<code" not in code.group("code"):
+        if _bare(code.group("before"), code.group("after")):
+            return True
+    image = _ONLY_IMG.match(stripped)
+    if image and _bare(image.group("before"), image.group("after")):
+        return True
+    return False
 
 
 def split_docs(content: str, source: str, native: set[str]) -> tuple[dict, str]:
     """A documentation page: the first <h1> is the title, and the <p> right
-    after it, if there is one and it is more than a lone <code>, the lede. No
+    after it, if there is one and it is more than a lone <code> or <img>, the
+    lede. No
     <h1> fails the build."""
     match = _H1.search(content)
     if not match:
@@ -174,9 +211,13 @@ def split_docs(content: str, source: str, native: set[str]) -> tuple[dict, str]:
         )
     before, after = content[:match.start()], content[match.end():]
     lede = _LEDE.match(after)
-    if lede and only_code(lede.group("lede")):
+    if lede and labels_only(lede.group("lede")):
         lede = None
-    body = before + (after[lede.end():] if lede else after)
+    # A comment in the seam stays in the body rather than being eaten with the
+    # lede: it is invisible either way, and dropping it would quietly delete
+    # something an author wrote.
+    kept = lede.group("comments") if lede else ""
+    body = before + kept + (after[lede.end():] if lede else after)
     return {
         "title": match.group("title"),
         "title_id": _title_id(match.group("attrs")),
@@ -282,6 +323,40 @@ def selftest() -> int:
     refused("title only, on a reading page", lambda: split(adr, "start.md"),
             "must start with `# Title` and a first paragraph")
 
+    # 2a. A comment in the seam between the title and the paragraph. It
+    #     renders as nothing, so the paragraph still opens the page and is
+    #     still the lede — and the comment stays in the body rather than being
+    #     eaten with it. This is the regression the comparison index paid for:
+    #     an editorial rule written under the `# H1` and a band that went
+    #     silently empty, with `make build` green throughout.
+    commented = (h1 + "<!-- naming: a rule about this page -->\n"
+                 '<p>The space is <em>crowded</em>.</p>\n<h2 id="a">A</h2>')
+    for label, (opening, body) in (
+        ("reading page", split(commented, "why.md")),
+        ("documentation page", split_docs(commented, "comparison/index.md", native)),
+    ):
+        expect(f"{label}: a comment in the seam leaves the lede",
+               opening["lede"], "The space is <em>crowded</em>.")
+        expect(f"{label}: the comment is kept in the body",
+               "<!-- naming: a rule about this page -->" in body, True)
+
+    #     And what a comment must *not* do is make a lede out of something that
+    #     is not one: after it, a list, a code block or an image is still the
+    #     body, and the page still opens on its title alone.
+    for shape, markup in (
+        ("a list", "<ul>\n<li>Status: proposed</li>\n</ul>"),
+        ("a code block", '<div class="highlight"><pre>digline view</pre></div>'),
+        ("an image", '<p><img alt="" src="x.png"></p>'),
+    ):
+        content = h1 + "<!-- a comment -->\n" + markup + "\n<p>Later.</p>"
+        opening, body = split_docs(content, "product/view.md", native)
+        expect(f"a comment then {shape} is not a lede", opening["lede"], None)
+        expect(f"a comment then {shape} leaves the markup in the body",
+               markup in body, True)
+        refused(f"a comment then {shape}, on a reading page",
+                lambda c=content: split(c, "start.md"),
+                "must start with `# Title` and a first paragraph")
+
     # 2b. A title and a paragraph that is only code — the Docker page's image
     #     name: not a lede, and the paragraph stays at the top of the body. A
     #     paragraph with code and words round it is still a lede.
@@ -292,10 +367,10 @@ def selftest() -> int:
     expect("only code: body", body,
            '\n<p><code>ghcr.io/digline/digline</code></p>\n<p>The official image runs any suite.</p>')
     for paragraph in ("<code>pip install digline</code>.", " <code>a</code> — ", "(<code>x</code>)"):
-        expect(f"only code: {paragraph!r}", only_code(paragraph), True)
+        expect(f"labels only: {paragraph!r}", labels_only(paragraph), True)
     for paragraph in ("Run <code>digline</code> first.", "<code>a</code> and <code>b</code>",
                       "<code>a</code><em>b</em>", "No code at all."):
-        expect(f"not only code: {paragraph!r}", only_code(paragraph), False)
+        expect(f"not a label: {paragraph!r}", labels_only(paragraph), False)
     opening, _ = split_docs(h1 + "<p>Run <code>digline run</code> first.</p>", "product/guide.md", native)
     expect("code among words: lede", opening["lede"], "Run <code>digline run</code> first.")
 

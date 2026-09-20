@@ -244,6 +244,20 @@ jobs:
           uv run tools/check-bar.py --selftest
           uv run tools/check-bar.py site
 
+      - name: Check that every page still opens on its lede
+        # A page's opening band is its `# Title` and the first paragraph under
+        # it (tools/hooks/opening.py). The five reading pages already fail the
+        # build without one; a documentation page is allowed to have none, so
+        # it can lose its lede in silence — which the comparison index did, to
+        # a comment written in the seam between the two. tools/check-opening.py
+        # reads the build and refuses a page with no lede that is not declared
+        # in its ALLOWED, and refuses a declaration that no longer matches a
+        # page or matches one that has a lede after all. --selftest first: a
+        # small site passes, and each of the five failures is planted.
+        run: |
+          uv run tools/check-opening.py --selftest
+          uv run tools/check-opening.py site
+
       - name: Check that code is not offered to a translator
         # Every <pre> and <code> on every page carries translate="no"
         # (tools/hooks/notranslate.py, and the templates for their own), so a
