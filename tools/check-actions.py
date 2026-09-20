@@ -94,7 +94,7 @@ def selftest() -> int:
          "is used at 'fbc6f3992d24b796d5a048ff273f7fcc4a7b6c0'"),
         ("no version at all", "      - uses: actions/checkout\n", "is used at nothing"),
         ("a full sha with no comment", "      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09\n",
-         "the version it is at is not written"),
+         "the exact version it is at is not written"),
         ("a full sha with a comment that names no version",
          "      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # the checkout\n",
          "the exact version it is at is not written"),
