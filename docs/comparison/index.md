@@ -3,14 +3,14 @@ title: How digline compares
 seo_title: >-
   How digline compares to promptfoo, DeepEval and observability
 description: >-
-  Snapshot testing, observability and exploration frameworks each answer a
-  different question. digline answers the pre-deploy one: did it get worse
-  than what I approved?
+  Four questions, four families of tool: snapshot testing, observability,
+  exploration, and regression testing against an approved baseline. digline
+  answers the last one: did it get worse than what I approved?
 ---
 
 # How digline compares
 
-The space around "testing LLM applications" is crowded. The useful question is not which tool to rank first, but which question each tool answers. There are three.
+The space around "testing LLM applications" is crowded. The useful question is not which tool to rank first, but which question each tool answers. There are four.
 
 ## "Did the output change?" — snapshot and replay testing
 
@@ -24,7 +24,7 @@ Langfuse, LangSmith, Arize Phoenix and similar platforms trace your application 
 
 What observability cannot tell you is whether the change you are about to ship makes things worse, because it only sees traffic after the change is live. It is a rear-view mirror — an essential one — while regression testing is the check before you pull out.
 
-## "Did it get worse than what I approved?" — digline
+## "Did it get worse than what I approved?" — regression testing
 
 digline answers the pre-deploy question, and takes the statistics of LLM outputs seriously:
 
@@ -35,9 +35,9 @@ digline answers the pre-deploy question, and takes the statistics of LLM outputs
 
 Two things digline will never do, by design: no hosted service that receives your payloads, and no data collection. The baseline lives in your repo; the runs happen on your machines. For teams whose prompts and outputs cannot leave their perimeter, this is not a feature toggle — it is the architecture.
 
-## Frameworks like promptfoo and DeepEval
+## "Which of these should I ship?" — exploration
 
-[promptfoo](promptfoo.md) and [DeepEval](deepeval.md) are built for exploration: comparing prompts, models and configurations side by side, with rich metric libraries. digline is deliberately narrower — it doesn't help you find the best configuration; it guards the one you approved. Many teams will use an exploration framework to choose, and digline to hold the line afterwards.
+Exploration frameworks put prompts, models and configurations side by side, and give you a wide library of metrics to score them with. When the question is which variant wins, that layout is the answer. It is a different job from holding the one you chose: a sweep tells you what is best today, not whether today is worse than the day someone approved.
 
 ## How digline compares to specific tools
 
@@ -53,4 +53,4 @@ One page per tool. Each one says what that tool does well, in its own vocabulary
 
 ## Using them together
 
-These families complement each other. A reasonable production setup is: an exploration framework while developing, digline as the gate in CI before deploy, and observability watching live traffic after. digline's only strong opinion is about its own layer: the verdict on regressions belongs in your repo, next to your code, before the deploy — never in someone else's cloud.
+Three of these four families complement each other. A reasonable production setup is: an exploration framework while developing, digline as the gate in CI before deploy, and observability watching live traffic after. Snapshot and replay testing is the family missing from that line, and the first section says why: when outputs are sampled, a hash answers a question nobody asked. digline's only strong opinion is about its own layer: the verdict on regressions belongs in your repo, next to your code, before the deploy — never in someone else's cloud.

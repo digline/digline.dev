@@ -109,9 +109,9 @@ DESCRIPTIONS: dict[str, str] = {
     ),
     "comparison/index.md": (
         "Which question each family of tools answers — snapshot testing, "
-        "observability, exploration frameworks — and which one digline "
-        "answers: did it get worse than what I approved? Links to a page per "
-        "tool underneath"
+        "observability, exploration, and regression testing against an "
+        "approved baseline — and why the last one is digline's: did it get "
+        "worse than what I approved? Links to a page per tool underneath"
     ),
     "comparison/promptfoo.md": (
         "What promptfoo does well — the prompt and provider matrix, its "
