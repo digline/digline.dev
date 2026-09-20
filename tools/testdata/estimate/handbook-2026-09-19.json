@@ -1,0 +1,169 @@
+{
+ "run": 35451029899,
+ "measured": "2026-09-19",
+ "what": "the Handbook's first run, it/de/es: per page, the English tokens after the front matter (characters / 3.2, as estimate() counts them) and what its calls cost, from calls.json of the artifacts translation-it, translation-de and translation-es",
+ "pages": [
+  {
+   "lang": "it",
+   "page": "handbook/01-what-you-are-shipping.md",
+   "tokens": 1608,
+   "cost": 0.3996
+  },
+  {
+   "lang": "it",
+   "page": "handbook/02-cases.md",
+   "tokens": 2783,
+   "cost": 0.5765
+  },
+  {
+   "lang": "it",
+   "page": "handbook/03-ground-truth.md",
+   "tokens": 2599,
+   "cost": 0.6578
+  },
+  {
+   "lang": "it",
+   "page": "handbook/04-checks.md",
+   "tokens": 2436,
+   "cost": 0.6025
+  },
+  {
+   "lang": "it",
+   "page": "handbook/05-the-judge.md",
+   "tokens": 2452,
+   "cost": 0.5888
+  },
+  {
+   "lang": "it",
+   "page": "handbook/06-the-reference.md",
+   "tokens": 2387,
+   "cost": 0.5793
+  },
+  {
+   "lang": "it",
+   "page": "handbook/07-maintenance.md",
+   "tokens": 2262,
+   "cost": 0.5752
+  },
+  {
+   "lang": "it",
+   "page": "handbook/08-for-teams-building-for-others.md",
+   "tokens": 2551,
+   "cost": 0.5711
+  },
+  {
+   "lang": "it",
+   "page": "handbook/index.md",
+   "tokens": 565,
+   "cost": 0.1747
+  },
+  {
+   "lang": "de",
+   "page": "handbook/01-what-you-are-shipping.md",
+   "tokens": 1608,
+   "cost": 0.2881
+  },
+  {
+   "lang": "de",
+   "page": "handbook/02-cases.md",
+   "tokens": 2783,
+   "cost": 0.866
+  },
+  {
+   "lang": "de",
+   "page": "handbook/03-ground-truth.md",
+   "tokens": 2599,
+   "cost": 0.9868
+  },
+  {
+   "lang": "de",
+   "page": "handbook/04-checks.md",
+   "tokens": 2436,
+   "cost": 0.6924
+  },
+  {
+   "lang": "de",
+   "page": "handbook/05-the-judge.md",
+   "tokens": 2452,
+   "cost": 0.4105
+  },
+  {
+   "lang": "de",
+   "page": "handbook/06-the-reference.md",
+   "tokens": 2387,
+   "cost": 0.6601
+  },
+  {
+   "lang": "de",
+   "page": "handbook/07-maintenance.md",
+   "tokens": 2262,
+   "cost": 0.6507
+  },
+  {
+   "lang": "de",
+   "page": "handbook/08-for-teams-building-for-others.md",
+   "tokens": 2551,
+   "cost": 0.745
+  },
+  {
+   "lang": "de",
+   "page": "handbook/index.md",
+   "tokens": 565,
+   "cost": 0.1271
+  },
+  {
+   "lang": "es",
+   "page": "handbook/01-what-you-are-shipping.md",
+   "tokens": 1608,
+   "cost": 0.2408
+  },
+  {
+   "lang": "es",
+   "page": "handbook/02-cases.md",
+   "tokens": 2783,
+   "cost": 0.8123
+  },
+  {
+   "lang": "es",
+   "page": "handbook/03-ground-truth.md",
+   "tokens": 2599,
+   "cost": 0.7962
+  },
+  {
+   "lang": "es",
+   "page": "handbook/04-checks.md",
+   "tokens": 2436,
+   "cost": 0.5533
+  },
+  {
+   "lang": "es",
+   "page": "handbook/05-the-judge.md",
+   "tokens": 2452,
+   "cost": 0.5657
+  },
+  {
+   "lang": "es",
+   "page": "handbook/06-the-reference.md",
+   "tokens": 2387,
+   "cost": 0.5102
+  },
+  {
+   "lang": "es",
+   "page": "handbook/07-maintenance.md",
+   "tokens": 2262,
+   "cost": 0.3337
+  },
+  {
+   "lang": "es",
+   "page": "handbook/08-for-teams-building-for-others.md",
+   "tokens": 2551,
+   "cost": 0.6324
+  },
+  {
+   "lang": "es",
+   "page": "handbook/index.md",
+   "tokens": 565,
+   "cost": 0.1734
+  }
+ ]
+}

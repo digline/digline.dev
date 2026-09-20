@@ -859,22 +859,71 @@ def _meaning_ok(verdict: dict) -> bool:
 # ── the estimate ─────────────────────────────────────────────────────────────
 
 # Tokens per character, and output per input, from the first run on
-# 2026-09-17 (the Italian catalog and Why): a page's translation wrote about 4.4
-# output tokens (thinking included) per token of English; the catalog, 1.65; a
-# reading of meaning, about 1,200.
 CHARS_PER_TOKEN = 3.2
+
+# What a page costs, per call, in tokens, as a line in the tokens of its English
+# (after the front matter, CHARS_PER_TOKEN characters each), and how many of
+# each call a page takes. Measured on ESTIMATE_MEASURED from ESTIMATE_SOURCE, by
+# least squares over every call of the run; the reading's output is the mean,
+# since its slope was noise. tools/testdata/estimate/ keeps the pages and what
+# each cost, and the selftest holds these constants to them.
+#
+# Two things they do not know. They were fitted on Handbook pages, where the
+# reading found a calque on nearly every page and so nearly every page was
+# corrected once (CORRECTIONS_PER_PAGE); the presentation pages have been
+# corrected less, so on them this expects more than a run spends. And the
+# catalog is estimated as before, from 2026-09-17 (the Italian catalog):
+# 1.65 output tokens per token of English, twice that at most.
+ESTIMATE_MEASURED = "2026-09-19"
+ESTIMATE_SOURCE = ("run 35451029899, the Handbook's nine pages in it, de and es — 27 pages, 58,928 English "
+                   "tokens, 101 calls, 14.77 USD")
+TRANSLATION_IN = (1.67, 944)       # (per token of English, and a constant)
+TRANSLATION_OUT = (3.41, 1906)     # thinking included
+CORRECTION_IN = (2.64, 2149)       # the English, the last answer and the reviewer's notes
+CORRECTION_OUT = (1.58, 154)
+READING_IN = (2.54, 997)
+READING_OUT = (0.0, 1855)
+TRANSLATIONS_PER_PAGE = 1.15       # a second attempt after failed checks, on 15 pages in 100
+READINGS_PER_PAGE = 1.70           # one, and one more after each correction
+CORRECTIONS_PER_PAGE = 0.81
+# The most a single call cost against its line, per kind, rounded up: a
+# reading's thinking varies most. The most a page can cost takes each call at
+# that.
+TRANSLATION_MOST, CORRECTION_MOST, READING_MOST = 1.3, 1.2, 1.7
+CATALOG_OUT_PER_TOKEN = 1.65
+
+
+def _call(tokens: float, into: tuple[float, float], out: tuple[float, float]) -> float:
+    """What one call costs in USD, for a page of `tokens` English tokens."""
+    price_in, price_out = PRICES[MODEL]
+    return ((into[0] * tokens + into[1]) * price_in + (out[0] * tokens + out[1]) * price_out) / 1e6
+
+
+def page_estimate(tokens: float) -> tuple[float, float]:
+    """(expected, most) for one page: expected, each call as often as a page
+    took it on ESTIMATE_MEASURED; most, the longest path the run can take — two
+    translations (the second after failed checks), one correction and a reading
+    after each — every call at the most one of its kind cost."""
+    translation_ = _call(tokens, TRANSLATION_IN, TRANSLATION_OUT)
+    correction = _call(tokens, CORRECTION_IN, CORRECTION_OUT)
+    reading = _call(tokens, READING_IN, READING_OUT)
+    expected = (TRANSLATIONS_PER_PAGE * translation_ + CORRECTIONS_PER_PAGE * correction
+                + READINGS_PER_PAGE * reading)
+    most = (2 * TRANSLATION_MOST * translation_ + CORRECTION_MOST * correction
+            + 2 * READING_MOST * reading)
+    return expected, most
 
 
 def estimate(root: str, langs: list[str], pages: list[str]) -> tuple[float, float]:
-    """(the expected cost in USD, the most it could cost with every second
-    attempt and correction), from what the plan would translate."""
+    """(the expected cost in USD, the most it could cost on the longest path),
+    from what the plan would translate."""
     price_in, price_out = PRICES[MODEL]
     expected = worst = 0.0
     for lang in langs:
         wanted, _ = catalog_plan(root, lang)
         if wanted:
             tokens = len(json.dumps(wanted, ensure_ascii=False)) / CHARS_PER_TOKEN
-            cost = ((tokens + 1500) * price_in + 1.65 * tokens * price_out) / 1e6
+            cost = ((tokens + 1500) * price_in + CATALOG_OUT_PER_TOKEN * tokens * price_out) / 1e6
             expected += cost
             worst += 2 * cost
         for name in pages:
@@ -882,11 +931,9 @@ def estimate(root: str, langs: list[str], pages: list[str]) -> tuple[float, floa
             if page_plan(root, lang, page) == "unchanged":
                 continue
             _, body = translation.read_page(os.path.join(root, "docs", page))
-            tokens = len(body) / CHARS_PER_TOKEN
-            translate = ((tokens + 1500) * price_in + (4.4 * tokens + 500) * price_out) / 1e6
-            read = ((2.3 * tokens + 800) * price_in + 1200 * price_out) / 1e6
-            expected += translate + read
-            worst += 3 * translate + 2 * read
+            one, most = page_estimate(len(body) / CHARS_PER_TOKEN)
+            expected += one
+            worst += most
     return expected, worst
 
 
@@ -909,8 +956,7 @@ def report(translator: Translator, langs, pages, dry_run: bool, started: str,
              f"- Spent: **{ledger.spent:.4f} USD** of a {ledger.cap:.2f} USD limit, in {len(ledger.calls)} call(s); "
              f"{sum(c.input_tokens for c in ledger.calls)} input and {sum(c.output_tokens for c in ledger.calls)} output tokens"]
     if estimated:
-        lines.append(f"- Estimated before the run: {estimated[0]:.2f} USD, at most {estimated[1]:.2f} with every second "
-                     "attempt and correction")
+        lines.append(f"- Estimated before the run: {estimated[0]:.2f} USD, at most {estimated[1]:.2f} on the longest path")
     lines += ["", "## Outcomes", "", "| Language | What | Status | Attempts | Checks | Meaning |", "|---|---|---|---|---|---|"]
     attention = []
     for o in translator.outcomes:
@@ -1038,8 +1084,8 @@ def main(argv: list[str]) -> int:
     started = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime())
     workspace = Workspace(ROOT, args.existing)
     estimated = estimate(workspace.root, langs, pages)
-    print(f"translate: estimated cost {estimated[0]:.2f} USD, at most {estimated[1]:.2f} with every second attempt "
-          f"and correction; the limit is {args.max_cost:.2f} USD", flush=True)
+    print(f"translate: estimated cost {estimated[0]:.2f} USD, at most {estimated[1]:.2f} on the longest path "
+          f"(ESTIMATE_MEASURED {ESTIMATE_MEASURED}); the limit is {args.max_cost:.2f} USD", flush=True)
     translator = Translator(Claude(FederatedToken()), Ledger(args.max_cost), workspace)
     try:
         translator.run(langs, pages)
@@ -1341,6 +1387,27 @@ def selftest() -> int:
         expected, worst = estimate(root, ["it"], ["start", "why"])
         expect("the estimate: something to pay for pages to translate, more at most", (0 < expected < worst), True)
         expect("the estimate: nothing for what is up to date", estimate(root, ["it"], ["about"]), (0.0, 0.0))
+        # The constants against what they were measured on: the pages of
+        # ESTIMATE_SOURCE, each with its English tokens and what it cost.
+        with open(os.path.join(TOOLS, "testdata", "estimate", "handbook-2026-09-19.json"), encoding="utf-8") as fh:
+            measured = json.load(fh)
+        spent = sum(p["cost"] for p in measured["pages"])
+        foreseen = sum(page_estimate(p["tokens"])[0] for p in measured["pages"])
+        most = [(p["page"], p["lang"]) for p in measured["pages"] if p["cost"] > page_estimate(p["tokens"])[1]]
+        per_lang = {lang: (sum(p["cost"] for p in measured["pages"] if p["lang"] == lang),
+                           sum(page_estimate(p["tokens"])[0] for p in measured["pages"] if p["lang"] == lang))
+                    for lang in ("it", "de", "es")}
+        expect("the estimate against the run it was measured on: within 10% in all, and in each language",
+               (len(measured["pages"]), abs(foreseen - spent) / spent < 0.10,
+                all(abs(f - s) / s < 0.15 for s, f in per_lang.values())), (27, True, True))
+        expect("no page of that run cost more than its most", most, [])
+        # The other half: the same test, on an estimate that counts no
+        # correction — one translation and one reading a page, as it did until
+        # ESTIMATE_MEASURED — refuses it.
+        uncorrected = sum(_call(p["tokens"], TRANSLATION_IN, TRANSLATION_OUT) + _call(p["tokens"], READING_IN, READING_OUT)
+                          for p in measured["pages"])
+        expect("an estimate with no correction in it is not within 10% of that run",
+               abs(uncorrected - spent) / spent < 0.10, False)
     finally:
         workspace.close()
 
