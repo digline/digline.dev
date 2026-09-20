@@ -479,6 +479,15 @@ DESCRIPTIONS: dict[str, str] = {
         "part of the run, and the totals crossing a boundary while the per-call "
         "counts do not"
     ),
+    "product/adr/0027-the-run-reconciles.md": (
+        "Whether a run recorded an answer to every question it asked: the "
+        "driver reads its own dispatch back \u2014 a suspended case asked "
+        "nothing, a calibration case its one check, every other case every "
+        "assertion \u2014 and records each gap as an errored verdict naming "
+        "the case and the check, so the run exits 2, cannot be promoted and "
+        "says it is not a regression; with what no count can see, an exception "
+        "the user's own code caught, stated rather than claimed"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

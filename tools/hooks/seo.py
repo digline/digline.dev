@@ -458,6 +458,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and the judge's \u2014 and why the totals leave the perimeter while the "
         "per-call counts stay with the answer they belong to.",
     ),
+    "product/adr/0027-the-run-reconciles.md": (
+        "ADR 0027: The run reconciles with what it was asked",
+        "Why a run checks that every question its suite asked came back as a "
+        "verdict, why a gap is named rather than counted, and why it exits 2 "
+        "without ever being called a regression.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
