@@ -67,6 +67,9 @@ bar:             ## the bar check against its own four-page site, refusals inclu
 translate:       ## the translate="no" and lang check against its own two-page site, refusals included — needs no build
 	uv run tools/check-translate.py --selftest
 
+opening:         ## the lede check against its own small site, refusals included — needs no build
+	uv run tools/check-opening.py --selftest
+
 i18n:            ## the catalog's check and t() against their own catalog, template and hook, refusals included — needs no build
 	uv run tools/hooks/i18n.py --selftest
 
@@ -87,6 +90,7 @@ build: docs css claims actions source home opening agents indexes posts feed car
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
 	uv run tools/check-bar.py site
+	uv run tools/check-opening.py site
 	uv run tools/check-translate.py site
 	uv run tools/check-translations.py site
 
@@ -97,6 +101,7 @@ check: css claims actions source  ## the stylesheets, the source, the two genera
 	uv run tools/check-glyphs.py site
 	uv run tools/check-assets.py site
 	uv run tools/check-bar.py site
+	uv run tools/check-opening.py site
 	uv run tools/check-translate.py site
 	uv run tools/check-translations.py site
 
