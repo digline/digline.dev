@@ -465,9 +465,9 @@ DESCRIPTIONS: dict[str, str] = {
         "How the judge is measured rather than trusted: read the rendered judge "
         "prompt before re-running anything, a calibration case with a written "
         "answer whose score outside its declared band exits 2 with no baseline, "
-        "`judge_samples` never reported without that result, the share of "
-        "judged scores at exactly 0 or 1, and the run-to-run range, the last "
-        "two printed without thresholds until data sizes them"
+        "`judge_samples` never reported without that result, and two readings "
+        "printed without thresholds until data sizes them \u2014 the share of "
+        "judged scores at exactly 0 or 1, and the run-to-run range"
     ),
     "product/adr/0025-the-tokens-and-the-bill.md": (
         "What a run cost, recorded instead of thrown away: token counts had "
