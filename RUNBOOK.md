@@ -130,9 +130,23 @@ All three in one dispatch, one job after the other, each with its own branch, pu
 
 **The credentials.** No Anthropic key: the job's GitHub OIDC token is exchanged at Anthropic (Workload Identity Federation). The federation rule is in the Anthropic Console of the organization whose id is the repository variable `ANTHROPIC_ORG_ID`; its own id is `ANTHROPIC_FEDERATION_RULE_ID`, with `ANTHROPIC_SERVICE_ACCOUNT_ID` and `ANTHROPIC_WORKSPACE_ID` next to it (Settings → Secrets and variables → Actions → Variables). It accepts this repository's `refs/heads/main` in the immutable subject form, `repo:digline@321413575/digline.dev@1348500446:ref:refs/heads/main`, and a job with no environment. The pull request is opened with the GitHub App's token, secrets `TRANSLATION_APP_ID` and `TRANSLATION_APP_PRIVATE_KEY`, because what `GITHUB_TOKEN` opens starts no workflow. Auto-merge needs "Allow auto-merge" on in the repository settings and the ruleset on `main` (pull request required, Build required, no force push).
 
+## Updating an action
+
+Every `uses:` in `.github/workflows/` is a full commit with the version it is at written after it, and `tools/check-actions.py` (in `make build` and in CI) refuses a tag, a branch, a short sha, or a pin whose version is not written:
+
+    uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+To move one to a newer version, read the sha from the action's own repository, never from a list — a tag is whatever that repository says it is today:
+
+    git ls-remote --tags https://github.com/actions/checkout | grep -E 'refs/tags/v5(\.|$)'
+
+An annotated tag prints twice: `refs/tags/v5.1.0` is the tag object and `refs/tags/v5.1.0^{}` the commit it points at. **The commit is the one with `^{}`**, and it is what goes in the workflow; when a tag prints only once, that line is the commit. The same commit usually carries the moving major (`v5`) and the exact version (`v5.1.0`): the comment names the exact one, so that a reader knows what they are on and the next update has something to compare with.
+
+The sha and the comment move together, in the same commit here: a comment left on the old version is worse than none, and nothing can catch it — the gate reads that a version is written, not which. Two things it is worth checking by hand when you update: that the version you wrote is the one the sha belongs to, and that the same action is at the same version in every workflow that uses it.
+
 ## The gates, before any merge into `main`
 
-- `make css` whenever `docs/assets/*.css` changed. It needs no build.
+- `make css` whenever `docs/assets/*.css` changed, and `make actions` whenever a workflow changed. Neither needs a build.
 - `make build` against `../digline` level with `origin/main`: sync, the CSS check, `mkdocs build --strict`, then `check-sitemap.py` and `check-llms.py`. All green.
 - The sync checks the first half of that itself: it refuses a digline checkout with uncommitted changes under what it copies (`docs/`, `examples/`, `docker/`, the changelog and roadmap), or one ahead of `origin/main`, or behind it — except a detached HEAD exactly on the latest `v*` tag `origin/main` contains, the release tag CI builds a dispatch from; an older tag, or an untagged commit, is refused. To look at a page that is not on digline main yet, `make preview` (`SYNC_UNRELEASED=1`): it builds with a banner and leaves `.sync-preview`, and `tools/check-source.sh`, in `make build` and in the workflow, refuses to ship that build.
 - The commit message names the digline commit it was built against and the URL count.
