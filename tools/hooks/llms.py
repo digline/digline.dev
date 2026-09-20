@@ -343,8 +343,9 @@ DESCRIPTIONS: dict[str, str] = {
     ),
     # Decisions
     "product/adr/index.md": (
-        "Every architecture decision behind digline, in the order it was taken, "
-        "superseded ones kept and marked"
+        "Every architecture decision behind digline, oldest first, each with "
+        "its status and the date it was taken, and nothing deleted when a "
+        "decision changes"
     ),
     "product/adr/0001-verdict-not-score.md": (
         "Why an assertion produces a three-state verdict rather than a bare "
