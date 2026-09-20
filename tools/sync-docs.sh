@@ -268,8 +268,9 @@ done
 {
   echo "# Decisions"
   echo
-  echo "Why digline is shaped the way it is. One record per decision, in the"
-  echo "order they were numbered; superseded ones stay, marked."
+  echo "Why digline is shaped the way it is. One record per decision, oldest"
+  echo "first, each with its status and its date. Nothing is deleted when a"
+  echo "decision changes."
   echo
   # The table — number, title, status, date — is filled at build time by
   # tools/hooks/indexes.py, which reads each record and fails the build on one

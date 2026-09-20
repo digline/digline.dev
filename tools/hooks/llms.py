@@ -343,8 +343,9 @@ DESCRIPTIONS: dict[str, str] = {
     ),
     # Decisions
     "product/adr/index.md": (
-        "Every architecture decision behind digline, in the order it was taken, "
-        "superseded ones kept and marked"
+        "Every architecture decision behind digline, oldest first, each with "
+        "its status and the date it was taken, and nothing deleted when a "
+        "decision changes"
     ),
     "product/adr/0001-verdict-not-score.md": (
         "Why an assertion produces a three-state verdict rather than a bare "
@@ -465,9 +466,9 @@ DESCRIPTIONS: dict[str, str] = {
         "How the judge is measured rather than trusted: read the rendered judge "
         "prompt before re-running anything, a calibration case with a written "
         "answer whose score outside its declared band exits 2 with no baseline, "
-        "`judge_samples` never reported without that result, the share of "
-        "judged scores at exactly 0 or 1, and the run-to-run range, the last "
-        "two printed without thresholds until data sizes them"
+        "`judge_samples` never reported without that result, and two readings "
+        "printed without thresholds until data sizes them \u2014 the share of "
+        "judged scores at exactly 0 or 1, and the run-to-run range"
     ),
     "product/adr/0025-the-tokens-and-the-bill.md": (
         "What a run cost, recorded instead of thrown away: token counts had "
