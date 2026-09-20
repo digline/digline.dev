@@ -458,6 +458,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and the judge's \u2014 and why the totals leave the perimeter while the "
         "per-call counts stay with the answer they belong to.",
     ),
+    "product/adr/0026-the-thinking-a-model-charged-for.md": (
+        "ADR 0026: The thinking a model charged for",
+        "Why a reply's thinking tokens are recorded beside the output they are "
+        "part of and never priced again, why nothing reported is never written "
+        "as a zero, and why a total that folds an unknown split stays unknown.",
+    ),
     "product/adr/0027-the-run-reconciles.md": (
         "ADR 0027: The run reconciles with what it was asked",
         "Why a run checks that every question its suite asked came back as a "
