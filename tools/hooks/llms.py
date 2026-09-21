@@ -515,6 +515,14 @@ DESCRIPTIONS: dict[str, str] = {
         "says it is not a regression; with what no count can see, an exception "
         "the user's own code caught, stated rather than claimed"
     ),
+    "product/adr/0028-the-rules-that-moved.md": (
+        "What moved on the suite side when config_hash changes: every "
+        "threshold, tolerance, sample count and aggregate gate named by value "
+        "and by direction \u2014 loosened, tightened or merely changed \u2014 "
+        "derived from the two stored runs rather than recorded, so no schema "
+        "moves and every baseline ever written is readable by it; reported and "
+        "never gated, because promotion is where a human signs a lowered bar"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
