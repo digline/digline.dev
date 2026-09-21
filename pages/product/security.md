@@ -123,9 +123,8 @@ round** — not before the tag, before anyone is told to upgrade. Three
 questions per new field: where does it cross a boundary, who wrote the
 value, and what does a hostile value do there.
 
-It has run on 0.7.1 and on every minor release since: seven so far,
-each in the [changelog](changelog.md). The first two under the standing
-rule:
+It has run on 0.7.1 and on every minor release since, each in the
+[changelog](changelog.md). The first two under the standing rule:
 
 - **Over 0.8.0.** Found `resolved_model` travelling in clear out of a
   redacted run, next to a `base_url` that redaction had withheld —
@@ -145,11 +144,16 @@ rule:
 The line is **exposure**, and it is the same line every time.
 
 A **published advisory** for a vulnerability that shipped: a released
-version, on an index somebody could install from. Four exist: the three
-in the table above, and one from the delta-pass over 0.12.0, fixed in
+version, on an index somebody could install from. Five exist: the three
+in the table above, one from the delta-pass over 0.12.0, fixed in
 0.12.1 —
 [GHSA-g25g-q7j3-jcgp](https://github.com/digline/digline/security/advisories/GHSA-g25g-q7j3-jcgp)
-(low, perimeter fields in comparison deltas).
+(low, perimeter fields in comparison deltas) — and one from
+[the denominator article](../blog/denominator-trap.md), fixed across
+0.15.1 to 0.15.3 —
+[GHSA-8c38-f965-cgww](https://github.com/digline/digline/security/advisories/GHSA-8c38-f965-cgww)
+(medium, a gate raised from `fail` to `pass` reported as an improvement,
+where an unjudgeable case had shrunk the denominator under it).
 
 A **`Security` entry in the changelog and no advisory** for a finding
 the process caught before it could reach anybody. There is no version to

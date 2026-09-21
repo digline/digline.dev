@@ -13,4 +13,4 @@ Write to [hello@digline.dev](mailto:hello@digline.dev) — questions about using
 
 Bugs and feature requests are better as [issues](https://github.com/digline/digline/issues), where the answer stays readable for whoever hits the same thing.
 
-Security reports go to the same address; please do not open a public issue first.
+Security reports go through [GitHub's private vulnerability reporting](https://github.com/digline/digline/security/advisories/new), not to that address and not to a public issue: a report that arrives in one person's inbox waits for that person.
