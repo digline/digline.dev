@@ -7,8 +7,8 @@ description: 'Cómo contactar con las personas que están detrás de digline: co
 search:
   exclude: true
 source: contact.md
-source_sha: 3576bb8d5d16
-source_commit: 69114fa
+source_sha: e89a877ca34d
+source_commit: 42423b2
 model: claude-opus-5
 ---
 
@@ -16,6 +16,6 @@ model: claude-opus-5
 
 Escribe a [hello@digline.dev](mailto:hello@digline.dev) — preguntas sobre el uso de digline y cualquier cosa que no encaje en un issue público.
 
-Para los errores y las peticiones de funcionalidades es mejor abrir [issues](https://github.com/digline/digline/issues), donde la respuesta queda legible para quien se encuentre con lo mismo.
+Para los errores y las peticiones de funcionalidades es mejor abrir [issues](https://github.com/digline/digline/issues), donde la respuesta queda consultable para quien se tope con lo mismo.
 
-Los informes de seguridad van a la misma dirección; por favor, no abras antes un issue público.
+Los informes de seguridad se envían mediante [el sistema privado de informes de vulnerabilidades de GitHub](https://github.com/digline/digline/security/advisories/new), no a esa dirección ni a un issue público: un informe que llega al buzón de una sola persona queda a la espera de esa persona.

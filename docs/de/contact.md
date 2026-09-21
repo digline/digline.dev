@@ -7,8 +7,8 @@ description: 'Wie du die Menschen hinter digline erreichst: Mail für Fragen zur
 search:
   exclude: true
 source: contact.md
-source_sha: 3576bb8d5d16
-source_commit: 69114fa
+source_sha: e89a877ca34d
+source_commit: 42423b2
 model: claude-opus-5
 ---
 
@@ -18,4 +18,4 @@ Schreib an [hello@digline.dev](mailto:hello@digline.dev) — Fragen zur Nutzung 
 
 Bugs und Feature-Requests sind besser als [Issues](https://github.com/digline/digline/issues) aufgehoben, wo die Antwort für alle lesbar bleibt, die auf dasselbe stoßen.
 
-Sicherheitsmeldungen gehen an dieselbe Adresse; bitte öffne dafür nicht zuerst ein öffentliches Issue.
+Sicherheitsmeldungen laufen über [GitHubs private Vulnerability-Meldung](https://github.com/digline/digline/security/advisories/new), nicht über diese Adresse und nicht über ein öffentliches Issue: Eine Meldung, die im Postfach einer einzelnen Person landet, wartet auf diese Person.
