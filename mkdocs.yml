@@ -236,6 +236,7 @@ nav:
           - Guide: product/guide.md
           - Metrics: product/metrics.md
           - Testing a selection: product/selection.md
+          - Watching an MCP server: product/tools.md
           - Suites as data: product/declarative.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
       # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
@@ -278,6 +279,7 @@ nav:
           - A LlamaIndex query engine: product/examples/llamaindex.md
           - A team that does not write Python: product/examples/quickstart-toml.md
           - A suite watched on a schedule: product/examples/operator.md
+          - An MCP server you do not control: product/examples/mcp-tools.md
           - A whole product (digline/brief): https://github.com/digline/brief
       # A new ADR does not get its line here on main. Its three entries — this
       # line, PRODUCT in tools/hooks/seo.py, DESCRIPTIONS in tools/hooks/llms.py —

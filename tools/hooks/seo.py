@@ -211,6 +211,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "declare the offered set per case in a suite.py, and two checks cover "
         "what was invented, what leaked and what went missing.",
     ),
+    "product/tools.md": (
+        "Watching an MCP server",
+        "How to tell whether an MCP server's tool descriptions changed under "
+        "you: dump tools/list canonically, declare it as a digline artifact, "
+        "and why a stale dump is worse than no check at all.",
+    ),
     "product/declarative.md": (
         "Suites as data",
         "How to write a suite in a suite.toml rather than a suite.py: what the "
@@ -529,6 +535,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Gating a prompt in CI with a suite.toml and a cases.json: the "
         "declarative form end to end, with no code in the suite and the same "
         "baseline a Python suite would produce.",
+    ),
+    "product/examples/mcp-tools.md": (
+        "Example: an MCP server you do not control",
+        "One tool description gains a clause, no name and no schema changes, "
+        "and a tool stops being called — with the canonical tools/list dump "
+        "declared as an artifact so the diff sits above the scores it moved.",
     ),
     "product/examples/operator.md": (
         "Example: a suite watched on a schedule",
