@@ -59,6 +59,20 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 3. Commit, saying which digline branch and commit it was built against, the URL count, and that the branch waits for the record. Do not merge.
 4. When the record is on digline main: update `../digline`, rebase or merge the branch, `make build` green, merge, push, check live.
 
+## A page here about something that lives in digline
+
+Three pages under `product/` are written in this repository rather than copied from digline: `pages/product/operator.md`, `pages/product/security.md` and `pages/product/examples/index.md`. `tools/sync-docs.sh` installs them into `docs/product/` after the copy. They exist because a page about how digline is *used* has no home in the other repository's `docs/` — but what they describe does live there, and changes there.
+
+The rule:
+
+> A page written here may name a **public API name**, linked to its own page — `HttpTarget`, `Disclosure`. It may not state a **count**, a **command**, an **internal file** or a **decision rule** that belongs to digline. Those are the other repository's to state, and they move when it moves: name the thing the reader needs and link the example, which states its own.
+
+Why: `pages/product/operator.md` was written on 9 September as a copy of `examples/operator/DESIGN.md`, minus one section. DESIGN.md was amended twice on 11 September; the copy was not. For twelve days the page said *two* alerts shipped where three did, named `compare` and `diff` for a layer the loop renders from `explain`, and described an escalation rule the shipped loop contradicts — while every link resolved and every gate was green. The distinction the rule draws is the one that failed: an API name is stable and has a page of its own that the sync brings in, so a reader can check it; a count, a command, a file name and a decision rule are mechanism, and a copy of mechanism goes stale silently.
+
+The gate, for the countable half: `tools/sync-docs.sh` writes `.operator-facts.json` (`tools/operator_facts.py`) — the alerts that ship, the files of `examples/operator/`, and digline's command list as `home.json` has it, all read at the latest `v*` tag the checkout contains. `tools/hooks/operator_page.py` fails the build when `/product/operator/` states a number of alerts that is not the number that ship, or names a command or one of those files as code. `promote` is the one command the page may name, because its *absence* from the operator's surface is the page's argument.
+
+A decision rule is not gated and cannot be: it is a sentence, not a number. The answer there is not to write one — say what the operator is for, and let the example say what it decides.
+
 ## A release that changes rule 1 of AGENTS.md
 
 /agents/ closes on a quotation of rule 1 of digline's `AGENTS.md`. The quotation is written in `overrides/agents.html`, not in `docs/agents.md`, so a translation never touches it; and it is held to a release. `tools/sync-docs.sh` reads rule 1 at the latest `v*` tag the digline checkout contains and writes it, with the tag and its commit, to `.agents-rule.json`. `tools/hooks/sources.py` fails the build when the quotation's text, whitespace normalized, is not that rule.

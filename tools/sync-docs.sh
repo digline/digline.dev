@@ -229,6 +229,19 @@ python3 "$here/tools/agents_rule.py" "$src" > "$rule.tmp" && mv "$rule.tmp" "$ru
 }
 agents_tag="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["tag"])' "$rule")"
 
+# The countable facts about examples/operator/, for the page about it. That page
+# is written here (pages/product/operator.md) and the example is not: its alerts,
+# its files and digline's own command list all change in the other repository.
+# tools/operator_facts.py reads them at the same release tag, and
+# tools/hooks/operator_page.py holds the built page to them. Same moment and
+# same reason as the rule above: this is when the other checkout is in reach.
+facts="$here/.operator-facts.json"
+python3 "$here/tools/operator_facts.py" "$src" > "$facts.tmp" && mv "$facts.tmp" "$facts" || {
+  rm -f "$facts.tmp" "$facts"
+  echo "sync: could not read examples/operator/ at a release tag of $src (above)" >&2
+  exit 1
+}
+
 rm -rf "$out"
 mkdir -p "$out/examples"
 

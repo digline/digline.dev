@@ -135,6 +135,12 @@ hooks:
   # tools/claims-register.toml, and the quotation of rule 1 that closes
   # /agents/ held to AGENTS.md at that tag. See the file's docstring.
   - tools/hooks/sources.py
+  # /product/operator/ is written here and the loop it describes is not: the
+  # page may name a public API name, and not a count, a command or a file of
+  # examples/operator/, which change in the other repository. Read from
+  # .operator-facts.json, which the sync writes. See the file's docstring and
+  # the rule in RUNBOOK.md.
+  - tools/hooks/operator_page.py
   # This site's own stylesheets and fonts, linked with a hash of their content,
   # so a changed file is a new URL and no cache serves the old one. See the
   # file's docstring; tools/check-assets.py checks the result.

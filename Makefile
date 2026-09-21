@@ -2,7 +2,7 @@
 # workflow checks the repository out and passes its path instead.
 DIGLINE ?= ../digline
 
-.PHONY: docs preview serve css claims actions source home opening agents indexes posts feed card glyphs assets bar translate i18n translations translation-checks agent build check clean
+.PHONY: docs preview serve css claims actions source home opening agents operator indexes posts feed card glyphs assets bar translate i18n translations translation-checks agent build check clean
 
 docs:            ## copy digline's docs/ and examples/*/README.md into docs/product/
 	tools/sync-docs.sh $(DIGLINE)
@@ -43,6 +43,10 @@ agents:          ## /agents/: rule 1 read out of AGENTS.md, links led to the tag
 	python3 tools/agents_rule.py --selftest
 	uv run tools/hooks/sources.py --selftest
 
+operator:        ## /product/operator/: the example's facts read at the tag, and the page held to them — needs no build
+	python3 tools/operator_facts.py --selftest
+	python3 tools/hooks/operator_page.py --selftest
+
 assets:          ## the asset-hash check against its own small site, refusals included — needs no build
 	uv run tools/check-assets.py --selftest
 
@@ -82,7 +86,7 @@ translation-checks: docs  ## every translation against its original: the fake on
 agent: docs      ## the translating agent with a fake model — prompts, skipping, the fixed section, retries, the spending limit, the report, a real build — no network
 	uv run tools/translate.py --selftest
 
-build: docs css claims actions source home opening agents indexes posts feed card glyphs assets bar translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an action at a tag or a branch, an unreleased source, a home.json the home cannot stand behind, a post with no date or a date in the future, a card whose width and height are not the image's, a post missing from the feed or a page in it that is not one, a character with no Plex glyph, a search icon on a page without search or missing from one with it, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
+build: docs css claims actions source home opening agents operator indexes posts feed card glyphs assets bar translate i18n translations translation-checks agent  ## what CI does; a broken link, a wrong sitemap, a stylesheet a browser cannot read, an action at a tag or a branch, an unreleased source, a home.json the home cannot stand behind, a post with no date or a date in the future, a card whose width and height are not the image's, a post missing from the feed or a page in it that is not one, a character with no Plex glyph, a search icon on a page without search or missing from one with it, code a translator may rewrite, a catalog key named and missing, or held and unused, or a translation that does not hold together, or strays from its original, fails it
 	uv run mkdocs build --strict
 	tools/check-sitemap.py site
 	tools/check-llms.py site
