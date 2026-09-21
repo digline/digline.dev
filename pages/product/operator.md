@@ -6,9 +6,12 @@ nobody is looking.
 
 An **operator** is an agent that runs the checks on a schedule,
 absorbs the measurement's own noise, and wakes a human only for drift
-that deserves a decision. Everything on this page is either shipped —
-and linked — or explicitly marked as a hypothesis being designed with
-pilots. There is no third category.
+that deserves a decision. How it does that is
+[the reference assembly](examples/operator.md)'s to say, and that is
+where it changes. This page is about why you would want one, and what
+it is not allowed to become. Everything here is either shipped — and
+linked — or marked as being designed with pilots. There is no third
+category.
 
 ## Two questions, two sources
 
@@ -31,41 +34,36 @@ capture, correlation, redaction at birth, and a harvest that
 *proposes* candidates the way an agent proposes anything in digline:
 a human approves them, or they are nothing. **This source is
 designed, not shipped.** The landing format already exists — a
-harvested case is a [TOML suite](declarative.md) plus a
-`cases.json`, diffable and reviewable like any other — but the
-harvest itself is being designed with people who have real traffic.
-Bring your history; the last section says how.
+harvested case is a [TOML suite](declarative.md) plus its cases,
+diffable and reviewable like any other — but the harvest itself is
+being designed with people who have real traffic. Bring your history;
+the last section says how.
 
-## What the operator decides alone, and what it escalates
+## What it is not allowed to become
 
 The operator automates the judgment [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md)
-writes down — and nothing beyond it.
+writes down — and nothing beyond it. Three boundaries, and none of
+them is a setting.
 
-**Alone**, it may re-run a suspicious run, classify a draw from a
-drift, and use [`diff`](diff.md) between candidates. Two
-constraints make that safe. The stopping rule is **declared in
-configuration before anything runs** — "at most two re-runs" is a
-parameter, never the model's mood in the moment: with a stochastic
-judge, enough re-runs always produce a green one, and a stopping rule
-chosen after the fact measures your patience rather than the system.
-And every action carries a **declared cost**: `acknowledge_calls`
-is already the contract on the [MCP surface](mcp.md), and the
-loop inherits it — the operator cannot spend without stating what it
-is spending, and the stopping rule is what bounds the total.
+**It cannot approve.** `promote` is not on the operator's surface —
+not refused, absent. A refusal is a conversation an agent can reopen;
+an absence is not. A baseline to re-approve needs a person, and that
+is not a policy a future release could relax.
 
-**Escalated**: drift that repeats beyond the measured floor; several
-cases flipping together, which is investigated and never retried,
-because retrying destroys the evidence either way; system errors — a
-judge that returned no text, a target that stopped answering; and
-anything that needs a signature. A baseline to re-approve always
-needs one. `promote` does not exist on the operator's surface — not
-refused, absent — so that last rule is not a policy a future release
-could relax. It is a fact about what the operator can reach.
+**It cannot repair.** The operator watches the measurement; it does
+not fix the system. A prompt belongs to your engineer or your coding
+agent, and the alert is the handover between the two.
 
-**Out of scope, by declared boundary: the remedy.** The operator
-watches the measurement; it does not repair the system. Fixing a
-prompt belongs to your engineer or your coding agent — and the alert
-is the handover between the two.
+**It cannot spend without saying so.** Every action it takes carries
+a declared cost, and what bounds the total is declared in
+configuration before anything runs — not chosen in the moment. With a
+stochastic judge, enough re-runs always produce a green one, and a
+limit picked afterwards measures your patience rather than the
+system.
+
+What it decides on its own, how it classifies, and when it wakes
+somebody are [the reference assembly](examples/operator.md)'s to
+state, beside the code that does it.
 
 ## Where it lives, and what travels
 
@@ -75,20 +73,10 @@ entrypoint — a scheduler you already have, and the operator's model
 called with your credentials. It is the same trust model as the
 judge: the reasoning about a report happens where the report is born.
 
-The alert is a document in three layers, and the model writes only
-the third:
-
-1. **The fact.** Machine truth from the wire: the `compare` or `diff`
-   JSON, the exit code, the run keys. Versioned, reproducible, not
-   prose.
-2. **The dossier.** Deterministic: what the operator did and saw.
-   Re-ran twice, per the declared stopping rule; the intervals the
-   samples spanned; which cases flipped; which configuration values
-   differed.
-3. **The judgment.** The only layer a model writes: draw, drift, or
-   structural — with its reasoning in the open, and **marked as the
-   operator's opinion, never as digline's verdict.** The instrument
-   measures; the operator opines; the document keeps them apart.
+An alert keeps apart what the wire said and what a model thought
+about it, and says which is which: the measurement is digline's, the
+opinion is the operator's, and the document never lets the second
+wear the first's clothes.
 
 Delivery is deliberately boring: a webhook, an email, an issue opened
 in your own repository. An alert is a document, not a platform. There
@@ -104,9 +92,8 @@ configurations, case names: fragments of your system and of your end
 clients' data. Hosted by us, your compliance perimeter would suddenly
 include us — our servers, our keys, our subprocessor agreement, our
 audit. digline exists so that none of that is needed. What leaves
-your perimeter is the redacted alert that your own suite's
-[`Disclosure`](api.md) declared could travel — and nothing
-else.
+your perimeter is the redacted alert your own suite
+[declared could travel](api.md) — and nothing else.
 
 (The one hosted thing this project may ever grow is a fleet console
 that receives *only* those already-travel-safe alerts and verdicts,
@@ -118,23 +105,15 @@ ever grows paid features, they will run inside your perimeter too.**
 
 ## Run it today
 
-[`examples/operator/`](examples/operator.md)
-is the reference assembly: a suite, an operator configuration —
-cadence, stopping rule, budget, in a file rather than a vibe — an
-operator prompt written against this document, an `.mcp.json` for the
-interactive path, and a scheduled workflow whose escalation opens an
-issue in your own repository. The deterministic layers run without
-any key; the judgment layer is an explicit opt-in, the same
-convention every example in the repository follows.
-
-Two alerts the loop actually produced ship with it:
-[`alerts/draw.md`](https://github.com/digline/digline/blob/main/examples/operator/alerts/draw.md),
-the cycle that re-ran once, came back green and deliberately woke
-nobody, and
-[`alerts/drift.md`](https://github.com/digline/digline/blob/main/examples/operator/alerts/drift.md),
-the same case and the same check red in all three runs, and the
-escalation that follows. The three layers above are not a proposal:
-they are what those two documents are made of.
+[`examples/operator/`](examples/operator.md) is the reference
+assembly: a suite, an operator configuration — cadence, stopping
+rule, budget, in a file, not in someone's head — an operator prompt
+written against this document, the interactive path, and a scheduled
+workflow whose escalation opens an issue in your own repository. Real
+alerts the loop produced ship beside it, and they are what this page
+describes in the abstract. The deterministic parts run without any
+key; the judgment is an explicit opt-in, the same convention every
+example in the repository follows.
 
 Fork it, point it at your endpoint, change the cadence.
 
@@ -146,8 +125,9 @@ How a request correlates to a run boundary. What makes one sample a
 candidate golden and another one noise. What redaction can do at
 birth, and what it cannot: a case you commit lives in your
 repository, so the question is not whether the payload is written
-down but whose perimeter the repository is in. Where it is not yours,
-capture refuses to write and says so. These are questions your
+down but whose perimeter the repository is in — and what a capture
+should do when that repository is not yours is one of the open
+questions, not a thing already settled. These are questions your
 history answers better than our whiteboard.
 
 If that is you, [open an issue](https://github.com/digline/digline/issues)

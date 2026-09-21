@@ -38,11 +38,12 @@ which tools/sync-docs.sh writes from the checkout it copies (tools/operator_fact
     contents, and its contents are not here.
 
 ── warning, then error ───────────────────────────────────────────────────────
-FAIL below decides whether a disagreement stops the build. It ships as False:
-the gate arrives while the page still breaks it in three places, and a gate
-that turns `main` red on the commit that introduces it teaches everyone to
-skip it. The page is rewritten next, and FAIL goes True in the same change —
-which is the commit where the gate starts meaning something.
+FAIL below decides whether a disagreement stops the build. It arrived False,
+on a page that broke the rule in six places, so that the gate could be read
+against the thing it was written for rather than against a page written to
+satisfy it. The page was rewritten and FAIL went True in the same change. From
+here a disagreement is a failed build, which is the only state in which a gate
+means anything.
 
 Named operator_page.py, not operator.py: a module called `operator` in a
 folder Python puts on the path shadows the standard library's, and `collections`
@@ -62,7 +63,7 @@ import tempfile
 
 FACTS_FILE = ".operator-facts.json"
 PAGE = "product/operator/index.html"
-FAIL = False
+FAIL = True
 
 # `promote`, and nothing else. The page says it is not on the operator's
 # surface — not refused, absent — which is the whole of its argument about what
