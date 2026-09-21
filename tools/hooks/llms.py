@@ -215,6 +215,11 @@ DESCRIPTIONS: dict[str, str] = {
         "set declared per case in a `suite.py`, and why an empty selection must "
         "never pass alone"
     ),
+    "product/tools.md": (
+        "How to detect a rewritten MCP tool description: a canonical "
+        "`tools/list` dump declared as an artifact, and the stale dump that "
+        "reads as a verification that happened"
+    ),
     "product/declarative.md": (
         "How to write a suite as data in a `suite.toml` rather than a "
         "`suite.py`, and which suites should stay Python"
@@ -337,6 +342,11 @@ DESCRIPTIONS: dict[str, str] = {
     "product/examples/quickstart-toml.md": (
         "How a team that writes no Python gates a prompt in CI: a `suite.toml`, "
         "a `cases.json`, and no code at all"
+    ),
+    "product/examples/mcp-tools.md": (
+        "One added clause in a tool description, no name or schema changed, "
+        "and the tool stops being called — the tools/list dump declared as an "
+        "artifact so the run says why"
     ),
     "product/examples/operator.md": (
         "The operator loop assembled: a suite re-run on a schedule within a "
