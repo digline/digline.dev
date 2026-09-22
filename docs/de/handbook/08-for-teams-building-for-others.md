@@ -6,8 +6,8 @@ description: 'Eine Evaluations-Suite, drei Beteiligte: was Entwickler, Beratungs
 search:
   exclude: true
 source: handbook/08-for-teams-building-for-others.md
-source_sha: e231cf6c9192
-source_commit: 356a3c8
+source_sha: 1f9246774e8e
+source_commit: c51c251
 model: claude-opus-5
 ---
 
@@ -17,7 +17,7 @@ Alles bis hierher gilt für alle, die ein LLM im Produktivbetrieb haben. Dieses 
 
 ## Drei Personen, eine Suite
 
-In einem Produkt, das du für dich selbst baust, gibt es eine beteiligte Partei. Hier sind es drei, und sie wollen Unterschiedliches aus denselben Zahlen.
+In einem Produkt, das du für dich selbst baust, gibt es eine beteiligte Partei. Hier sind es drei, und sie wollen aus denselben Zahlen jeweils etwas anderes herauslesen.
 
 **Der Entwickler** will das, was die vorherigen sieben Kapitel beschreiben: Fälle, checks, eine Referenz, einen Vergleich in der CI.
 
@@ -61,9 +61,9 @@ Zwei Gewohnheiten, die den Bericht wertvoll machen:
 
 ## Was das Beratungshaus behält
 
-Für jeden Kunden, im Repository dieses Kunden oder in einem kundenspezifischen Verzeichnis, das sich nicht mit dem eines anderen verwechseln lässt: die Suite, die Referenzen, die bereinigten runs. Niemals ein gemeinsamer Speicher, in dem die Urteile von Kunde A neben denen von Kunde B liegen — einen Tippfehler davon entfernt, das eine für das andere zu lesen. Perimeter sind Verzeichnisse, und das Werkzeug sollte sich weigern, über sie hinweg zu vergleichen oder zu promoten, damit der Fehler unmöglich ist und nicht bloß unerwünscht.
+Für jeden Kunden, im Repository dieses Kunden oder in einem kundenspezifischen Verzeichnis, das sich nicht mit dem eines anderen verwechseln lässt: die Suite, die Referenzen, die bereinigten runs. Niemals ein gemeinsamer Speicher, in dem die Urteile von Kunde A neben denen von Kunde B liegen — wo ein einziger Tippfehler genügt, um das eine für das andere zu halten. Perimeter sind Verzeichnisse, und das Werkzeug sollte sich weigern, über sie hinweg zu vergleichen oder zu promoten, damit der Fehler unmöglich ist und nicht bloß unerwünscht.
 
-Über die Kunden hinweg sieht das Beratungshaus nur das, was weitergegeben wird: welche checks, welche Scores, welche Aggregatwerte, welche Prompts, wenn die Suite es erlaubt hat. Das reicht, um zu bemerken, dass ein Modell-Update drei Kunden auf einmal verschlechtert hat, und es enthält nichts, woran einer von ihnen Anstoß nehmen würde.
+Kundenübergreifend sieht das Beratungshaus nur das, was weitergegeben wird: welche checks, welche Scores, welche Aggregatwerte, welche Prompts, wenn die Suite es erlaubt hat. Das reicht, um zu bemerken, dass ein Modell-Update drei Kunden auf einmal verschlechtert hat, und es enthält nichts, woran einer von ihnen Anstoß nehmen würde.
 
 ## Wenn der Produktivbetrieb die Suite speist
 
@@ -81,4 +81,4 @@ Damit schließt sich der Kreis, den Kapitel 2 von Hand verlangt hat: *ein gesehe
 
 ---
 
-Das ist das Handbuch. Wenn du es von vorn bis hinten gelesen hast, weißt du mehr darüber, ein LLM-Feature unter Kontrolle zu halten, als die meisten Teams, die eines ausliefern. Das Werkzeug, das um diese acht Kapitel herum gebaut ist, ist [digline](../../index.md); das Projekt, aus dem die meisten Zahlen stammen, ist [öffentlich](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f). Keines von beiden brauchst du für den Anfang — die zwanzig Fälle schon.
+Das ist das Handbuch. Wenn du es von vorn bis hinten gelesen hast, weißt du mehr darüber, ein LLM-Feature unter Kontrolle zu halten, als die meisten Teams, die eines ausliefern. Das Werkzeug, das um diese Kapitel herum gebaut ist, ist [digline](../../index.md); das Projekt, aus dem die meisten Zahlen stammen, ist [öffentlich](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f). Keines von beiden brauchst du für den Anfang — die zwanzig Fälle schon.
