@@ -6,8 +6,8 @@ description: 'Eine Evaluations-Suite, drei Beteiligte: was Entwickler, Beratungs
 search:
   exclude: true
 source: handbook/08-for-teams-building-for-others.md
-source_sha: 1f9246774e8e
-source_commit: c51c251
+source_sha: 86ffefba379b
+source_commit: e4039b7
 model: claude-opus-5
 ---
 
@@ -35,7 +35,7 @@ Nimm einen erfundenen Fall in einem Recruiting-Tool, Zahlen inklusive: Der Leben
 
 - **Das Urteil**: Name des checks, bestanden oder nicht, Score 0.81, Schwellenwert 0.70, Toleranz, Kosten. Zahlen darüber, wie sich das System verhalten hat.
 - **Die Nutzdaten**: der Lebenslauf, der Ranking-Text und die *Begründung* des Richters — die den Lebenslauf zitiert, um den Score zu erklären.
-- **Der Aggregatwert**: Precision 0.75 über den gesamten Satz, 12 richtige Positive, 4 falsche.
+- **Der Aggregatwert**: Precision 0.75 über die gesamte Fallmenge, 12 richtige Positive, 4 falsche.
 
 Das Beratungshaus braucht das Erste und das Dritte für seine Arbeit. Auf das Zweite hat es kein Recht, und es braucht es auch nicht. Die Regel ist deshalb mechanisch: **ein run, der die Grenze zwischen Kunde und Beratungshaus überschreitet, wird vorher bereinigt** — Begründungen entfernt, Metadaten der Nutzdaten entfernt, die Urteile und die Zahlen bleiben. Nicht als Option, an die jemand beim Export denken muss, sondern als Eigenschaft des runs selbst, geprüft beim Lesen der Datei, sodass ein Dokument, das von sich behauptet, bereinigt zu sein, keine Begründung enthalten kann.
 
@@ -49,7 +49,9 @@ Daraus folgen drei Dinge, und jedes davon ist eine Entwurfsentscheidung, die dir
 
 ## Was der Kunde bekommt
 
-Nicht das Repository. Einen **Bericht**: ein in sich geschlossenes Dokument — eine HTML-Datei, druckbar —, das in dieser Reihenfolge beantwortet: *Ist es schlechter geworden?*, *welche checks und um wie viel*, *was wurde getestet und was hat sich daran geändert*, *wann, unter welcher Version, von wem freigegeben*. Geschrieben für jemanden, der keinen Code liest, erzeugt aus demselben Vergleich, den der Entwickler gesehen hat, sodass die beiden nie auseinandergehen können.
+Nicht das Repository. Einen **Bericht**: ein in sich geschlossenes Dokument — eine HTML-Datei, druckbar —, das mit *was getestet wurde* beginnt: der Kunde, die Suite, dieser run, die Referenz, gegen die gemessen wird, die Code-Version und ob der Arbeitsbaum sauber war. Dann beantwortet es *Ist es schlechter geworden?* und danach *welche checks und um wie viel*. Geschrieben für jemanden, der keinen Code liest, erzeugt aus demselben Vergleich, den der Entwickler gesehen hat, sodass die beiden nie auseinandergehen können.
+
+Er hält fest, *wann* die Referenz freigegeben wurde, nicht von wem. Das Wer steckt in der git-Historie des Commits, der sie hinzugefügt hat, und das ist die Antwort, die man gibt, wenn die Frage gestellt wird.
 
 Der Bericht wird innerhalb des Kunden-Perimeters erzeugt, wo die Begründungen vorliegen, und er kann sie enthalten: Für den Kunden ist die Erklärung des Richters, warum ein Fall fehlgeschlagen ist, die nützlichste Zeile auf der Seite. Die bereinigte Fassung desselben Berichts — Urteile, keine Begründungen — ist das, was das Beratungshaus behält.
 
@@ -61,7 +63,7 @@ Zwei Gewohnheiten, die den Bericht wertvoll machen:
 
 ## Was das Beratungshaus behält
 
-Für jeden Kunden, im Repository dieses Kunden oder in einem kundenspezifischen Verzeichnis, das sich nicht mit dem eines anderen verwechseln lässt: die Suite, die Referenzen, die bereinigten runs. Niemals ein gemeinsamer Speicher, in dem die Urteile von Kunde A neben denen von Kunde B liegen — wo ein einziger Tippfehler genügt, um das eine für das andere zu halten. Perimeter sind Verzeichnisse, und das Werkzeug sollte sich weigern, über sie hinweg zu vergleichen oder zu promoten, damit der Fehler unmöglich ist und nicht bloß unerwünscht.
+Für jeden Kunden, im Repository dieses Kunden oder in einem kundenspezifischen Verzeichnis, das sich nicht mit dem eines anderen verwechseln lässt: die Suite, die Referenzen, die bereinigten runs. Niemals ein gemeinsamer Speicher, in dem die Urteile von Kunde A neben denen von Kunde B liegen — wo ein einziger Tippfehler genügt, um das eine für das andere zu halten. Perimeter sind Verzeichnisse, und das Werkzeug sollte sich weigern, über sie hinweg zu vergleichen oder zu promoten, damit der Fehler unmöglich ist und nicht bloß davon abgeraten wird.
 
 Kundenübergreifend sieht das Beratungshaus nur das, was weitergegeben wird: welche checks, welche Scores, welche Aggregatwerte, welche Prompts, wenn die Suite es erlaubt hat. Das reicht, um zu bemerken, dass ein Modell-Update drei Kunden auf einmal verschlechtert hat, und es enthält nichts, woran einer von ihnen Anstoß nehmen würde.
 
