@@ -1,7 +1,7 @@
 """Which languages the site is translated into, and which of its pages.
 
 English is the original, and the only language of the documentation, the
-comparison and the blog. The six presentation pages and the Handbook's nine
+comparison and the blog. The six presentation pages and the Handbook's ten
 may have a translation in each of LANGUAGES, written in docs/<lang>/ at the
 same path as the English page it translates, and served at the same path under
 /<lang>/:
@@ -38,12 +38,13 @@ LANGUAGES = ("it", "de", "es")
 NAMES = {"en": "English", "it": "Italiano", "de": "Deutsch", "es": "Español"}
 
 # The pages that may be translated, by their source path under docs/: the six
-# presentation pages, and the Handbook's index and eight chapters, in the
+# presentation pages, and the Handbook's index and nine chapters, in the
 # nav's order. A page with translations carries the language menu in the
 # bar's second slot, whichever shell it is drawn in.
 PRESENTATION_PAGES = ("index.md", "start.md", "why.md", "about.md", "contact.md", "agents.md")
 HANDBOOK_PAGES = (
     "handbook/index.md",
+    "handbook/00-before-the-prompt.md",
     "handbook/01-what-you-are-shipping.md",
     "handbook/02-cases.md",
     "handbook/03-ground-truth.md",

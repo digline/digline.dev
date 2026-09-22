@@ -163,9 +163,14 @@ DESCRIPTIONS: dict[str, str] = {
     ),
     # Handbook
     "handbook/index.md": (
-        "What the eight chapters cover and the order to read them in — about "
+        "What the nine chapters cover and the order to read them in — about "
         "evaluating an LLM feature, not about the tool: nothing here needs "
         "digline installed"
+    ),
+    "handbook/00-before-the-prompt.md": (
+        "The four decisions that come before the prompt and decide whether an "
+        "LLM feature can be measured at all, and what each one costs once the "
+        "feature is in production"
     ),
     "handbook/01-what-you-are-shipping.md": (
         "Why a model call looks like a function and is not one, and what that "
