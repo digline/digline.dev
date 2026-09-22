@@ -6,8 +6,8 @@ description: Una puntuación puede caer mucho y aun así pasar su umbral los dos
 search:
   exclude: true
 source: handbook/06-the-reference.md
-source_sha: c46f6b87214f
-source_commit: 356a3c8
+source_sha: 7fe35576a20c
+source_commit: 340f1dd
 model: claude-opus-5
 ---
 
@@ -19,7 +19,7 @@ Todo lo anterior produce números. Este capítulo trata del número que importa 
 
 La mayoría de los equipos que siquiera prueban una función con LLM tiene un umbral: la puntuación debe superar 0.7. Responde a una pregunta — *¿es aceptable?* — y es ciego a la otra — *¿es lo que era?*
 
-Aquí está con números inventados. Una función que obtuvo 0.91 en el lanzamiento y 0.78 hoy pasa el umbral los dos días. Nada se pone en rojo. Y sin embargo algo cambió en trece puntos, y quien la usa notó el cambio antes que cualquier prueba. Para verlo tienes que haber anotado el 0.91. Eso es la referencia: un run de tu suite que miraste, diste por bueno y registraste — las puntuaciones, el prompt que las produjo, el commit, la fecha — para que cada run posterior pueda compararse con él en lugar de con una línea.
+Veámoslo con números inventados. Una función que obtuvo 0.91 en el lanzamiento y 0.78 hoy pasa el umbral los dos días. Nada se pone en rojo. Y sin embargo algo cambió en trece puntos, y quien la usa notó el cambio antes que cualquier prueba. Para verlo tienes que haber anotado el 0.91. Eso es la referencia: un run de tu suite que miraste, diste por bueno y registraste — las puntuaciones, el prompt que las produjo, el commit, la fecha — para que cada run posterior pueda compararse con él en lugar de con una línea.
 
 El umbral dice dónde está el suelo. La referencia dice dónde estabas parado. Necesitas los dos, y el segundo es el que casi nadie guarda.
 
@@ -31,7 +31,7 @@ Un archivo, en el repositorio, junto al código. En el [proyecto de la newslette
 - **Los agregados**, si los casos están etiquetados — precision 0.667 y accuracy 0.762, diez de quince y dieciséis de veintiuno — con los recuentos que los produjeron.
 - **El texto del prompt** que produjo el run, literal, con su hash. No una referencia a un archivo que puede haber cambiado desde entonces; el texto mismo, congelado.
 - **El commit** en el que estaba el código, y si el árbol de trabajo estaba limpio.
-- **La configuración** de la suite — qué checks, qué umbrales — como un hash, para que una comparación contra una suite con reglas distintas se rechace en vez de carecer de sentido en silencio.
+- **La configuración** de la suite — qué checks, qué umbrales — como un hash, para que una comparación entre reglas distintas lo señale en vez de carecer de sentido en silencio. La comparación se ejecuta igualmente: informa de que la suite cambió desde la referencia, y pone esa frase junto a números medidos con otras reglas. Lo que el hash rechaza es la promoción — un run cuya configuración no es la vigente no puede convertirse en la referencia.
 
 Del hecho de que el prompt esté *dentro* del archivo se siguen dos cosas. Primero, la referencia es reproducible aunque nunca hayas hecho commit del prompt por separado — una situación común durante un día de experimentos. Segundo, cuando un run posterior difiere, la comparación puede mostrar el diff del prompt justo al lado del diff de las puntuaciones: *cambiaste estas tres líneas; estos dos casos se movieron.* Ese emparejamiento es lo más útil que puede mostrar una comparación, y solo existe si el prompt viaja con el run.
 
