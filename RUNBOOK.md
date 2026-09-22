@@ -10,6 +10,10 @@ The diff is read before the commit, not after.
 
 `gh pr merge` is a call of its own: never chained with `gh run watch`, a poll or a sleep. Stopping a chained call during the wait leaves the merge done. That is how #72 reached `main` on 19 September at a commit older than the one under review.
 
+**And never chained with `cd` either.** A merge is addressed by number, and the number alone says nothing about which repository it is in: `gh` reads that from the working directory. So the call before it is `gh repo view --json nameWithOwner --jq .nameWithOwner`, and the number is merged only against the name that comes back.
+
+Why: on 22 September a session merged five pull requests across both repositories, and one call began `cd ../digline-lock-glob && gh pr merge 67`. Another session had already removed that worktree, the `cd` failed, and the shell was left in `digline.dev` — where `gh pr merge 67` addressed digline.dev#67, a pull request about the Handbook that had merged three days earlier. Nothing happened, because a merged pull request cannot be merged again. That is the only reason nothing happened: had digline.dev#67 been open, an unrelated change would have landed on `main` and deployed, from a command whose author believed it was in the other repository. `cd` failing is not the unusual part — a shared checkout is shared, and worktrees come and go under it.
+
 ## One session, one worktree
 
 Several sessions — people, agents — may work on this repository at once, and they share one checkout. So a session does not change branch in that checkout. It works in a worktree of its own, on a branch from `origin/main`:
