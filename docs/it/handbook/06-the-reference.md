@@ -6,8 +6,8 @@ description: Un punteggio può calare parecchio e superare comunque la sua sogli
 search:
   exclude: true
 source: handbook/06-the-reference.md
-source_sha: c46f6b87214f
-source_commit: 356a3c8
+source_sha: 7fe35576a20c
+source_commit: 340f1dd
 model: claude-opus-5
 ---
 
@@ -31,7 +31,7 @@ Un file, nel repository, accanto al codice. Nel [progetto newsletter](https://gi
 - **Gli aggregati**, se i casi sono etichettati — precision 0.667 e accuracy 0.762, dieci su quindici e sedici su ventuno — con i conteggi che li hanno prodotti.
 - **Il testo del prompt** che ha prodotto il run, alla lettera, con il suo hash. Non un rimando a un file che nel frattempo può essere cambiato; il testo stesso, congelato.
 - **Il commit** su cui si trovava il codice, e se il working tree era pulito.
-- **La configurazione** della suite — quali check, quali soglie — sotto forma di hash, così che un confronto con una suite che ha regole diverse venga rifiutato invece di risultare privo di senso senza che nessuno se ne accorga.
+- **La configurazione** della suite — quali check, quali soglie — sotto forma di hash, così che un confronto tra regole diverse lo dichiari invece di risultare privo di senso senza che nessuno se ne accorga. Il confronto viene comunque eseguito: segnala che la suite è cambiata rispetto al riferimento, e mette quella frase accanto a numeri misurati con altre regole. Quello che l'hash rifiuta è la promozione — un run la cui configurazione non è quella in vigore non può diventare il riferimento.
 
 Dal fatto che il prompt sia *dentro* il file derivano due conseguenze. Primo, il riferimento è riproducibile anche se non hai mai committato il prompt separatamente — una situazione frequente durante una giornata di esperimenti. Secondo, quando un run successivo differisce, il confronto può mostrare il diff del prompt proprio accanto al diff dei punteggi: *hai cambiato queste tre righe; questi due casi si sono spostati.* Questo accostamento è la cosa più utile che un confronto possa mostrare, ed esiste solo se il prompt viaggia insieme al run.
 
