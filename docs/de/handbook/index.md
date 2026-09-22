@@ -3,24 +3,28 @@ title: Handbuch
 seo_title: 'Handbuch: ein LLM-Feature unter Kontrolle behalten'
 lang: de
 translation_of: handbook/index.md
-description: 'Acht Kapitel zur Bewertung von LLM-Anwendungen in der Praxis: Fälle, Ground Truth, checks, der Richter, die Referenz, Wartung. Über das Problem, nicht über das Werkzeug.'
+description: 'Neun Kapitel zur Bewertung von LLM-Anwendungen in der Praxis: was zuerst zu bauen ist, Fälle, Ground Truth, checks, der Richter, die Referenz, Wartung. Über das Problem, nicht über das Werkzeug.'
 search:
   exclude: true
 source: handbook/index.md
-source_sha: 0b5b5820ed85
-source_commit: d7f3b56
+source_sha: 102161a61926
+source_commit: c51c251
 model: claude-opus-5
 ---
 
 # Handbuch
 
-Acht Kapitel darüber, wie du ein LLM-Feature unter Kontrolle behältst — für
+Neun Kapitel darüber, wie du ein LLM-Feature unter Kontrolle behältst — für
 alle, die eines in Produktion haben und die schlimme Woche noch nicht hinter
 sich haben. Es geht um das Problem, nicht um das Werkzeug: nichts davon setzt
 eine Installation von digline voraus, und die meisten Zahlen stammen aus einem
 kleinen öffentlichen Projekt, das du nachlesen kannst. Fang beim ersten Kapitel
 an und lies sie der Reihe nach — jedes baut auf dem vorherigen auf.
 
+- **[0. Vor dem Prompt](../../handbook/00-before-the-prompt.md)** — die vier
+  Entscheidungen, die vor dem Prompt kommen und darüber entscheiden, ob das
+  Feature überhaupt messbar ist. Das eine Kapitel, das dich bittet, zu ändern,
+  was du baust, statt es zu messen.
 - **[1. Was du tatsächlich auslieferst](../../handbook/01-what-you-are-shipping.md)** — warum
   ein Modellaufruf wie eine Funktion aussieht und keine ist, und was dich das
   kostet.
