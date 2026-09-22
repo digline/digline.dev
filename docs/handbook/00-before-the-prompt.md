@@ -17,6 +17,8 @@ The usual order is to write the prompt, ship, and deal with the rest when somebo
 
 What follows is the common shape of an LLM feature in production, read off one system's code rather than measured against it: code assembles a context, one model call decides what to say, prose comes back. [Chapter 3](03-ground-truth.md) takes that system apart from the other end and asks where its ground truth could come from. This is the list of decisions that would have given it one. Nothing here is a number — nothing has been run.
 
+That reading was a reading, and there is no artefact behind it: no dated note, no captured repository, nothing to cite. The shape above is what was understood from looking at a system, written down afterwards from memory, and anyone who goes looking for the document it came from will not find one. It is offered as a shape that recurs, not as evidence — every claim in this chapter has to stand on whether you recognise it in your own system, because there is nothing else holding it up.
+
 ## 1. Emit the decision, not only the prose
 
 If the feature chooses — which items to mention, which to leave out, in what order — the choosing is the behaviour you will want to measure, and the prose is a rendering of it. A system that returns the ids it chose, in order, beside the sentence it wrote can be asserted on mechanically, and gives a person's judgement something to point at. One that returns only the sentence cannot, whatever you bolt on later: every check you write reads prose, and so does every argument about whether the choice was right.
