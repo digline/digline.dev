@@ -10,7 +10,7 @@ name: translate
 # the six presentation pages, i18n/en.yml, the templates that write catalog
 # words — as a real run of every language and those pages; and by hand
 # (workflow_dispatch), as a dry run or a real one. The Handbook is translated
-# by hand only: its nine pages are not among the paths below, so a change to
+# by hand only: its pages are not among the paths below, so a change to
 # its English, a front matter or a renumbering included, starts nothing and
 # costs nothing. Each build of the site says how far behind it is
 # (docs.yml, tools/translate.py --summary); a run by hand asks for it with
@@ -82,7 +82,7 @@ on:
         type: string
         default: "it,de,es"
       pages:
-        description: "Pages, comma-separated: index, start, why, about, contact, agents; the Handbook as handbook (all nine) or handbook/02-cases"
+        description: "Pages, comma-separated: index, start, why, about, contact, agents; the Handbook as handbook (every chapter and the index) or handbook/02-cases"
         type: string
         default: "index,start,why,about,contact,agents"
       dry_run:
