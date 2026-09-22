@@ -656,6 +656,39 @@ def selftest() -> int:
         def first_in_article(pattern, replacement):
             return first_from('<article class="essay">', pattern, replacement)
 
+        # a) what fences a block decides that it is left alone, never what is
+        # written between the fences. `tools/translate.py`'s prompt says so; this
+        # is the half that catches a translator who did it anyway.
+        #
+        # It is not hypothetical. On 2026-09-22 the Handbook's chapter 0 opened
+        # on a fenced tree drawn out of English sentences — no code in it at all
+        # — and the German and Spanish runs translated it, twice each, because
+        # a rule about "code blocks" does not obviously reach a block of prose.
+        # The fixture carries no fenced block, so this is read from HTML here
+        # rather than planted in the built site.
+        def code_of(html: str) -> list[tuple[str, str]]:
+            page = Main()
+            page.feed(f"<main>{html}</main>")
+            page.close()
+            return page.code_texts
+
+        tree_en = "<pre>the decision comes back as data\nthe input cannot move on its own</pre>"
+        tree_es = "<pre>la decisión vuelve como datos\nla entrada no puede moverse sola</pre>"
+        if _sequence_problem("p", "code", code_of(tree_en), code_of(tree_es)) is None:
+            failures.append("a) a <pre> of prose, translated, was not refused")
+        else:
+            print("translations selftest: refused, as it must — a) a <pre> of prose translated")
+        if _sequence_problem("p", "code", code_of(tree_en), code_of(tree_en)) is not None:
+            failures.append("a) a <pre> of prose left in English was refused")
+
+        # And the one line inside a <pre> that is the site's prose rather than
+        # digline's output stays translatable, which is the whole reason the
+        # marker exists (the home's .out__note lines).
+        note_en = '<pre>digline compare\n<span translate="yes">the note under it</span></pre>'
+        note_es = '<pre>digline compare\n<span translate="yes">la nota debajo</span></pre>'
+        if _sequence_problem("p", "code", code_of(note_en), code_of(note_es)) is not None:
+            failures.append('a) a translate="yes" line inside a <pre> was refused')
+
         why = "site/it/why/index.html"
         planted = [
             ("a) a code span rewritten", why, first_in_main(r"(<code[^>]*>)pip install digline", r"\1pip installa digline"),
