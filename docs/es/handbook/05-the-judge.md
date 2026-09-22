@@ -6,8 +6,8 @@ description: Un juez LLM también extrae muestras. Por qué debes medir el ruido
 search:
   exclude: true
 source: handbook/05-the-judge.md
-source_sha: 09f62fac8c2c
-source_commit: 356a3c8
+source_sha: ba60264b1a69
+source_commit: 340f1dd
 model: claude-opus-5
 ---
 
@@ -37,9 +37,9 @@ La solución es preguntar más de una vez y combinar. La suite de la newsletter 
 
 El muestreo trae tres preguntas, y las respuestas importan más que el número cinco:
 
-**¿Combinar cómo?** La puntuación es la media de las muestras. Pero la cantidad interesante es el *acuerdo*: cuántas muestras comparten el veredicto mayoritario. Toma unas puntuaciones inventadas: tres muestras de 0.80, 0.85 y 0.99 discrepan a gritos y coinciden por completo en el veredicto; tres de 0.69, 0.71 y 0.70 están a menos de dos puntos unas de otras y se reparten dos a uno con un umbral de 0.70. El acuerdo ve el segundo caso; la media no.
+**¿Combinar cómo?** La puntuación es la media de las muestras. Pero la cantidad interesante es el *acuerdo*: cuántas muestras comparten el veredicto mayoritario. Toma unas puntuaciones inventadas: tres muestras de 0.80, 0.85 y 0.99 difieren muchísimo y coinciden por completo en el veredicto; tres de 0.69, 0.71 y 0.70 están a menos de dos puntos unas de otras y se reparten dos a uno con un umbral de 0.70. El acuerdo ve el segundo caso; la media no.
 
-**¿Y si no logran ponerse de acuerdo?** Entonces el juicio no era posible, y la respuesta honesta es *no se pudo juzgar*: un tercer estado, ni aprobado ni fallido. Un caso cuyas muestras se reparten por igual no es una regresión ni un éxito; es un caso que el juez no puede decidir, y una referencia construida sobre él sería una referencia a una moneda al aire. Fija un acuerdo mínimo (`"3/5"`, por ejemplo) por debajo del cual el veredicto es un error, y niégate a promover un run que contenga alguno.
+**¿Y si no logran ponerse de acuerdo?** Entonces el juicio no era posible, y la respuesta honesta es *no se pudo juzgar*: un tercer estado, ni aprobado ni fallido. Un caso cuyas muestras se reparten tres a dos no es una regresión ni un éxito; es un caso que el juez no puede decidir, y una referencia construida sobre él sería una referencia a una moneda al aire. Fija un acuerdo mínimo por debajo del cual el veredicto es un error, y niégate a promover un run que contenga alguno, pero sitúalo donde pueda dispararse. Con cinco muestras la mayoría es siempre de al menos tres, así que `"3/5"` nunca rechaza una votación en la que se juzgaron todas las muestras; el mínimo que detecta un reparto de tres a dos es `"4/5"`.
 
 **Escribe las fracciones como fracciones.** «Dos de tres» escrito como `0.67` es una trampa: ⅔ es 0.666…, que está *por debajo* de 0.67, y todo caso con un voto discrepante de tres se convierte en un error. `"2/3"` dice lo que quieres decir y no puede desviarse por un redondeo; la suite de la newsletter escribe `"3/5"`.
 
@@ -53,7 +53,7 @@ La tolerancia es el tamaño de cambio que aceptas ignorar como ruido. Todo el mu
 4. La tolerancia es esa diferencia mayor, más un pequeño margen.
 5. Si ese número es tan grande como las diferencias que quieres *detectar*, para: el check es demasiado ruidoso para servir de gate. Muestrea más, o cambia el check; no amplíes la tolerancia hasta que se lo trague todo.
 
-Esto es lo que muestra en el juez de la newsletter: seis runs, cinco muestras por caso, con los mismos prompts, los mismos casos y la misma configuración. Cada celda indica cuántas de las cinco muestras coincidieron con el lector; las horas están en UTC.
+Esto es lo que se ve al aplicarlo al juez de la newsletter: seis runs, cinco muestras por caso, con los mismos prompts, los mismos casos y la misma configuración. Cada celda indica cuántas de las cinco muestras coincidieron con el lector; las horas están en UTC.
 
 | caso | 1 sep 12:29 | 1 sep 12:44 | 3 sep 06:14 | 3 sep 06:18 | 3 sep 06:24 | 3 sep 06:30 |
 |---|---|---|---|---|---|---|
