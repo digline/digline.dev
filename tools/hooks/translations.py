@@ -9,7 +9,7 @@ original. This hook does three things with them.
 Every file under a language's folder is read, and the build fails when
 
   * it is not one of the pages that may be translated (languages.PAGES: the
-    six presentation pages and the Handbook's nine), at the path of its
+    six presentation pages and the Handbook's ten), at the path of its
     original: docs/it/why.md and docs/it/handbook/02-cases.md, not
     docs/it/perche.md nor docs/it/product/guide.md;
   * its ``lang:`` is not the name of its folder, or that language has no
@@ -1151,6 +1151,7 @@ def selftest() -> int:
         expect("the Italian chapter 3's drawer, in the nav's order (the fixture's Italian catalog is the English one)",
                [(h, t) for h, t, a, e in it_drawer if "#" not in h],
                [("../../", "Home"), ("../../why/", links_title("it/why.md")), ("../", "Handbook"),
+                ("../../../handbook/00-before-the-prompt/", "0. Before the prompt EN"),
                 ("../../../handbook/01-what-you-are-shipping/", "1. What you are actually shipping EN"),
                 ("../02-cases/", chapter_2), ("./", short_title(open(os.path.join(root, "docs", "it", "handbook", "03-ground-truth.md"),
                                                                      encoding="utf-8").read())),
@@ -1165,7 +1166,7 @@ def selftest() -> int:
                (titles_seen[-1].endswith("EN"), any(t.startswith("1. What you are actually shipping") and t.endswith("EN") for t in titles_seen),
                 [a for h, t, a, e in it_drawer if a], len([t for t in titles_seen if t.endswith("EN")]),
                 any("How digline compares" in t for t in titles_seen)),
-               (False, True, [True], 5, False))
+               (False, True, [True], 6, False))
         expect("the Italian chapter 3's drawer: itself current, under its title up to the colon, the chapter 2 translated",
                ([t for h, t, a, e in it_drawer if a], chapter_2 in titles_seen),
                ([short_title(open(os.path.join(root, "docs", "it", "handbook", "03-ground-truth.md"), encoding="utf-8").read())],

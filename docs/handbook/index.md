@@ -1,21 +1,25 @@
 ---
 title: Handbook
 description: >-
-  Eight chapters on evaluating LLM applications in practice: cases,
-  ground truth, checks, the judge, the baseline, maintenance. About the problem, not the
-  tool.
+  Nine chapters on evaluating LLM applications in practice: what to build
+  first, cases, ground truth, checks, the judge, the baseline, maintenance.
+  About the problem, not the tool.
 seo_title: >-
   Handbook: keeping an LLM feature under control
 ---
 
 # Handbook
 
-Eight chapters on keeping an LLM feature under control, for people who have one
+Nine chapters on keeping an LLM feature under control, for people who have one
 in production and have not yet had the bad week. They are about the problem, not
 about the tool: nothing here needs digline installed, and most of the numbers
 come from one small public project you can go and read. Start at the first chapter
 and read them in order — each one leans on the one before it.
 
+- **[0. Before the prompt](00-before-the-prompt.md)** — the four decisions
+  that come before the prompt and decide whether the feature can be measured
+  at all. The one chapter that asks you to change what you are building
+  rather than to measure it.
 - **[1. What you are actually shipping](01-what-you-are-shipping.md)** — why a
   model call looks like a function and is not one, and what that costs you.
 - **[2. Cases: the asset nobody builds](02-cases.md)** — every team has a
