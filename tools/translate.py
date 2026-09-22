@@ -80,7 +80,7 @@ a second run skips what the first translated.
 
     usage: tools/translate.py --langs it,de,es          # --pages defaults to
                                                         # the presentation pages
-           tools/translate.py --langs it --pages handbook      # the Handbook's nine
+           tools/translate.py --langs it --pages handbook      # the Handbook's ten
            tools/translate.py --langs it --pages handbook/02-cases
                               --out DIR [--dry-run] [--existing DIR] [--max-cost 12]
            tools/translate.py --langs it,de,es --pages ... --plan
@@ -1466,13 +1466,13 @@ def selftest() -> int:
                        ([("i18n/it.yml", "unchanged"), ("docs/it/why.md", "unchanged")], 0))
                 expect("the summary over the first run's output: the chapter translated and up to date",
                        summary(second.root, ["it", "de"]).splitlines(),
-                       ["- Handbook, it: 1 of 9 page(s) translated, 0 behind the English",
-                        "- Handbook, de: 0 of 9 page(s) translated"])
+                       ["- Handbook, it: 1 of 10 page(s) translated, 0 behind the English",
+                        "- Handbook, de: 0 of 10 page(s) translated"])
                 with open(second.path("docs", "handbook", "03-ground-truth.md"), "a", encoding="utf-8") as fh:
                     fh.write("\nOne more sentence in English.\n")
                 expect("the summary after the English chapter changed: behind, and named",
                        summary(second.root, ["it"]),
-                       "- Handbook, it: 1 of 9 page(s) translated, 1 behind the English (handbook/03-ground-truth)\n")
+                       "- Handbook, it: 1 of 10 page(s) translated, 1 behind the English (handbook/03-ground-truth)\n")
                 # One English sentence changed: the plan has that page, in that language, and nothing else.
                 with open(second.path("docs", "why.md"), "a", encoding="utf-8") as fh:
                     fh.write("\nOne more sentence.\n")

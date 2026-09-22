@@ -126,7 +126,7 @@ A page whose translation failed the checks twice is not written, and the job fai
 
 `dry_run` defaults to true: the translations, the report and the bill go to the run's artifact, nothing to `docs/` or a pull request.
 
-**The Handbook, by hand.** One language per job — nine pages fit a job's time and its 12 USD, three languages in one job do not — and a pull request per language on `i18n/auto-<lang>`. One language:
+**The Handbook, by hand.** One language per job — ten pages fit a job's time and its 12 USD, three languages in one job do not — and a pull request per language on `i18n/auto-<lang>`. One language:
 
     gh workflow run translate.yml --ref main -f langs=it -f pages=handbook -f dry_run=false -f max_cost=12
 
@@ -136,7 +136,7 @@ All three in one dispatch, one job after the other, each with its own branch, pu
 
 `max_cost` is then per language.
 
-`pages=handbook` is the nine; a single page is `handbook/02-cases`. `uv run tools/translate.py --plan --langs it --pages handbook` says first what the run would translate, and `--summary` says, per language, how many of the Handbook's pages are translated and how many of those are behind the English. docs.yml writes that summary into every build's run summary ("The Handbook's translations"), so a Handbook fallen behind is seen without a run: its pages keep the stale notice meanwhile, and `tools/check-translations.py` reports them and does not compare them, never fails on them.
+`pages=handbook` is every chapter and the index; a single page is `handbook/02-cases`. `uv run tools/translate.py --plan --langs it --pages handbook` says first what the run would translate, and `--summary` says, per language, how many of the Handbook's pages are translated and how many of those are behind the English. docs.yml writes that summary into every build's run summary ("The Handbook's translations"), so a Handbook fallen behind is seen without a run: its pages keep the stale notice meanwhile, and `tools/check-translations.py` reports them and does not compare them, never fails on them.
 
 **Renumbering or renaming a Handbook chapter.** A translation stands at its original's path and its links reach the English pages by path (`tools/translation.py`, `relink()`), so a `git mv` of `docs/handbook/<chapter>.md` is also a `git mv` of `docs/<lang>/handbook/<chapter>.md` in every language that has it — with its `translation_of` and `source` set to the new path — and the relative links to it in every translation change with it, in the same pull request. Otherwise the build stops — a translation whose `translation_of` names a page the build does not have, or a link to a file that is not there — which is the point: nothing reaches `main` half-renamed. A renumbering changes the English text too (the `# 4.` of its title, the "chapter 4" of its neighbours), so the translations are then behind their originals, and the next run by hand brings them up to date.
 

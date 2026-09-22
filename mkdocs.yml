@@ -223,10 +223,11 @@ nav:
       - Inspect AI: comparison/inspect-ai.md
       - Opik: comparison/opik.md
 
-  # Written here, not in digline/digline: these eight chapters are about the
+  # Written here, not in digline/digline: these nine chapters are about the
   # problem, not about the tool, and they do not move with a release.
   - Handbook:
       - handbook/index.md
+      - 0. Before the prompt: handbook/00-before-the-prompt.md
       - 1. What you are actually shipping: handbook/01-what-you-are-shipping.md
       - 2. Cases: handbook/02-cases.md
       - 3. Ground truth: handbook/03-ground-truth.md
