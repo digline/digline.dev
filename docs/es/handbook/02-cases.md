@@ -6,8 +6,8 @@ description: Todo equipo que publica una función con LLM tiene un prompt y casi
 search:
   exclude: true
 source: handbook/02-cases.md
-source_sha: 67838bc398da
-source_commit: 48129ea
+source_sha: df9735371a40
+source_commit: e4039b7
 model: claude-opus-5
 ---
 
@@ -39,7 +39,7 @@ Eso es todo. Para un bot de soporte: una pregunta que un cliente hizo de verdad,
 }
 ```
 
-Tres campos hacen el trabajo. El `id` lo nombra. Las `vars` son lo que recibe el sistema. El `expected` es lo que sabes. Los `metadata` son para quien lea el caso más adelante —de dónde salió el artículo y la puntuación que le dio el juez esa mañana— y ningún check los lee. No siempre sabes cuál es la salida correcta exacta —para un resumen o una respuesta de texto libre, nadie lo sabe—, pero siempre sabes *algo*: debería mencionar X, no debería pasar de N palabras, una persona en la que confías la consideró aceptable. Todo lo que sepas va en `expected`. Lo que no sepas lo dejas fuera y lo compruebas con algo más débil.
+Tres campos hacen el trabajo. El `id` lo nombra. Las `vars` son lo que recibe el sistema. El `expected` es lo que sabes. Los `metadata` son para quien lea el caso más adelante: de dónde salió el artículo y la puntuación que le dio el juez esa mañana. Ningún check que viene con digline los lee, y un check que escribas tú sí puede: cada aserción recibe los metadatos del caso junto a los de la respuesta, y el formato declarativo permite que el cuerpo de la petición de un target nombre `case.metadata.<key>` como cualquier otro campo del caso. Pon ahí lo que necesita quien lo lea, no aquello de lo que depende un check: un check que necesita metadatos sin decirlo es un check cuya entrada no está en `vars`. No siempre sabes cuál es la salida correcta exacta —para un resumen o una respuesta de texto libre, nadie lo sabe—, pero siempre sabes *algo*: debería mencionar X, no debería pasar de N palabras, una persona en la que confías la consideró aceptable. Todo lo que sepas va en `expected`. Lo que no sepas lo dejas fuera y lo compruebas con algo más débil.
 
 ## Por qué el prompt se lleva toda la atención y los casos ninguna
 
@@ -53,7 +53,7 @@ Los casos cambian el bucle. Con veinte casos, la cuadragésima primera iteració
 
 ## De dónde salen los casos
 
-No de tu imaginación. Los casos que inventas en tu escritorio prueban las entradas en las que ya pensaste, que son exactamente las entradas que el prompt ya maneja. Los casos útiles vienen de cuatro sitios, y ninguno requiere creatividad:
+No de tu imaginación. Los casos que inventas sentado en tu mesa prueban las entradas en las que ya pensaste, que son exactamente las entradas que el prompt ya maneja. Los casos útiles vienen de cuatro sitios, y ninguno requiere creatividad:
 
 **Correcciones.** Cada vez que una persona corrige al modelo —un reclutador cambia la familia del puesto, un editor reescribe el resumen, el lector marca un artículo al que el juez dio poca puntuación—, esa corrección es un caso etiquetado, gratis, y más valioso que cualquier cosa que pudieras escribir. En el proyecto de la newsletter, cada mañana el lector dice qué artículos valieron la pena de verdad; esa respuesta es el `expected` de los casos del día. El programa lo registra como efecto secundario del uso normal. Busca ese efecto secundario en tu propio producto: casi siempre está ahí, sin registrar.
 
@@ -89,7 +89,7 @@ Lo que necesitan esos veinte:
 
 ## La parte que se acumula
 
-Todo lo demás en un proyecto con LLM pierde valor. El prompt que ajustaste contra un modelo es peor en el siguiente. El umbral que elegiste se desvía. El juez cambia de opinión. Los casos no pierden valor: una respuesta correcta a una entrada real sigue siendo correcta cuando cambia el modelo, cuando cambia el prompt, cuando cambias de proveedor. Veinte casos en marzo son veinte casos en septiembre, más lo que septiembre haya añadido.
+Todo lo demás en un proyecto con LLM pierde valor. El prompt que ajustaste para un modelo es peor en el siguiente. El umbral que elegiste se desvía. El juez cambia de opinión. Los casos no pierden valor: una respuesta correcta a una entrada real sigue siendo correcta cuando cambia el modelo, cuando cambia el prompt, cuando cambias de proveedor. Veinte casos en marzo son veinte casos en septiembre, más lo que septiembre haya añadido.
 
 Por eso el trabajo aburrido es el único que vale la pena hacer primero. Seis meses después, el equipo con el mejor prompt tiene un prompt. El equipo con doscientos casos reales tiene la capacidad de cambiar cualquier cosa —modelo, prompt, proveedor— y saber en menos de una hora si ha empeorado. El prompt es una opinión; los casos son la memoria.
 
