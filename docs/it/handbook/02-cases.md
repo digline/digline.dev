@@ -6,8 +6,8 @@ description: Ogni team che rilascia una funzionalità LLM ha un prompt e quasi n
 search:
   exclude: true
 source: handbook/02-cases.md
-source_sha: 67838bc398da
-source_commit: 48129ea
+source_sha: df9735371a40
+source_commit: e4039b7
 model: claude-opus-5
 ---
 
@@ -39,7 +39,7 @@ Tutto qui. Per un bot di assistenza: una domanda posta davvero da un cliente, e 
 }
 ```
 
-Il lavoro lo fanno tre campi. L'`id` gli dà un nome. I `vars` sono ciò che il sistema riceve. L'`expected` è ciò che sai. I `metadata` servono a chi leggerà il caso più avanti — da dove veniva l'articolo, e il punteggio che il giudice gli aveva dato quella mattina — e nessun check li legge. Non sempre conosci l'output esatto corretto — per un riassunto o una risposta in testo libero non lo conosce nessuno — ma *qualcosa* lo sai sempre: deve citare X, non deve superare N parole, una persona di cui ti fidi l'ha giudicato accettabile. Tutto ciò che sai va in `expected`. Ciò che non sai lo lasci fuori e lo verifichi con qualcosa di più debole.
+Il lavoro lo fanno tre campi. L'`id` gli dà un nome. I `vars` sono ciò che il sistema riceve. L'`expected` è ciò che sai. I `metadata` servono a chi leggerà il caso più avanti — da dove veniva l'articolo, e il punteggio che il giudice gli aveva dato quella mattina. Nessun check incluso in digline li legge, mentre un check che scrivi tu può farlo: ogni asserzione riceve i metadata del caso accanto a quelli della risposta, e il formato dichiarativo permette al corpo della richiesta di un target di indicare `case.metadata.<key>` come qualsiasi altro campo del caso. Mettici ciò che serve a chi legge, non ciò da cui dipende un check — un check che ha bisogno dei metadata senza dirlo è un check il cui input non sta in `vars`. Non sempre conosci l'output esatto corretto — per un riassunto o una risposta in testo libero non lo conosce nessuno — ma *qualcosa* lo sai sempre: deve citare X, non deve superare N parole, una persona di cui ti fidi l'ha giudicato accettabile. Tutto ciò che sai va in `expected`. Ciò che non sai lo lasci fuori e lo verifichi con qualcosa di più debole.
 
 ## Perché il prompt riceve tutte le attenzioni e i casi nessuna
 
