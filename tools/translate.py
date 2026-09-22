@@ -78,7 +78,8 @@ over unchanged, report.md, and calls.json. --existing DIR lays the
 translations of an earlier dry run (its --out) over the repository first, so
 a second run skips what the first translated.
 
-    usage: tools/translate.py --langs it,de,es --pages index,start,why,about,contact
+    usage: tools/translate.py --langs it,de,es          # --pages defaults to
+                                                        # the presentation pages
            tools/translate.py --langs it --pages handbook      # the Handbook's nine
            tools/translate.py --langs it --pages handbook/02-cases
                               --out DIR [--dry-run] [--existing DIR] [--max-cost 12]

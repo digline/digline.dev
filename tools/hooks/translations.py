@@ -54,8 +54,8 @@ marked lang="en".
 
 ── the drawer and the sidebar on a translation (on_page_context) ─────────────
 Material draws the site's nav in the drawer, and on a wide screen the part of
-it the page is in, in the sidebar; for a translation that is 93 English
-entries. So a translation of a Handbook page gets ``page.meta.translation_nav``
+it the page is in, in the sidebar; for a translation that is the whole
+English nav, every entry of it. So a translation of a Handbook page gets ``page.meta.translation_nav``
 instead, and overrides/partials/nav.html draws it with Material's own macro:
 the pages translated into its language, in the nav's order, under their own
 titles; the Handbook whole — each chapter under its translated title, or in
