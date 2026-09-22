@@ -124,6 +124,12 @@ A page whose translation failed the checks twice is not written, and the job fai
 
 **The two comparisons on /start/.** They are not written on the page: `tools/hooks/home.py` puts the headline of two captured runs — the `steady` scenario and `prompt_regression` in digline's `home.json` — where the page keeps two comments, and holds the built page to them. The sentence around them counts what those runs report, in words: three checks moved, one case set aside, six checks worse. Those counts are checked against the capture too (`claim_problems`), so a recapture that moves one of them stops the build here rather than leaving the page saying what no run said. When that happens: read the new sentence, change the words around it, and let the translations follow — `docs/start.md` is a page the agent translates.
 
+**A second run on a language destroys the first one's unmerged work.** Every run rewrites `i18n/auto-<lang>` on top of `main`, so its pull request holds that run's pages and only those. A page the previous run translated, and nobody merged, is gone from the branch — not conflicted, not flagged: absent, with the pull request still open and looking complete.
+
+So: merge a language's pull request before running that language again, or ask one run for every page you need. On 22 September a run for chapter 0 alone, dispatched while the German and Spanish chapter 8 sat unmerged in #108 and #109, took both with it.
+
+Recovering costs nothing if you notice in time. The run that produced the lost page uploaded it: `gh api repos/digline/digline.dev/actions/runs/<id>/artifacts` names `translation-<lang>`, and its zip holds `docs/<lang>/…` exactly as the run wrote it, checked and corrected. Copy the file back onto the branch and push. The artifacts keep for **90 days** — the repository's retention, which `translate.yml` does not override — so the window is long, and the reason to hurry is that nobody will look for a page they do not know is missing.
+
 **A run by hand.** From `main` only — the federation rule refuses any other ref:
 
     gh workflow run translate.yml --ref main -f langs=it,de,es -f pages=index,start,why,about,contact,agents -f dry_run=false -f max_cost=12
