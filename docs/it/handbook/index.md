@@ -3,24 +3,28 @@ title: Manuale
 seo_title: 'Manuale: tenere sotto controllo una funzionalità LLM'
 lang: it
 translation_of: handbook/index.md
-description: 'Otto capitoli sulla valutazione delle applicazioni LLM nella pratica: casi, ground truth, check, il giudice, il riferimento, manutenzione. Parlano del problema, non dello strumento.'
+description: 'Nove capitoli sulla valutazione delle applicazioni LLM nella pratica: cosa costruire per primo, casi, ground truth, check, il giudice, il riferimento, manutenzione. Parlano del problema, non dello strumento.'
 search:
   exclude: true
 source: handbook/index.md
-source_sha: 0b5b5820ed85
-source_commit: d7f3b56
+source_sha: 102161a61926
+source_commit: c51c251
 model: claude-opus-5
 ---
 
 # Manuale
 
-Otto capitoli su come tenere sotto controllo una funzionalità LLM, per chi ne ha
+Nove capitoli su come tenere sotto controllo una funzionalità LLM, per chi ne ha
 una in produzione e non ha ancora passato la brutta settimana. Parlano del
 problema, non dello strumento: niente di quanto segue richiede digline
 installato, e la maggior parte dei numeri viene da un piccolo progetto pubblico
 che puoi consultare tu stesso. Inizia dal primo capitolo e leggili in ordine:
 ciascuno si appoggia al precedente.
 
+- **[0. Prima del prompt](../../handbook/00-before-the-prompt.md)** — le quattro
+  decisioni che vengono prima del prompt e decidono se la funzionalità sia
+  misurabile o no. L'unico capitolo che ti chiede di cambiare quello che stai
+  costruendo invece di misurarlo.
 - **[1. Che cosa stai davvero rilasciando](../../handbook/01-what-you-are-shipping.md)** —
   perché una chiamata al modello sembra una funzione e non lo è, e quanto ti
   costa.

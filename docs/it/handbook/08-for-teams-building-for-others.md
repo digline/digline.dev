@@ -6,8 +6,8 @@ description: 'Una sola suite di valutazione, tre parti interessate: che cosa ser
 search:
   exclude: true
 source: handbook/08-for-teams-building-for-others.md
-source_sha: e231cf6c9192
-source_commit: 356a3c8
+source_sha: 1f9246774e8e
+source_commit: c51c251
 model: claude-opus-5
 ---
 
@@ -57,7 +57,7 @@ Due abitudini che danno valore al report:
 
 **Un riferimento per ogni consegna.** Quando il cliente accetta una release, quell'accettazione è una promozione. Il file di riferimento registra lo stato che ha accettato; il report successivo si confronta con quello. «È peggiorato da quando l'hai accettato» è una frase che entrambe le parti possono verificare.
 
-**L'aggregato nel contratto.** Con casi etichettati, una suite ha un numero — precision 0.75, nell'esempio inventato qui sopra — abbastanza stabile da poter essere messo per iscritto: *il classificatore concorda con i tuoi revisori su almeno il 70% dei casi confermati.* Fissalo dove il sistema misurabilmente si trova al momento dell'accettazione, non dove l'una o l'altra parte vorrebbe che fosse. La soglia è l'impegno; il confronto è il modo in cui entrambe le parti lo tengono d'occhio.
+**L'aggregato nel contratto.** Con casi etichettati, una suite ha un numero — precision 0.75, nell'esempio inventato qui sopra — abbastanza stabile da poter essere messo per iscritto: *il classificatore concorda con i tuoi revisori su almeno il 70% dei casi confermati.* Fissalo al livello in cui il sistema si colloca, in base alle misurazioni, al momento dell'accettazione, non dove l'una o l'altra parte vorrebbe che fosse. La soglia è l'impegno; il confronto è il modo in cui entrambe le parti lo tengono d'occhio.
 
 ## Che cosa conserva la società di consulenza
 
@@ -81,4 +81,4 @@ Così si chiude il ciclo che il capitolo 2 chiedeva di fare a mano: *un fallimen
 
 ---
 
-Questo è il manuale. Se l'hai letto da cima a fondo, sai come tenere sotto controllo una funzionalità basata su LLM più della maggior parte dei team che ne rilasciano una. Lo strumento costruito attorno a questi otto capitoli è [digline](../../index.md); il progetto da cui viene la maggior parte dei numeri è [pubblico](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f). Nessuno dei due è necessario per iniziare — i venti casi sì.
+Questo è il manuale. Se l'hai letto da cima a fondo, sai come tenere sotto controllo una funzionalità basata su LLM più della maggior parte dei team che ne rilasciano una. Lo strumento costruito attorno a questi capitoli è [digline](../../index.md); il progetto da cui viene la maggior parte dei numeri è [pubblico](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f). Nessuno dei due è necessario per iniziare — i venti casi sì.

@@ -326,6 +326,7 @@ nav:
           - ADR 0025 — The tokens and the bill: product/adr/0025-the-tokens-and-the-bill.md
           - ADR 0026 — The thinking a model charged for: product/adr/0026-the-thinking-a-model-charged-for.md
           - ADR 0027 — The run reconciles with what it was asked: product/adr/0027-the-run-reconciles.md
+          - ADR 0028 — The rules that moved: product/adr/0028-the-rules-that-moved.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
