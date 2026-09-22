@@ -6,8 +6,8 @@ description: 'Una suite de evaluación, tres partes interesadas: qué necesita c
 search:
   exclude: true
 source: handbook/08-for-teams-building-for-others.md
-source_sha: e231cf6c9192
-source_commit: 356a3c8
+source_sha: 1f9246774e8e
+source_commit: c51c251
 model: claude-opus-5
 ---
 
@@ -55,7 +55,7 @@ El informe se genera dentro del perímetro del cliente, donde las razones están
 
 Dos hábitos que hacen que el informe valga algo:
 
-**Una referencia por entrega.** Cuando el cliente acepta una release, esa aceptación es una promoción. El archivo de referencia registra el estado que aceptó; el siguiente informe compara contra él. «Empeoró desde que lo aceptaste» es una frase que ambas partes pueden verificar.
+**Una referencia por entrega.** Cuando el cliente acepta una release, esa aceptación es una promoción. El archivo de referencia registra el estado que aceptó; el siguiente informe se compara con él. «Empeoró desde que lo aceptaste» es una frase que ambas partes pueden verificar.
 
 **El agregado en el contrato.** Con casos etiquetados, una suite tiene un número —precision 0.75, en el caso inventado de arriba— lo bastante estable como para dejarlo por escrito: *el clasificador coincide con tus revisores en al menos el 70% de los casos confirmados.* Fíjalo donde el sistema está, medido, en el momento de la aceptación, no donde a alguna de las partes le gustaría que estuviera. El umbral es el compromiso; la comparación es la forma en que ambas partes lo vigilan.
 
@@ -81,4 +81,4 @@ Eso cierra el ciclo que el capítulo 2 pedía a mano: *un fallo visto, un caso e
 
 ---
 
-Este es el manual. Si lo has leído de principio a fin, sabes más sobre cómo mantener bajo control una funcionalidad con LLM que la mayoría de los equipos que publican una. La herramienta construida en torno a estos ocho capítulos es [digline](../../index.md); el proyecto del que salió la mayoría de los números es [público](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f). Ninguno de los dos hace falta para empezar; los veinte casos sí.
+Este es el manual. Si lo has leído de principio a fin, sabes más sobre cómo mantener bajo control una funcionalidad con LLM que la mayoría de los equipos que publican una. La herramienta construida en torno a estos capítulos es [digline](../../index.md); el proyecto del que salió la mayoría de los números es [público](https://github.com/digline/brief/tree/9507bb06f7dd90a4b6a624dbe77725e50819a02f). Ninguno de los dos hace falta para empezar; los veinte casos sí.
