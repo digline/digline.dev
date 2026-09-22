@@ -1,7 +1,8 @@
 # The site is two things at once.
 #
-#   - The presentation pages (index, why, about, contact) carry `template:` in
-#     their front matter and are rendered by a file of their own in overrides/.
+#   - The presentation pages — tools/languages.py's PRESENTATION_PAGES, which
+#     is the list every part of the build reads — carry `template:` in their
+#     front matter and are rendered by a file of their own in overrides/.
 #     Those pages are free HTML: they do not use the theme at all.
 #   - Everything under product/ is the documentation of digline/digline, copied
 #     in by tools/sync-docs.sh before the build and rendered by Material as it
@@ -99,8 +100,9 @@ hooks:
   # docstring, and tools/catalog.py for how a value is written.
   - tools/hooks/i18n.py
   # The translations of the presentation pages, docs/<lang>/: refused unless
-  # each is one of the five, in its folder's language, at its original's path,
-  # with its own description and out of search; the hreflang links on an
+  # each is one of tools/languages.py's, in its folder's language, at its
+  # original's path, with its own description and out of search; the hreflang
+  # links on an
   # English page with translations and on the translations; and a translation's
   # links sent to the pages translated into its language, all checked again in
   # site/ after the build. See the file's docstring, and tools/languages.py.

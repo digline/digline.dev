@@ -45,8 +45,8 @@ import sys
 import tempfile
 
 #: The pages that open without a lede, and why. A pattern for the ADR records,
-#: which are twenty-six of one shape, and a line for each page that is its own
-#: case. Removing a page from here is a diff a reviewer sees, which is the
+#: which are one shape however many of them there are, and a line for each page
+#: that is its own case. Removing a page from here is a diff a reviewer sees, which is the
 #: whole point of writing it down rather than reading yesterday's build.
 ALLOWED: dict[str, str] = {
     r"product/adr/\d{4}-[^/]+": (
