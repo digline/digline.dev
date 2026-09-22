@@ -27,7 +27,7 @@ A file, in the repository, next to the code. In the [newsletter project](https:/
 - **The aggregates**, if the cases are labelled — precision 0.667 and accuracy 0.762, ten of fifteen and sixteen of twenty-one — with the counts that produced them.
 - **The prompt text** that produced the run, verbatim, with its hash. Not a reference to a file that may have changed since; the text itself, frozen.
 - **The commit** the code was at, and whether the working tree was clean.
-- **The configuration** of the suite — which checks, which thresholds — as a hash, so that a comparison against a suite with different rules is refused rather than silently meaningless.
+- **The configuration** of the suite — which checks, which thresholds — as a hash, so that a comparison across different rules says so instead of being silently meaningless. The comparison still runs: it reports that the suite changed since the reference, and puts that sentence beside numbers measured under other rules. What the hash refuses is promotion — a run whose configuration is not the one in force cannot become the reference.
 
 Two things follow from the prompt being *inside* the file. First, the reference is reproducible even if you never committed the prompt separately — a common state during a day of experiments. Second, when a later run differs, the comparison can show the diff of the prompt right next to the diff of the scores: *you changed these three lines; these two cases moved.* That pairing is the single most useful thing a comparison can show, and it only exists if the prompt travels with the run.
 
