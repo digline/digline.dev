@@ -45,7 +45,9 @@ Three things follow, and each is a design decision you will face whatever tool y
 
 ## What the customer receives
 
-Not the repository. A **report**: a self-contained document — one HTML file, printable — that answers, in this order, *did it get worse?*, *which checks and by how much*, *what was under test and what changed in it*, *when, under which version, approved by whom*. Written for someone who does not read code, generated from the same comparison the developer saw, so that the two can never disagree.
+Not the repository. A **report**: a self-contained document — one HTML file, printable — that opens on *what was under test*: the customer, the suite, this run, the reference it is measured against, the code version and whether the tree was clean. Then it answers *did it get worse?*, and then *which checks and by how much*. Written for someone who does not read code, generated from the same comparison the developer saw, so that the two can never disagree.
+
+It records *when* the reference was approved, not by whom. The who is the git history of the commit that added it, which is the answer to give when the question is asked.
 
 The report is generated inside the customer's perimeter, where the reasons are available, and it can include them: for the customer, the judge's explanation of why a case failed is the most useful line on the page. The redacted version of the same report — verdicts, no reasons — is what the consultancy keeps.
 
