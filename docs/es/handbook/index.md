@@ -3,24 +3,28 @@ title: Manual
 seo_title: 'Manual: mantener bajo control una funcionalidad con LLM'
 lang: es
 translation_of: handbook/index.md
-description: 'Ocho capítulos sobre la evaluación de aplicaciones LLM en la práctica: casos, verdad de referencia, checks, el juez, la referencia, mantenimiento. Sobre el problema, no sobre la herramienta.'
+description: 'Nueve capítulos sobre la evaluación de aplicaciones LLM en la práctica: qué construir primero, casos, verdad de referencia, checks, el juez, la referencia, mantenimiento. Sobre el problema, no sobre la herramienta.'
 search:
   exclude: true
 source: handbook/index.md
-source_sha: 0b5b5820ed85
-source_commit: d7f3b56
+source_sha: 102161a61926
+source_commit: c51c251
 model: claude-opus-5
 ---
 
 # Manual
 
-Ocho capítulos sobre cómo mantener bajo control una funcionalidad con LLM, para
+Nueve capítulos sobre cómo mantener bajo control una funcionalidad con LLM, para
 quienes ya tienen una en producción y todavía no han pasado la mala semana.
 Tratan del problema, no de la herramienta: nada de lo que hay aquí requiere
 tener digline instalado, y la mayoría de los números salen de un pequeño
 proyecto público que puedes consultar por tu cuenta. Empieza por el primer capítulo y léelos
 en orden: cada uno se apoya en el anterior.
 
+- **[0. Antes del prompt](../../handbook/00-before-the-prompt.md)** — las cuatro
+  decisiones que vienen antes del prompt y deciden si la funcionalidad se puede
+  medir siquiera. El único capítulo que te pide cambiar lo que estás
+  construyendo en vez de medirlo.
 - **[1. Lo que realmente estás entregando](../../handbook/01-what-you-are-shipping.md)** — por
   qué una llamada a un modelo parece una función y no lo es, y qué te cuesta eso.
 - **[2. Casos: el activo que nadie construye](../../handbook/02-cases.md)** — todo equipo tiene
