@@ -476,6 +476,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "verdict, why a gap is named rather than counted, and why it exits 2 "
         "without ever being called a regression.",
     ),
+    "product/adr/0028-the-rules-that-moved.md": (
+        "ADR 0028: The rules that moved",
+        "Why a changed suite names which threshold, tolerance, sample count or "
+        "gate moved and in which direction, why every one of them is derived "
+        "from the stored runs rather than recorded, and why it reports without "
+        "ever gating.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
