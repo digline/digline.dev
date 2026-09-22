@@ -6,8 +6,8 @@ description: Ein Score kann weit fallen und liegt an beiden Tagen trotzdem über
 search:
   exclude: true
 source: handbook/06-the-reference.md
-source_sha: c46f6b87214f
-source_commit: 356a3c8
+source_sha: 7fe35576a20c
+source_commit: 340f1dd
 model: claude-opus-5
 ---
 
@@ -31,13 +31,13 @@ Eine Datei, im Repository, neben dem Code. Im [Newsletter-Projekt](https://githu
 - **Die Aggregate**, wenn die Fälle gelabelt sind — Precision 0.667 und Accuracy 0.762, zehn von fünfzehn und sechzehn von einundzwanzig — mit den zugrunde liegenden Anzahlen.
 - **Der Prompttext**, der den run erzeugt hat, wörtlich, mit seinem Hash. Kein Verweis auf eine Datei, die sich seitdem geändert haben kann; der Text selbst, eingefroren.
 - **Der Commit**, auf dem der Code stand, und ob der Working Tree sauber war.
-- **Die Konfiguration** der Suite — welche checks, welche Schwellenwerte — als Hash, damit ein Vergleich mit einer Suite mit anderen Regeln abgelehnt wird, statt still und leise bedeutungslos zu sein.
+- **Die Konfiguration** der Suite — welche checks, welche Schwellenwerte — als Hash, damit ein Vergleich über unterschiedliche Regeln hinweg das auch sagt, statt still und leise bedeutungslos zu sein. Der Vergleich läuft trotzdem: Er meldet, dass sich die Suite seit der Referenz geändert hat, und stellt diesen Satz neben Zahlen, die nach anderen Regeln gemessen wurden. Was der Hash verweigert, ist die Promotion — ein run, dessen Konfiguration nicht die geltende ist, kann nicht zur Referenz werden.
 
 Daraus, dass der Prompt *in* der Datei steht, folgen zwei Dinge. Erstens ist die Referenz reproduzierbar, auch wenn du den Prompt nie separat committet hast — ein üblicher Zustand an einem Tag voller Experimente. Zweitens kann der Vergleich, wenn ein späterer run abweicht, das Diff des Prompts direkt neben das Diff der Scores stellen: *du hast diese drei Zeilen geändert; diese zwei Fälle haben sich bewegt.* Diese Gegenüberstellung ist das Nützlichste, was ein Vergleich zeigen kann, und es gibt sie nur, wenn der Prompt zusammen mit dem run gespeichert wird.
 
 ## Promoten: eine bewusste Handlung
 
-Ein run wird nicht dadurch zur Referenz, dass er der neueste ist oder dass er grün ist. Jemand promotet ihn. Das ist eine Entscheidung — *so sieht gut aus, daran lasse ich mich messen* — und sie sollte sich auch so anfühlen. Im Newsletter-Projekt ist es ein Befehl, `digline promote`, und das Ergebnis ist ein Commit mit einer Datei darin, die ein Reviewer lesen kann.
+Ein run wird nicht dadurch zur Referenz, dass er der neueste ist oder dass er grün ist. Jemand promotet ihn. Das ist eine Entscheidung — *so sieht ein guter Zustand aus — daran lasse ich mich messen* — und sie sollte sich auch so anfühlen. Im Newsletter-Projekt ist es ein Befehl, `digline promote`, und das Ergebnis ist ein Commit mit einer Datei darin, die ein Reviewer lesen kann.
 
 Drei Dinge sollte eine Promotion verweigern, weil jedes davon die Referenz zur Lüge machen würde:
 

@@ -6,8 +6,8 @@ description: Auch ein LLM-Richter zieht Stichproben. Warum du das Rauschen des R
 search:
   exclude: true
 source: handbook/05-the-judge.md
-source_sha: 09f62fac8c2c
-source_commit: 356a3c8
+source_sha: ba60264b1a69
+source_commit: 340f1dd
 model: claude-opus-5
 ---
 
@@ -39,7 +39,7 @@ Mit Stichproben kommen drei Fragen, und die Antworten sind wichtiger als die Zah
 
 **Wie zusammenfassen?** Der Score ist der Mittelwert der Stichproben. Die interessante Größe ist aber die *Übereinstimmung*: wie viele Stichproben das Mehrheitsurteil teilen. Nimm erfundene Scores: Drei Stichproben mit 0.80, 0.85, 0.99 weichen deutlich voneinander ab und stimmen im Urteil vollständig überein; drei mit 0.69, 0.71, 0.70 liegen nicht mehr als zwei Hundertstel auseinander und teilen sich bei einem Schwellenwert von 0.70 im Verhältnis zwei zu eins. Die Übereinstimmung sieht den zweiten Fall; der Mittelwert nicht.
 
-**Was, wenn sie sich nicht einig werden?** Dann war das Urteil nicht möglich, und die ehrliche Antwort lautet *konnte nicht beurteilt werden* — ein dritter Zustand, weder bestanden noch durchgefallen. Ein Fall, dessen Stichproben sich gleichmäßig aufteilen, ist keine Regression und kein Erfolg; er ist ein Fall, den der Richter nicht entscheiden kann, und eine Referenz, die darauf aufbaut, wäre eine Referenz auf einen Münzwurf. Lege eine Mindestübereinstimmung fest (etwa `"3/5"`), unterhalb derer das Urteil ein Fehler ist, und weigere dich, einen run zu promoten, der einen solchen Fall enthält.
+**Was, wenn sie sich nicht einig werden?** Dann war das Urteil nicht möglich, und die ehrliche Antwort lautet *konnte nicht beurteilt werden* — ein dritter Zustand, weder bestanden noch durchgefallen. Ein Fall, dessen Stichproben sich drei zu zwei aufteilen, ist keine Regression und kein Erfolg; er ist ein Fall, den der Richter nicht entscheiden kann, und eine Referenz, die darauf aufbaut, wäre eine Referenz auf einen Münzwurf. Lege eine Mindestübereinstimmung fest, unterhalb derer das Urteil ein Fehler ist, und weigere dich, einen run zu promoten, der einen solchen Fall enthält — aber lege sie so fest, dass sie auch auslösen kann. Bei fünf Stichproben beträgt die Mehrheit immer mindestens drei, also lehnt `"3/5"` nie eine Abstimmung ab, in der jede Stichprobe beurteilt wurde; die Untergrenze, die eine Aufteilung von drei zu zwei erfasst, ist `"4/5"`.
 
 **Schreibe Brüche als Brüche.** „Zwei von drei“ als `0.67` geschrieben ist eine Falle: ⅔ ist 0.666…, also *kleiner* als 0.67, und jeder Fall mit einer Gegenstimme von dreien wird zum Fehler. `"2/3"` sagt, was du meinst, und kann nicht an einer Rundung scheitern; die Newsletter-Suite schreibt `"3/5"`.
 
