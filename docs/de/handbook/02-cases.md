@@ -6,8 +6,8 @@ description: Jedes Team, das ein LLM-Feature ausliefert, hat einen Prompt, und f
 search:
   exclude: true
 source: handbook/02-cases.md
-source_sha: 67838bc398da
-source_commit: 48129ea
+source_sha: df9735371a40
+source_commit: e4039b7
 model: claude-opus-5
 ---
 
@@ -39,7 +39,7 @@ Mehr nicht. Bei einem Support-Bot: eine Frage, die ein Kunde tatsächlich gestel
 }
 ```
 
-Drei Felder erledigen die Arbeit. Die `id` benennt ihn. Die `vars` sind das, was das System bekommt. Das `expected` ist das, was du weißt. Die `metadata` sind für den, der den Fall später liest — woher der Artikel stammt und welche Bewertung der Richter ihm an jenem Morgen gegeben hat —, und kein check liest sie. Du kennst nicht immer die genaue richtige Ausgabe — bei einer Zusammenfassung oder einer Freitextantwort kennt sie niemand —, aber du weißt immer *etwas*: Sie sollte X erwähnen, sie sollte N Wörter nicht überschreiten, eine Person, der du vertraust, hat sie als akzeptabel eingestuft. Was du weißt, kommt in `expected`. Was du nicht weißt, lässt du weg und prüfst es mit etwas Schwächerem.
+Drei Felder erledigen die Arbeit. Die `id` benennt ihn. Die `vars` sind das, was das System bekommt. Das `expected` ist das, was du weißt. Die `metadata` sind für den, der den Fall später liest — woher der Artikel stammt und welche Bewertung der Richter ihm an jenem Morgen gegeben hat. Kein check, der mit digline ausgeliefert wird, liest sie, ein check, den du selbst schreibst, kann es: jede Assertion bekommt neben den Daten der Antwort auch die Metadaten des Falls, und im deklarativen Format kann der Request-Body eines Targets `case.metadata.<key>` genauso ansprechen wie jedes andere Feld des Falls. Leg dort ab, was ein Leser braucht, nicht das, worauf ein check angewiesen ist — ein check, der stillschweigend Metadaten braucht, ist ein check, dessen Eingabe nicht in `vars` steht. Du kennst nicht immer die genaue richtige Ausgabe — bei einer Zusammenfassung oder einer Freitextantwort kennt sie niemand —, aber du weißt immer *etwas*: Sie sollte X erwähnen, sie sollte N Wörter nicht überschreiten, eine Person, der du vertraust, hat sie als akzeptabel eingestuft. Was du weißt, kommt in `expected`. Was du nicht weißt, lässt du weg und prüfst es mit etwas Schwächerem.
 
 ## Warum der Prompt die ganze Aufmerksamkeit bekommt und die Fälle keine
 
@@ -85,7 +85,7 @@ Was die zwanzig brauchen:
 
 **Kein einmaliges Lieferobjekt.** Eine Falldatei, die am Tag des Release vollständig war, ist bei der zweiten Beschwerde veraltet. Die Menge wächst im Tempo der Produktion — deshalb ist „ein Fehler, ein Fall“ eine Regel und kein Projekt.
 
-**Keine sensiblen Daten, wenn die Datei irgendwohin gelangt.** Ein Fall, der aus einem echten Kundengespräch gebaut ist, trägt diesen Kunden mit sich. Halte solche Fälle innerhalb der Grenzen, aus denen sie stammen, oder schreibe die Eingabe mit derselben Form und anderen Fakten um. Im Newsletter-Projekt sind die Eingaben öffentliche Artikel, also ist die Datei ebenfalls öffentlich; bei einem Recruiting-Werkzeug sind die Stellenbeschreibungen unproblematisch und die Lebensläufe nicht.
+**Keine sensiblen Daten, wenn die Datei irgendwohin gelangt.** Ein Fall, der aus einem echten Kundengespräch entstanden ist, enthält die Daten dieses Kunden. Halte solche Fälle innerhalb der Grenzen, aus denen sie stammen, oder schreibe die Eingabe mit derselben Form und anderen Fakten um. Im Newsletter-Projekt sind die Eingaben öffentliche Artikel, also ist die Datei ebenfalls öffentlich; bei einem Recruiting-Werkzeug sind die Stellenbeschreibungen unproblematisch und die Lebensläufe nicht.
 
 ## Der Teil, der sich ansammelt
 
