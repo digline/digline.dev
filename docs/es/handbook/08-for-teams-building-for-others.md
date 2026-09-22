@@ -6,8 +6,8 @@ description: 'Una suite de evaluación, tres partes interesadas: qué necesita c
 search:
   exclude: true
 source: handbook/08-for-teams-building-for-others.md
-source_sha: 1f9246774e8e
-source_commit: c51c251
+source_sha: 86ffefba379b
+source_commit: e4039b7
 model: claude-opus-5
 ---
 
@@ -49,7 +49,9 @@ De ahí se siguen tres cosas, y cada una es una decisión de diseño a la que te
 
 ## Qué recibe el cliente
 
-El repositorio no. Un **informe**: un documento que se basta a sí mismo —un único archivo HTML, imprimible— que responde, en este orden, *¿empeoró?*, *qué checks y cuánto*, *qué se estaba probando y qué cambió en ello*, *cuándo, con qué versión, aprobado por quién*. Escrito para alguien que no lee código, generado a partir de la misma comparación que vio el desarrollador, de modo que los dos nunca puedan contradecirse.
+El repositorio no. Un **informe**: un documento que se basta a sí mismo —un único archivo HTML, imprimible— que empieza por *qué se estaba probando*: el cliente, la suite, este run, la referencia con la que se compara, la versión del código y si el árbol estaba limpio. Después responde *¿empeoró?* y luego *qué checks y cuánto*. Escrito para alguien que no lee código, generado a partir de la misma comparación que vio el desarrollador, de modo que los dos nunca puedan contradecirse.
+
+Registra *cuándo* se aprobó la referencia, no quién la aprobó. El quién está en el historial de git del commit que la añadió, y eso es lo que hay que responder cuando llega la pregunta.
 
 El informe se genera dentro del perímetro del cliente, donde las razones están disponibles, y puede incluirlas: para el cliente, la explicación del juez sobre por qué falló un caso es la línea más útil de la página. La versión depurada del mismo informe —veredictos, sin razones— es la que conserva la consultora.
 
