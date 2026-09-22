@@ -6,8 +6,8 @@ description: Anche un giudice LLM estrae dei campioni. Perché devi misurare il 
 search:
   exclude: true
 source: handbook/05-the-judge.md
-source_sha: 09f62fac8c2c
-source_commit: 356a3c8
+source_sha: ba60264b1a69
+source_commit: 340f1dd
 model: claude-opus-5
 ---
 
@@ -39,7 +39,7 @@ Il campionamento porta con sé tre domande, e le risposte contano più del numer
 
 **Come combinarli?** Il punteggio è la media dei campioni. Ma la quantità interessante è l'*accordo*: quanti campioni condividono il verdetto di maggioranza. Prendi dei punteggi inventati: tre campioni di 0.80, 0.85, 0.99 sono in forte disaccordo tra loro e concordano pienamente sul verdetto; tre di 0.69, 0.71, 0.70 stanno entro due centesimi l'uno dall'altro e si dividono due a uno su una soglia di 0.70. L'accordo vede il secondo caso; la media no.
 
-**E se non riescono a mettersi d'accordo?** Allora il giudizio non era possibile, e la risposta onesta è *giudizio impossibile* — un terzo stato, né superato né fallito. Un caso i cui campioni si dividono in parti uguali non è una regressione e non è un successo; è un caso che il giudice non sa decidere, e un riferimento costruito su di esso sarebbe un riferimento a un lancio di moneta. Imposta un accordo minimo (`"3/5"`, per esempio) sotto il quale il verdetto è un errore, e rifiuta di promuovere un run che ne contenga uno.
+**E se non riescono a mettersi d'accordo?** Allora il giudizio non era possibile, e la risposta onesta è *giudizio impossibile* — un terzo stato, né superato né fallito. Un caso i cui campioni si dividono tre a due non è una regressione e non è un successo; è un caso che il giudice non sa decidere, e un riferimento costruito su di esso sarebbe un riferimento a un lancio di moneta. Imposta un accordo minimo sotto il quale il verdetto è un errore, e rifiuta di promuovere un run che ne contenga uno — ma impostalo a un valore che possa scattare davvero. Con cinque campioni la maggioranza è sempre almeno tre, quindi `"3/5"` non rifiuta mai una votazione in cui tutti i campioni sono stati giudicati; la soglia che intercetta una divisione tre a due è `"4/5"`.
 
 **Scrivi le frazioni come frazioni.** «Due su tre» scritto come `0.67` è una trappola: ⅔ vale 0.666…, che è *sotto* 0.67, e ogni caso con un voto contrario su tre diventa un errore. `"2/3"` dice quello che intendi e non può sbagliare per un arrotondamento; la suite della newsletter scrive `"3/5"`.
 
