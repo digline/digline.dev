@@ -34,7 +34,7 @@ That is all. For a support bot: a question a customer actually asked, and whethe
 }
 ```
 
-Three fields do the work. The `id` names it. The `vars` are what the system receives. The `expected` is what you know. The `metadata` is for whoever reads the case later — where the article came from, and the score the judge gave it that morning — and no check reads it. You do not always know the exact right output — for a summary or a free-text answer, nobody does — but you always know *something*: it should mention X, it should not exceed N words, a person you trust rated it acceptable. Whatever you know goes in `expected`. Whatever you do not know, you leave out and check with something weaker.
+Three fields do the work. The `id` names it. The `vars` are what the system receives. The `expected` is what you know. The `metadata` is for whoever reads the case later — where the article came from, and the score the judge gave it that morning. No check that digline ships reads it, and a check you write can: every assertion receives the case's metadata beside the response's, and the declarative format lets a target's request body name `case.metadata.<key>` like any other case field. Put in it what a reader needs, not what a check depends on — a check that quietly needs metadata is a check whose input is not in `vars`. You do not always know the exact right output — for a summary or a free-text answer, nobody does — but you always know *something*: it should mention X, it should not exceed N words, a person you trust rated it acceptable. Whatever you know goes in `expected`. Whatever you do not know, you leave out and check with something weaker.
 
 ## Why the prompt gets all the attention and the cases get none
 
