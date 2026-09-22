@@ -39,6 +39,28 @@ The same rule, for `../digline` alone, before a build: `make build` refuses a di
 
 Why: after PR #17 the shared checkout's `main` was five commits behind `origin/main`, so `git branch -d` refused a branch that was already merged, and whoever opened the checkout next was reading an old site. During PR #18, `../digline` fell five commits behind a digline merge, and the build stopped at the sync.
 
+## A claim that cannot be sourced
+
+It says so in the place it is made — never in a footnote, and never nowhere.
+
+A footnote is a place a reader arrives after having already believed the claim,
+and a reader who goes looking for evidence and finds none draws a worse
+conclusion than the one we could have handed them. So the qualification travels
+with the sentence: in the paragraph that makes the claim, in the section that
+prints the figure.
+
+The instance in this repository is the Handbook's chapter 0, which describes a
+system "read off one system's code" and then says, in that same paragraph, that
+the reading has no dated artefact behind it — no note, no captured repository,
+nothing to cite. It is offered as a shape that recurs, not as evidence.
+
+The rule is the same one digline's `CLAUDE.md` carries under Conventions, and it
+is written in both places on purpose: chapter 0 is the instance that lives here,
+and a convention cited in one repository about a claim made in another is one
+lookup too far. The other instance is a measurement rather than prose —
+`docs/adr/0024` §5.6 states the bound on what a replay can measure beside the
+figure it qualifies — and the shape does not change between the two.
+
 ## A page the site did not have
 
 Every page in the nav needs a description, or the build fails:
