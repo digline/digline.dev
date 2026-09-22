@@ -6,8 +6,8 @@ description: 'Una sola suite di valutazione, tre parti interessate: che cosa ser
 search:
   exclude: true
 source: handbook/08-for-teams-building-for-others.md
-source_sha: 1f9246774e8e
-source_commit: c51c251
+source_sha: 86ffefba379b
+source_commit: e4039b7
 model: claude-opus-5
 ---
 
@@ -49,7 +49,9 @@ Ne discendono tre conseguenze, e ciascuna è una decisione di progettazione che 
 
 ## Che cosa riceve il cliente
 
-Non il repository. Un **report**: un documento autonomo — un unico file HTML, stampabile — che risponde, in quest'ordine, alle domande *è peggiorato?*, *quali check e di quanto*, *che cosa era sotto test e che cosa è cambiato*, *quando, con quale versione, approvato da chi*. Scritto per chi non legge codice, generato dallo stesso confronto che ha visto lo sviluppatore, così che i due non possano mai discordare.
+Non il repository. Un **report**: un documento autonomo — un unico file HTML, stampabile — che si apre su *che cosa era sotto test*: il cliente, la suite, questo run, il riferimento con cui viene confrontato, la versione del codice e se l'albero era pulito. Poi risponde *è peggiorato?*, e quindi *quali check e di quanto*. Scritto per chi non legge codice, generato dallo stesso confronto che ha visto lo sviluppatore, così che i due non possano mai discordare.
+
+Registra *quando* il riferimento è stato approvato, non da chi. Il chi è la storia git del commit che l'ha aggiunto, ed è la risposta da dare quando la domanda arriva.
 
 Il report viene generato dentro il perimetro del cliente, dove le motivazioni sono disponibili, e può includerle: per il cliente, la spiegazione del giudice sul perché un caso è fallito è la riga più utile della pagina. La versione oscurata dello stesso report — verdetti, niente motivazioni — è quella che la società di consulenza conserva.
 
@@ -61,7 +63,7 @@ Due abitudini che danno valore al report:
 
 ## Che cosa conserva la società di consulenza
 
-Per ogni cliente, nel repository di quel cliente o in una directory per cliente che non si possa confondere con quella di un altro: la suite, i riferimenti, i run oscurati. Mai un unico archivio in cui i verdetti del cliente A stanno accanto a quelli del cliente B — basta un refuso per scambiare gli uni con gli altri. I perimetri sono directory, e lo strumento dovrebbe rifiutarsi di confrontare o promuovere attraverso di essi, così che l'errore sia impossibile e non soltanto sconsigliato.
+Per ogni cliente, nel repository di quel cliente o in una directory per cliente che non si possa confondere con quella di un altro: la suite, i riferimenti, i run oscurati. Mai un unico archivio in cui i verdetti del cliente A stanno accanto a quelli del cliente B — basta un refuso per scambiare gli uni con gli altri. I perimetri sono directory, e lo strumento dovrebbe rifiutarsi di confrontare o promuovere da un perimetro all'altro, così che l'errore sia impossibile e non soltanto sconsigliato.
 
 Tra un cliente e l'altro, la società di consulenza vede solo ciò che viaggia: quali check, quali punteggi, quali aggregati, quali prompt se la suite lo ha consentito. È abbastanza per accorgersi che un aggiornamento del modello ha peggiorato tre clienti insieme, e non contiene nulla a cui uno di loro potrebbe obiettare.
 
