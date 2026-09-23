@@ -115,3 +115,47 @@ The uncomfortable part is how reasonable the change was. I wasn't
 making the judge do more. I was making its output easier to check. The
 change that made the judge harder to trust was the one I made to trust
 it more.
+
+## Addendum, 2026-09-23: the control a reader proposed
+
+The post says I measured an effect and not a mechanism. A few hours
+after it went up, **u/aofu_dev** on r/LLMDevs proposed the control that
+tests one mechanism. Add a dummy field that always returns "ok", and see
+whether the disagreement still goes up on the same cases without asking
+for a description. Same reply shape, no work in it. The control is
+theirs. I ran exactly that arm, and nothing else.
+
+I wrote the predictions down before the run, including what the result
+could and couldn't tell apart. If the field itself was the cost, every
+run would come back at 7 or more. If the describing was the cost, every
+run would come back at 6 or fewer.
+
+Four runs, same suite, same 21 cases, five samples each:
+
+|                              | one field | description field | `"ok"` field |
+| ---------------------------- | --------- | ----------------- | ------------ |
+| cases whose samples disagree | 2–6       | 7–8, eight runs   | 5, 3, 5, 4   |
+
+Every run is back inside the old prompt's band. The case the description
+had made unstable split in one run of four, not seven of eight. All 420
+replies returned "ok". The old prompt, run once more that afternoon, gave
+4, so the model hadn't moved.
+
+**It isn't the field.** One more key that asks for nothing cost nothing
+on this judge. What loosened it was asking for *that* field, one the model
+has to work to fill.
+
+That narrows the advice above. "The new field doesn't belong in that
+reply" is about a field with content. A constant key is harmless here.
+
+It doesn't settle my two guesses, and I said so before the run. The "ok"
+field added 6 tokens to the prompt. The description came with about 160
+tokens of instructions. So the cost is either the describing or the
+length of what asked for it, and this control can't tell those apart. The
+next arm can: the old prompt padded with about 160 tokens of neutral text,
+and no field.
+
+It cost $0.45, including one run I took by mistake and left out of the
+count. The predictions, the numbers and the mistake are in
+[decision 0004](https://github.com/digline/brief/blob/3635b44ce72a47738660fc1e816417716d3160b4/decisions/0004-the-constant-field.md),
+pinned to the commit.
