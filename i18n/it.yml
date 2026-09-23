@@ -148,6 +148,7 @@ home:
     run_text: In un container, o per un agente.
     docker: Immagine Docker
     mcp: Server MCP
+    plugin: Plugin Claude Code
   commands:
     kicker: Comandi
     count:
@@ -417,6 +418,7 @@ source_keys:
       examples_text: df62c6ce232d
       examples_title: 936698aa1941
       mcp: d938c8168e3a
+      plugin: 23c468285d1a
       openai_compatible: 2b6834dd6a7e
       providers_text: 94c9fedb11ec
       providers_title: 996c32b35f21
