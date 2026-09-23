@@ -29,7 +29,7 @@ Si la funcionalidad elige —qué elementos mencionar, cuáles omitir, en qué o
 
 Hoy es un campo en la respuesta y un parseo. Más adelante es el contrato entre el modelo y todo lo que viene después, y un contrato es de los cambios caros.
 
-**Dónde no encaja:** no todas las funcionalidades eligen. Si lo que vendes es la prosa misma —una reescritura, una traducción, una respuesta en una conversación—, no hay selección que emitir y solo cargas con las decisiones 3 y 4. La mayoría de las funcionalidades no son así: seleccionan, ordenan, enrutan o extraen, y al resultado lo llaman resumen.
+**Dónde se resiste:** no todas las funcionalidades eligen. Si lo que vendes es la prosa misma —una reescritura, una traducción, una respuesta en una conversación—, no hay selección que emitir y solo cargas con las decisiones 3 y 4. La mayoría de las funcionalidades no son así: seleccionan, ordenan, enrutan o extraen, y al resultado lo llaman resumen.
 
 ## 2. Haz que la entrada sea determinista
 
@@ -45,7 +45,7 @@ La entrada armada tal como la recibió el modelo, la respuesta tal como llegó, 
 
 Es el único punto que no sirve de nada el día en que lo escribes: ninguna funcionalidad lo lee, ninguna pantalla lo muestra, y es lo primero que se cuestiona en una revisión. También es el único que no se puede añadir después a ningún precio. Los demás son caros de incorporar a posteriori; este no se puede incorporar, porque lo que habría contenido ya no existe.
 
-**Dónde no encaja:** no es gratis, y un capítulo que dijera lo contrario se equivocaría. La entrada armada son los datos que entraron, así que el registro los hereda, y hereda también las reglas sobre dónde puede residir ([capítulo 8](../../handbook/08-for-teams-building-for-others.md)): mismo perímetro, misma retención. Y toma *qué modelo respondió* de la respuesta, no de lo que pediste: el día en que un proveedor reapunta un alias, esos son dos hechos distintos.
+**Dónde se resiste:** no es gratis, y un capítulo que dijera lo contrario se equivocaría. La entrada armada son los datos que entraron, así que el registro los hereda, y hereda también las reglas sobre dónde puede residir ([capítulo 8](../../handbook/08-for-teams-building-for-others.md)): mismo perímetro, misma retención. Y toma *qué modelo respondió* de la respuesta, no de lo que pediste: el día en que un proveedor reapunta un alias, esos son dos hechos distintos.
 
 ## 4. Haz que un fallo se distinga de una respuesta vacía
 
