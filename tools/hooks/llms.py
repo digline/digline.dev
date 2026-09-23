@@ -528,6 +528,12 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
+    "blog/added-field.md": (
+        "Why adding one field to an LLM judge's structured reply changed how "
+        "it scored everything else, measured over repeated runs; why moving "
+        "the field after the score did not undo it; and why a field that must "
+        "not disturb an existing call belongs in a second call"
+    ),
     "blog/denominator-trap.md": (
         "Why a case that errors, is suspended or carries no label leaves a "
         "run-level aggregate's denominator and raises the score exactly when "
