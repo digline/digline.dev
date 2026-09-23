@@ -6,8 +6,8 @@ description: 'Quattro decisioni vengono prima del prompt e determinano se una fe
 search:
   exclude: true
 source: handbook/00-before-the-prompt.md
-source_sha: dfa436056f03
-source_commit: c51c251
+source_sha: a25e3595ba15
+source_commit: 49fbb1a
 model: claude-opus-5
 ---
 
@@ -20,6 +20,8 @@ Il prompt è la parte centrale del lavoro, non il suo inizio. Quattro decisioni 
 L'ordine abituale è scrivere il prompt, rilasciare e occuparsi del resto quando qualcuno si lamenta. Sembra iniziare dalla parte difficile. In realtà è iniziare dall'unica parte malleabile: il prompt resta economico da cambiare, e tutto ciò che gli sta attorno si irrigidisce. La forma della risposta diventa il contratto su cui vengono scritti il renderer, il client e le righe salvate, e le righe già scritte sono le righe che hai. Così l'attenzione va alla parte che tra un anno sarà ancora economica, e salta le quattro che non lo saranno.
 
 Quello che segue è la forma comune di una feature LLM in produzione, ricavata dal codice di un sistema più che misurata su di esso: il codice assembla un contesto, una sola chiamata al modello decide cosa dire, torna della prosa. Il [capitolo 3](../../handbook/03-ground-truth.md) smonta quel sistema dall'altro capo e si chiede da dove potrebbe venire il suo ground truth. Questo è l'elenco delle decisioni che gliene avrebbero dato uno. Qui non c'è nessun numero — niente è stato eseguito.
+
+Quella lettura era una lettura, e dietro non c'è nessun artefatto: nessuna nota datata, nessun repository conservato, niente da citare. La forma descritta sopra è ciò che si è capito osservando un sistema, messo per iscritto in seguito a memoria, e chi cercasse il documento da cui proviene non lo troverebbe. È proposta come una forma che si ripete, non come una prova — ogni affermazione di questo capitolo regge solo se la riconosci nel tuo sistema, perché non c'è nient'altro a sostenerla.
 
 ## 1. Restituisci la decisione, non solo la prosa
 

@@ -6,8 +6,8 @@ description: 'Cuatro decisiones vienen antes del prompt y deciden si una funcion
 search:
   exclude: true
 source: handbook/00-before-the-prompt.md
-source_sha: dfa436056f03
-source_commit: c51c251
+source_sha: a25e3595ba15
+source_commit: 49fbb1a
 model: claude-opus-5
 ---
 
@@ -20,6 +20,8 @@ El prompt es el medio del trabajo, no su principio. Cuatro decisiones lo precede
 El orden habitual es escribir el prompt, publicar y ocuparse del resto cuando alguien se queje. Parece empezar por lo difícil. Es empezar por lo único blando: el prompt sigue siendo barato de cambiar, y todo lo que lo rodea fragua. La forma de la respuesta se convierte en el contrato al que se ajustan el renderizador, el cliente y las filas almacenadas, y las filas ya escritas son las que tienes. Así que la atención va a la parte que seguirá siendo barata dentro de un año, y se salta las cuatro que no lo serán.
 
 Lo que sigue es la forma habitual de una funcionalidad con LLM en producción, leída del código de un sistema y no contrastada con él: el código arma un contexto, una llamada al modelo decide qué decir, vuelve prosa. El [capítulo 3](../../handbook/03-ground-truth.md) desarma ese sistema desde el otro extremo y pregunta de dónde podría salir su verdad de referencia. Esta es la lista de decisiones que se la habrían dado. Aquí no hay ningún número: no se ha ejecutado nada.
+
+Esa lectura fue una lectura, y no hay ningún artefacto detrás: ninguna nota fechada, ningún repositorio capturado, nada que citar. La forma descrita arriba es lo que se entendió al mirar un sistema, anotado después de memoria, y quien busque el documento del que proviene no lo encontrará. Se ofrece como una forma que se repite, no como evidencia: cada afirmación de este capítulo depende de si la reconoces en tu propio sistema, porque no hay nada más que la sostenga.
 
 ## 1. Emite la decisión, no solo la prosa
 
