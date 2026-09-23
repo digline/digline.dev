@@ -19,21 +19,21 @@ way. One more key in the JSON shouldn't change the others.
 It does. Here's the one I measured.
 
 I had a judging prompt that worked. It returned a score, and it was
-about as stable as an LLM judge gets: over twenty-one runs, it agreed
-with my labels on 16 of the 21 cases in eighteen of them. Very nearly
-deterministic.
+about as stable as an LLM judge gets. I ran it twenty-one times. In
+eighteen of those runs it agreed with my labels on 16 of the 21 cases.
+Very nearly deterministic.
 
 The sentence it returned alongside the score had a problem, though.
-It mixed description with judgement, something of the shape "the reply
+It mixed description with judgement, something like "the reply
 lists three causes and misses the obvious one", and only the first
 half was checkable. So I asked the same call for one more thing: the
 description on its own, as its own field. A good reason, a small change.
 
 Agreement didn't collapse. It got slightly worse, a median of 15 of
 21 against the old 16, and much more variable, 13 to 17 against 14 to
-16. The variance is the larger half, and it's the part that makes this
-easy to miss, because a one-point drop in the median is the kind of
-thing you shrug at. What changed is that the judge got **loose**. Each
+16. The variance is the bigger half of the story, and it's the part
+you miss. A one-point drop in the median is the kind of thing you
+shrug at. What changed is that the judge got **loose**. Each
 case is sampled more than once, and the number to watch is how many
 cases come back with samples that disagree with each other:
 
@@ -49,10 +49,11 @@ at all.
 
 The obvious diagnosis was position, and I liked it. A reply is
 generated in the order the JSON declares it. I had put the description
-first, so the score was being written after, and conditioned on, a
-description the model had just made up. Put the new field after the
-score and the score is written before the description exists. It
-can't be influenced by something that hasn't been generated yet.
+first, so the score got written after the description, and
+conditioned on it, and the model had just made that description up.
+Put the new field after the score and the score is written before the
+description exists. It can't be influenced by something that hasn't
+been generated yet.
 
 That's the answer you want to be true, because it's free. Reorder two
 keys and carry on.
@@ -73,11 +74,11 @@ well.
 ## What I don't know
 
 This is one judging prompt, on one model, over twenty-one cases. I
-measured an effect, not a mechanism. I have guesses, that asking for a
-description changes what the model takes the job to be wherever the
-answer goes, or that it's just a longer, different prompt, and I tested
-none of them. It may not reproduce on your model, or on a prompt that
-isn't a judge. What I can say is that the one explanation I was sure
+measured an effect, not a mechanism. I have two guesses. Maybe asking
+for a description changes what the model thinks the job is, no matter
+where the answer sits. Maybe it's just a longer prompt, so a different
+one. I tested neither. It may not reproduce on your model, or on a
+prompt that isn't a judge. What I can say is that the one explanation I was sure
 of, position, is the one the numbers ruled out.
 
 ## What to look at in your own code
@@ -111,6 +112,6 @@ before and after the change, and a count of the cases that stopped
 agreeing with themselves, is enough.
 
 The uncomfortable part is how reasonable the change was. I wasn't
-making the judge do more; I was making its output easier to check. The
+making the judge do more. I was making its output easier to check. The
 change that made the judge harder to trust was the one I made to trust
 it more.
