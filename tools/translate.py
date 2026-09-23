@@ -1413,6 +1413,23 @@ def selftest() -> int:
     finally:
         workspace.close()
 
+    # The links: relink() is safe to apply twice. The direction that bit: a
+    # previous translation's links, copied back by a model told to keep them.
+    translated = ("[capitolo 8](../../handbook/08-for-teams-building-for-others.md), "
+                  "[il post](../../blog/bad-evals-my-own.md#the-fix), [Why](../../why.md)")
+    expect("a link already in translated form, relinked twice, comes out unchanged",
+           translation.relink(translation.relink(translated, "handbook/00-before-the-prompt.md", "it"),
+                              "handbook/00-before-the-prompt.md", "it"), translated)
+    english = "[chapter 8](08-for-teams-building-for-others.md), [the post](../blog/bad-evals-my-own.md#the-fix)"
+    once = translation.relink(english, "handbook/00-before-the-prompt.md", "de")
+    expect("an English link is still rewritten, and a second pass leaves it where the first put it",
+           (once, translation.relink(once, "handbook/00-before-the-prompt.md", "de")),
+           ("[chapter 8](../../handbook/08-for-teams-building-for-others.md), "
+            "[the post](../../blog/bad-evals-my-own.md#the-fix)",) * 2)
+    expect("at the top level too: why.md's link to start.md, rewritten once",
+           translation.relink(translation.relink("[start](start.md)", "why.md", "es"), "why.md", "es"),
+           "[start](../start.md)")
+
     # 7. The real thing, without the network: the Italian catalog and Why, built and checked.
     workspace = Workspace(ROOT, english_only=True)
     try:
