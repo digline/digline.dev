@@ -533,6 +533,17 @@ DESCRIPTIONS: dict[str, str] = {
         "uncheckable is counted and named rather than passed, because a "
         "control that goes quiet when it cannot run is worse than none"
     ),
+    "product/adr/0030-the-configuration-an-application-reports.md": (
+        "Which fields of a configuration an application reports over HTTP are "
+        "measurements and which are the end company's perimeter: the rule that "
+        "lets a plugin's model travel rests on the suite having been reviewed, "
+        "and over HTTP the measured party writes every field, so the partition "
+        "is unavailable rather than merely narrow; withholding the names would "
+        "make them invisible without making them trustworthy and would cost "
+        "the log its rows; the proposal is that the suite declares the system "
+        "it expects and a reported configuration that contradicts it is "
+        "refused, which restores the review the rule depends on"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
