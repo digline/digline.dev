@@ -328,6 +328,7 @@ nav:
           - ADR 0027 — The run reconciles with what it was asked: product/adr/0027-the-run-reconciles.md
           - ADR 0028 — The rules that moved: product/adr/0028-the-rules-that-moved.md
           - ADR 0029 — The artifact that must not drift: product/adr/0029-the-artifact-that-must-not-drift.md
+          - ADR 0030 — The configuration an application reports: product/adr/0030-the-configuration-an-application-reports.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

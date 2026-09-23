@@ -490,6 +490,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and is never called a regression, and why a pin nobody could check "
         "says so instead of passing.",
     ),
+    "product/adr/0030-the-configuration-an-application-reports.md": (
+        "ADR 0030: The configuration an application reports",
+        "Why an HTTP application's self-reported model and provider are not "
+        "covered by the rule that lets a plugin's travel, why withholding them "
+        "would cost the reading more than it buys, and why the suite declaring "
+        "the system it expects restores the review instead.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
