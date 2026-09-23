@@ -6,8 +6,8 @@ description: 'Vier Entscheidungen kommen vor dem Prompt und entscheiden, ob ein 
 search:
   exclude: true
 source: handbook/00-before-the-prompt.md
-source_sha: dfa436056f03
-source_commit: c51c251
+source_sha: a25e3595ba15
+source_commit: 49fbb1a
 model: claude-opus-5
 ---
 
@@ -20,6 +20,8 @@ Der Prompt ist die Mitte der Arbeit, nicht ihr Anfang. Vier Entscheidungen komme
 Die übliche Reihenfolge lautet: Prompt schreiben, ausliefern und sich um den Rest kümmern, wenn sich jemand beschwert. Das sieht aus, als würde man mit dem schwierigen Teil anfangen. Tatsächlich fängt man mit dem einzigen weichen Teil an: Der Prompt bleibt billig zu ändern, alles um ihn herum härtet aus. Die Form der Antwort wird zum Vertrag, gegen den Renderer, Client und gespeicherte Zeilen geschrieben werden, und die schon geschriebenen Zeilen sind die Zeilen, die du hast. Die Aufmerksamkeit richtet sich also auf den Teil, der in einem Jahr noch billig sein wird, und überspringt die vier, die es nicht sein werden.
 
 Was folgt, ist die übliche Form eines LLM-Features in Produktion, abgelesen am Code eines Systems und nicht daran gemessen: Code stellt einen Kontext zusammen, ein Modellaufruf entscheidet, was gesagt wird, zurück kommt Prosa. [Kapitel 3](../../handbook/03-ground-truth.md) nimmt dieses System vom anderen Ende her auseinander und fragt, woher seine Ground Truth kommen könnte. Dies ist die Liste der Entscheidungen, die ihm eine verschafft hätten. Nichts hier ist eine Zahl – nichts wurde ausgeführt.
+
+Diese Lektüre war eben nur eine Lektüre, und es gibt kein Artefakt dahinter: keine datierte Notiz, kein gesichertes Repository, nichts zum Zitieren. Die Form oben ist das, was beim Betrachten eines Systems verstanden und hinterher aus dem Gedächtnis aufgeschrieben wurde, und wer nach dem Dokument sucht, aus dem sie stammt, wird keines finden. Sie wird als wiederkehrende Form angeboten, nicht als Beleg – jede Behauptung in diesem Kapitel steht und fällt damit, ob du sie in deinem eigenen System wiedererkennst, denn sonst trägt sie nichts.
 
 ## 1. Gib die Entscheidung aus, nicht nur die Prosa
 
