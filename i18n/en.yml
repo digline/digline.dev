@@ -183,6 +183,7 @@ home:
     # home.py: the rows of "Other ways to run it".
     docker: "Docker image"
     mcp: "MCP server"
+    plugin: "Claude Code plugin"
 
   commands:
     kicker: "Commands"

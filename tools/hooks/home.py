@@ -186,10 +186,16 @@ STACK_EXAMPLES = (
     ("LangGraph", "product/examples/langgraph.md"),
     ("LangChain4j", "product/examples/langchain4j.md"),
 )
-# (key in stack_words() of the row's name, page)
+# (key in stack_words() of the row's name, page, the id of the section it
+# links to or None for the page itself). A row with a section reads its name in
+# code from the section's first paragraph rather than the page's: the Claude
+# Code plugin has no page of its own, it has a section on the MCP page, and a
+# page bought for it would be three entries and a sync rule for words that
+# already exist there.
 STACK_RUN = (
-    ("docker", "product/docker.md"),
-    ("mcp", "product/mcp.md"),
+    ("docker", "product/docker.md", None),
+    ("mcp", "product/mcp.md", None),
+    ("plugin", "product/mcp.md", "in-claude-code-as-a-plugin"),
 )
 
 
@@ -199,6 +205,7 @@ def stack_words(lang: str) -> dict[str, str]:
         "openai_compatible": t("home.stack.openai_compatible", lang=lang),
         "docker": t("home.stack.docker", lang=lang),
         "mcp": t("home.stack.mcp", lang=lang),
+        "plugin": t("home.stack.plugin", lang=lang),
     }
 
 # Where a command without a page of its own is written about, and where the
@@ -747,17 +754,26 @@ def page_question(page_html: str, source: str) -> str:
     return after.strip() if colon and after.strip() else title
 
 
-def opening_code(page_html: str, source: str) -> str:
+def opening_code(page_html: str, source: str, anchor: str | None = None) -> str:
     """The first thing in code in the first paragraph under a page's title:
     `ghcr.io/digline/digline` on the Docker page, `digline-mcp` on the MCP
-    page."""
-    heading = _H1_TEXT.search(page_html)
+    page. With ``anchor``, under the heading with that id instead:
+    `digline@digline` under the MCP page's plugin section."""
+    if anchor is None:
+        heading = _H1_TEXT.search(page_html)
+        where = source
+    else:
+        heading = re.search(rf'<h[1-6]\b[^>]*\bid="{re.escape(anchor)}"[^>]*>.*?</h[1-6]>',
+                            page_html, re.I | re.S)
+        where = f"{source}#{anchor}"
+        if not heading:
+            raise _fail_site(f"the stack band links to {where}, and {source} has no heading with that id.")
     rest = page_html[heading.end():] if heading else page_html
     paragraph = _FIRST_P.search(rest)
     code = _CODE.search(paragraph.group(1)) if paragraph else None
     if not code or not _plain(code.group(1)).strip():
         raise _fail_site(
-            f"the stack band reads a name in code from the first paragraph of {source}, "
+            f"the stack band reads a name in code from the first paragraph of {where}, "
             "and there is none."
         )
     return _plain(code.group(1)).strip()
@@ -813,9 +829,9 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str,
     examples = [{"name": name, "question": page_question(page(source), source),
                  "href": source[: -len(".md")] + "/"}
                 for name, source in STACK_EXAMPLES]
-    run = [{"name": words[key], "code": opening_code(page(source), source),
-            "href": source[: -len(".md")] + "/"}
-           for key, source in STACK_RUN]
+    run = [{"name": words[key], "code": opening_code(page(source), source, anchor),
+            "href": source[: -len(".md")] + "/" + (f"#{anchor}" if anchor else "")}
+           for key, source, anchor in STACK_RUN]
     return {"providers": providers, "examples": examples, "run": run}
 
 
@@ -947,7 +963,7 @@ def on_nav(nav, config, files, **kwargs):
     return nav
 
 
-_STACK_PAGES = {source for _, source in STACK_EXAMPLES + STACK_RUN}
+_STACK_PAGES = {row[1] for row in STACK_EXAMPLES + STACK_RUN}
 
 
 def on_page_content(html, page, config, files, **kwargs):
@@ -1422,7 +1438,7 @@ def selftest() -> int:
 
     # 1c. The stack band, against pages of the shape the build has: a title with
     #     a colon, one without, the Docker and MCP pages' first paragraphs.
-    stack_pages = {source for _, source in STACK_EXAMPLES + STACK_RUN}
+    stack_pages = {row[1] for row in STACK_EXAMPLES + STACK_RUN}
     headerlink = '<a class="headerlink" href="#t" title="Link to this section">&para;</a>'
     stack_rendered = {
         "product/examples/langchain.md": f'<h1 id="t">My pipeline is LangChain: what changed when I upgraded it?{headerlink}</h1><p>Body.</p>',
@@ -1430,7 +1446,9 @@ def selftest() -> int:
         "product/examples/langgraph.md": f'<h1 id="t">My agent calls the right tools, but with the right arguments?{headerlink}</h1>',
         "product/examples/langchain4j.md": '<h1 id="t">My app is <code>LangChain4j</code>: what do I put in my repo?</h1>',
         "product/docker.md": '<h1 id="t">The official digline image</h1>\n<p><code>ghcr.io/digline/digline</code></p><p>The <code>other</code>.</p>',
-        "product/mcp.md": '<h1 id="t">digline over MCP</h1>\n<p><code>digline-mcp</code> is the <a href="x">MCP</a> server.</p>',
+        "product/mcp.md": '<h1 id="t">digline over MCP</h1>\n<p><code>digline-mcp</code> is the <a href="x">MCP</a> server.</p>'
+                          '<h3 id="in-claude-code-as-a-plugin">In Claude Code, as a plugin</h3>\n'
+                          '<p><code>digline@digline</code> is the plugin. It ships <code>operating-digline</code>.</p>',
     }
     docs_text = ("uv add digline-anthropic, or digline-openai; digline-bedrock (Converse API).\n\n"
                  "The judge lives where the output does. `digline-openai` takes a\n`base_url`, so "
@@ -1450,7 +1468,8 @@ def selftest() -> int:
     expect("example links", band["examples"][0]["href"], "product/examples/langchain/")
     expect("run rows", [(r["name"], r["code"], r["href"]) for r in band["run"]],
            [("Docker image", "ghcr.io/digline/digline", "product/docker/"),
-            ("MCP server", "digline-mcp", "product/mcp/")])
+            ("MCP server", "digline-mcp", "product/mcp/"),
+            ("Claude Code plugin", "digline@digline", "product/mcp/#in-claude-code-as-a-plugin")])
 
     stack_refusals = [
         ("a provider package no page writes",
@@ -1474,6 +1493,12 @@ def selftest() -> int:
         ("a Docker page whose first paragraph has no code",
          lambda p, r, t: (p, {**r, "product/docker.md": "<h1>Image</h1><p>No name here.</p><p><code>late</code></p>"}, t),
          "first paragraph of product/docker.md"),
+        ("a section the page no longer has",
+         lambda p, r, t: (p, {**r, "product/mcp.md": r["product/mcp.md"].replace("in-claude-code-as-a-plugin", "plugin")}, t),
+         "product/mcp.md has no heading with that id"),
+        ("a section whose first paragraph has no code",
+         lambda p, r, t: (p, {**r, "product/mcp.md": r["product/mcp.md"].replace("<code>digline@digline</code> is the plugin. It ships <code>operating-digline</code>.", "The plugin, with no name.")}, t),
+         "first paragraph of product/mcp.md#in-claude-code-as-a-plugin"),
     ]
     for label, mutate, needle in stack_refusals:
         try:
