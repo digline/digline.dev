@@ -338,6 +338,7 @@ nav:
   # what the site calls it, the same split product/ and "Docs" already have.
   - Writing:
       - blog/index.md
+      - "The field you added": blog/added-field.md
       - "The case that errors": blog/denominator-trap.md
       - "Bad evals, my own": blog/bad-evals-my-own.md
       - "My LLM eval cried wolf": blog/my-llm-eval-cried-wolf.md
