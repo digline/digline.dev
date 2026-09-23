@@ -8,8 +8,8 @@ description: 'Lo que un agente de programación puede hacer con digline y lo que
 search:
   exclude: true
 source: agents.md
-source_sha: 2837b5253048
-source_commit: 503ec3b
+source_sha: 0ba003e650a9
+source_commit: 1e6213e
 model: claude-opus-5
 ---
 
@@ -69,11 +69,13 @@ pytest-digline incluye la comparación en un informe de pytest; la GitHub Action
 
 ### AGENTS.md y la skill
 
-AGENTS.md es la capa de criterio que la herramienta no codifica: cuándo repetir una ejecución, investigar o recomendar. Las mismas reglas se distribuyen como skill de Claude Code, y un test falla si unas y otras dejan de coincidir.
+AGENTS.md es la capa de criterio que la herramienta no codifica: cuándo repetir una ejecución, investigar o recomendar. Las mismas reglas se distribuyen como skill de Claude Code, que se instala con el plugin `digline@digline`, y un test falla si unas y otras dejan de coincidir.
+
+El plugin también te pregunta antes de que un agente ejecute `promote` o `register`. Eso es una preferencia, no un muro: puedes desactivarlo, y un comando que no reconoce pasa sin más. El muro es el diff revisado, porque los baselines y el register están versionados en el repositorio.
 
 **No está:** la aprobación. La primera regla, más abajo, la deja en manos de una persona.
 
-**Detalles:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline)
+**Detalles:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline), [el plugin](../product/mcp.md#in-claude-code-as-a-plugin)
 
 </div>
 
