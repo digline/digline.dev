@@ -25,7 +25,7 @@ Quella lettura era una lettura, e dietro non c'è nessun artefatto: nessuna nota
 
 ## 1. Restituisci la decisione, non solo la prosa
 
-Se la feature sceglie — quali elementi menzionare, quali tralasciare, in che ordine — la scelta è il comportamento che vorrai misurare, e la prosa ne è una resa. Un sistema che restituisce gli id che ha scelto, in ordine, accanto alla frase che ha scritto si può verificare meccanicamente con delle assert, e offre al giudizio di una persona qualcosa da indicare. Uno che restituisce solo la frase non può, qualunque cosa gli aggiungi dopo: ogni check che scrivi legge prosa, e lo stesso vale per ogni discussione sul fatto che la scelta fosse giusta.
+Se la feature sceglie — quali elementi menzionare, quali tralasciare, in che ordine — la scelta è il comportamento che vorrai misurare, e la prosa ne è una resa. Un sistema che restituisce gli id che ha scelto, in ordine, accanto alla frase che ha scritto si può verificare meccanicamente con delle assert, e offre al giudizio di una persona qualcosa da indicare. Uno che restituisce solo la frase non può, qualunque cosa gli aggiungi dopo: ogni check che scrivi legge prosa, e così fa ogni discussione sul fatto che la scelta fosse giusta.
 
 Oggi è un campo nella risposta e un parse. Più tardi è il contratto tra il modello e tutto ciò che sta a valle, e un contratto è un cambiamento di quelli costosi.
 
