@@ -81,6 +81,17 @@ one. I tested neither. It may not reproduce on your model, or on a
 prompt that isn't a judge. What I can say is that the one explanation I was sure
 of, position, is the one the numbers ruled out.
 
+It isn't the only time I've seen this shape, though. In [ADR 0004
+§7.10](../product/adr/0004-every-plugin-is-a-target-and-a-judge.md#710-measured-2026-09-23-a-judge-declines-less-when-given-more-context)
+a judge was handed the same six descriptions twice, once with an
+unrelated paragraph about a reader's taste added. It declined 4 of 6
+without that paragraph and 1 of 6 with it. There the judge was given
+more; here it was asked for more. Neither change has anything to do
+with whether the output is true, and both moved what the judge does.
+That's a second instance on a different input, not further reading,
+and not an explanation either: it doesn't name a mechanism any more
+than this post does.
+
 ## What to look at in your own code
 
 Three questions, about ten minutes.
