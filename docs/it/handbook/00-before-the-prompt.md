@@ -6,8 +6,8 @@ description: 'Quattro decisioni vengono prima del prompt e determinano se una fe
 search:
   exclude: true
 source: handbook/00-before-the-prompt.md
-source_sha: dfa436056f03
-source_commit: c51c251
+source_sha: a25e3595ba15
+source_commit: 49fbb1a
 model: claude-opus-5
 ---
 
@@ -21,9 +21,11 @@ L'ordine abituale è scrivere il prompt, rilasciare e occuparsi del resto quando
 
 Quello che segue è la forma comune di una feature LLM in produzione, ricavata dal codice di un sistema più che misurata su di esso: il codice assembla un contesto, una sola chiamata al modello decide cosa dire, torna della prosa. Il [capitolo 3](../../handbook/03-ground-truth.md) smonta quel sistema dall'altro capo e si chiede da dove potrebbe venire il suo ground truth. Questo è l'elenco delle decisioni che gliene avrebbero dato uno. Qui non c'è nessun numero — niente è stato eseguito.
 
+Quella lettura era una lettura, e dietro non c'è nessun artefatto: nessuna nota datata, nessun repository conservato, niente da citare. La forma descritta sopra è ciò che si è capito osservando un sistema, messo per iscritto in seguito a memoria, e chi cercasse il documento da cui proviene non lo troverebbe. È proposta come una forma che si ripete, non come una prova — ogni affermazione di questo capitolo regge solo se la riconosci nel tuo sistema, perché non c'è nient'altro a sostenerla.
+
 ## 1. Restituisci la decisione, non solo la prosa
 
-Se la feature sceglie — quali elementi menzionare, quali tralasciare, in che ordine — la scelta è il comportamento che vorrai misurare, e la prosa ne è una resa. Un sistema che restituisce gli id che ha scelto, in ordine, accanto alla frase che ha scritto si può verificare meccanicamente con delle assert, e offre al giudizio di una persona qualcosa da indicare. Uno che restituisce solo la frase non può, qualunque cosa gli aggiungi dopo: ogni check che scrivi legge prosa, e così fa ogni discussione sul fatto che la scelta fosse giusta.
+Se la feature sceglie — quali elementi menzionare, quali tralasciare, in che ordine — la scelta è il comportamento che vorrai misurare, e la prosa ne è una resa. Un sistema che restituisce gli id che ha scelto, in ordine, accanto alla frase che ha scritto si può verificare meccanicamente con delle assert, e offre al giudizio di una persona qualcosa da indicare. Uno che restituisce solo la frase non può, qualunque cosa gli aggiungi dopo: ogni check che scrivi legge prosa, e lo stesso vale per ogni discussione sul fatto che la scelta fosse giusta.
 
 Oggi è un campo nella risposta e un parse. Più tardi è il contratto tra il modello e tutto ciò che sta a valle, e un contratto è un cambiamento di quelli costosi.
 
