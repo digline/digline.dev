@@ -523,6 +523,16 @@ DESCRIPTIONS: dict[str, str] = {
         "moves and every baseline ever written is readable by it; reported and "
         "never gated, because promotion is where a human signs a lowered bar"
     ),
+    "product/adr/0029-the-artifact-that-must-not-drift.md": (
+        "How a file that is the thing under test becomes a control: the suite "
+        "names the paths that must not drift, the run records them, and a "
+        "named path whose digest moved exits 2 \u2014 never folded into worse, "
+        "because a changed input is not a regression; not an assertion, "
+        "because an expected digest would reach config_hash and unpromote "
+        "every baseline the moment the file moved; and a pin a redaction left "
+        "uncheckable is counted and named rather than passed, because a "
+        "control that goes quiet when it cannot run is worse than none"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
