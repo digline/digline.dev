@@ -6,8 +6,8 @@ description: 'Vier Entscheidungen kommen vor dem Prompt und entscheiden, ob ein 
 search:
   exclude: true
 source: handbook/00-before-the-prompt.md
-source_sha: dfa436056f03
-source_commit: c51c251
+source_sha: a25e3595ba15
+source_commit: 49fbb1a
 model: claude-opus-5
 ---
 
@@ -20,6 +20,8 @@ Der Prompt ist die Mitte der Arbeit, nicht ihr Anfang. Vier Entscheidungen komme
 Die übliche Reihenfolge lautet: Prompt schreiben, ausliefern und sich um den Rest kümmern, wenn sich jemand beschwert. Das sieht aus, als würde man mit dem schwierigen Teil anfangen. Tatsächlich fängt man mit dem einzigen weichen Teil an: Der Prompt bleibt billig zu ändern, alles um ihn herum härtet aus. Die Form der Antwort wird zum Vertrag, gegen den Renderer, Client und gespeicherte Zeilen geschrieben werden, und die schon geschriebenen Zeilen sind die Zeilen, die du hast. Die Aufmerksamkeit richtet sich also auf den Teil, der in einem Jahr noch billig sein wird, und überspringt die vier, die es nicht sein werden.
 
 Was folgt, ist die übliche Form eines LLM-Features in Produktion, abgelesen am Code eines Systems und nicht daran gemessen: Code stellt einen Kontext zusammen, ein Modellaufruf entscheidet, was gesagt wird, zurück kommt Prosa. [Kapitel 3](../../handbook/03-ground-truth.md) nimmt dieses System vom anderen Ende her auseinander und fragt, woher seine Ground Truth kommen könnte. Dies ist die Liste der Entscheidungen, die ihm eine verschafft hätten. Nichts hier ist eine Zahl – nichts wurde ausgeführt.
+
+Diese Lektüre war eben nur eine Lektüre, und es gibt kein Artefakt dahinter: keine datierte Notiz, kein gesichertes Repository, nichts zum Zitieren. Die Form oben ist das, was beim Betrachten eines Systems verstanden und hinterher aus dem Gedächtnis aufgeschrieben wurde, und wer nach dem Dokument sucht, aus dem sie stammt, wird keines finden. Sie wird als wiederkehrende Form angeboten, nicht als Beleg – jede Behauptung in diesem Kapitel steht und fällt damit, ob du sie in deinem eigenen System wiedererkennst, denn sonst trägt sie nichts.
 
 ## 1. Gib die Entscheidung aus, nicht nur die Prosa
 
@@ -49,7 +51,7 @@ Das ist der eine Punkt, der an dem Tag, an dem du ihn schreibst, nichts bringt: 
 
 Ein Aufruf, der fehlgeschlagen ist, und ein Aufruf, der wirklich nichts zu sagen hatte, sind zwei Tatsachen. Als dieselbe Zeile gespeichert werden sie zu einer, und zwar zur leisen: Ein Ausfall liest sich wie ein ruhiger Morgen.
 
-Diese Entscheidung lässt die Aufzeichnung verrotten, die du gerade aufgebaut hast: Jede Zählung über diese Zeilen liest Schweigen als Zustimmung und bleibt falsch, solange die Zeilen aufbewahrt werden. Nachträglich lassen sie sich auch nicht auseinandersortieren, weder über das Datum noch durch Schlussfolgern – aus dem Grund, den Kapitel 3 zum Neuinterpretieren eines mehrdeutigen Labels nennt. Sie bleiben mehrdeutig.
+Diese Entscheidung lässt die Aufzeichnung verrotten, die du gerade aufgebaut hast: Jede Auswertung dieser Zeilen deutet Schweigen als Zustimmung und bleibt falsch, solange die Zeilen aufbewahrt werden. Nachträglich lassen sie sich auch nicht auseinandersortieren, weder über das Datum noch durch Schlussfolgern – aus dem Grund, den Kapitel 3 zum Neuinterpretieren eines mehrdeutigen Labels nennt. Sie bleiben mehrdeutig.
 
 Heute ist es ein Zustand mehr. Später ist es ein Zustand mehr – und keine Historie.
 
@@ -98,7 +100,7 @@ Sieben Fragen, eine pro Schritt. Beantworte sie am Whiteboard, bevor eine Zeile 
 | 1. Sagt das Feature, *welche* Dinge es gewählt hat – als Daten und nicht nur in Prosa? | Es gibt nichts, worauf geprüft werden kann, und keine Geste kann auf eine Auswahl zeigen. |
 | 2. Erreicht bei gleichen gespeicherten Daten derselbe Kontext das Modell? | Keine Eingabe zum Einfrieren, also kein Fall – und kein roter run, der sich zuordnen lässt. |
 | 3. Werden bei jedem Aufruf die zusammengestellte Eingabe, die Antwort, das antwortende Modell und die Zeit aufgeschrieben? | Der einzige Punkt, der sich später um keinen Preis nachrüsten lässt. |
-| 4. Kannst du einen fehlgeschlagenen Aufruf von einem echten „nichts zu berichten“ unterscheiden? | Ein Ausfall wird als ruhiger Morgen gespeichert, und jede Zählung über diese Zeilen liest Schweigen als Zustimmung. |
+| 4. Kannst du einen fehlgeschlagenen Aufruf von einem echten „nichts zu berichten“ unterscheiden? | Ein Ausfall wird als ruhiger Morgen gespeichert, und jede Auswertung dieser Zeilen deutet Schweigen als Zustimmung. |
 | 5. Ist der Prompt das Einzige, was sich ändern muss, wenn du eine andere Antwort willst? | Der Prompt ist nicht mehr billig: Ihn zu ändern wird zu einer Änderung an allem, was danach kommt. |
 | 6. Was gilt an jedem möglichen Tag für eine korrekte Ausgabe, und lässt sich das ohne Modell prüfen? | Du fängst am teuersten Ende an, bei einem Richter, und das auf einem System, dessen Konsistenz niemand gezeigt hat. |
 | 7. Wo, in dem, was ein Mensch schon tut, könnte er sagen, dass das falsch war – und woran hängt diese Geste? | Der Widerspruch kommt nie an oder kommt als Label an, das zwei Dinge bedeutet. |
