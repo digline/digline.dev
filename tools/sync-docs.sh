@@ -150,7 +150,8 @@ else
            "$(git -C "$src" log --oneline "$main_sha..HEAD" | sed 's/^/    /')" \
            "" \
            "Those commits are on nobody else's clock. A page that arrives with" \
-           "them builds green here and is missing from every other build."
+           "them builds green here and is missing from every other build." \
+           "Pushed to another branch is still ahead: this reads origin/main only."
   fi
 
   if [ "$behind" -gt 0 ]; then
