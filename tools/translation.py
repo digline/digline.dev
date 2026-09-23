@@ -286,7 +286,16 @@ _KEPT = re.compile(r"\A(?:[A-Za-z][A-Za-z0-9+.-]*:|/|#)")
 def relink(body: str, page: str, lang: str) -> str:
     """The Markdown of the English page docs/<page>, its relative links
     rewritten to reach the same English pages from docs/<lang>/<page>. A link's
-    #fragment and ?query are kept, and so is a final slash."""
+    #fragment and ?query are kept, and so is a final slash.
+
+    Safe to apply twice: a link already rewritten is left as it is. A page
+    translated before goes to the model with its previous translation, links
+    already rewritten, and the model is told to keep every sentence the English
+    diff does not touch exactly as it is. A model that obeys hands those links
+    back, and rewriting them a second time sent them one folder above docs/:
+    on 23 September that failed chapter 0 in it and de, and es passed only
+    because its second attempt did not copy the sentence. The rule is the
+    function's, so that no caller has to undo the links first."""
     folder = posixpath.dirname(page)
     here = posixpath.join(lang, folder) if folder else lang
 
@@ -297,6 +306,12 @@ def relink(body: str, page: str, lang: str) -> str:
         cut = min((i for i in (target.find("#"), target.find("?")) if i >= 0), default=len(target))
         path, tail = target[:cut], target[cut:]
         if not path:
+            return match.group(0)
+        # An English link stays inside docs/, so read from docs/<lang>/<folder>
+        # it stays inside docs/<lang>/. A rewritten one reaches an English page,
+        # outside docs/<lang>/: it is already where it has to be.
+        reached = posixpath.normpath(posixpath.join(here, path))
+        if reached != lang and not reached.startswith(lang + "/"):
             return match.group(0)
         english = posixpath.normpath(posixpath.join(folder, path))
         moved = posixpath.relpath(english, here)
