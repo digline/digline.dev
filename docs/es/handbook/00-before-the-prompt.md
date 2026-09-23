@@ -6,8 +6,8 @@ description: 'Cuatro decisiones vienen antes del prompt y deciden si una funcion
 search:
   exclude: true
 source: handbook/00-before-the-prompt.md
-source_sha: dfa436056f03
-source_commit: c51c251
+source_sha: a25e3595ba15
+source_commit: 49fbb1a
 model: claude-opus-5
 ---
 
@@ -21,13 +21,15 @@ El orden habitual es escribir el prompt, publicar y ocuparse del resto cuando al
 
 Lo que sigue es la forma habitual de una funcionalidad con LLM en producción, leída del código de un sistema y no contrastada con él: el código arma un contexto, una llamada al modelo decide qué decir, vuelve prosa. El [capítulo 3](../../handbook/03-ground-truth.md) desarma ese sistema desde el otro extremo y pregunta de dónde podría salir su verdad de referencia. Esta es la lista de decisiones que se la habrían dado. Aquí no hay ningún número: no se ha ejecutado nada.
 
+Esa lectura fue una lectura, y no hay ningún artefacto detrás: ninguna nota fechada, ningún repositorio capturado, nada que citar. La forma descrita arriba es lo que se entendió al mirar un sistema, anotado después de memoria, y quien busque el documento del que proviene no lo encontrará. Se ofrece como una forma que se repite, no como evidencia: cada afirmación de este capítulo depende de si la reconoces en tu propio sistema, porque no hay nada más que la sostenga.
+
 ## 1. Emite la decisión, no solo la prosa
 
 Si la funcionalidad elige —qué elementos mencionar, cuáles omitir, en qué orden—, esa elección es el comportamiento que vas a querer medir, y la prosa es su representación. Un sistema que devuelve los ids que eligió, en orden, junto a la frase que escribió permite hacer aserciones mecánicas y le da al juicio de una persona algo a lo que apuntar. Uno que solo devuelve la frase no lo permite, por mucho que le añadas después: cada check que escribas lee prosa, y también lo hace cualquier discusión sobre si la elección fue correcta.
 
 Hoy es un campo en la respuesta y un parseo. Más adelante es el contrato entre el modelo y todo lo que viene después, y un contrato es de los cambios caros.
 
-**Dónde se resiste:** no todas las funcionalidades eligen. Si lo que vendes es la prosa misma —una reescritura, una traducción, una respuesta en una conversación—, no hay selección que emitir y solo cargas con las decisiones 3 y 4. La mayoría de las funcionalidades no son así: seleccionan, ordenan, enrutan o extraen, y al resultado lo llaman resumen.
+**Dónde no encaja:** no todas las funcionalidades eligen. Si lo que vendes es la prosa misma —una reescritura, una traducción, una respuesta en una conversación—, no hay selección que emitir y solo cargas con las decisiones 3 y 4. La mayoría de las funcionalidades no son así: seleccionan, ordenan, enrutan o extraen, y al resultado lo llaman resumen.
 
 ## 2. Haz que la entrada sea determinista
 
@@ -43,7 +45,7 @@ La entrada armada tal como la recibió el modelo, la respuesta tal como llegó, 
 
 Es el único punto que no sirve de nada el día en que lo escribes: ninguna funcionalidad lo lee, ninguna pantalla lo muestra, y es lo primero que se cuestiona en una revisión. También es el único que no se puede añadir después a ningún precio. Los demás son caros de incorporar a posteriori; este no se puede incorporar, porque lo que habría contenido ya no existe.
 
-**Dónde se resiste:** no es gratis, y un capítulo que dijera lo contrario se equivocaría. La entrada armada son los datos que entraron, así que el registro los hereda, y hereda también las reglas sobre dónde puede residir ([capítulo 8](../../handbook/08-for-teams-building-for-others.md)): mismo perímetro, misma retención. Y toma *qué modelo respondió* de la respuesta, no de lo que pediste: el día en que un proveedor reapunta un alias, esos son dos hechos distintos.
+**Dónde no encaja:** no es gratis, y un capítulo que dijera lo contrario se equivocaría. La entrada armada son los datos que entraron, así que el registro los hereda, y hereda también las reglas sobre dónde puede residir ([capítulo 8](../../handbook/08-for-teams-building-for-others.md)): mismo perímetro, misma retención. Y toma *qué modelo respondió* de la respuesta, no de lo que pediste: el día en que un proveedor reapunta un alias, esos son dos hechos distintos.
 
 ## 4. Haz que un fallo se distinga de una respuesta vacía
 
