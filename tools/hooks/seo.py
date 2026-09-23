@@ -483,6 +483,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "from the stored runs rather than recorded, and why it reports without "
         "ever gating.",
     ),
+    "product/adr/0029-the-artifact-that-must-not-drift.md": (
+        "ADR 0029: The artifact that must not drift",
+        "Why a file under test that must not change is a declaration read at "
+        "comparison time rather than an assertion, why a drifted one exits 2 "
+        "and is never called a regression, and why a pin nobody could check "
+        "says so instead of passing.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
