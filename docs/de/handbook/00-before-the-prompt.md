@@ -51,7 +51,7 @@ Das ist der eine Punkt, der an dem Tag, an dem du ihn schreibst, nichts bringt: 
 
 Ein Aufruf, der fehlgeschlagen ist, und ein Aufruf, der wirklich nichts zu sagen hatte, sind zwei Tatsachen. Als dieselbe Zeile gespeichert werden sie zu einer, und zwar zur leisen: Ein Ausfall liest sich wie ein ruhiger Morgen.
 
-Diese Entscheidung lässt die Aufzeichnung verrotten, die du gerade aufgebaut hast: Jede Auswertung dieser Zeilen deutet Schweigen als Zustimmung und bleibt falsch, solange die Zeilen aufbewahrt werden. Nachträglich lassen sie sich auch nicht auseinandersortieren, weder über das Datum noch durch Schlussfolgern – aus dem Grund, den Kapitel 3 zum Neuinterpretieren eines mehrdeutigen Labels nennt. Sie bleiben mehrdeutig.
+Diese Entscheidung lässt die Aufzeichnung verrotten, die du gerade aufgebaut hast: Jede Zählung über diese Zeilen liest Schweigen als Zustimmung und bleibt falsch, solange die Zeilen aufbewahrt werden. Nachträglich lassen sie sich auch nicht auseinandersortieren, weder über das Datum noch durch Schlussfolgern – aus dem Grund, den Kapitel 3 zum Neuinterpretieren eines mehrdeutigen Labels nennt. Sie bleiben mehrdeutig.
 
 Heute ist es ein Zustand mehr. Später ist es ein Zustand mehr – und keine Historie.
 
@@ -100,7 +100,7 @@ Sieben Fragen, eine pro Schritt. Beantworte sie am Whiteboard, bevor eine Zeile 
 | 1. Sagt das Feature, *welche* Dinge es gewählt hat – als Daten und nicht nur in Prosa? | Es gibt nichts, worauf geprüft werden kann, und keine Geste kann auf eine Auswahl zeigen. |
 | 2. Erreicht bei gleichen gespeicherten Daten derselbe Kontext das Modell? | Keine Eingabe zum Einfrieren, also kein Fall – und kein roter run, der sich zuordnen lässt. |
 | 3. Werden bei jedem Aufruf die zusammengestellte Eingabe, die Antwort, das antwortende Modell und die Zeit aufgeschrieben? | Der einzige Punkt, der sich später um keinen Preis nachrüsten lässt. |
-| 4. Kannst du einen fehlgeschlagenen Aufruf von einem echten „nichts zu berichten“ unterscheiden? | Ein Ausfall wird als ruhiger Morgen gespeichert, und jede Auswertung dieser Zeilen deutet Schweigen als Zustimmung. |
+| 4. Kannst du einen fehlgeschlagenen Aufruf von einem echten „nichts zu berichten“ unterscheiden? | Ein Ausfall wird als ruhiger Morgen gespeichert, und jede Zählung über diese Zeilen liest Schweigen als Zustimmung. |
 | 5. Ist der Prompt das Einzige, was sich ändern muss, wenn du eine andere Antwort willst? | Der Prompt ist nicht mehr billig: Ihn zu ändern wird zu einer Änderung an allem, was danach kommt. |
 | 6. Was gilt an jedem möglichen Tag für eine korrekte Ausgabe, und lässt sich das ohne Modell prüfen? | Du fängst am teuersten Ende an, bei einem Richter, und das auf einem System, dessen Konsistenz niemand gezeigt hat. |
 | 7. Wo, in dem, was ein Mensch schon tut, könnte er sagen, dass das falsch war – und woran hängt diese Geste? | Der Widerspruch kommt nie an oder kommt als Label an, das zwei Dinge bedeutet. |
