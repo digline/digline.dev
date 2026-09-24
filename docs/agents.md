@@ -70,7 +70,7 @@ The plugin also asks you before an agent runs `promote` or `register`. That is a
 
 **Not there:** the approval. The first rule, below, leaves it to a person.
 
-**Details:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline), [the plugin](product/mcp.md#in-claude-code-as-a-plugin)
+**Details:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/plugins/digline/skills/operating-digline), [the plugin](product/mcp.md#in-claude-code-as-a-plugin)
 
 </div>
 

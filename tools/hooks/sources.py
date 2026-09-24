@@ -87,7 +87,7 @@ REPOSITORY = "https://github.com/digline/digline"
 # The page's links to digline's main, and their form at a release tag.
 LINKS = {
     f"{REPOSITORY}/blob/main/AGENTS.md": REPOSITORY + "/blob/{tag}/AGENTS.md",
-    f"{REPOSITORY}/tree/main/.claude/skills/operating-digline": REPOSITORY + "/tree/{tag}/.claude/skills/operating-digline",
+    f"{REPOSITORY}/tree/main/plugins/digline/skills/operating-digline": REPOSITORY + "/tree/{tag}/plugins/digline/skills/operating-digline",
 }
 
 
@@ -506,13 +506,13 @@ def selftest() -> int:
         expect("a whole file is read", load(path)["tag"], "v0.15.0")
 
     markdown = ("[`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md) … "
-                "[`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline)")
+                "[`operating-digline`](https://github.com/digline/digline/tree/main/plugins/digline/skills/operating-digline)")
     expect("the links to AGENTS.md and the skill lead to the release tag",
            at_tag(markdown, "v0.15.0", PAGE),
            "[`AGENTS.md`](https://github.com/digline/digline/blob/v0.15.0/AGENTS.md) … "
-           "[`operating-digline`](https://github.com/digline/digline/tree/v0.15.0/.claude/skills/operating-digline)")
+           "[`operating-digline`](https://github.com/digline/digline/tree/v0.15.0/plugins/digline/skills/operating-digline)")
     refused("a page without the link to the skill", lambda: at_tag(markdown.split(" … ")[0], "v0.15.0", PAGE),
-            "has no link to https://github.com/digline/digline/tree/main/.claude/skills/operating-digline")
+            "has no link to https://github.com/digline/digline/tree/main/plugins/digline/skills/operating-digline")
 
     # The body split at its one .aside, for the quotation to go between.
     expect("the body split before its .aside",
