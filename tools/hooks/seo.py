@@ -504,6 +504,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "the run document, why there is no force flag, and why the guard makes "
         "the replacement never silent without making it impossible.",
     ),
+    "product/adr/0032-the-second-path-to-an-absent-tool.md": (
+        "ADR 0032: The second path to an absent tool",
+        "Why digline view stops promoting by default once a guarantee says no "
+        "surface can, why the refusal is an absent control rather than one "
+        "that fails, why the hook watches the flag and not the command, and "
+        "why migrate is allowed by a condition instead of a permission.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
