@@ -554,6 +554,22 @@ DESCRIPTIONS: dict[str, str] = {
         "refusal names both keys, so replacing a moved reference is never "
         "silent, though a copied key still makes it possible"
     ),
+    "product/adr/0032-the-second-path-to-an-absent-tool.md": (
+        "Why a guarantee stated about one surface is a claim about every "
+        "surface: the MCP has no promote tool, the hook matches the promote "
+        "subcommand and the skill forbids the command, yet digline view "
+        "serves POST /promote, so all three defend the decision by keying on "
+        "a name and the act arrives through a fourth word; view therefore "
+        "refuses promotion by default with --allow-promote to enable it, "
+        "because an opt-in guarantee is one nobody has and the costs are "
+        "asymmetric; the refusal is an absence in both places a caller looks, "
+        "no button and no route, never a 403 that would imply a someone who "
+        "may; the hook leaves bare view alone and watches the flag, which is "
+        "the promote decision made ambient; and migrate, which also rewrites "
+        "the committed baseline, is ruled by a condition rather than a "
+        "permission, allowed for as long as every migration step is required "
+        "to write nothing semantic"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
