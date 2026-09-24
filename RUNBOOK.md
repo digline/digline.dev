@@ -156,6 +156,24 @@ On 24 September it happened a fourth time in two days. #136 changed one URL in t
 
 That run adds one data point to the open question above. German was the only page of the three sent to a correction round, and the only one that strayed. Italian and Spanish were written once, and changed nothing but their `source_sha` and `source_commit`. That fits the correction round being the half that strays, but one run does not show it.
 
+**The count over the history, 24 September: strays live in corrected pages, and "German" was never the variable.** The data point above read German and the correction round as one thing because in #137 they were the same page. They are not the same thing. Corrections happen in all three languages, and strays follow the correction, not the language.
+
+How it was counted: every merged translation pull request (25, `i18n/auto*`), measuring only the bot's commit against its parent, so a hand fix cannot count as a stray the job made. The hand fixes left out are 6c45569 (#137), 0827a78 (#128), bb987c3 (#127), 503d858 (#124), 1af4f74 (#108), d65605c (#109), 6515c61 (#105), 54f7f4d (#78), 8b7530a (#79), 0603a65 and 2d1d0c2 (#77), and dd610ca (#50), plus the merges of `main`. Only pages the report marks *changed* count (40). The 48 *new* pages have no English diff to stray from. A page strayed when its translation changed more paragraphs than its English did between the two `source_commit`s, front matter excluded. That is the shape check, run backwards, at paragraph level. It agrees with every case a person had already ruled on: German /agents/ in #137 and chapter 0 in #124, #127 and #128 come out as strays, and the Italian and Spanish /agents/ in #137 come out clean.
+
+| | strayed |
+|---|---|
+| corrected once | 17 of 18 |
+| not corrected | 1 of 22 |
+| German | 7 of 7 corrected, 0 of 6 not |
+| Spanish | 7 of 7 corrected, 0 of 6 not |
+| Italian | 3 of 4 corrected, 1 of 10 not |
+
+Its limit is part of the result. 40 pages are not 40 observations: the three languages of one English change share that change. The unit is the English change. There are 13, and 9 of them hold both a corrected and an uncorrected page. In all 9 the corrected page is the one that strayed, and in none is it the other way round. Nine in one direction against a coin is p ≈ 0.002, and five would already have been under 0.05. That is enough to say strays live in corrected pages. It is not enough to put a rate on it, and not enough to say which step strayed.
+
+What it cannot say, and why. There are three explanations and the history cannot choose between them. The correction rewrites what it was not asked to. Or the first attempt strays, the reader flags the rewritten prose, and that is why the page was corrected at all. Or the reader, which reads the whole page, notes a calque in prose the English did not touch, and the correction does exactly what it was told. The third is not a stray in the model. It is an instruction. Telling them apart needs what the job does not keep: each attempt's text, and the first reading's issues and notes, which the second reading replaces. The rendered prompt is not needed, because it is a pure function of those and the commit.
+
+None of this changes what the shape check has to be. It must run after the correction, and this count says that is where the strays are. Wired into the job's checks, it also answers most of "which step" for free. A correction that fails the checks is already put back to the text before it, and the report says "its correction failed the checks and was not kept". Keeping the attempts is worth building only for a stray the shape check cannot see: inside the paragraphs the English changed, or on a new page.
+
 **The two comparisons on /start/.** They are not written on the page: `tools/hooks/home.py` puts the headline of two captured runs — the `steady` scenario and `prompt_regression` in digline's `home.json` — where the page keeps two comments, and holds the built page to them. The sentence around them counts what those runs report, in words: three checks moved, one case set aside, six checks worse. Those counts are checked against the capture too (`claim_problems`), so a recapture that moves one of them stops the build here rather than leaving the page saying what no run said. When that happens: read the new sentence, change the words around it, and let the translations follow — `docs/start.md` is a page the agent translates.
 
 **A second run on a language destroys the first one's unmerged work.** Every run rewrites `i18n/auto-<lang>` on top of `main`, so its pull request holds that run's pages and only those. A page the previous run translated, and nobody merged, is gone from the branch — not conflicted, not flagged: absent, with the pull request still open and looking complete.
