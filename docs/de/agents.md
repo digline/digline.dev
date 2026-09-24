@@ -19,13 +19,13 @@ Ein Agent kann alles messen und nichts freigeben. Messen ist Arbeit, die sich de
 
 <div class="principle" markdown>
 
-## Das Fehlen, nicht die Weigerung
+## Die Abwesenheit, nicht die Weigerung
 
-Auf dem MCP-Server gibt es `promote` nicht: seine Tools lesen ein Ergebnis oder messen ein neues, und keines davon schreibt eine baseline. Eine Weigerung ist ein Gespräch, das ein Agent wieder aufnehmen kann – dagegen argumentieren, es erneut versuchen, sie umgehen. Ein Fehlen nicht. Die Begründung steht in [ADR 0011](../product/adr/0011-the-mcp-server.md).
+Auf dem MCP-Server gibt es `promote` nicht: seine Tools lesen ein Ergebnis oder messen ein neues, und keines davon schreibt eine baseline. Eine Weigerung ist ein Gespräch, das ein Agent wieder aufnehmen kann – dagegen argumentieren, es erneut versuchen, sie umgehen. Eine Abwesenheit nicht. Die Begründung steht in [ADR 0011](../product/adr/0011-the-mcp-server.md).
 
 </div>
 
-## Die Berührungspunkte, die ein Agent erreicht
+## Die Oberflächen, die ein Agent erreicht
 
 <div class="tiles" markdown>
 
@@ -88,6 +88,6 @@ Das Plugin fragt dich außerdem, bevor ein Agent `promote` oder `register` ausf�
 Der getestete Agent, nicht der Agent, der digline benutzt.
 {: .aside__kicker }
 
-Der Satz eines Agenten ist nicht das, was das Geld bewegt hat. `ToolsCalled` hält fest, welche Tools aufgerufen wurden und in welcher Reihenfolge; `ToolCalledWith` hält die Argumente fest, die ein einzelner Aufruf trug. Im [Beispiel zu LangGraph](../product/examples/langgraph.md) muss ein Dispatch-Agent eine Bestellung nachschlagen, bevor er sie erstattet, und genau den Betrag erstatten, den die Abfrage zurückgegeben hat – ein Agent, der die Abfrage überspringt, schreibt einen guten Satz, und keine Zusicherung über den Text kann das erkennen. Beide checks sind unter [den Zusicherungen](../product/api.md#the-assertions) aufgeführt.
+Der Satz eines Agenten ist nicht das, was das Geld bewegt hat. `ToolsCalled` hält fest, welche Tools aufgerufen wurden und in welcher Reihenfolge; `ToolCalledWith` hält die Argumente fest, die ein einzelner Aufruf trug. Im [Beispiel zu LangGraph](../product/examples/langgraph.md) muss ein Dispatch-Agent eine Bestellung nachsehen, bevor er sie erstattet, und genau den Betrag erstatten, den die Abfrage zurückgegeben hat – ein Agent, der die Abfrage überspringt, schreibt einen guten Satz, und keine Zusicherung über den Text kann das erkennen. Beide checks sind unter [den Zusicherungen](../product/api.md#the-assertions) aufgeführt.
 
 </div>
