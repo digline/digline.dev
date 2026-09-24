@@ -8,8 +8,8 @@ description: 'Lo que un agente de programación puede hacer con digline y lo que
 search:
   exclude: true
 source: agents.md
-source_sha: 0ba003e650a9
-source_commit: 1e6213e
+source_sha: c86c64377a6a
+source_commit: 9a72f67
 model: claude-opus-5
 ---
 
