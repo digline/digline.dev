@@ -55,7 +55,7 @@ operator:        ## /product/operator/: the example's facts read at the tag, and
 assets:          ## the asset-hash check against its own small site, refusals included — needs no build
 	uv run tools/check-assets.py --selftest
 
-indexes:         ## the Examples tiles and the Decisions table: every missing field refused — needs no build
+indexes:         ## the Examples tiles and the Decisions table: every missing field refused, and no status in a record's description — needs no build
 	uv run tools/hooks/indexes.py --selftest
 
 posts:           ## a post's date read once: the list on /blog/, and a missing, unparseable or future date refused — needs no build

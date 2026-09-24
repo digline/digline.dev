@@ -381,8 +381,9 @@ DESCRIPTIONS: dict[str, str] = {
         "the judge that evaluates it — and the core implements neither"
     ),
     "product/adr/0005-the-configuration-of-the-system-under-test.md": (
-        "Proposed, nothing implemented: how a run would record which model "
-        "answered, at what temperature, under what token cap"
+        "How a run records the system under test — the model sent and the one "
+        "the provider reported, temperature, token cap — beside `config_hash` "
+        "rather than inside it, with perimeter fields withheld at a boundary"
     ),
     "product/adr/0006-repeated-samples-and-the-noise-floor.md": (
         "Why a case is run more than once, and why a drop is a regression only "

@@ -346,9 +346,9 @@ PRODUCT: dict[str, tuple[str, str]] = {
     ),
     "product/adr/0005-the-configuration-of-the-system-under-test.md": (
         "ADR 0005: The configuration of the system under test",
-        "Proposed, nothing implemented: a run records the fingerprint of its "
-        "configuration but not which model answered, at what temperature, "
-        "under what token cap.",
+        "Why a run records which model answered, at what temperature and "
+        "under what token cap, beside the suite's fingerprint rather than "
+        "inside it, and which of those fields stay inside the perimeter.",
     ),
     "product/adr/0006-repeated-samples-and-the-noise-floor.md": (
         "ADR 0006: Repeated samples and the noise floor",
