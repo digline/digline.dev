@@ -497,6 +497,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "would cost the reading more than it buys, and why the suite declaring "
         "the system it expects restores the review instead.",
     ),
+    "product/adr/0031-the-reference-promote-replaces.md": (
+        "ADR 0031: The reference a promotion replaces",
+        "Why promote refuses to replace a baseline other than the one the run "
+        "was compared against, why the key comes from the person rather than "
+        "the run document, why there is no force flag, and why the guard makes "
+        "the replacement never silent without making it impossible.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

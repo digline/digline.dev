@@ -544,6 +544,16 @@ DESCRIPTIONS: dict[str, str] = {
         "it expects and a reported configuration that contradicts it is "
         "refused, which restores the review the rule depends on"
     ),
+    "product/adr/0031-the-reference-promote-replaces.md": (
+        "Why promote refuses a baseline that moved since the comparison: the "
+        "person names the reference being replaced with --replacing KEY or "
+        "none, because a key recorded in the run document would be the wrong "
+        "fact (the baseline at measure time, not the one compared against); "
+        "compare prints the key so it can be carried; there is no force flag, "
+        "because re-running the offline comparison costs one command; and the "
+        "refusal names both keys, so replacing a moved reference is never "
+        "silent, though a copied key still makes it possible"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
