@@ -25,6 +25,8 @@ and removes it when its work is merged or abandoned: `git worktree remove ../dig
 
 Why: on 16 September a branch change made outside the session moved the shared checkout back to `main` mid-task, and the next commit landed on local `main` instead of on the branch it was written for.
 
+On 24 September it was broken by the session writing this RUNBOOK's own entry on translations. That session switched branches in both shared checkouts and left `../digline` on a branch it had already merged. It put the checkout back and said so. The rule does not hold because people know it: the session that broke it was reading this file at the time.
+
 At the end of the session, after the merge, the local `main` of both shared checkouts — this repository's, `../digline.dev`, and digline's, `../digline`, which `make build` syncs from — is brought level with `origin/main`: by fast-forward only, and only when the checkout is on `main`, has nothing uncommitted, and its `main` is an ancestor of `origin/main`. Otherwise it is left as it is, and the session says which checkout, and which of the three conditions failed. A checkout that is not on `main` is reported with the branch it is on and whether that branch has work not pushed: commits ahead of its upstream (`git -C "$repo" rev-list --count @{u}..HEAD`), or no upstream at all.
 
     for repo in ../digline.dev ../digline; do
