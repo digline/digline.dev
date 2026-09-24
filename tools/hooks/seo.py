@@ -452,6 +452,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "per-million rates that enter the suite's identity because a price is "
         "the ruler a cost budget reads on, withheld at a named endpoint.",
     ),
+    "product/adr/0023-capture.md": (
+        "ADR 0023: Capture: the human's label, made a regression",
+        "How what a person did with a model's answer would become a regression "
+        "case: a source declared in code, cases proposed by pattern and elected "
+        "by a person, the label kept verbatim, and the commit as the signature.",
+    ),
     "product/adr/0024-the-judge-as-an-instrument.md": (
         "ADR 0024: The judge as an instrument",
         "Why the judge gets measurements of its own: a calibration case whose "

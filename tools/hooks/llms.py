@@ -479,6 +479,12 @@ DESCRIPTIONS: dict[str, str] = {
         "`config_hash`, rates withheld at a named endpoint as a declared latch, "
         "and `promote --target` so a multi-target suite names what it signs"
     ),
+    "product/adr/0023-capture.md": (
+        "How `digline capture` would turn what a person did with a model's "
+        "answer into a committed case: a source declared in code, explicit "
+        "labels only, cases proposed by pattern and elected by a person, an id "
+        "generated from the input, and a declared regime for the payload"
+    ),
     "product/adr/0024-the-judge-as-an-instrument.md": (
         "How the judge is measured rather than trusted: read the rendered judge "
         "prompt before re-running anything, a calibration case with a written "

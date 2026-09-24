@@ -322,6 +322,7 @@ nav:
           - ADR 0020 — The reading across runs: product/adr/0020-the-reading-across-runs.md
           - ADR 0021 — The register: product/adr/0021-the-register.md
           - ADR 0022 — The declared price: product/adr/0022-the-declared-price.md
+          - ADR 0023 — Capture, the human's label made a regression: product/adr/0023-capture.md
           - ADR 0024 — The judge as an instrument: product/adr/0024-the-judge-as-an-instrument.md
           - ADR 0025 — The tokens and the bill: product/adr/0025-the-tokens-and-the-bill.md
           - ADR 0026 — The thinking a model charged for: product/adr/0026-the-thinking-a-model-charged-for.md
