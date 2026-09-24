@@ -381,8 +381,9 @@ DESCRIPTIONS: dict[str, str] = {
         "the judge that evaluates it — and the core implements neither"
     ),
     "product/adr/0005-the-configuration-of-the-system-under-test.md": (
-        "Proposed, nothing implemented: how a run would record which model "
-        "answered, at what temperature, under what token cap"
+        "How a run records the system under test — the model sent and the one "
+        "the provider reported, temperature, token cap — beside `config_hash` "
+        "rather than inside it, with perimeter fields withheld at a boundary"
     ),
     "product/adr/0006-repeated-samples-and-the-noise-floor.md": (
         "Why a case is run more than once, and why a drop is a regression only "
@@ -477,6 +478,12 @@ DESCRIPTIONS: dict[str, str] = {
         "declared price that wins over the plugin's list and enters "
         "`config_hash`, rates withheld at a named endpoint as a declared latch, "
         "and `promote --target` so a multi-target suite names what it signs"
+    ),
+    "product/adr/0023-capture.md": (
+        "How `digline capture` would turn what a person did with a model's "
+        "answer into a committed case: a source declared in code, explicit "
+        "labels only, cases proposed by pattern and elected by a person, an id "
+        "generated from the input, and a declared regime for the payload"
     ),
     "product/adr/0024-the-judge-as-an-instrument.md": (
         "How the judge is measured rather than trusted: read the rendered judge "

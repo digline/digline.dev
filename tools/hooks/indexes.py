@@ -62,6 +62,10 @@ from mkdocs.exceptions import PluginError
 # home.py sits beside this file, and mkdocs puts a hook's folder on sys.path
 # while it loads it: the rule for a question is written once, there.
 from home import page_question, page_title
+# The two tables that describe every page, read here only to hold the records'
+# descriptions to the rule below; each hook still owns its own.
+from llms import DESCRIPTIONS
+from seo import PRODUCT
 
 EXAMPLES_INDEX = "product/examples/index.md"
 DECISIONS_INDEX = "product/adr/index.md"
@@ -79,6 +83,50 @@ _H1 = re.compile(r"\A# (\S.*?)[ \t]*$", re.M)
 
 def _fail(problem: str) -> PluginError:
     return PluginError(f"indexes: {problem}")
+
+
+# ── a description carries no status ──────────────────────────────────────────
+#
+# A record's status has one place: its `- Status:` line in digline, which the
+# Decisions table below copies. A description that says it too is a second
+# copy written by hand, and the first one that disagreed was ADR 0005's —
+# "Proposed, nothing implemented" in both tables, for a record accepted and
+# shipped since 0.2.0. Removing the copy beats syncing it.
+#
+# Capitalised status words anywhere, and the phrases that stand in for one in
+# any case. Lowercase `accepted` stays sayable: ADR 0021's dispositions are
+# accepted, rejected or unsure, and that is what the record decides.
+_STATUS_WORDS = re.compile(
+    r"\b(?:Proposed|Accepted|Superseded)\b"
+    r"|(?i:\b(?:not|nothing)\s+(?:yet\s+)?implemented\b|\bunimplemented\b)"
+)
+
+
+def statuses_in_descriptions(product: dict[str, tuple[str, str]],
+                             descriptions: dict[str, str]) -> list[str]:
+    """Each record's description that states a status, as `table: path: words`."""
+    found = []
+    for table, entries in (("PRODUCT in tools/hooks/seo.py", product),
+                           ("DESCRIPTIONS in tools/hooks/llms.py", descriptions)):
+        for src, value in entries.items():
+            if not _RECORD.match(src):
+                continue
+            text = " ".join(value) if isinstance(value, tuple) else value
+            words = [m.group(0) for m in _STATUS_WORDS.finditer(text)]
+            if words:
+                found.append(f"{table}: {src}: {', '.join(repr(w) for w in words)}")
+    return found
+
+
+def refuse_statuses_in_descriptions(product, descriptions) -> None:
+    found = statuses_in_descriptions(product, descriptions)
+    if found:
+        raise _fail(
+            "a record's description states its status, which the Decisions table "
+            "already says from the record itself — so two hand-written copies can "
+            "disagree, and ADR 0005's did. Say what the record decides and leave "
+            "the status out. The fix is here, not in digline:\n  "
+            + "\n  ".join(found))
 
 
 # ── the Decisions table ──────────────────────────────────────────────────────
@@ -212,6 +260,8 @@ def on_files(files, config, **kwargs):
 
 
 def on_nav(nav, config, files, **kwargs):
+    refuse_statuses_in_descriptions(PRODUCT, DESCRIPTIONS)
+
     def find(items):
         for item in items:
             if getattr(item, "is_section", False):
@@ -421,12 +471,35 @@ def selftest() -> int:
         expect("tools/sync-docs.sh writes the Decisions placeholder",
                bool(_DECISIONS_SLOT.search(fh.read())), True)
 
+    # A status in a record's description, refused in either table; a word that
+    # is a status only when capitalised, allowed lowercase; a page that is not a
+    # record, not read; and the real tables, which must carry none.
+    rec = "product/adr/0005-x.md"
+    refused("a status in PRODUCT",
+            lambda: refuse_statuses_in_descriptions(
+                {rec: ("ADR 0005: X", "Proposed, nothing implemented: a run records it.")}, {}),
+            "PRODUCT in tools/hooks/seo.py: product/adr/0005-x.md: 'Proposed', "
+            "'nothing implemented'")
+    refused("a status in DESCRIPTIONS",
+            lambda: refuse_statuses_in_descriptions({}, {rec: "Accepted: how a run records it"}),
+            "DESCRIPTIONS in tools/hooks/llms.py: product/adr/0005-x.md: 'Accepted'")
+    refused("a phrase standing in for one",
+            lambda: refuse_statuses_in_descriptions({}, {rec: "Not yet implemented: how"}),
+            "'Not yet implemented'")
+    expect("a disposition list is what a record decides, not its status",
+           statuses_in_descriptions({}, {rec: "a mandatory accepted, rejected or unsure"}), [])
+    expect("a page that is not a record is not read",
+           statuses_in_descriptions({}, {"product/guide.md": "Accepted inputs"}), [])
+    expect("the real PRODUCT and DESCRIPTIONS state no record's status",
+           statuses_in_descriptions(PRODUCT, DESCRIPTIONS), [])
+
     for failure in failures:
         print(f"indexes selftest: {failure}", file=sys.stderr)
     if failures:
         return 1
     print("indexes selftest: the Decisions table from records of every shape, the Examples "
-          "tiles and their external line, and every missing field and placeholder refused")
+          "tiles and their external line, every missing field and placeholder refused, "
+          "and no status in a record's description")
     return 0
 
 
