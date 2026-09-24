@@ -75,7 +75,7 @@ Das Plugin fragt dich außerdem, bevor ein Agent `promote` oder `register` ausf�
 
 **Nicht vorhanden:** die Freigabe. Die erste Regel, unten, überlässt sie einem Menschen.
 
-**Details:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline), [das Plugin](../product/mcp.md#in-claude-code-as-a-plugin)
+**Details:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/plugins/digline/skills/operating-digline), [das Plugin](../product/mcp.md#in-claude-code-as-a-plugin)
 
 </div>
 

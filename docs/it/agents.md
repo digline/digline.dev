@@ -75,7 +75,7 @@ Il plugin ti chiede conferma anche prima che un agente esegua `promote` o `regis
 
 **Assente:** l'approvazione. La prima regola, qui sotto, la lascia a una persona.
 
-**Dettagli:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/.claude/skills/operating-digline), [il plugin](../product/mcp.md#in-claude-code-as-a-plugin)
+**Dettagli:** [`AGENTS.md`](https://github.com/digline/digline/blob/main/AGENTS.md), [`operating-digline`](https://github.com/digline/digline/tree/main/plugins/digline/skills/operating-digline), [il plugin](../product/mcp.md#in-claude-code-as-a-plugin)
 
 </div>
 
