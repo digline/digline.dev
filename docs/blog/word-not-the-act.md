@@ -58,12 +58,11 @@ comment says why: that is a curl or an old browser, and neither is the
 attack it was written for. Against a caller with a shell, it is the
 door.
 
-Measured, not read. Two runs in a store. The first one promoted. The
-server started. One POST with no `Origin` and no credential of any kind.
-200, and the baseline moved to the other run. No `promote` command ran.
-No MCP tool was called; none exists to call. The hook stayed quiet,
-because it reads the first word after `digline`, and that word was
-`view`.
+Measured, not read. Two runs in a store, the first promoted. The server
+started. One POST with no `Origin` and no credential of any kind. 200,
+and the baseline moved to the other run. No `promote` command ran. No
+MCP tool was called; none exists to call. The hook stayed quiet, because
+it reads the first word after `digline`, and that word was `view`.
 
 Two things found afterwards are worse. First, the skill does not just
 fail to mention `view`. Two sections below the rule it sends the agent
@@ -84,8 +83,9 @@ learned to watch the flag. That flag allows promotion for every run in
 the store until the server is killed — a bigger decision than one
 promotion, not a smaller one.
 
-That shipped in 0.20.0. Going over the release again, I checked
-something I had never run: the flag, against the code that parses it.
+That shipped in 0.20.0, on the afternoon of 2026-09-24. Going over the
+release that evening, I checked something I had never run: the flag,
+against the code that parses it.
 
 argparse accepts any unambiguous prefix of an option, and nothing had
 turned that off. `digline view --a`, `--al`, `--allow`, `--allow-p` and
@@ -96,12 +96,14 @@ of them are silent. Only the full spelling asks.
 Then the chain, end to end. `digline view --a`, then a POST with no
 `Origin`. 200. The baseline moved. Nobody was asked.
 
+So 0.20.0 was public with that hole in it, for about fourteen hours.
+0.20.1 closed it the next morning.
+
 The docstring had ruled this out, in a sentence I wrote:
 *"`--allow-promote=` is not a spelling argparse accepts for a
 `store_true`, so a prefix match would only ever widen this."* That is
-true about suffixes. argparse abbreviates prefixes. It was a confident
-sentence about what the parser accepts, and it had never been run
-against the parser.
+true about suffixes. argparse abbreviates prefixes. A confident sentence
+about what the parser accepts, never run against the parser.
 
 ## What closing it found
 

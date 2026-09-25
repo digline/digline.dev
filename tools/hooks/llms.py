@@ -582,6 +582,13 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
+    "blog/word-not-the-act.md": (
+        "Four measured cases where a guard keyed on the name of an act and "
+        "the act arrived spelled otherwise \u2014 a web route that promoted, "
+        "two launchers the hook did not recognise, and an abbreviated flag; "
+        "why reading the guard found none of them, the two ways to make a "
+        "name-based guard complete, and three checks to run on your own"
+    ),
     "blog/added-field.md": (
         "Why adding one field to an LLM judge's structured reply changed how "
         "it scored everything else, measured over repeated runs; why moving "
