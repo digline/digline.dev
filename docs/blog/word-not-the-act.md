@@ -211,6 +211,10 @@ fails the build. That is what would catch the next one, which nobody
 has thought of yet. It is ruled and not yet written, which is the
 honest state of it.
 
+The three side by side — what each guard matched, which spelling walked
+past it, how it was found and what closed it — are in [ADR 0032
+§8][adr].
+
 The uncomfortable part is the last sentence of instance three. The
 guard that was added to close the first hole was defeated, on the day
 it shipped, by an abbreviation of the flag it was written to watch. A
@@ -218,3 +222,4 @@ name-keyed guard doesn't fail once and get fixed. It fails the same way
 again, in the fix.
 
 [hol]: https://github.com/hashgraph-online/hol-guard
+[adr]: ../product/adr/0032-the-second-path-to-an-absent-tool.md#8-a-guard-that-keys-on-a-name-is-defeated-by-another-spelling-of-the-same-act
