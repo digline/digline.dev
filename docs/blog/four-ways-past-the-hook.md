@@ -1,12 +1,12 @@
 ---
-title: "You blocked the word, not the act"
+title: "Four ways an agent walked past my command hook"
 description: "Four times in two days, a guard of mine named the act it guarded, and the act arrived under another name. In the order it happened, with three checks to run."
 seo_title: >-
-  You blocked the word, not the act
+  Four ways an agent walked past my command hook
 date: 2026-09-25
 ---
 
-# You blocked the word, not the act
+# Four ways an agent walked past my command hook
 
 You have built a control over what an agent may do. A hook that asks
 before a dangerous command. A permission filter. An allowlist. It

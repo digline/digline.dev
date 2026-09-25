@@ -343,7 +343,7 @@ nav:
   # what the site calls it, the same split product/ and "Docs" already have.
   - Writing:
       - blog/index.md
-      - "You blocked the word": blog/word-not-the-act.md
+      - "Four ways past the hook": blog/four-ways-past-the-hook.md
       - "The field you added": blog/added-field.md
       - "The case that errors": blog/denominator-trap.md
       - "Bad evals, my own": blog/bad-evals-my-own.md

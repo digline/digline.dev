@@ -582,7 +582,7 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
-    "blog/word-not-the-act.md": (
+    "blog/four-ways-past-the-hook.md": (
         "Four measured cases where a guard keyed on the name of an act and "
         "the act arrived spelled otherwise \u2014 a web route that promoted, "
         "two launchers the hook did not recognise, and an abbreviated flag; "
