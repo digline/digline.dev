@@ -27,7 +27,7 @@ Three surfaces defend that:
 
 | surface | what it matches |
 | --- | --- |
-| the MCP server | there is no tool called `promote` — an example calls it by name every cycle and expects *unknown tool* |
+| the MCP server | no tool called `promote` — a test calls it and expects *unknown tool* |
 | the plugin hook | the first word after `digline` is `promote` or `register` |
 | the skill an agent loads | *"Never run `digline promote` on your own initiative"* |
 
@@ -48,9 +48,9 @@ different question: is this command a read or a write?
 `POST /promote`.
 
 This was not an oversight. The route was designed and documented, under
-a heading of its own: *The one route that writes*. What nobody decided
-was what it meant next to a guarantee, written three times, that this
-thing cannot promote.
+a heading of its own: *The one route that writes*. Nobody decided what
+it meant sitting next to a guarantee that this thing cannot promote. A
+guarantee written three times.
 
 From the source it looks like it needs a browser and a click. It does
 not. The origin check allows a request with no `Origin` header, and a
@@ -84,8 +84,8 @@ learned to watch the flag. That flag allows promotion for every run in
 the store until the server is killed — a bigger decision than one
 promotion, not a smaller one.
 
-That shipped in 0.20.0. Going over the release again, one thing had
-never been run against the code that parses it.
+That shipped in 0.20.0. Going over the release again, I checked
+something I had never run: the flag, against the code that parses it.
 
 argparse accepts any unambiguous prefix of an option, and nothing had
 turned that off. `digline view --a`, `--al`, `--allow`, `--allow-p` and
@@ -160,9 +160,9 @@ drift.
 **Or derive the spellings from the side that accepts them.** The parser
 knows every prefix it will take. The packaging knows every entry point
 that starts the program. A guard that asks them keeps up when they
-change. A written list is stale already: an unambiguous prefix of
-`--allow-promote` depends on every other option on that command, so one
-new flag quietly changes what the guard should match.
+change. A written list is stale already. What counts as an unambiguous
+prefix of `--allow-promote` depends on every other option on that
+command. One new flag quietly changes what the guard should match.
 
 The third option does not work, and it is the one I had taken: write the
 list once, then check it by reading it.
@@ -206,11 +206,11 @@ where the act has a name. A guarantee has to sit on the side where the
 act has an effect: the write, the route, the commit. There, there is one
 thing to list, and it is not a vocabulary.
 
-That is also why the rule the four produced is not "the view must not
-promote". The rule is that the set of code paths reaching the write is
-written down, and a path not on the list fails the build. That would
-catch the fifth. It is ruled and not yet written, which is the honest
-state of it.
+That is also why these four did not produce the rule "the view must not
+promote". The rule they produced is that the set of code paths reaching
+the write is written down, and a path not on the list fails the build.
+That would catch the fifth. It is ruled and not yet written, which is
+the honest state of it.
 
 All four are side by side in [ADR 0032 §8][adr]: what each guard
 matched, which spelling walked past, and what closed it.
