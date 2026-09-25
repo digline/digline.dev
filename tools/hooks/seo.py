@@ -517,6 +517,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "that fails, why the hook watches the flag and not the command, and "
         "why migrate is allowed by a condition instead of a permission.",
     ),
+    "product/adr/0033-the-server-that-promotes-for-one-browser.md": (
+        "ADR 0033: The server that promotes, for one browser",
+        "Why digline view --allow-promote mints a launch key per start and "
+        "promotes only for the browser that opens the address it prints, why "
+        "the key has no home and nothing to configure, and why a missing key "
+        "is a 403 there while the default server answers 404.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

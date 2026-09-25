@@ -577,6 +577,18 @@ DESCRIPTIONS: dict[str, str] = {
         "permission, allowed for as long as every migration step is required "
         "to write nothing semantic"
     ),
+    "product/adr/0033-the-server-that-promotes-for-one-browser.md": (
+        "Why the flag that lets digline view promote cannot say who is asking: "
+        "a person's flagged server answered a POST with no Origin from any "
+        "process of the same user, an agent's shell included, and the hook "
+        "never saw it; so the flagged server mints a launch key per start, "
+        "held in memory, never written and never configurable, hands it to "
+        "one browser as a cookie through the address it prints, never renders "
+        "it in a page, and refuses a POST without it with a 403, because on "
+        "that server somebody may promote while on the default server nobody "
+        "may and the route stays a 404; the key is not a second control, and "
+        "the world-2 version of the question is left to its own records"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

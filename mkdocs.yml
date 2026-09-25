@@ -332,6 +332,7 @@ nav:
           - ADR 0030 — The configuration an application reports: product/adr/0030-the-configuration-an-application-reports.md
           - ADR 0031 — The reference a promotion replaces: product/adr/0031-the-reference-promote-replaces.md
           - ADR 0032 — The second path to an absent tool: product/adr/0032-the-second-path-to-an-absent-tool.md
+          - ADR 0033 — The server that promotes, for one browser: product/adr/0033-the-server-that-promotes-for-one-browser.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
