@@ -524,6 +524,15 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "the key has no home and nothing to configure, and why a missing key "
         "is a 403 there while the default server answers 404.",
     ),
+    "product/adr/0034-the-store-outside-and-the-reference-that-names-nothing.md": (
+        "ADR 0034: The store outside the repository, and the reference that "
+        "names nothing",
+        "Why the store, the cases and the full reference sit inside the "
+        "perimeter of the company that owns them while the repository holds "
+        "only the key and a projection with no names in it, why an "
+        "unclassified field is refused instead of filtered, and why a green "
+        "check says no string rather than no content.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

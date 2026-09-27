@@ -589,6 +589,22 @@ DESCRIPTIONS: dict[str, str] = {
         "may and the route stays a 404; the key is not a second control, and "
         "the world-2 version of the question is left to its own records"
     ),
+    "product/adr/0034-the-store-outside-and-the-reference-that-names-nothing.md": (
+        "Where each artifact lives once the cases may not leave the company "
+        "that owns them, and what may cross back: the store, the cases and the "
+        "full reference inside that perimeter, and in the software house's "
+        "repository two things only — the key linking a commit to the "
+        "reference it was judged against, and a projection of that reference in "
+        "which every string that is not digline's own vocabulary is a token or "
+        "absent, with an unclassified field refused rather than filtered, "
+        "because “no string crosses” is checkable and “no "
+        "dangerous string crosses” has to know which ones are; why a token "
+        "and not an index or a digest, what the gate still exits on with no "
+        "names in the file, and what it does not claim — six routes carry "
+        "text out of a redacted document today, a name inside an integer under "
+        "a declared key crosses every filter, so a green says no string rather "
+        "than no content"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
