@@ -333,6 +333,7 @@ nav:
           - ADR 0031 — The reference a promotion replaces: product/adr/0031-the-reference-promote-replaces.md
           - ADR 0032 — The second path to an absent tool: product/adr/0032-the-second-path-to-an-absent-tool.md
           - ADR 0033 — The server that promotes, for one browser: product/adr/0033-the-server-that-promotes-for-one-browser.md
+          - ADR 0034 — The store outside the repository, and the reference that names nothing: product/adr/0034-the-store-outside-and-the-reference-that-names-nothing.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
