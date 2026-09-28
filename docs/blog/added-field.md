@@ -115,6 +115,13 @@ first one left exactly as it was. That costs you a request per case.
 I haven't measured the second call yet. It's what's left because it's
 the only option that doesn't touch the call I did measure.
 
+*Corrected 2026-09-28: when this went up, the second call was already
+being built — [decision 0002](https://github.com/digline/brief/blob/3635b44ce72a47738660fc1e816417716d3160b4/decisions/0002-the-describing-call.md)
+was proposed at 09:49 and its call committed at 10:28, the minute the
+post was published; it was first run at 10:55, and that run did not
+measure what this sentence means. What that run found is in
+[decision 0003](https://github.com/digline/brief/blob/3635b44ce72a47738660fc1e816417716d3160b4/decisions/0003-a-check-that-cannot-fail.md).*
+
 ## What it cost
 
 Two prompt versions, eight runs, $0.88. The runs were taken with
