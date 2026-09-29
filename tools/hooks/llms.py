@@ -632,6 +632,17 @@ DESCRIPTIONS: dict[str, str] = {
         "token resolves; and erasure is assisted, showing the cases with every "
         "row beside them"
     ),
+    "product/adr/0037-the-review-interface-and-the-election-recorded-where-the-text-is-not.md": (
+        "Capture where the text is the end company's: an expected written at "
+        "review can become a case, kept in the gate and out of the aggregate "
+        "accuracy; either party's person elects at a served page at the data "
+        "owner's side, and the election says which; the software house records "
+        "one line per elected case, a token, a date and the approver, never a "
+        "word of the text; ADR 0023's two invocations give way to the page, "
+        "whose specification is everything they protected: no ranking, no "
+        "pre-selection, two per pattern, no elect-all; and the hash of an "
+        "input never leaves, while the token that does rests on the name table"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
