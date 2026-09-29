@@ -533,6 +533,14 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "unclassified field is refused instead of filtered, and why a green "
         "check says no string rather than no content.",
     ),
+    "product/adr/0035-the-record-of-a-deletion.md": (
+        "ADR 0035: The record of a deletion",
+        "Why a removal from the store is recorded in an append-only ledger at "
+        "the data owner's side, apart from the data and at a path the owner "
+        "configures, why an entry names a removed run by its timestamp and "
+        "carries no digest, and why the ledger reduces what a backup exposes "
+        "without removing it.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
