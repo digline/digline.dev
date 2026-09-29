@@ -8,8 +8,8 @@ description: 'Lo que un agente de programación puede hacer con digline y lo que
 search:
   exclude: true
 source: agents.md
-source_sha: c86c64377a6a
-source_commit: 9a72f67
+source_sha: d6be562af543
+source_commit: 82df906
 model: claude-opus-5
 ---
 
@@ -69,7 +69,7 @@ pytest-digline incluye la comparación en un informe de pytest; la GitHub Action
 
 ### AGENTS.md y la skill
 
-AGENTS.md es la capa de criterio que la herramienta no codifica: cuándo repetir una ejecución, investigar o recomendar. Las mismas reglas se distribuyen como skill de Claude Code, que se instala con el plugin `digline@digline`, y un test falla si unas y otras dejan de coincidir.
+AGENTS.md es la capa de criterio que la herramienta no codifica: cuándo repetir una ejecución, investigar o recomendar. Las mismas reglas se distribuyen como skill de Claude Code, que se instala con el plugin `digline@digline`, y un test falla si unas y otras dejan de coincidir. En otro agente, la skill por sí sola se instala con `npx skills add digline/digline --skill operating-digline`, tomada de `main` y no de una release.
 
 El plugin también te pregunta antes de que un agente ejecute `promote` o `register`. Eso es una preferencia, no un muro: puedes desactivarlo, y un comando que no reconoce pasa sin más. El muro es el diff revisado, porque los baselines y el register están versionados en el repositorio.
 
@@ -88,6 +88,6 @@ El plugin también te pregunta antes de que un agente ejecute `promote` o `regis
 El agente que se está probando, no el agente que usa digline.
 {: .aside__kicker }
 
-La frase de un agente no es lo que movió el dinero. `ToolsCalled` registra qué herramientas se llamaron y en qué orden; `ToolCalledWith` registra los argumentos que llevaba una llamada. En el [ejemplo de LangGraph](../product/examples/langgraph.md), un agente de despacho debe consultar un pedido antes de reembolsarlo y reembolsar la cifra que devolvió la consulta: un agente que se salta la consulta escribe una frase correcta, y ninguna aserción sobre el texto puede verlo. Los dos checks aparecen en [las aserciones](../product/api.md#the-assertions).
+La frase de un agente no es lo que movió el dinero. `ToolsCalled` contiene qué herramientas se llamaron y en qué orden; `ToolCalledWith` contiene los argumentos que llevaba una llamada. En el [ejemplo de LangGraph](../product/examples/langgraph.md), un agente de despacho debe consultar un pedido antes de reembolsarlo y reembolsar la cifra que devolvió la consulta: un agente que se salta la consulta escribe una frase correcta, y ninguna aserción sobre el texto puede verlo. Los dos checks aparecen en [las aserciones](../product/api.md#the-assertions).
 
 </div>

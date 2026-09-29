@@ -8,8 +8,8 @@ description: 'Cosa può fare un agente di programmazione con digline e cosa non 
 search:
   exclude: true
 source: agents.md
-source_sha: c86c64377a6a
-source_commit: 9a72f67
+source_sha: d6be562af543
+source_commit: 82df906
 model: claude-opus-5
 ---
 
@@ -69,7 +69,7 @@ pytest-digline inserisce il confronto in un report di pytest; la GitHub Action l
 
 ### AGENTS.md e la skill
 
-AGENTS.md è lo strato di giudizio che lo strumento non codifica: quando rieseguire, quando indagare, quando formulare una raccomandazione. Le stesse regole sono distribuite come skill di Claude Code, installata con il plugin `digline@digline`, e un test fallisce se le rispettive regole divergono.
+AGENTS.md è lo strato di giudizio che lo strumento non codifica: quando rieseguire, quando indagare, quando formulare una raccomandazione. Le stesse regole sono distribuite come skill di Claude Code, installata con il plugin `digline@digline`, e un test fallisce se le rispettive regole divergono. In un altro agente, la skill da sola si installa con `npx skills add digline/digline --skill operating-digline`, presa da `main` anziché da una release.
 
 Il plugin ti chiede conferma anche prima che un agente esegua `promote` o `register`. È una preferenza, non un muro: puoi disattivarla, e un comando che non riconosce passa. Il muro è il diff revisionato, perché i baseline e il register vengono committati.
 
