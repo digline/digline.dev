@@ -8,8 +8,8 @@ description: 'Was ein Coding-Agent mit digline tun kann und was nicht: jede Mess
 search:
   exclude: true
 source: agents.md
-source_sha: c86c64377a6a
-source_commit: 9a72f67
+source_sha: d6be562af543
+source_commit: 82df906
 model: claude-opus-5
 ---
 
@@ -69,7 +69,7 @@ pytest-digline bringt den Vergleich in den pytest-Report; die GitHub Action komm
 
 ### AGENTS.md und der Skill
 
-AGENTS.md ist die Urteilsebene, die das Werkzeug nicht abbildet: wann ein run zu wiederholen, wann zu untersuchen und wann zu empfehlen ist. Dieselben Regeln gibt es als Claude-Code-Skill, der mit dem Plugin `digline@digline` installiert wird, und ein Test schlägt fehl, wenn die Regeln auseinanderlaufen.
+AGENTS.md ist die Urteilsebene, die das Werkzeug nicht abbildet: wann ein run zu wiederholen, wann zu untersuchen und wann zu empfehlen ist. Dieselben Regeln gibt es als Claude-Code-Skill, der mit dem Plugin `digline@digline` installiert wird, und ein Test schlägt fehl, wenn die Regeln auseinanderlaufen. In einem anderen Agenten lässt sich der Skill allein mit `npx skills add digline/digline --skill operating-digline` installieren, bezogen aus `main` statt aus einem Release.
 
 Das Plugin fragt dich außerdem, bevor ein Agent `promote` oder `register` ausführt. Das ist eine Voreinstellung, keine Mauer: du kannst sie abschalten, und ein Befehl, den es nicht erkennt, kommt durch. Die Mauer ist das geprüfte Diff, denn baselines und das Register werden committet.
 
