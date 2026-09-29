@@ -619,6 +619,19 @@ DESCRIPTIONS: dict[str, str] = {
         "said out loud; nothing in digline reads it; and it reduces, without "
         "removing, what a restored backup plus the ledger reveals"
     ),
+    "product/adr/0036-the-name-table-and-the-process-that-owns-it.md": (
+        "The rules that make the name table work: one table per tenant and "
+        "suite at the data owner's side, outside the store's API, which digline "
+        "is handed as two callables and never opens; a token is 128 random "
+        "bits in 22 characters with no scope, so it is never minted twice and "
+        "finds nothing in the wrong tenant's table; the token alone is the key "
+        "and the kind a check; tokens are stable per suite and the run key "
+        "joins nothing, so removing a run removes no row; look-up-or-mint is "
+        "keyed by kind and text and atomic because one process owns the table "
+        "and runs its three writers; a resolver refuses a document in which no "
+        "token resolves; and erasure is assisted, showing the cases with every "
+        "row beside them"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
