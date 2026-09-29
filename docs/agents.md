@@ -64,7 +64,7 @@ pytest-digline puts the comparison in a pytest report; the GitHub Action comment
 
 ### AGENTS.md and the skill
 
-AGENTS.md is the judgment layer the tool does not encode: when to re-run, investigate or recommend. The same rules ship as a Claude Code skill, installed with the plugin `digline@digline`, and a test fails if their rules drift apart.
+AGENTS.md is the judgment layer the tool does not encode: when to re-run, investigate or recommend. The same rules ship as a Claude Code skill, installed with the plugin `digline@digline`, and a test fails if their rules drift apart. In another agent, the skill alone installs with `npx skills add digline/digline --skill operating-digline`, taken from `main` rather than a release.
 
 The plugin also asks you before an agent runs `promote` or `register`. That is a preference, not a wall: you can switch it off, and a command it does not recognise gets through. The wall is the reviewed diff, because baselines and the register are committed.
 
