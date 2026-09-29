@@ -335,6 +335,7 @@ nav:
           - ADR 0033 — The server that promotes, for one browser: product/adr/0033-the-server-that-promotes-for-one-browser.md
           - ADR 0034 — The store outside the repository, and the reference that names nothing: product/adr/0034-the-store-outside-and-the-reference-that-names-nothing.md
           - ADR 0035 — The record of a deletion: product/adr/0035-the-record-of-a-deletion.md
+          - ADR 0036 — The name table, and the process that owns it: product/adr/0036-the-name-table-and-the-process-that-owns-it.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

@@ -541,6 +541,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "carries no digest, and why the ledger reduces what a backup exposes "
         "without removing it.",
     ),
+    "product/adr/0036-the-name-table-and-the-process-that-owns-it.md": (
+        "ADR 0036: The name table, and the process that owns it",
+        "Why the name table lives outside the store and digline is only handed "
+        "it, why a token is 128 random bits with no scope, why the run key "
+        "joins nothing in the table, and why erasure is assisted rather than "
+        "automatic.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
