@@ -548,6 +548,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "joins nothing in the table, and why erasure is assisted rather than "
         "automatic.",
     ),
+    "product/adr/0037-the-review-interface-and-the-election-recorded-where-the-text-is-not.md": (
+        "ADR 0037: The review interface, and the election recorded where the text is not",
+        "Why an expected written at review can become a case but not enter the "
+        "aggregate, why either party may elect at a served page and the "
+        "election says which, and why the software house records a token and "
+        "never the text.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
