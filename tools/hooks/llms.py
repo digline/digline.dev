@@ -610,6 +610,13 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
+    "blog/check-that-could-not-fail.md": (
+        "A faithfulness check on an LLM call that scored 1.000 because the "
+        "prompt already forbade the defect it measured: why a correct check "
+        "can have nothing left to find, the question that exposes it, how to "
+        "make a check red on purpose and what that costs, and why mutation "
+        "cannot find a property that was never true"
+    ),
     "blog/four-ways-past-the-hook.md": (
         "Four measured cases where a guard keyed on the name of an act and "
         "the act arrived spelled otherwise \u2014 a web route that promoted, "
