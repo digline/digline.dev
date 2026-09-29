@@ -605,6 +605,20 @@ DESCRIPTIONS: dict[str, str] = {
         "a declared key crosses every filter, so a green says no string rather "
         "than no content"
     ),
+    "product/adr/0035-the-record-of-a-deletion.md": (
+        "Where the fact of a removal is kept once the store can delete: a "
+        "ledger at the data owner's side, written only by appending, apart from "
+        "the data's backups at a path the owner configures per tenant; an entry "
+        "carries a removed row's token or a removed run's timestamp, when, and "
+        "who decided, never what was removed or who asked, and says the row was "
+        "removed from this store rather than that the data no longer exists; "
+        "no digest in an entry, because a config_hash was measured recoverable "
+        "in seconds from a known template; immutability comes from the owner's "
+        "storage and the ledger declares what it was told; retention is "
+        "mandatory with no default; with no path nothing is written and it is "
+        "said out loud; nothing in digline reads it; and it reduces, without "
+        "removing, what a restored backup plus the ledger reveals"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
