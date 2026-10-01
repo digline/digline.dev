@@ -654,6 +654,17 @@ DESCRIPTIONS: dict[str, str] = {
         "comparison made in clear is left open; and serving a page writes the "
         "name table, which ADR 0036 is owed"
     ),
+    "product/adr/0039-disclosure-on-request.md": (
+        "Disclosure on request: the software house asks to see one case in "
+        "clear and sees it; the end company does not authorise case by case, "
+        "because a permission needs somebody available when it is needed; the "
+        "control moves from permission to a trace that names a person and the "
+        "source of their identity; the reason is required, with a default "
+        "computed where the data is; and three problems named, not resolved: "
+        "the default has no subject at review, each disclosure consumes the "
+        "name table by an uncounted number of rows, and payload crosses with "
+        "no declaration in code"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

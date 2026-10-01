@@ -338,6 +338,7 @@ nav:
           - ADR 0036 — The name table, and the process that owns it: product/adr/0036-the-name-table-and-the-process-that-owns-it.md
           - ADR 0037 — The review interface, and the election recorded where the text is not: product/adr/0037-the-review-interface-and-the-election-recorded-where-the-text-is-not.md
           - ADR 0038 — The projection of a run nobody promoted: product/adr/0038-the-projection-of-a-run-nobody-promoted.md
+          - "ADR 0039 — Disclosure on request: the software house sees a case, and the trace replaces the permission": product/adr/0039-disclosure-on-request.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

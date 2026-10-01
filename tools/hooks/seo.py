@@ -562,6 +562,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and no more, and why two projections may be compared but a "
         "comparison may not be rebuilt into a run.",
     ),
+    "product/adr/0039-disclosure-on-request.md": (
+        "ADR 0039: Disclosure on request",
+        "Why the software house may ask to see one case in clear without the "
+        "end company authorising it, why the control is a trace of who looked "
+        "and why, and why that trace has not yet been squared with the rule "
+        "that the payload stays where it is born.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
