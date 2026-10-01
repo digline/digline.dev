@@ -643,6 +643,17 @@ DESCRIPTIONS: dict[str, str] = {
         "pre-selection, two per pattern, no elect-all; and the hash of an "
         "input never leaves, while the token that does rests on the name table"
     ),
+    "product/adr/0038-the-projection-of-a-run-nobody-promoted.md": (
+        "Projecting a run for a served page: ADR 0034's refusal to start from "
+        "anything but a promotion narrows to the committed file, because its "
+        "reason is to keep a non-reference out of a commit and a served page "
+        "commits nothing; a served projection carries what a projected "
+        "reference carries, plus a response count and digline's own "
+        "vocabulary; rebuilding a run from a comparison stays refused, "
+        "comparing two projections from one table is permitted, tokenising a "
+        "comparison made in clear is left open; and serving a page writes the "
+        "name table, which ADR 0036 is owed"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

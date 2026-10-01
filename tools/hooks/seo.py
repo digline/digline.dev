@@ -555,6 +555,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "election says which, and why the software house records a token and "
         "never the text.",
     ),
+    "product/adr/0038-the-projection-of-a-run-nobody-promoted.md": (
+        "ADR 0038: The projection of a run nobody promoted",
+        "Why a page served to the software house may project a run that was "
+        "never promoted, why it carries what a projected reference carries "
+        "and no more, and why two projections may be compared but a "
+        "comparison may not be rebuilt into a run.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
