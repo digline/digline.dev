@@ -569,6 +569,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and why, and why that trace has not yet been squared with the rule "
         "that the payload stays where it is born.",
     ),
+    "product/adr/0040-a-runs-key-and-the-two-answers-the-store-gives.md": (
+        "ADR 0040: A run's key, and the two answers the store gives",
+        "Why digline names a run both by its file's name and by its time and "
+        "configuration digest, what that costs when a file is renamed by "
+        "hand, and three ways to make it one name, each priced.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

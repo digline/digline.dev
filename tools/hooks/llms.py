@@ -665,6 +665,16 @@ DESCRIPTIONS: dict[str, str] = {
         "name table by an uncounted number of rows, and payload crosses with "
         "no declaration in code"
     ),
+    "product/adr/0040-a-runs-key-and-the-two-answers-the-store-gives.md": (
+        "A run's key has two answers: the stored file's name, which the store "
+        "lists and reads by, and key_of(created_at, config_hash), which the "
+        "store writes under and every recorded key carries; the protocol "
+        "states the second for writing and nothing holds it for reading; three "
+        "symptoms of a file renamed by hand, measured; and three options, "
+        "priced against an existing store: keep the split with the projected "
+        "list's local guard, have the store refuse a file not named by its "
+        "key, or derive the key from the document when reading"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
