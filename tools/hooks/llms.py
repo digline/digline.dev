@@ -675,6 +675,14 @@ DESCRIPTIONS: dict[str, str] = {
         "list's local guard, have the store refuse a file not named by its "
         "key, or derive the key from the document when reading"
     ),
+    "product/adr/0041-the-exit-code-of-a-failure-nobody-anticipated.md": (
+        "A failure the command line did not translate exited 1, which means "
+        "worse, from gates that measured nothing and from readings that never "
+        "gate; a fifth exit code, 70, for a failure nobody anticipated, printed "
+        "with its traceback; three refusals that reached the same path moved "
+        "to 64 instead; and a suite that raises while it loads, refused with "
+        "the line that raised, classified by who raised it"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

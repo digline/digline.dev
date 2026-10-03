@@ -575,6 +575,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "configuration digest, what that costs when a file is renamed by "
         "hand, and three ways to make it one name, each priced.",
     ),
+    "product/adr/0041-the-exit-code-of-a-failure-nobody-anticipated.md": (
+        "ADR 0041: The exit code of a failure nobody anticipated",
+        "Why a failure digline did not anticipate exits 70 and not 1, which "
+        "means worse, and how it is told apart from a refused request and "
+        "from the suite's own code failing while it loads.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
