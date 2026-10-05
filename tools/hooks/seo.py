@@ -571,9 +571,9 @@ PRODUCT: dict[str, tuple[str, str]] = {
     ),
     "product/adr/0040-a-runs-key-and-the-two-answers-the-store-gives.md": (
         "ADR 0040: A run's key, and the two answers the store gives",
-        "Why digline names a run both by its file's name and by its time and "
-        "configuration digest, what that costs when a file is renamed by "
-        "hand, and three ways to make it one name, each priced.",
+        "Why a run has one name, the one its time and configuration digest "
+        "give, why the store refuses a file renamed by hand when it lists "
+        "runs, and why a copy is told from a rename.",
     ),
     "product/adr/0041-the-exit-code-of-a-failure-nobody-anticipated.md": (
         "ADR 0041: The exit code of a failure nobody anticipated",

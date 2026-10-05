@@ -666,14 +666,15 @@ DESCRIPTIONS: dict[str, str] = {
         "no declaration in code"
     ),
     "product/adr/0040-a-runs-key-and-the-two-answers-the-store-gives.md": (
-        "A run's key has two answers: the stored file's name, which the store "
+        "A run's key had two answers: the stored file's name, which the store "
         "lists and reads by, and key_of(created_at, config_hash), which the "
-        "store writes under and every recorded key carries; the protocol "
-        "states the second for writing and nothing holds it for reading; three "
-        "symptoms of a file renamed by hand, measured; and three options, "
-        "priced against an existing store: keep the split with the projected "
-        "list's local guard, have the store refuse a file not named by its "
-        "key, or derive the key from the document when reading"
+        "store writes under and every recorded key carries; three symptoms of "
+        "a file renamed by hand, measured; three options priced, and one "
+        "chosen: the store refuses a file whose name is not its key_of, "
+        "checked when it lists runs and before the schema, so one badly named "
+        "file does not stop latest for a whole suite; a copy is told from a "
+        "rename, latest never claims a file it left out was newer, the repair "
+        "is a refusal that explains, and a renamed file is a defect"
     ),
     "product/adr/0041-the-exit-code-of-a-failure-nobody-anticipated.md": (
         "A failure the command line did not translate exited 1, which means "
