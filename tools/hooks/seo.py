@@ -581,6 +581,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "means worse, and how it is told apart from a refused request and "
         "from the suite's own code failing while it loads.",
     ),
+    "product/adr/0042-the-two-boundaries-of-an-artifact.md": (
+        "ADR 0042: The two boundaries of an artifact",
+        "Why a file outside the repository is never read as an artifact, and "
+        "why one from the store or from .git is refused wherever its text "
+        "would leave the run, promotion included.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

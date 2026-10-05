@@ -684,6 +684,13 @@ DESCRIPTIONS: dict[str, str] = {
         "to 64 instead; and a suite that raises while it loads, refused with "
         "the line that raised, classified by who raised it"
     ),
+    "product/adr/0042-the-two-boundaries-of-an-artifact.md": (
+        "A suite could declare any readable file as an artifact and send it "
+        "across a boundary under one flag; a file outside the perimeter is now "
+        "never read, and one under .digline or .git, at any depth and in any "
+        "case, refuses the command where its text would leave the run: the "
+        "redacted report, the MCP and promotion"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
