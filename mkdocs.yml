@@ -341,6 +341,7 @@ nav:
           - "ADR 0039 — Disclosure on request: the software house sees a case, and the trace replaces the permission": product/adr/0039-disclosure-on-request.md
           - ADR 0040 — A run's key, and the two answers the store gives: product/adr/0040-a-runs-key-and-the-two-answers-the-store-gives.md
           - ADR 0041 — The exit code of a failure nobody anticipated: product/adr/0041-the-exit-code-of-a-failure-nobody-anticipated.md
+          - ADR 0042 — The two boundaries of an artifact: product/adr/0042-the-two-boundaries-of-an-artifact.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
