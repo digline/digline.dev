@@ -587,6 +587,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "why one from the store or from .git is refused wherever its text "
         "would leave the run, promotion included.",
     ),
+    "product/adr/0043-a-message-digline-did-not-write.md": (
+        "ADR 0043: A message digline did not write",
+        "Why an exception's message written by a suite or a library is payload, "
+        "and why the frame that raised it, not its type, decides whether a "
+        "refusal may carry it to an MCP agent.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

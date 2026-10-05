@@ -691,6 +691,13 @@ DESCRIPTIONS: dict[str, str] = {
         "case, refuses the command where its text would leave the run: the "
         "redacted report, the MCP and promotion"
     ),
+    "product/adr/0043-a-message-digline-did-not-write.md": (
+        "An exception's message written by the suite, its application or a "
+        "library can quote a case's data, so it is payload: the frame that "
+        "raised it decides who wrote it, through every wrap and whatever its "
+        "type, and an agent receives the type, the location and the command "
+        "that prints the traceback without the message"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
