@@ -593,6 +593,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "and why the frame that raised it, not its type, decides whether a "
         "refusal may carry it to an MCP agent.",
     ),
+    "product/adr/0044-the-run-delete.md": (
+        "ADR 0044: The run delete",
+        "How a stored run is removed with its journal and every replay of it "
+        "across the tenant, and why the run under the current baseline is "
+        "refused before anything is touched.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
