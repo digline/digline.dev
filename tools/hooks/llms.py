@@ -700,6 +700,13 @@ DESCRIPTIONS: dict[str, str] = {
         "type, and an agent receives the type, the location and the command "
         "that prints the traceback without the message"
     ),
+    "product/adr/0044-the-run-delete.md": (
+        "A sixth store method removes a run, its journal legs and every replay "
+        "chained from it across the tenant, leaves first, after a plan that "
+        "refuses before anything is removed: the run under the current "
+        "baseline, a file whose key cannot be verified, a directory that cannot "
+        "be read. No MCP tool carries it, and it is not an erasure"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
