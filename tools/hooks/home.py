@@ -124,7 +124,7 @@ COMMAND_GROUPS = (
     ("record", ("run", "promote")),
     ("compare", ("compare", "diff", "explain", "report")),
     ("history", ("list", "log", "register", "view")),
-    ("maintenance", ("rejudge", "migrate")),
+    ("maintenance", ("rejudge", "migrate", "delete")),
 )
 
 # The language the documentation's sidebar is labelled in, on every page: the
@@ -1308,11 +1308,11 @@ def selftest() -> int:
     metrics_ids = {c["anchor"] for c in grid_data["checks"]["items"]}
     g = grids(grid_data, pages, guide_html, metrics_ids, reference)
     links = {c["name"]: c["href"] for grp in g["commands"]["groups"] for c in grp["commands"]}
-    expect("command count", g["commands"]["count"], 12)
-    expect("command heading", g["commands"]["heading"], "Twelve commands")
+    expect("command count", g["commands"]["count"], 13)
+    expect("command heading", g["commands"]["heading"], "Thirteen commands")
     expect("group order", [grp["key"] for grp in g["commands"]["groups"]],
            ["record", "compare", "history", "maintenance"])
-    expect("group sizes", [len(grp["commands"]) for grp in g["commands"]["groups"]], [2, 4, 4, 2])
+    expect("group sizes", [len(grp["commands"]) for grp in g["commands"]["groups"]], [2, 4, 4, 3])
     expect("a command with a page", links["diff"], "product/diff/")
     expect("2. a guide heading with the name in code, over the reference and the text",
            links["promote"], "product/guide/#approving")

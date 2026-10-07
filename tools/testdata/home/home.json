@@ -294,6 +294,10 @@
         "help": "make a run the baseline"
       },
       {
+        "name": "delete",
+        "help": "remove a run, its journal legs and its replays across the tenant"
+      },
+      {
         "name": "register",
         "help": "record a person's disposition about a comparison; commit the line"
       },

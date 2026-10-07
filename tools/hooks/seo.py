@@ -271,6 +271,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "version this release reads, and what a scan does with a document it "
         "cannot read.",
     ),
+    "product/delete.md": (
+        "digline delete",
+        "Remove a run and every replay chained from it from the store. A "
+        "promoted run is refused, and a delete is not an erasure.",
+    ),
     "product/docker.md": (
         "The Docker image",
         "The official ghcr.io/digline/digline image: what it contains and what "
@@ -598,6 +603,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "How a stored run is removed with its journal and every replay of it "
         "across the tenant, and why the run under the current baseline is "
         "refused before anything is touched.",
+    ),
+    "product/adr/0045-one-declared-path-resolved-once.md": (
+        "ADR 0045: One declared path, resolved once",
+        "Why one declared path is resolved once, by whoever opens the file, so "
+        "the file checked and recorded is the file read, and where a path is "
+        "anchored to the suite.",
     ),
     "product/examples/index.md": (
         "Examples",
