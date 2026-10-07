@@ -707,6 +707,14 @@ DESCRIPTIONS: dict[str, str] = {
         "baseline, a file whose key cannot be verified, a directory that cannot "
         "be read. No MCP tool carries it, and it is not an erasure"
     ),
+    "product/adr/0045-one-declared-path-resolved-once.md": (
+        "A declared path is resolved once, by whoever opens the file, and is "
+        "reported already resolved, so read_artifacts no longer resolves what "
+        "a target has opened, and a path is anchored to the suite only where a "
+        "suite is necessarily present: it closes the divergence of path, not "
+        "the divergence of time, so the text recorded is still not established "
+        "to be the text sent"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

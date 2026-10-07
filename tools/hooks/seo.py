@@ -599,6 +599,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "across the tenant, and why the run under the current baseline is "
         "refused before anything is touched.",
     ),
+    "product/adr/0045-one-declared-path-resolved-once.md": (
+        "ADR 0045: One declared path, resolved once",
+        "Why one declared path is resolved once, by whoever opens the file, so "
+        "the file checked and recorded is the file read, and where a path is "
+        "anchored to the suite.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
