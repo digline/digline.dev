@@ -275,10 +275,10 @@ DESCRIPTIONS: dict[str, str] = {
         "release reads, and what a scan does with a document it cannot read"
     ),
     "product/delete.md": (
-        "Removes a run and the replays chained from it, leaves first, across "
-        "every suite of the tenant. Refuses a run the baseline was promoted "
-        "from. It removes documents from the store's directory: it is not an "
-        "erasure, and proves nothing about backups, snapshots or git."
+        "Removes a run and every replay chained from it across the tenant, "
+        "leaves first, after a plan that refuses the run under the current "
+        "baseline before anything is removed, and it removes documents from "
+        "the store's directory rather than erasing them"
     ),
     "product/docker.md": (
         "What the official `ghcr.io/digline/digline` image contains and what it "
