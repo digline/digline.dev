@@ -260,6 +260,7 @@ nav:
           - "digline view": product/view.md
           - "digline rejudge": product/rejudge.md
           - "digline migrate": product/migrate.md
+          - "digline delete": product/delete.md
       - Running it:
           - The Docker image: product/docker.md
           - digline over MCP: product/mcp.md

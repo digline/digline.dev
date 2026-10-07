@@ -271,6 +271,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "version this release reads, and what a scan does with a document it "
         "cannot read.",
     ),
+    "product/delete.md": (
+        "digline delete",
+        "Remove a run and every replay chained from it from the store. A "
+        "promoted run is refused, and a delete is not an erasure.",
+    ),
     "product/docker.md": (
         "The Docker image",
         "The official ghcr.io/digline/digline image: what it contains and what "

@@ -274,6 +274,12 @@ DESCRIPTIONS: dict[str, str] = {
         "How to bring stored runs and a baseline up to the schema version this "
         "release reads, and what a scan does with a document it cannot read"
     ),
+    "product/delete.md": (
+        "Removes a run and the replays chained from it, leaves first, across "
+        "every suite of the tenant. Refuses a run the baseline was promoted "
+        "from. It removes documents from the store's directory: it is not an "
+        "erasure, and proves nothing about backups, snapshots or git."
+    ),
     "product/docker.md": (
         "What the official `ghcr.io/digline/digline` image contains and what it "
         "deliberately does not, which tag to pin in CI, and how to derive it "

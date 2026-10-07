@@ -124,7 +124,7 @@ COMMAND_GROUPS = (
     ("record", ("run", "promote")),
     ("compare", ("compare", "diff", "explain", "report")),
     ("history", ("list", "log", "register", "view")),
-    ("maintenance", ("rejudge", "migrate")),
+    ("maintenance", ("rejudge", "migrate", "delete")),
 )
 
 # The language the documentation's sidebar is labelled in, on every page: the
