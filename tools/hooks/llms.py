@@ -294,6 +294,12 @@ DESCRIPTIONS: dict[str, str] = {
         "check, a suspension as a skip, and no provider call unless you ask "
         "for one \u2014 and what pytest's single exit code cannot tell apart"
     ),
+    "product/github-action.md": (
+        "How the digline GitHub Action gates a pull request: which exit codes "
+        "are the verdict, which are digline's without being one, and which are "
+        "not digline's at all; what each output means when it is empty; how to "
+        "tell 1 from 2; and that this holds from v1.2.0"
+    ),
     "product/operator.md": (
         "What an operator may decide alone \u2014 re-run, classify a draw from "
         "a drift, diff two candidates, all under a stopping rule declared "
