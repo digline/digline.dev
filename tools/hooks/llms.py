@@ -735,6 +735,14 @@ DESCRIPTIONS: dict[str, str] = {
         "one property of a document's form, and a declared source is verified by "
         "nobody"
     ),
+    "product/adr/0047-what-a-case-in-clear-contains.md": (
+        "A case in clear is a class declared in reviewed code: it never holds "
+        "the judge's reason, the case's metadata, the recorded answers or the "
+        "run's input; it resolves the case's own rows and never a shared one; "
+        "and a captured case's input and its answers are shown at a page served "
+        "at the data owner's side and carried by no document, --json or MCP "
+        "response"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
