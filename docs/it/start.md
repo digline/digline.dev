@@ -7,8 +7,8 @@ description: Cos'è una regressione degli LLM, perché i test ordinari non la ri
 search:
   exclude: true
 source: start.md
-source_sha: f1b884ed9bca
-source_commit: 200f768
+source_sha: a35fc5f737b0
+source_commit: 6c046e8
 model: claude-opus-5
 ---
 
@@ -65,6 +65,7 @@ Il baseline è un file in git. Ha una cronologia, si può confrontare con diff, 
 
 - [Perché](../why.md) — il ragionamento dietro le scelte di progetto, se vuoi contestarlo.
 - [Guida](../product/guide.md) — installalo e arriva al tuo primo `compare` in pochi minuti.
+- [La GitHub Action](../product/github-action.md) — lo stesso gate su ogni pull request, e cosa significa ciascun exit code.
 - [Come si colloca digline](../comparison/index.md) — se usi già uno strumento di eval e vuoi sapere cosa cambia.
 
 Dieci parole che incontrerai lungo la strada: **run**, **baseline**, **confronto**, **promozione**, **check**, **giudizio**, **tolleranza**, **noise floor**, **regressione**, **gate**. Ciascuna è spiegata la prima volta che compare nella Guida.

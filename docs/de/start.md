@@ -7,8 +7,8 @@ description: Was eine LLM-Regression ist, warum normale Tests sie nicht erkennen
 search:
   exclude: true
 source: start.md
-source_sha: f1b884ed9bca
-source_commit: 200f768
+source_sha: a35fc5f737b0
+source_commit: 6c046e8
 model: claude-opus-5
 ---
 
@@ -65,6 +65,7 @@ Die baseline ist eine Datei in git. Sie hat eine Historie, sie lässt sich diffe
 
 - [Warum](../why.md) — die Überlegungen hinter dem Entwurf, falls du darüber streiten willst.
 - [Guide](../product/guide.md) — installieren und in wenigen Minuten zum ersten `compare` kommen.
+- [Die GitHub Action](../product/github-action.md) — dasselbe gate bei jedem Pull Request, und was die einzelnen Exit-Codes bedeuten.
 - [digline im Vergleich](../comparison/index.md) — wenn du schon ein Eval-Tool nutzt und wissen willst, was anders ist.
 
 Zehn Wörter, die dir unterwegs begegnen: **run**, **baseline**, **compare**, **promote**, **check**, **judge**, **Toleranz**, **noise floor**, **Regression**, **gate**. Jedes wird beim ersten Auftreten im Guide erklärt.
