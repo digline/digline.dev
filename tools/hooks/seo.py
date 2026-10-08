@@ -616,6 +616,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "the file checked and recorded is the file read, and where a path is "
         "anchored to the suite.",
     ),
+    "product/adr/0046-a-widening-is-a-declared-class.md": (
+        "ADR 0046: A widening is a class declared in reviewed code",
+        "Why widening what crosses a boundary stays in reviewed code, and why "
+        "a disclosure made at a page selects within a declared class without "
+        "amending fixed decision 9.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
