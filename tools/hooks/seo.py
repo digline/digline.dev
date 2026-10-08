@@ -294,6 +294,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "in pytest's own report, gating on the baseline committed in your "
         "repository \u2014 and why a pytest run costs nothing by default.",
     ),
+    "product/github-action.md": (
+        "The GitHub Action",
+        "digline-action, the gate on a pull request: its exit codes in three "
+        "kinds, what an empty output means, the version they hold from, and "
+        "the two limits of its comment.",
+    ),
     "product/operator.md": (
         "The operator loop",
         "Who watches the measurement when nobody is looking: an agent that "

@@ -265,6 +265,7 @@ nav:
           - The Docker image: product/docker.md
           - digline over MCP: product/mcp.md
           - digline in pytest: product/pytest.md
+          - The GitHub Action: product/github-action.md
           # Not a surface like the three above it: the design of the loop
           # that drives them on a schedule. It follows the MCP surface it is
           # built on.

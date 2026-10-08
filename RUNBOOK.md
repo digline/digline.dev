@@ -89,7 +89,7 @@ The procedure, the one ADR 0009 and ADR 0022 followed:
 
 ## A page here about something that lives in digline
 
-Three pages under `product/` are written in this repository rather than copied from digline: `pages/product/operator.md`, `pages/product/security.md` and `pages/product/examples/index.md`. `tools/sync-docs.sh` installs them into `docs/product/` after the copy. They exist because a page about how digline is *used* has no home in the other repository's `docs/` — but what they describe does live there, and changes there.
+Four pages under `product/` are written in this repository rather than copied from digline: `pages/product/operator.md`, `pages/product/security.md`, `pages/product/examples/index.md` and `pages/product/github-action.md`. The last describes digline-action, a third repository, and the same rule holds for it: what it states belongs to `action.yml` and moves when that moves. `tools/sync-docs.sh` installs them into `docs/product/` after the copy. They exist because a page about how digline is *used* has no home in the other repository's `docs/` — but what they describe does live there, and changes there.
 
 The rule:
 
