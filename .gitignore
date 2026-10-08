@@ -25,5 +25,9 @@
 __pycache__/
 .DS_Store
 
+# IDE
+.idea/
+.vscode/
+
 # Only ever present in CI: the digline checkout the docs are copied out of.
 /_digline/
