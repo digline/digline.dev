@@ -622,6 +622,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "a disclosure made at a page selects within a declared class without "
         "amending fixed decision 9.",
     ),
+    "product/adr/0047-what-a-case-in-clear-contains.md": (
+        "ADR 0047: What a case in clear contains",
+        "What a case shown in clear to the software house contains, what it "
+        "never contains, and why its input is read at the data owner's page "
+        "and carried by nothing.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
