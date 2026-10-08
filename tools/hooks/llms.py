@@ -727,6 +727,14 @@ DESCRIPTIONS: dict[str, str] = {
         "the divergence of time, so the text recorded is still not established "
         "to be the text sent"
     ),
+    "product/adr/0046-a-widening-is-a-declared-class.md": (
+        "A widening of what crosses a boundary is a class declared in reviewed "
+        "code, and a recorded act, a person and a reason at a page, selects an "
+        "instance within a declared class and is never a widening, so a "
+        "disclosure on request does not amend fixed decision 9; a flag verifies "
+        "one property of a document's form, and a declared source is verified by "
+        "nobody"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
