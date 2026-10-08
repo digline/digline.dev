@@ -7,8 +7,8 @@ description: Qué es una regresión de LLM, por qué las pruebas habituales no l
 search:
   exclude: true
 source: start.md
-source_sha: f1b884ed9bca
-source_commit: 200f768
+source_sha: a35fc5f737b0
+source_commit: 6c046e8
 model: claude-opus-5
 ---
 
@@ -65,6 +65,7 @@ El baseline es un archivo en git. Tiene historial, se le puede sacar un diff y n
 
 - [Por qué](../why.md): el razonamiento detrás del diseño, por si quieres discutirlo.
 - [Guía](../product/guide.md): instálalo y consigue tu primer `compare` en unos minutos.
+- [La GitHub Action](../product/github-action.md): el mismo gate en cada pull request, y qué significa cada código de salida.
 - [En qué se diferencia digline](../comparison/index.md): si ya usas una herramienta de evaluación y quieres saber en qué se diferencia.
 
 Diez palabras que te encontrarás por el camino: **run**, **baseline**, **comparar**, **promover**, **check**, **juzgar**, **tolerancia**, **noise floor**, **regresión**, **gate**. Cada una se explica la primera vez que aparece en la Guía.
