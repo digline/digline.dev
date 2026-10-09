@@ -546,11 +546,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
     ),
     "product/adr/0035-the-record-of-a-deletion.md": (
         "ADR 0035: The record of a deletion",
-        "Why a removal from the store is recorded in an append-only ledger at "
-        "the data owner's side, apart from the data and at a path the owner "
-        "configures, why an entry names a removed run by its timestamp and "
-        "carries no digest, and why the ledger reduces what a backup exposes "
-        "without removing it.",
+        "Why a removal from the store is recorded in two append-only ledgers "
+        "per tenant at the data owner's side, one of row removals and one of "
+        "run removals, apart from the data and at paths the owner configures, "
+        "why an entry names a removed run by its timestamp and carries no "
+        "digest, and why the ledger reduces what a backup exposes without "
+        "removing it.",
     ),
     "product/adr/0036-the-name-table-and-the-process-that-owns-it.md": (
         "ADR 0036: The name table, and the process that owns it",
