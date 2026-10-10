@@ -629,6 +629,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "never contains, and why its input is read at the data owner's page "
         "and carried by nothing.",
     ),
+    "product/adr/0048-the-versions-a-suite-holds-and-the-one-in-force.md": (
+        "ADR 0048: The versions a suite holds, and the one in force",
+        "Why a suite's store holds every version it receives and declares one "
+        "in force, why moving that pointer is a promotion, and why it leaves "
+        "the baseline alone.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
