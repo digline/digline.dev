@@ -747,6 +747,15 @@ DESCRIPTIONS: dict[str, str] = {
         "at the data owner's side and carried by no document, --json or MCP "
         "response"
     ),
+    "product/adr/0048-the-versions-a-suite-holds-and-the-one-in-force.md": (
+        "A suite's store holds every version it has received and declares one "
+        "in force; there is one pointer per (tenant, suite), state of the store "
+        "behind the ResultStore protocol, and moving it is a promotion that "
+        "leaves the baseline as it is; the pointer names a version by its "
+        "declared string and carries no digest; the versions sit inside "
+        ".digline/<tenant>/ as versioned documents, never an overwritten copy, "
+        "and can be listed without loading a suite"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
