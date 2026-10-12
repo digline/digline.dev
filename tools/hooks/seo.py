@@ -578,8 +578,8 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "ADR 0039: Disclosure on request",
         "Why the software house may ask to see one case in clear without the "
         "end company authorising it, why the control is a trace of who looked "
-        "and why, and why that trace has not yet been squared with the rule "
-        "that the payload stays where it is born.",
+        "and why, and why that trace keeps the rule that the payload stays "
+        "where it is born.",
     ),
     "product/adr/0040-a-runs-key-and-the-two-answers-the-store-gives.md": (
         "ADR 0040: A run's key, and the two answers the store gives",
