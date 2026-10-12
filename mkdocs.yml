@@ -22,6 +22,8 @@ edit_uri: ""
 
 docs_dir: docs
 site_dir: site
+exclude_docs: |
+  !/.well-known/
 
 # The translations of the presentation pages, docs/<lang>/, one folder per
 # language in tools/languages.py (LANGUAGES). They are in no nav — the nav is the

@@ -300,6 +300,7 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           path: site
+          include-hidden-files: true
 
   deploy:
     name: Deploy
