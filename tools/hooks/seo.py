@@ -406,8 +406,8 @@ PRODUCT: dict[str, tuple[str, str]] = {
     "product/adr/0013-the-pytest-plugin.md": (
         "ADR 0013: The pytest plugin",
         "Why a pytest row is one check rather than one case, why the plugin "
-        "compares without running unless you say so, and what pytest's exit "
-        "code cannot carry.",
+        "compares without running unless you say so, and what it does with "
+        "digline's exit codes.",
     ),
     "product/adr/0014-what-may-ride-a-schema-bump.md": (
         "ADR 0014: What may ride a schema bump",
