@@ -290,9 +290,8 @@ DESCRIPTIONS: dict[str, str] = {
         "MCP, and why the server has no tool that promotes a baseline"
     ),
     "product/pytest.md": (
-        "How to gate a pytest run on a digline comparison \u2014 one row per "
-        "check, a suspension as a skip, and no provider call unless you ask "
-        "for one \u2014 and what pytest's single exit code cannot tell apart"
+        "How to gate a pytest run on a digline comparison: one row per check, "
+        "a suspension as a skip, and no provider call unless you ask for one"
     ),
     "product/github-action.md": (
         "How the digline GitHub Action gates a pull request: which exit codes "
