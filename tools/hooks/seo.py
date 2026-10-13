@@ -635,6 +635,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "in force, why moving that pointer is a promotion, and why it leaves "
         "the baseline alone.",
     ),
+    "product/adr/0049-a-run-that-judged-nothing-does-not-pass.md": (
+        "ADR 0049: A run that judged nothing does not pass, and a front end "
+        "does not say green where digline did not",
+        "Why a run that judged nothing exits 2 and cannot be promoted, and why "
+        "an errored figure beside judged cases moves no exit code.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
