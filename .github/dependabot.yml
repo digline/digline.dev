@@ -1,0 +1,30 @@
+# The site's lock, kept fresh. Until this file, nothing here turned an advisory
+# into a pull request: alerts were on and read `uv.lock`, security updates were
+# off, and no version updates were configured. On 2026-10-12 three urllib3
+# advisories were raised against the lock and stayed open, with no pull request,
+# until one was written by hand on 2026-10-14 (#189). An alert that nobody is
+# made to act on is a check with no consequence.
+#
+# Shaped like digline's `.github/dependabot.yml`, its `uv` entry: weekly,
+# grouped, so a bump arrives as one pull request a person reads rather than
+# several nobody does. `docs.yml` runs on `pull_request`, so each one arrives
+# already built.
+#
+# What this file is not: it configures **version updates** only, pull requests
+# on a schedule, advisory or no advisory. Dependabot **alerts** and **security
+# updates** are repository settings, not entries here, and they can change
+# without a commit.
+version: 2
+updates:
+  # `uv`, not `pip`: what is committed here is `uv.lock`, and the `pip`
+  # ecosystem cannot read one.
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      site:
+        patterns: ["*"]
+    commit-message:
+      prefix: "Bump"
