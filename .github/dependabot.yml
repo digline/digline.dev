@@ -16,6 +16,23 @@
 # without a commit.
 version: 2
 updates:
+  # The workflows, the other half of their pins. Every `uses:` here is a full
+  # 40-character commit with its exact version in a comment beside it, and
+  # `tools/check-actions.py` refuses anything else. A pinned commit never moves,
+  # so on its own it never receives a fix either: this entry is what moves it.
+  # Dependabot rewrites the commit and the comment together, which is the only
+  # reason the comment stays true. Shaped like digline's `github-actions` entry.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "Bump"
+
   # `uv`, not `pip`: what is committed here is `uv.lock`, and the `pip`
   # ecosystem cannot read one.
   - package-ecosystem: uv
