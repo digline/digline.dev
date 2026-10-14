@@ -759,8 +759,9 @@ DESCRIPTIONS: dict[str, str] = {
         "and can be listed without loading a suite"
     ),
     "product/adr/0049-a-run-that-judged-nothing-does-not-pass.md": (
-        "A run in which no case that measures the subject was judged exits 2 "
-        "and is never promoted; an errored aggregate beside judged cases "
+        "A run in which none of the cases its suite measures was judged exits "
+        "2 and is never promoted, and a suite of canaries and calibration "
+        "cases only is judged by them; an errored aggregate beside judged cases "
         "moves no exit code; a suspension never fails a case and does not pass a "
         "run; pytest-digline does not end a session green where digline does "
         "not exit 0, and ends it at 1 because pytest's 2 means interrupted"
