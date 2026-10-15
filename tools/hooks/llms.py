@@ -760,6 +760,15 @@ DESCRIPTIONS: dict[str, str] = {
         "run; pytest-digline does not end a session green where digline does "
         "not exit 0, and ends it at 1 because pytest's 2 means interrupted"
     ),
+    "product/adr/0050-the-noise-floor-compares-a-range-with-means.md": (
+        "The noise floor is to measure a movement of means against the "
+        "dispersion of the mean of the judged samples, not against the range "
+        "of single samples, so that it narrows as K grows; it is to apply only "
+        "where a check declares it, and a check that declares none is to be "
+        "decided by its tolerance alone; and the change is a break: a check "
+        "with tolerance 0 and a baseline that is not unanimous will report "
+        "movements it used to call unchanged"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
