@@ -4,9 +4,9 @@ template: home.html
 seo_title: >-
   digline — catch LLM quality regressions in your repo
 description: >-
-  Regression testing for LLM applications: digline compares every run
-  against an approved baseline versioned in your repository, and names the
-  checks that got worse.
+  Regression tests and evals for LLM apps against a baseline in your
+  repository: in CI, in pytest or over MCP, digline names the checks that
+  got worse.
 ---
 
 <!--
