@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — Qualitätsregressionen von LLMs im eigenen Repository erkennen
 lang: de
 translation_of: index.md
-description: 'Regressionstests für LLM-Anwendungen: digline vergleicht jeden run mit einer freigegebenen baseline, die im Repository versioniert ist, und benennt die checks, die sich verschlechtert haben.'
+description: 'Regressionstests und Evals für LLM-Anwendungen gegen eine baseline im eigenen Repository: in CI, in pytest oder über MCP benennt digline die checks, die sich verschlechtert haben.'
 search:
   exclude: true
 source: index.md
-source_sha: 7a40afbfada8
-source_commit: 23ee832
+source_sha: f71cc66fddd3
+source_commit: 1b69245
 model: claude-opus-5
 ---
 

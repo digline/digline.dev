@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — detecta regresiones de calidad en LLM dentro de tu repositorio
 lang: es
 translation_of: index.md
-description: 'Pruebas de regresión para aplicaciones LLM: digline compara cada run con un baseline aprobado y versionado en tu repositorio, y nombra los checks que empeoraron.'
+description: 'Pruebas de regresión y evaluaciones para aplicaciones LLM frente a un baseline en tu repositorio: en CI, en pytest o a través de MCP, digline nombra los checks que empeoraron.'
 search:
   exclude: true
 source: index.md
-source_sha: 7a40afbfada8
-source_commit: 23ee832
+source_sha: f71cc66fddd3
+source_commit: 1b69245
 model: claude-opus-5
 ---
 
