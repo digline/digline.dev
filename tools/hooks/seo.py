@@ -641,6 +641,13 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why a run that judged nothing exits 2 and cannot be promoted, and why "
         "an errored figure beside judged cases moves no exit code.",
     ),
+    "product/adr/0050-the-noise-floor-compares-a-range-with-means.md": (
+        "ADR 0050: The noise floor compares a range of single samples with a "
+        "movement of means",
+        "Why a movement of means is to be measured against the dispersion of "
+        "the mean, not the range of single samples, and only where a check "
+        "declares a floor.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
