@@ -59,16 +59,10 @@ import languages  # noqa: E402  tools/languages.py
 # leaves the name to the page.
 ROOT_SECTION = "Overview"
 
-# The summary under the H1. The landing's own words: the sentence under the
-# wordmark, then the two paragraphs that say what you get and where it lives.
-# Lifted rather than written, so there is one description of the product and
-# not a second one that drifts from it — the same reason the SEO hook prefers a
-# page's own first paragraph to anything it could compose.
-TAGLINE = (
-    "Regression testing for LLM applications, with the baseline in your "
-    "repository, not on someone's server."
-)
-
+# The summary, after the line under the H1. That line, the `>`, is not written
+# here: it is mkdocs.yml's site_description, read in on_post_build, so the
+# sentence is in one place. Material prints the same value as the meta
+# description of the 404, which declares none of its own.
 SUMMARY = """\
 digline gives you an approved reference — the baseline — and on every change
 tells you whether you are below it: which case, which check, by how much. The
@@ -931,7 +925,13 @@ def on_post_build(config, **kwargs):
     site_dir = config["site_dir"]
     site_url = (config["site_url"] or "").rstrip("/") + "/"
 
-    out = [f"# {config['site_name']}", "", f"> {TAGLINE}", "", SUMMARY, ""]
+    tagline = " ".join((config["site_description"] or "").split())
+    if not tagline:
+        raise PluginError(
+            "llms: mkdocs.yml has no site_description, and the line under "
+            "llms.txt's H1 is that sentence"
+        )
+    out = [f"# {config['site_name']}", "", f"> {tagline}", "", SUMMARY, ""]
 
     for heading, pages in _sections(_nav.items, ROOT_SECTION):
         out += [f"## {heading}", ""]
