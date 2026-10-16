@@ -100,7 +100,7 @@ For a binary check at K equals 5 with a pass threshold of 0.5, the largest same-
 
 Now put that next to the shape of a binary band, keeping two things apart. The rows of that table are settings, chosen once for the suite. Agreement is a property of one comparison, and at any setting below unanimity the suite will hold both kinds.
 
-Take a comparison whose baseline samples disagreed. The minimum is 0 and the maximum is 1, so the band is the entire scale and excuses all the movement available in that row. Take one whose samples were unanimous and the band collapses to a point and excuses nothing.
+Take a comparison whose baseline samples disagreed. The minimum is 0 and the maximum is 1, so the band is the entire scale and excuses all the movement available in that row. Take one whose samples were unanimous and the band collapses to a point and excuses nothing. How often a judge's samples split on identical input, even at temperature 0, is the subject of Hiroki Tamba's "[Necessary but Not Sufficient: Temperature Control and Reproducibility in LLM-as-Judge Safety Evaluations](https://arxiv.org/abs/2606.26185)" (arXiv:2606.26185). On a binary check a split baseline is the worst case: its samples span the whole scale, so the band excuses every movement there is.
 
 So the setting fixes how large a movement can exist, and then the band decides case by case whether that movement is visible, with the split cases giving it away for free.
 
@@ -229,3 +229,5 @@ One thing before the list. The scripts and the outputs behind these figures live
 **The 1.1.** Arithmetic, and the body says so where it uses it.
 
 **The five citations of Miller.** Verified against the rendered pages of the PDF, which is arXiv 2411.00640v1. The omega squared formula at section 5 page 9, verbatim. The super-population quote at section 3 page 5. Recommendation four on page 2. Equation 7 at section 4.2 page 7. And the sentence about K much greater than 1 in appendix C page 14, which this piece paraphrases rather than quotes, as it should.
+
+**The citation of Tamba.** arXiv:2606.26185, cited for the subject of split judge samples. Title and identifier read off the arXiv abstract page on 16 October 2026. No number in this piece comes from it.
