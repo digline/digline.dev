@@ -10,6 +10,13 @@
 keep:
   - run
   - baseline
+  # A term of art with no settled translation in Italian, German or Spanish,
+  # kept like baseline. The plural only: it is the one form the site uses as a
+  # noun on its own. The singular appears only before a noun ("eval run", "an
+  # eval tool"), which German writes as a hyphenated compound ("Eval-run"), and
+  # a term here must stand as a whole word in every language. How Italian and
+  # Spanish render the singular is in KEPT_GRAMMAR in tools/translate.py.
+  - evals
   - check
   - gate
   - noise floor

@@ -135,6 +135,20 @@ MAX_TOKENS = 64000
 LANGUAGE_NAMES = {"it": "Italian", "de": "German", "es": "Spanish"}
 ADDRESS = {"it": 'the informal "tu"', "de": 'the informal "du"', "es": 'the informal "tú"'}
 WE = {"it": '"noi"', "de": '"wir"', "es": '"nosotros"'}
+# The grammar a kept term takes, in a language where it needs one. A kept term
+# stays as written, but Italian still gives it a gender, and a translation left
+# to choose chose both: eight masculine and seven feminine uses of "baseline"
+# across the pages, until they were made one by hand. Feminine, the gender of
+# the head of the compound and the form in use in Italian technical writing.
+# Without this line the next translation of a changed page chooses again.
+# The singular "eval" is not in the glossary (see there); Italian and Spanish
+# keep it before a noun by this rule, which no check enforces.
+KEPT_GRAMMAR = {
+    "it": '"baseline" is feminine: la baseline, una baseline, le baseline. Every article, adjective, '
+          'participle and pronoun that refers to it agrees: quella baseline, la nuova baseline, nessuno la promuove. '
+          '"eval" before a noun stays English and follows it: "eval run" is "run di eval".',
+    "es": '"eval" before a noun stays English and follows it: "eval run" is "run de eval".',
+}
 # A page by its path under docs/ without .md: "why", "handbook/02-cases". The
 # presentation pages keep the names they always had, and "index" is the home,
 # never the Handbook's index, which is "handbook/index".
@@ -289,6 +303,11 @@ class Claude:
 # ── the prompts ──────────────────────────────────────────────────────────────
 
 
+def kept_grammar(lang: str) -> str:
+    """The line on a kept term's grammar in ``lang``, or nothing."""
+    return f"\n- {KEPT_GRAMMAR[lang]}" if lang in KEPT_GRAMMAR else ""
+
+
 def rules(lang: str, root: str) -> str:
     words = translation.glossary(root)
     names = translation.data_terms(root)
@@ -300,7 +319,7 @@ Write as a careful technical writer whose first language is {LANGUAGE_NAMES[lang
 - Address the reader with {ADDRESS[lang]}.
 - Leave exactly as written: code spans and code blocks, commands, program output, URLs and link targets, HTML tags and attributes, HTML entities' meaning, Markdown structure, numbers (a decimal point stays a point: 0.88, never 0,88), and headings with their level — translate a heading's words, keep its number of # signs and its place.
 - **Everything inside a fenced block stays byte for byte, whether or not it looks like code.** A fence may hold a diagram, a tree, a worked example, a transcript, or plain English sentences — that is still a fenced block and it is still left alone. It is the fence that decides, never what is written between the fences: a block that reads as prose you would otherwise translate is exactly the case this rule is for. The one exception is a line the page has already marked `translate="yes"`; translate that line and nothing else in the block.
-- These terms name concepts of digline: {", ".join(words["keep"])}. Where the English uses one as a noun for that concept — a check, a run, the baseline, a gate, the noise floor — leave it in English, exactly as written. Where the same word is an ordinary verb or an everyday word — "check your inputs", "run the suite three times" — translate it, as a native writer would.
+- These terms name concepts of digline and of the field it works in: {", ".join(words["keep"])}. Where the English uses one as a noun for that concept — a check, a run, the baseline, a gate, the noise floor, the evals — leave it in English, exactly as written. Only the word stays English: the sentence around it, its word order and its articles, is {LANGUAGE_NAMES[lang]}. Where the same word is an ordinary verb or an everyday word — "check your inputs", "run the suite three times" — translate it, as a native writer would.{kept_grammar(lang)}
 - Leave these names exactly as written: the commands digline {", digline ".join(names["commands"])}; the checks {", ".join(names["checks"])}; the packages {", ".join(names["packages"])}; the frameworks {", ".join(names["frameworks"])}.
 - Never use these words: {", ".join(words["forbidden"].get(lang, [])) or "(none)"}.
 - Write idiomatic {LANGUAGE_NAMES[lang]}, never a calque: do not carry English syntax, idioms or collocations across word for word. Say what a native technical writer would say in their place.

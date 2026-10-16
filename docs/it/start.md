@@ -36,9 +36,9 @@ Le domande concrete, alla fine, sono queste:
 
 ## Cosa fa digline
 
-digline è un gate che metti davanti a quella domanda. Scrivi una volta per tutte cosa ti aspetti dal tuo sistema, sotto forma di un insieme di check: quelli deterministici (la risposta è JSON valido, non contiene numeri di telefono, cita il nome del cliente) e quelli giudicati (un secondo modello valuta la risposta rispetto a una griglia di valutazione). Li esegui sul tuo sistema. Quando il risultato ti soddisfa, lo **promuovi**: diventa il baseline, un file committato nel tuo repository accanto al codice.
+digline è un gate che metti davanti a quella domanda. Scrivi una volta per tutte cosa ti aspetti dal tuo sistema, sotto forma di un insieme di check: quelli deterministici (la risposta è JSON valido, non contiene numeri di telefono, cita il nome del cliente) e quelli giudicati (un secondo modello valuta la risposta rispetto a una griglia di valutazione). Li esegui sul tuo sistema. Quando il risultato ti soddisfa, lo **promuovi**: diventa la baseline, un file committato nel tuo repository accanto al codice.
 
-Da quel momento ogni run viene confrontato con quel baseline, e il report risponde all'unica domanda che conta. Ecco un run in cui niente è peggiorato, anche se tre check si sono spostati e un caso non ha potuto essere risolto:
+Da quel momento ogni run viene confrontato con quella baseline, e il report risponde all'unica domanda che conta. Ecco un run in cui niente è peggiorato, anche se tre check si sono spostati e un caso non ha potuto essere risolto:
 
 <!-- digline: a comparison where nothing got worse -->
 
@@ -48,7 +48,7 @@ ed ecco un run in cui sei check sono peggiorati:
 
 Entrambi sono ciò che `digline compare` ha stampato sulla suite di esempio del primo capitolo della [Guida](../product/guide.md), catturati dalla release da cui provengono questi documenti. I numeri sono quelli misurati da quei run.
 
-Il baseline è un file in git. Ha una cronologia, si può confrontare con diff, e nessuno lo promuove tranne te. Non c'è una dashboard a cui accedere né un servizio che riceve i tuoi dati: digline gira dove gira il tuo codice.
+La baseline è un file in git. Ha una cronologia, si può confrontare con diff, e nessuno la promuove tranne te. Non c'è una dashboard a cui accedere né un servizio che riceve i tuoi dati: digline gira dove gira il tuo codice.
 
 ## Trenta secondi, in immagini
 

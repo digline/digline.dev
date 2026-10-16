@@ -4,7 +4,7 @@ template: agents.html
 seo_title: 'digline per gli agenti: misurare tutto, approvare nulla'
 lang: it
 translation_of: agents.md
-description: 'Cosa può fare un agente di programmazione con digline e cosa non può: eseguire e leggere ogni misurazione, senza raggiungere alcuna superficie che promuova un baseline.'
+description: 'Cosa può fare un agente di programmazione con digline e cosa non può: eseguire e leggere ogni misurazione, senza raggiungere alcuna superficie che promuova una baseline.'
 search:
   exclude: true
 source: agents.md
@@ -21,7 +21,7 @@ Un agente può misurare tutto e non approvare nulla. La misurazione è un lavoro
 
 ## L'assenza, non il rifiuto
 
-Sul server MCP `promote` non esiste: i suoi strumenti leggono un risultato o ne misurano uno nuovo, e nessuno di essi scrive un baseline. Un rifiuto è una conversazione che un agente può riaprire: contestare, ritentare, aggirare. Un'assenza no. Il ragionamento è nell'[ADR 0011](../product/adr/0011-the-mcp-server.md).
+Sul server MCP `promote` non esiste: i suoi strumenti leggono un risultato o ne misurano uno nuovo, e nessuno di essi scrive una baseline. Un rifiuto è una conversazione che un agente può riaprire: contestare, ritentare, aggirare. Un'assenza no. Il ragionamento è nell'[ADR 0011](../product/adr/0011-the-mcp-server.md).
 
 </div>
 
@@ -59,7 +59,7 @@ Osserva una suite a intervalli programmati e apre una issue quando un risultato 
 
 pytest-digline inserisce il confronto in un report di pytest; la GitHub Action lo pubblica come commento sulla pull request ed esce con il codice di digline.
 
-**Assente:** un modo per promuovere. Nessun flag, fixture o marker nel plugin e nessun input nella Action rende un run il nuovo baseline.
+**Assente:** un modo per promuovere. Nessun flag, fixture o marker nel plugin e nessun input nella Action rende un run la nuova baseline.
 
 **Dettagli:** [pytest-digline](../product/pytest.md), [la GitHub Action](https://github.com/digline/digline-action)
 
@@ -71,7 +71,7 @@ pytest-digline inserisce il confronto in un report di pytest; la GitHub Action l
 
 AGENTS.md è lo strato di giudizio che lo strumento non codifica: quando rieseguire, quando indagare, quando formulare una raccomandazione. Le stesse regole sono distribuite come skill di Claude Code, installata con il plugin `digline@digline`, e un test fallisce se le rispettive regole divergono. In un altro agente, la skill da sola si installa con `npx skills add digline/digline --skill operating-digline`, presa da `main` anziché da una release.
 
-Il plugin ti chiede conferma anche prima che un agente esegua `promote` o `register`. È una preferenza, non un muro: puoi disattivarla, e un comando che non riconosce passa. Il muro è il diff revisionato, perché i baseline e il register vengono committati.
+Il plugin ti chiede conferma anche prima che un agente esegua `promote` o `register`. È una preferenza, non un muro: puoi disattivarla, e un comando che non riconosce passa. Il muro è il diff revisionato, perché le baseline e il register vengono committati.
 
 **Assente:** l'approvazione. La prima regola, qui sotto, la lascia a una persona.
 
