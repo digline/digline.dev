@@ -116,7 +116,7 @@ home:
     intro: Las pruebas pasan, la aplicación responde, la demostración funciona. Luego un cambio en un prompt, una versión de modelo o la actualización de una biblioteca modifica una respuesta de la que dependía tu cliente, y nada en el pipeline lo indica.
     usually: Cómo suele ocurrir
     usually_items:
-      average: Volver a ejecutar las evaluaciones y mirar la media
+      average: Volver a ejecutar las evals y mirar la media
       bad_day: No hay forma de distinguir una caída real de un mal día del juez
       notebook: Lo que se aprobó, y cuándo, vive en el cuaderno de alguien
       client: El cliente descubre la regresión primero
@@ -191,7 +191,7 @@ home:
         description: Adopta la naturaleza del check que envuelve.
   readings:
     kicker: Sin referencia y con ella
-    title: El mismo run de evaluación,
+    title: El mismo run de eval,
     title_accent: leído de dos maneras.
     intro: Una línea del prompt cambió entre dos runs. A la izquierda, las puntuaciones que obtienes sin referencia. A la derecha, lo que imprime digline frente a la referencia aprobada.
     alone_head: El run nuevo por sí solo

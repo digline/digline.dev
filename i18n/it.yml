@@ -116,7 +116,7 @@ home:
     intro: I test passano, l&rsquo;applicazione risponde, la demo funziona. Poi una modifica al prompt, una versione del modello o l&rsquo;aggiornamento di una libreria cambia una risposta su cui il tuo cliente contava, e nella pipeline nulla lo segnala.
     usually: Come va di solito
     usually_items:
-      average: Rieseguire le eval e guardare la media
+      average: Rieseguire le evals e guardare la media
       bad_day: Nessun modo per distinguere un calo reale da un giudice in giornata cattiva
       notebook: Ciò che è stato approvato, e quando, sta nel notebook di qualcuno
       client: Il cliente trova la regressione per primo
@@ -191,7 +191,7 @@ home:
         description: Assume la natura del check che avvolge.
   readings:
     kicker: Senza riferimento, e con uno
-    title: Lo stesso run di valutazione,
+    title: Lo stesso run di eval,
     title_accent: letto in due modi.
     intro: Una riga del prompt è cambiata tra due run. A sinistra, i punteggi che ottieni senza un riferimento. A destra, ciò che digline stampa a confronto con quello approvato.
     alone_head: Il nuovo run da solo

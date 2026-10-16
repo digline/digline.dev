@@ -4,7 +4,7 @@ template: home.html
 seo_title: digline — intercetta le regressioni di qualità degli LLM nel tuo repository
 lang: it
 translation_of: index.md
-description: 'Test di regressione e valutazioni per applicazioni LLM rispetto a una baseline nel tuo repository: in CI, in pytest o via MCP, digline indica i check che sono peggiorati.'
+description: 'Test di regressione ed evals per applicazioni LLM rispetto a una baseline nel tuo repository: in CI, in pytest o via MCP, digline indica i check che sono peggiorati.'
 search:
   exclude: true
 source: index.md
