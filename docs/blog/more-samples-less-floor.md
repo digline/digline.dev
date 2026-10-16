@@ -112,6 +112,8 @@ Unanimity is a property of states, not scores. A split binary baseline necessari
 
 So "the band swallows everything" is a statement about binary checks. What is true of every check, binary or not, is the one sentence at the top: a range of single draws against a mean, widening with K while the mean settles.
 
+That a judge can return different verdicts on an identical input, even at temperature 0, is the subject of Hiroki Tamba's paper on temperature control and reproducibility in LLM-as-judge evaluations. It demonstrates that the disagreement can persist, and says explicitly that it does not estimate how often. Its items were built to sit at the boundary, which is the region a split baseline comes from.
+
 ## The measurement I threw away and then did again
 
 There's a second suite behind this work, the judge for a pipeline I run every day: 145 cases, 5 assertions each, 725 comparisons. Five samples per case, and the suite declares `min_agreement` at 3/5.
@@ -170,6 +172,8 @@ One thing about their scale. Those floors apply to the mean across the suite's c
 
 The favourable case is omega squared equal to zero, which holds only when the change touches no case differently from any other. Any real change makes that term positive. That's why the number is a floor: an estimate would need that term.
 
+The principle isn't mine. Tamba's paper recommends surfacing grader disagreement as a first-class harness health metric, because a harness that reports single-run verdicts without variance can present noise as a safety property. This section is that argument applied to a gate instead of a harness. My band did the opposite of reporting the disagreement: it spent it on excusing movement, so the disagreement never reached anybody.
+
 A tool that prints that number next to the outcome is telling the truth about what it can see. A tool that prints a band is telling you it measured something.
 
 ## The objection I expect
@@ -227,5 +231,7 @@ One thing before the list. The scripts and the outputs behind these figures live
 **The 2 out of 22, at p equal to 0.017 and p equal to 0.039.** A permutation test, 2000 permutations, seed 7.
 
 **The 1.1.** Arithmetic, and the body says so where it uses it.
+
+**The citations of Tamba.** arXiv 2606.26185v1, the only version. The repeated-grading design at section 4.1, page 3. The recommendation to surface grader disagreement as a first-class harness health metric is M4, section 6, page 6. The paper's own limit, that it demonstrates non-determinism can persist rather than estimating a rate, is section 5.4, page 6. No figure from the paper is quoted here.
 
 **The five citations of Miller.** Verified against the rendered pages of the PDF, which is arXiv 2411.00640v1. The omega squared formula at section 5 page 9, verbatim. The super-population quote at section 3 page 5. Recommendation four on page 2. Equation 7 at section 4.2 page 7. And the sentence about K much greater than 1 in appendix C page 14, which this piece paraphrases rather than quotes, as it should.
