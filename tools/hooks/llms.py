@@ -774,6 +774,15 @@ DESCRIPTIONS: dict[str, str] = {
         "The posts, newest first, each with the runs behind it \u2014 written "
         "from the pipelines the author runs rather than about the library"
     ),
+    "blog/more-samples-less-floor.md": (
+        "Why a noise floor built from the range of K single samples, compared "
+        "against a mean, widens as K grows while the mean it judges steadies; "
+        "what it adds on two real suites, a few comparisons in a hundred on "
+        "one and nothing on the other; why it excuses every same-side "
+        "movement of a binary check whose baseline split; and why paired "
+        "differences per case, with a detection floor that carries its "
+        "assumptions, should replace it"
+    ),
     "blog/check-that-could-not-fail.md": (
         "A faithfulness check on an LLM call that scored 1.000 because the "
         "prompt already forbade the defect it measured: why a correct check "
