@@ -648,6 +648,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "the mean, not the range of single samples, and only where a check "
         "declares a floor.",
     ),
+    "product/adr/0051-a-pinned-path-the-run-no-longer-records.md": (
+        "ADR 0051: A pinned path the judged run no longer records",
+        "Why a pinned path that is gone, beside a pinned file with no "
+        "reference, is to exit 2, and why either alone is to be reported and "
+        "move nothing.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

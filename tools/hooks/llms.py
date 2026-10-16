@@ -769,6 +769,15 @@ DESCRIPTIONS: dict[str, str] = {
         "with tolerance 0 and a baseline that is not unanimous will report "
         "movements it used to call unchanged"
     ),
+    "product/adr/0051-a-pinned-path-the-run-no-longer-records.md": (
+        "A pin the reference held and the judged run does not hold is to be "
+        "reported and to move no exit code; a pinned file with no reference "
+        "value is to be reported as unchecked in its own right, and to move "
+        "none either; and the two together, a pinned path the judged run no "
+        "longer records beside a pinned file with no reference value, are to "
+        "exit 2, because a rename and a removal cannot be told apart there and "
+        "one of them loses the guarantee"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
