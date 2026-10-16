@@ -354,6 +354,7 @@ nav:
           - ADR 0048 — The versions a suite holds, and the one in force: product/adr/0048-the-versions-a-suite-holds-and-the-one-in-force.md
           - ADR 0049 — A run that judged nothing does not pass, and a front end does not say green where digline did not: product/adr/0049-a-run-that-judged-nothing-does-not-pass.md
           - ADR 0050 — The noise floor compares a range of single samples with a movement of means: product/adr/0050-the-noise-floor-compares-a-range-with-means.md
+          - ADR 0051 — A pinned path the judged run no longer records: product/adr/0051-a-pinned-path-the-run-no-longer-records.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
