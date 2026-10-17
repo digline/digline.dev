@@ -87,7 +87,7 @@ home:
     title: Hai cambiato un&nbsp;prompt.
     title_quiet: Cos&rsquo;altro è peggiorato?
     lede: Un prompt nuovo, una versione del modello, l&rsquo;aggiornamento di una libreria. L&rsquo;applicazione funziona ancora, i test passano ancora, e una risposta su cui il tuo cliente contava adesso è peggiorata.
-    question: Peggiorata, o solo diversa? Esegui due volte la stessa suite e i punteggi si spostano da soli. Un confronto semplice o si lascia sfuggire il calo vero, o grida al lupo per il rumore.
+    question: Peggiorata, o solo diversa? Esegui due volte la stessa suite e i punteggi si spostano da soli.
     answer: 'digline dice cosa è peggiorato: quale caso, quale check, di quanto. Se campioni il tuo riferimento, ti dice anche quanto quel punteggio si sposta da solo, così vedi se il calo è più grande di quanto oscilla la misura.'
     found: Ce ne siamo accorti perché il nostro stesso noise floor è risultato più largo della tolleranza che avevamo dichiarato.
     requires: Richiede Python {python}
@@ -356,7 +356,7 @@ source_keys:
       found: 0d2c5258beda
       lede: df2d48eaafed
       license: 2a43a93eceec
-      question: 6ccbd73ca2d5
+      question: f41737d12586
       requires: 1763678e27ee
       start: 2adc964c0847
       title: 296493ef0115

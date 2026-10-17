@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — pruebas de regresión para LLM con un noise floor medido
 lang: es
 translation_of: index.md
-description: 'Pruebas de regresión para aplicaciones LLM en CI, pytest o MCP: digline nombra los checks que empeoraron y en cuánto, e informa de cuánto se mueve la puntuación por sí sola cuando tu referencia está muestreada.'
+description: 'Pruebas de regresión para aplicaciones LLM en CI, pytest o MCP: digline nombra los checks que empeoraron y, con una referencia muestreada, cuánto se mueve la puntuación por sí sola.'
 search:
   exclude: true
 source: index.md
-source_sha: 8eae67993ced
-source_commit: eef8252
+source_sha: afce5f157f2c
+source_commit: dbd36c6
 model: claude-opus-5
 ---
 

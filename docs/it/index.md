@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — test di regressione per LLM con un noise floor misurato
 lang: it
 translation_of: index.md
-description: 'Test di regressione per applicazioni LLM in CI, pytest o MCP: digline indica i check che sono peggiorati e di quanto, e riporta quanto il punteggio si sposta da solo quando il tuo riferimento è campionato.'
+description: 'Test di regressione per applicazioni LLM in CI, pytest o MCP: digline indica i check che sono peggiorati e, con un riferimento campionato, quanto il punteggio si sposta da solo.'
 search:
   exclude: true
 source: index.md
-source_sha: 8eae67993ced
-source_commit: eef8252
+source_sha: afce5f157f2c
+source_commit: dbd36c6
 model: claude-opus-5
 ---
 
