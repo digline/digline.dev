@@ -89,7 +89,7 @@ home:
     lede: Un prompt nuovo, una versione del modello, l&rsquo;aggiornamento di una libreria. L&rsquo;applicazione funziona ancora, i test passano ancora, e una risposta su cui il tuo cliente contava adesso è peggiorata.
     question: Peggiorata, o solo diversa? Esegui due volte la stessa suite e i punteggi si spostano da soli. Un confronto semplice o si lascia sfuggire il calo vero, o grida al lupo per il rumore.
     answer: 'digline dice cosa è peggiorato: quale caso, quale check, di quanto. Se campioni il tuo riferimento, ti dice anche quanto quel punteggio si sposta da solo, così vedi se il calo è più grande di quanto oscilla la misura.'
-    found: Ce ne siamo accorti perché il nostro stesso noise floor si è rivelato più largo della tolleranza che avevamo dichiarato.
+    found: Ce ne siamo accorti perché il nostro stesso noise floor è risultato più largo della tolleranza che avevamo dichiarato.
     requires: Richiede Python {python}
     start: Inizia qui
     why: Perché un riferimento nel repo

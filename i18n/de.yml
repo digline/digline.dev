@@ -89,7 +89,7 @@ home:
     lede: Ein neuer Prompt, eine Modellversion, ein Bibliotheks-Upgrade. Die Anwendung läuft weiter, die Tests sind weiter grün, und eine Antwort, auf die sich dein Kunde verlassen hat, ist jetzt schlechter.
     question: Schlechter oder nur anders? Lass dieselbe Suite zweimal laufen, und die Scores bewegen sich von selbst. Ein einfacher Vergleich übersieht entweder den echten Abfall oder schlägt beim Rauschen blinden Alarm.
     answer: 'digline benennt, was schlechter geworden ist: welcher Fall, welcher check, um wie viel. Ziehst du Stichproben für deine Referenz, sagt es dir auch, wie stark sich dieser Score von selbst bewegt, damit du siehst, ob der Abfall größer ist als die Schwankung der Messung.'
-    found: Aufgefallen ist uns das, weil unser eigener noise floor breiter war als die Toleranz, die wir angegeben hatten.
+    found: Aufgefallen ist uns das, weil unser eigener noise floor breiter war als die Toleranz, die wir festgelegt hatten.
     requires: Benötigt Python {python}
     start: Hier starten
     why: Warum eine Referenz im Repo
