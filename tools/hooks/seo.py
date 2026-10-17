@@ -654,6 +654,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "reference, is to exit 2, and why either alone is to be reported and "
         "move nothing.",
     ),
+    "product/adr/0052-a-suite-loaded-again-reads-its-application-again.md": (
+        "ADR 0052: A suite loaded again reads its application again",
+        "Why what digline put in place for a suite is to be taken out before it "
+        "loads another in the same process, and a module it did not load is to "
+        "be named, not refused.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
