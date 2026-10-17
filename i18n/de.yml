@@ -86,7 +86,10 @@ home:
     version_pre_1_0: v{version}, vor 1.0
     title: Du hast einen&nbsp;Prompt geändert.
     title_quiet: Was ist sonst noch schlechter geworden?
-    lede: Ein neuer Prompt, eine Modellversion, ein Bibliotheks-Upgrade. Die Anwendung läuft weiter, und eine Antwort, auf die sich dein Kunde verlassen hat, ist jetzt falsch. digline sagt dir, welcher Fall betroffen ist, um wie viel, und ob der Abfall größer ist als das Rauschen des Judge selbst.
+    lede: Ein neuer Prompt, eine Modellversion, ein Bibliotheks-Upgrade. Die Anwendung läuft weiter, die Tests sind weiter grün, und eine Antwort, auf die sich dein Kunde verlassen hat, ist jetzt schlechter.
+    question: Schlechter oder nur anders? Lass dieselbe Suite zweimal laufen, und die Scores bewegen sich von selbst. Ein einfacher Vergleich übersieht entweder den echten Abfall oder schlägt beim Rauschen blinden Alarm.
+    answer: 'digline benennt, was schlechter geworden ist: welcher Fall, welcher check, um wie viel. Ziehst du Stichproben für deine Referenz, sagt es dir auch, wie stark sich dieser Score von selbst bewegt, damit du siehst, ob der Abfall größer ist als die Schwankung der Messung.'
+    found: Aufgefallen ist uns das, weil unser eigener noise floor breiter war als die Toleranz, die wir angegeben hatten.
     requires: Benötigt Python {python}
     start: Hier starten
     why: Warum eine Referenz im Repo
@@ -345,12 +348,15 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
+      answer: 201dcb995e61
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
         no_server: 04230bb3d69e
-      lede: f67b1ad59e06
+      found: 0d2c5258beda
+      lede: df2d48eaafed
       license: 2a43a93eceec
+      question: 6ccbd73ca2d5
       requires: 1763678e27ee
       start: 2adc964c0847
       title: 296493ef0115

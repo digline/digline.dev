@@ -86,7 +86,10 @@ home:
     version_pre_1_0: v{version}, previa a 1.0
     title: Cambiaste un&nbsp;prompt.
     title_quiet: ¿Qué más empeoró?
-    lede: Un prompt nuevo, una versión de modelo, la actualización de una biblioteca. La aplicación sigue funcionando y una respuesta de la que dependía tu cliente ahora es incorrecta. digline te dice qué caso, en cuánto y si la caída es mayor que el propio ruido del juez.
+    lede: Un prompt nuevo, una versión de modelo, la actualización de una biblioteca. La aplicación sigue funcionando, las pruebas siguen pasando y una respuesta de la que dependía tu cliente ahora es peor.
+    question: ¿Peor, o solo distinta? Ejecuta la misma suite dos veces y las puntuaciones se mueven solas. Una comparación simple o pasa por alto la caída real o da falsas alarmas por ruido.
+    answer: 'digline nombra lo que empeoró: qué caso, qué check, en cuánto. Si muestreas tu referencia, también te dice cuánto se mueve esa puntuación por sí sola, para que veas si la caída es mayor que lo que oscila la medición.'
+    found: Nos dimos cuenta porque nuestro propio noise floor resultó ser más ancho que la tolerancia que habíamos declarado.
     requires: Requiere Python {python}
     start: Empieza aquí
     why: Por qué una referencia en el repositorio
@@ -345,12 +348,15 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
+      answer: 201dcb995e61
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
         no_server: 04230bb3d69e
-      lede: f67b1ad59e06
+      found: 0d2c5258beda
+      lede: df2d48eaafed
       license: 2a43a93eceec
+      question: 6ccbd73ca2d5
       requires: 1763678e27ee
       start: 2adc964c0847
       title: 296493ef0115
