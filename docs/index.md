@@ -2,11 +2,11 @@
 title: Home
 template: home.html
 seo_title: >-
-  digline — catch LLM quality regressions in your repo
+  digline — LLM regression testing with a measured noise floor
 description: >-
-  Regression tests and evals for LLM apps against a baseline in your
-  repository: in CI, in pytest or over MCP, digline names the checks that
-  got worse.
+  Regression tests for LLM apps in CI, pytest or MCP: digline names the
+  checks that got worse and by how much, and reports how much the score moves
+  on its own when your reference is sampled.
 ---
 
 <!--
