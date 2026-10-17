@@ -5,8 +5,8 @@ seo_title: >-
   digline — LLM regression testing with a measured noise floor
 description: >-
   Regression tests for LLM apps in CI, pytest or MCP: digline names the
-  checks that got worse and by how much, and reports how much the score moves
-  on its own when your reference is sampled.
+  checks that got worse, and with a sampled reference how much the score
+  moves on its own.
 ---
 
 <!--

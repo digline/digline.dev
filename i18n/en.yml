@@ -111,7 +111,7 @@ home:
     title: "You changed one&nbsp;prompt."
     title_quiet: "What else got worse?"
     lede: "A new prompt, a model version, a library upgrade. The app still runs, the tests still pass, and one answer your client relied on is now worse."
-    question: "Worse, or just different? Run the same suite twice and the scores move on their own. A plain comparison either misses the real drop or cries wolf on noise."
+    question: "Worse, or just different? Run the same suite twice and the scores move on their own."
     answer: "digline names what got worse: which case, which check, by how much. Sample your reference and it also tells you how much that score moves on its own, so you can see whether the drop is bigger than the measurement."
     found: "We found this because our own noise floor turned out to be wider than the tolerance we had declared."
     requires: "Requires Python {python}"
