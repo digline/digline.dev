@@ -783,7 +783,7 @@ DESCRIPTIONS: dict[str, str] = {
         "before it loads a suite again in the same process: the modules that "
         "resolved in the suite's directory and the suite's own module, the "
         "directory on sys.path, the path hook, the importer cache entry and "
-        "_scoped, and nothing it did not insert. A name in that scope already "
+        "_scoped, and nothing it did not insert; a name in that scope already "
         "loaded from an origin digline did not load is to be named as "
         "modules_unchecked, not refused, and read in the comparison's headline "
         "from the judged run only, moving no number"
