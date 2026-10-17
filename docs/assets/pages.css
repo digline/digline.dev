@@ -163,6 +163,12 @@ pre {
   margin: 0 0 1.875rem; max-width: 34em;
   font-size: 1.1875rem; line-height: 1.55; color: var(--muted);
 }
+/* The home's opening is three paragraphs and a line under them: the space
+   before the install command goes after the line, not between paragraphs. */
+.hero__lede { margin-bottom: .625rem; }
+.hero__found { margin: 0 0 .75rem; max-width: 40em; font-size: .9375rem; line-height: 1.5; }
+.hero__found a { color: var(--muted); text-decoration: underline; text-underline-offset: .2em; }
+.hero__found a:hover { color: var(--link); }
 /* The two ways on: Start here as the one filled button on the page, the other
    as a button drawn by its border. The arrow is drawn, not written, and is
    left out of what a screen reader says. */

@@ -1,15 +1,15 @@
 ---
 title: Home
 template: home.html
-seo_title: digline — intercetta le regressioni di qualità degli LLM nel tuo repository
+seo_title: digline — test di regressione per LLM con un noise floor misurato
 lang: it
 translation_of: index.md
-description: 'Test di regressione ed evals per applicazioni LLM rispetto a una baseline nel tuo repository: in CI, in pytest o via MCP, digline indica i check che sono peggiorati.'
+description: 'Test di regressione per applicazioni LLM in CI, pytest o MCP: digline indica i check che sono peggiorati e, con un riferimento campionato, quanto il punteggio si sposta da solo.'
 search:
   exclude: true
 source: index.md
-source_sha: f71cc66fddd3
-source_commit: 1b69245
+source_sha: afce5f157f2c
+source_commit: dbd36c6
 model: claude-opus-5
 ---
 

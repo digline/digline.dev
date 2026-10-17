@@ -11,8 +11,9 @@
 site_name: digline
 site_url: https://digline.dev/
 site_description: >-
-  Regression testing for LLM applications — with the baseline in your
-  repository, not on someone's server.
+  Regression testing for LLM applications: sample your reference and a score
+  drop is read against how much that score moves on its own. A flip from pass
+  to fail is always a regression.
 site_author: Alessandro Prandini
 copyright: Apache-2.0
 

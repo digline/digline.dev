@@ -1,15 +1,15 @@
 ---
 title: Inicio
 template: home.html
-seo_title: digline — detecta regresiones de calidad en LLM dentro de tu repositorio
+seo_title: digline — pruebas de regresión para LLM con un noise floor medido
 lang: es
 translation_of: index.md
-description: 'Pruebas de regresión y evals para aplicaciones LLM frente a un baseline en tu repositorio: en CI, en pytest o a través de MCP, digline nombra los checks que empeoraron.'
+description: 'Pruebas de regresión para aplicaciones LLM en CI, pytest o MCP: digline nombra los checks que empeoraron y, con una referencia muestreada, cuánto se mueve la puntuación por sí sola.'
 search:
   exclude: true
 source: index.md
-source_sha: f71cc66fddd3
-source_commit: 1b69245
+source_sha: afce5f157f2c
+source_commit: dbd36c6
 model: claude-opus-5
 ---
 
