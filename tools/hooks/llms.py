@@ -778,6 +778,16 @@ DESCRIPTIONS: dict[str, str] = {
         "exit 2, because a rename and a removal cannot be told apart there and "
         "one of them loses the guarantee"
     ),
+    "product/adr/0052-a-suite-loaded-again-reads-its-application-again.md": (
+        "What digline put in place for a suite's scope is to be taken out "
+        "before it loads a suite again in the same process: the modules that "
+        "resolved in the suite's directory and the suite's own module, the "
+        "directory on sys.path, the path hook, the importer cache entry and "
+        "_scoped, and nothing it did not insert. A name in that scope already "
+        "loaded from an origin digline did not load is to be named as "
+        "modules_unchecked, not refused, and read in the comparison's headline "
+        "from the judged run only, moving no number"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
