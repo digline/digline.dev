@@ -656,9 +656,9 @@ PRODUCT: dict[str, tuple[str, str]] = {
     ),
     "product/adr/0052-a-suite-loaded-again-reads-its-application-again.md": (
         "ADR 0052: A suite loaded again reads its application again",
-        "Why digline is to take out what it put in place for a suite before "
-        "loading it again in the same process, and to name, not refuse, a "
-        "module it did not load.",
+        "Why what digline put in place for a suite is to be taken out before it "
+        "loads another in the same process, and a module it did not load is to "
+        "be named, not refused.",
     ),
     "product/examples/index.md": (
         "Examples",
