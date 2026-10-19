@@ -130,8 +130,6 @@ There is no official example of this today.
 
 The default image names a **digline** release, not the action's version. `@v1` is the action's line and digline is on its own, so `@v1` alone does not say which digline runs. The `image` default in the action's `action.yml` says it, and that line is the one place it is written.
 
-As of 2026-10-08 the default is `ghcr.io/digline/digline:0.30.0`, from `v1.1.0` onwards.
-
 Two checks keep it from falling behind:
 
 - the action's own CI compares the default with the newest digline on PyPI, and the job fails when they differ. It runs every Monday on a schedule, on every push to the action's `main` and on every pull request to it;
