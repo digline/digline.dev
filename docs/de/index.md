@@ -1,15 +1,15 @@
 ---
 title: Startseite
 template: home.html
-seo_title: digline — Regressionstests für LLMs mit gemessenem noise floor
+seo_title: digline — Regressionstests für LLMs mit festgelegtem noise floor
 lang: de
 translation_of: index.md
-description: 'Regressionstests für LLM-Anwendungen in CI, pytest oder MCP: digline benennt die checks, die sich verschlechtert haben, und bei einer Referenz mit Stichproben, wie stark sich der Score von selbst bewegt.'
+description: 'Regressionstests für LLM-Anwendungen in CI, pytest oder MCP: digline benennt die checks, die sich verschlechtert haben, und, wo du einen noise floor festlegst, wie stark sich der Score von selbst bewegt.'
 search:
   exclude: true
 source: index.md
-source_sha: afce5f157f2c
-source_commit: dbd36c6
+source_sha: b1ed04161a9c
+source_commit: 3185dfb
 model: claude-opus-5
 ---
 
