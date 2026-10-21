@@ -232,7 +232,7 @@ home:
     title: Wo der check sitzt,
     title_accent: wenn ein Agent die Änderungen vornimmt.
     intro: Der Agent ändert, digline entscheidet, ob die Änderung weiterlaufen darf.
-    alt: 'Animiertes Diagramm von digline in einem agentischen Ablauf: Die Änderung eines Coding-Agents läuft durch digline, ein gate in deinem Repository, das sie an einem noise floor und der freigegebenen baseline misst. Drift innerhalb des noise floor wird stillschweigend aufgefangen; eine echte Drift geht als Dossier an einen Menschen, und nur dessen Unterschrift aktualisiert die baseline. Wenn der Agent nach promote greift, antwortet der Server, dass es ein solches Werkzeug nicht gibt.'
+    alt: 'Animiertes Diagramm von digline in einem agentischen Ablauf: Die Änderung eines Coding-Agents läuft durch digline, ein gate in deinem Repository, das sie mit der freigegebenen baseline vergleicht. Drift innerhalb eines festgelegten noise floor wird stillschweigend aufgefangen, und wo ein check keinen festlegt, entscheidet seine Toleranz; eine echte Drift geht als Dossier an einen Menschen, und nur dessen Unterschrift aktualisiert die baseline. Wenn der Agent nach promote greift, antwortet der Server, dass es ein solches Werkzeug nicht gibt.'
   roadmap:
     kicker: Roadmap
     title: Wohin es
@@ -342,7 +342,7 @@ source_keys:
       title: f5c04e5b9def
       title_accent: dd712cf62d1a
     flow:
-      alt: 7c0aac2c3191
+      alt: 19ea5e050a47
       intro: 164b5787998c
       kicker: 173d98ef1236
       title: 643212005eca

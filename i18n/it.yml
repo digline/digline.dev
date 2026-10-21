@@ -232,7 +232,7 @@ home:
     title: Dove si colloca il check
     title_accent: quando le modifiche le fa un agente.
     intro: L&rsquo;agente modifica, digline decide se la modifica può andare avanti.
-    alt: 'Diagramma animato di digline in un flusso agentico: la modifica di un agente di programmazione passa attraverso digline, un gate interno al tuo repository, che la misura rispetto a un noise floor e alla baseline approvata. Uno scostamento entro il noise floor viene assorbito in silenzio; uno scostamento reale arriva a una persona sotto forma di dossier, e solo la firma della persona aggiorna la baseline. Quando l&rsquo;agente prova a usare promote, il server risponde che quello strumento non esiste.'
+    alt: 'Diagramma animato di digline in un flusso agentico: la modifica di un agente di programmazione passa attraverso digline, un gate interno al tuo repository, che la confronta con la baseline approvata. Uno scostamento entro un noise floor dichiarato viene assorbito in silenzio, e dove un check non ne dichiara nessuno decide la sua tolleranza; uno scostamento reale arriva a una persona sotto forma di dossier, e solo la firma della persona aggiorna la baseline. Quando l&rsquo;agente prova a usare promote, il server risponde che quello strumento non esiste.'
   roadmap:
     kicker: Roadmap
     title: Dove sta
@@ -342,7 +342,7 @@ source_keys:
       title: f5c04e5b9def
       title_accent: dd712cf62d1a
     flow:
-      alt: 7c0aac2c3191
+      alt: 19ea5e050a47
       intro: 164b5787998c
       kicker: 173d98ef1236
       title: 643212005eca
