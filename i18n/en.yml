@@ -280,7 +280,7 @@ home:
     title: "Where the check sits"
     title_accent: "when an agent is making the changes."
     intro: "The agent edits, digline decides whether the edit can go further."
-    alt: "Animated diagram of digline in an agentic flow: a coding agent's change passes through digline, a gate inside your repository, which measures it against a noise floor and the approved baseline. Drift within the floor is absorbed silently; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent reaches for promote, the server answers that no such tool exists."
+    alt: "Animated diagram of digline in an agentic flow: a coding agent's change passes through digline, a gate inside your repository, which compares it with the approved baseline. Drift within a declared floor is absorbed silently, and where a check declares none its tolerance decides; a real drift goes to a human as a dossier, and only the human's signature updates the baseline. When the agent reaches for promote, the server answers that no such tool exists."
 
   roadmap:
     kicker: "Roadmap"
