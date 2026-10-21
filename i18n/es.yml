@@ -126,7 +126,7 @@ home:
     with_reference: Con una referencia aprobada en el repositorio
     with_reference_items:
       compared: Cada cambio se compara caso por caso
-      noise: Se mide el ruido del juez antes de declarar una caída
+      noise: Se mide el ruido del juez, y un check puede pedir que una caída se lea frente a ese ruido
       file: La referencia es un archivo en un PR, con un commit y un nombre
       ci: CI se detiene antes que el lanzamiento
   fits:
@@ -238,7 +238,7 @@ home:
     title: Hacia dónde
     title_accent: va
     shipped_label: 'Entregado &mdash; credibilidad del veredicto:'
-    shipped_text: una caída es una regresión solo cuando sale del intervalo que el baseline midió entre sus propias muestras, y el trabajo pendiente ahora es la adopción.
+    shipped_text: un check que pide un noise floor lo obtiene, medido a partir de las propias muestras de su referencia, y un check que no lo pide se decide por la tolerancia que escribió su autor; el trabajo pendiente ahora es la adopción.
     never_label: Dos cosas nunca estarán en la hoja de ruta.
     never_text: Un servicio alojado que reciba tus payloads &mdash; prompts, salidas y el juez se quedan en tu perímetro. Y la recopilación de datos de uso, nunca.
     more: toda la hoja de ruta, con vías y gates en lugar de fechas &rarr;
@@ -387,7 +387,7 @@ source_keys:
         ci: a3b241cea305
         compared: d7f22d7416d0
         file: 9268df605542
-        noise: 19a7fa5dbeb6
+        noise: dc7d087c7c05
     python:
       or_newer: 57613e146b4f
     readings:
@@ -416,7 +416,7 @@ source_keys:
       never_label: 7d28fb40af98
       never_text: 33f7bcb41643
       shipped_label: bb070b8e3da5
-      shipped_text: 98e46d4af20f
+      shipped_text: 6a14cbf4624e
       title: 87ab0cab1a67
       title_accent: 3aada874b683
     stack:

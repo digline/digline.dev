@@ -126,7 +126,7 @@ home:
     with_reference: Mit einer freigegebenen Referenz im Repo
     with_reference_items:
       compared: Jede Änderung wird Fall für Fall verglichen
-      noise: Das Rauschen des Judge wird gemessen, bevor ein Abfall festgestellt wird
+      noise: Das Rauschen des Judge wird gemessen, und ein check kann verlangen, dass ein Abfall daran geprüft wird
       file: Die Referenz ist eine Datei in einem PR, mit einem Commit und einem Namen dazu
       ci: CI stoppt früher als das Release
   fits:
@@ -238,7 +238,7 @@ home:
     title: Wohin es
     title_accent: geht
     shipped_label: 'Ausgeliefert &mdash; Glaubwürdigkeit des Urteils:'
-    shipped_text: Ein Abfall ist erst dann eine Regression, wenn er das Intervall verlässt, das die baseline über ihre eigenen Stichproben gemessen hat; offen ist jetzt die Verbreitung.
+    shipped_text: Ein check, der einen noise floor verlangt, bekommt ihn, gemessen an den eigenen Stichproben seiner Referenz, und ein check, der keinen verlangt, wird nach der Toleranz entschieden, die sein Autor geschrieben hat; offen ist jetzt die Verbreitung.
     never_label: Zwei Dinge werden nie auf der Roadmap stehen.
     never_text: Ein gehosteter Dienst, der deine Nutzdaten entgegennimmt &mdash; Prompts, Ausgaben und der Judge bleiben in deinem Perimeter. Und niemals das Sammeln von Nutzungsdaten.
     more: die ganze Roadmap, Arbeitsstränge und gates statt Termine &rarr;
@@ -387,7 +387,7 @@ source_keys:
         ci: a3b241cea305
         compared: d7f22d7416d0
         file: 9268df605542
-        noise: 19a7fa5dbeb6
+        noise: dc7d087c7c05
     python:
       or_newer: 57613e146b4f
     readings:
@@ -416,7 +416,7 @@ source_keys:
       never_label: 7d28fb40af98
       never_text: 33f7bcb41643
       shipped_label: bb070b8e3da5
-      shipped_text: 98e46d4af20f
+      shipped_text: 6a14cbf4624e
       title: 87ab0cab1a67
       title_accent: 3aada874b683
     stack:
