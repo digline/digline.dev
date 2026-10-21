@@ -38,7 +38,7 @@ Las preguntas prácticas resultan ser estas:
 
 digline es un gate que pones delante de esa pregunta. Escribes una vez lo que esperas de tu sistema en forma de un conjunto de checks: deterministas (la respuesta es JSON válido, no contiene números de teléfono, menciona el nombre del cliente) y juzgados (un segundo modelo puntúa la respuesta según una rúbrica). Los ejecutas contra tu sistema. Cuando el resultado te parece bien, lo **promueves**: pasa a ser el baseline, un archivo versionado en tu repositorio junto al código.
 
-A partir de entonces, cada run se compara con ese baseline y el informe responde a la única pregunta que importa. Este es un run en el que nada empeoró, aunque tres checks se movieron y un caso no pudo resolverse:
+A partir de entonces, cada run se compara con ese baseline y el informe responde a la única pregunta que importa. Este es un run en el que nada empeoró, aunque dos checks se movieron y un caso no pudo resolverse:
 
 <!-- digline: a comparison where nothing got worse -->
 
