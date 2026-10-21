@@ -88,7 +88,7 @@ home:
     title_quiet: ¿Qué más empeoró?
     lede: Un prompt nuevo, una versión de modelo, la actualización de una biblioteca. La aplicación sigue funcionando, las pruebas siguen pasando y una respuesta de la que dependía tu cliente ahora es peor.
     question: ¿Peor, o solo distinta? Ejecuta la misma suite dos veces y las puntuaciones se mueven solas.
-    answer: 'digline nombra lo que empeoró: qué caso, qué check, en cuánto. Si muestreas tu referencia, también te dice cuánto se mueve esa puntuación por sí sola, para que veas si la caída es mayor que lo que oscila la medición.'
+    answer: 'digline nombra lo que empeoró: qué caso, qué check, en cuánto. Si muestreas tu referencia y declaras un noise floor en los checks que lo necesitan, también te dice cuánto se mueve esa puntuación por sí sola, para que veas si la caída es mayor que lo que oscila la medición.'
     found: Nos dimos cuenta porque nuestro propio noise floor resultó ser más ancho que la tolerancia que habíamos declarado.
     requires: Requiere Python {python}
     start: Empieza aquí
@@ -348,7 +348,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: 201dcb995e61
+      answer: d3758b85d72c
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
