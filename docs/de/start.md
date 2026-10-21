@@ -8,7 +8,7 @@ search:
   exclude: true
 source: start.md
 source_sha: c2a1db7cc060
-source_commit: 6e431fe
+source_commit: 489f48e
 model: claude-opus-5
 ---
 
