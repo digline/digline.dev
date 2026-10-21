@@ -46,7 +46,7 @@ ed ecco un run in cui sei check sono peggiorati:
 
 <!-- digline: a comparison where something did -->
 
-Entrambi sono ciò che `digline compare` ha stampato sulla suite di esempio del primo capitolo della [Guida](../product/guide.md), catturati dalla release da cui provengono questi documenti. Il modello e il giudice di quella suite sono preconfezionati e non viene chiamato alcun provider, quindi le risposte e i loro costi sono fissati dall'esempio e si riproducono in modo identico; i numeri sono quelli che digline ha calcolato a partire da essi.
+Entrambi sono ciò che `digline compare` ha stampato sulla suite di esempio del primo capitolo della [Guida](../product/guide.md), catturati dalla release da cui provengono questi documenti. Il modello e il giudice di quella suite sono preregistrati e non viene chiamato alcun provider, quindi le risposte e i loro costi sono fissati dall'esempio e si riproducono in modo identico; i numeri sono quelli che digline ha calcolato a partire da essi.
 
 La baseline è un file in git. Ha una cronologia, si può confrontare con diff, e nessuno la promuove tranne te. Non c'è una dashboard a cui accedere né un servizio che riceve i tuoi dati: digline gira dove gira il tuo codice.
 

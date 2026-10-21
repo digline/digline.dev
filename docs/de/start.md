@@ -46,7 +46,7 @@ und hier einer, bei dem sechs checks schlechter geworden sind:
 
 <!-- digline: a comparison where something did -->
 
-Beides ist die Ausgabe von `digline compare` auf der Beispiel-Suite aus dem ersten Kapitel des [Guide](../product/guide.md), aufgenommen aus dem Release, aus dem diese Dokumentation stammt. Das Modell und der Richter in dieser Suite sind vorgefertigt, und es wird kein Anbieter aufgerufen; die Antworten und ihre Kosten sind damit durch das Beispiel festgelegt und reproduzieren sich exakt. Die Zahlen sind das, was digline daraus berechnet hat.
+Beides ist die Ausgabe von `digline compare` auf der Beispiel-Suite aus dem ersten Kapitel des [Guide](../product/guide.md), aufgenommen aus dem Release, aus dem diese Dokumentation stammt. Das Modell und der Judge in dieser Suite sind vorgefertigt, und es wird kein Anbieter aufgerufen; die Antworten und ihre Kosten sind damit durch das Beispiel festgelegt und reproduzieren sich exakt. Die Zahlen sind das, was digline daraus berechnet hat.
 
 Die baseline ist eine Datei in git. Sie hat eine Historie, sie lässt sich diffen, und niemand außer dir gibt sie frei. Es gibt kein Dashboard, in das man sich einloggen muss, und keinen Dienst, der deine Daten erhält — digline läuft dort, wo dein Code läuft.
 
