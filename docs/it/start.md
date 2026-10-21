@@ -7,7 +7,7 @@ description: Cos'è una regressione degli LLM, perché i test ordinari non la ri
 search:
   exclude: true
 source: start.md
-source_sha: c6ef90fa5ddf
+source_sha: c2a1db7cc060
 source_commit: 6e431fe
 model: claude-opus-5
 ---

@@ -7,7 +7,7 @@ description: Qué es una regresión de LLM, por qué las pruebas habituales no l
 search:
   exclude: true
 source: start.md
-source_sha: c6ef90fa5ddf
+source_sha: c2a1db7cc060
 source_commit: 6e431fe
 model: claude-opus-5
 ---
