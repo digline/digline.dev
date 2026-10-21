@@ -218,7 +218,7 @@ home:
     kicker: Pruébalo
     title: El inicio rápido funciona
     title_accent: sin clave de API.
-    intro: Necesitas Python {python}. La llamada al modelo de la guía es predefinida, así que puedes ver todo el ciclo antes de conectar un proveedor real.
+    intro: Necesitas Python {python}. La guía usa modelo y juez predefinidos, así que puedes ver todo el ciclo antes de conectar un proveedor real.
     steps:
       run: Ejecuta la suite y escribe un archivo de run.
       promote: Una persona aprueba ese run como referencia.
@@ -433,7 +433,7 @@ source_keys:
     try:
       digline_prints: 49ec85ad555a
       full_guide: 800c497de8ba
-      intro: 00e5966a4b34
+      intro: 8efd525de5f4
       kicker: fe6951113784
       note: 4179237417b8
       steps:

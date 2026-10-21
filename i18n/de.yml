@@ -218,7 +218,7 @@ home:
     kicker: Ausprobieren
     title: Der Schnelleinstieg läuft
     title_accent: ohne API-Schlüssel.
-    intro: Du brauchst Python {python}. Der Modellaufruf in der Anleitung ist vorgefertigt, du siehst also den ganzen Ablauf, bevor du einen echten Provider anbindest.
+    intro: Du brauchst Python {python}. Die Anleitung läuft mit vorgefertigtem Modell und Judge, du siehst also den ganzen Ablauf, bevor du einen echten Provider anbindest.
     steps:
       run: Führt die Suite aus und schreibt eine run-Datei.
       promote: Ein Mensch gibt diesen run als Referenz frei.
@@ -433,7 +433,7 @@ source_keys:
     try:
       digline_prints: 49ec85ad555a
       full_guide: 800c497de8ba
-      intro: 00e5966a4b34
+      intro: 8efd525de5f4
       kicker: fe6951113784
       note: 4179237417b8
       steps:

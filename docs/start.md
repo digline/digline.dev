@@ -40,7 +40,7 @@ and here is one where six checks did:
 
 <!-- digline: a comparison where something did -->
 
-Both are what `digline compare` printed on the example suite of the [Guide](product/guide.md)'s first chapter, captured from the release the docs come from. The numbers are the ones those runs measured.
+Both are what `digline compare` printed on the example suite of the [Guide](product/guide.md)'s first chapter, captured from the release the docs come from. The model and the judge in that suite are canned, and no provider is called, so the answers and their costs are fixed by the example and reproduce exactly; the numbers are what digline computed from them.
 
 The baseline is a file in git. It has history, it can be diffed, and nobody promotes it but you. There is no dashboard to log into and no service that receives your data — digline runs where your code runs.
 
