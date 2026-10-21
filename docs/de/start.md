@@ -7,8 +7,8 @@ description: Was eine LLM-Regression ist, warum normale Tests sie nicht erkennen
 search:
   exclude: true
 source: start.md
-source_sha: c6ef90fa5ddf
-source_commit: 6e431fe
+source_sha: c2a1db7cc060
+source_commit: 489f48e
 model: claude-opus-5
 ---
 
@@ -38,7 +38,7 @@ Die praktischen Fragen lauten dann:
 
 digline ist ein gate, das du vor diese Frage stellst. Du schreibst einmal auf, was du von deinem System erwartest, und zwar als Satz von checks — deterministische (die Antwort ist gültiges JSON, enthält keine Telefonnummern, nennt den Namen des Kunden) und bewertete (ein zweites Modell beurteilt die Antwort anhand einer Rubrik). Du führst sie auf deinem System aus. Wenn dir das Ergebnis gefällt, gibst du es mit **promote** frei: Es wird zur baseline — eine Datei, die neben dem Code in dein Repository eingecheckt wird.
 
-Von da an wird jeder run mit dieser baseline verglichen, und der Bericht beantwortet die einzige Frage, auf die es ankommt. Hier ist ein run, bei dem nichts schlechter geworden ist, obwohl sich drei checks bewegt haben und ein Fall nicht entschieden werden konnte:
+Von da an wird jeder run mit dieser baseline verglichen, und der Bericht beantwortet die einzige Frage, auf die es ankommt. Hier ist ein run, bei dem nichts schlechter geworden ist, obwohl sich zwei checks bewegt haben und ein Fall nicht entschieden werden konnte:
 
 <!-- digline: a comparison where nothing got worse -->
 

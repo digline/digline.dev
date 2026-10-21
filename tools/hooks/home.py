@@ -1087,7 +1087,7 @@ NUMBER_WORDS = {
 def claim_problems(site: str, data: dict) -> list[str]:
     """The numbers the English page says, against the runs it shows.
 
-    The sentence around the two comparisons counts what they report — three
+    The sentence around the two comparisons counts what they report — two
     checks moved, one case set aside, six checks worse — and those counts are
     the capture's. A recapture that changes one of them leaves the sentence
     saying what no run said, and nothing else on the page would notice.

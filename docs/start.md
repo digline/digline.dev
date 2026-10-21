@@ -32,7 +32,7 @@ The practical questions turn out to be:
 
 digline is a gate you put in front of that question. You write down, once, what you expect from your system as a set of checks — deterministic ones (the answer is valid JSON, contains no phone numbers, mentions the customer's name) and judged ones (a second model rates the answer against a rubric). You run them against your system. When you're happy with the result, you **promote** it: it becomes the baseline, a file committed in your repository next to the code.
 
-From then on, every run is compared with that baseline, and the report answers the only question that matters. Here is a run where nothing got worse, though three checks moved and one case could not be settled:
+From then on, every run is compared with that baseline, and the report answers the only question that matters. Here is a run where nothing got worse, though two checks moved and one case could not be settled:
 
 <!-- digline: a comparison where nothing got worse -->
 
