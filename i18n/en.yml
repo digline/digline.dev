@@ -264,7 +264,7 @@ home:
     kicker: "Try it"
     title: "The quickstart runs"
     title_accent: "without an API key."
-    intro: "You need Python {python}. The model call in the guide is canned, so you can see the whole loop before wiring a real provider."
+    intro: "You need Python {python}. The guide runs on a canned model and judge, so you can see the whole loop before wiring a real provider."
     steps:
       run: "Runs the suite and writes a run file."
       promote: "A person approves that run as the reference."

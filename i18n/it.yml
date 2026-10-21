@@ -218,7 +218,7 @@ home:
     kicker: Provalo
     title: Il quickstart funziona
     title_accent: senza chiave API.
-    intro: Serve Python {python}. La chiamata al modello nella guida è preregistrata, così puoi vedere l&rsquo;intero ciclo prima di collegare un provider reale.
+    intro: Serve Python {python}. La guida usa modello e giudice preregistrati, così puoi vedere l&rsquo;intero ciclo prima di collegare un provider reale.
     steps:
       run: Esegue la suite e scrive un file di run.
       promote: Una persona approva quel run come riferimento.
@@ -433,7 +433,7 @@ source_keys:
     try:
       digline_prints: 49ec85ad555a
       full_guide: 800c497de8ba
-      intro: 00e5966a4b34
+      intro: 8efd525de5f4
       kicker: fe6951113784
       note: 4179237417b8
       steps:
