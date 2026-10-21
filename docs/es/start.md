@@ -7,8 +7,8 @@ description: Qué es una regresión de LLM, por qué las pruebas habituales no l
 search:
   exclude: true
 source: start.md
-source_sha: a35fc5f737b0
-source_commit: 6c046e8
+source_sha: c6ef90fa5ddf
+source_commit: 6e431fe
 model: claude-opus-5
 ---
 
@@ -46,7 +46,7 @@ y este es uno en el que seis checks sí empeoraron:
 
 <!-- digline: a comparison where something did -->
 
-Ambos son lo que imprimió `digline compare` en la suite de ejemplo del primer capítulo de la [Guía](../product/guide.md), capturado de la versión publicada de la que proceden estos documentos. Las cifras son las que midieron esos runs.
+Ambos son lo que imprimió `digline compare` en la suite de ejemplo del primer capítulo de la [Guía](../product/guide.md), capturado de la versión publicada de la que proceden estos documentos. El modelo y el juez de esa suite están predefinidos, y no se llama a ningún proveedor, así que las respuestas y sus costes quedan fijados por el ejemplo y se reproducen exactamente; las cifras son las que digline calculó a partir de ellos.
 
 El baseline es un archivo en git. Tiene historial, se le puede sacar un diff y nadie más que tú lo promueve. No hay ningún panel en el que iniciar sesión ni ningún servicio que reciba tus datos: digline se ejecuta donde se ejecuta tu código.
 
@@ -68,4 +68,4 @@ El baseline es un archivo en git. Tiene historial, se le puede sacar un diff y n
 - [La GitHub Action](../product/github-action.md): el mismo gate en cada pull request, y qué significa cada código de salida.
 - [En qué se diferencia digline](../comparison/index.md): si ya usas una herramienta de evaluación y quieres saber en qué se diferencia.
 
-Diez palabras que te encontrarás por el camino: **run**, **baseline**, **comparar**, **promover**, **check**, **juzgar**, **tolerancia**, **noise floor**, **regresión**, **gate**. Cada una se explica la primera vez que aparece en la Guía.
+Diez palabras que te encontrarás por el camino: **run**, **baseline**, **comparar**, **promover**, **check**, **juez**, **tolerancia**, **noise floor**, **regresión**, **gate**. Cada una se explica la primera vez que aparece en la Guía.

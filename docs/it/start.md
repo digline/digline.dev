@@ -7,8 +7,8 @@ description: Cos'è una regressione degli LLM, perché i test ordinari non la ri
 search:
   exclude: true
 source: start.md
-source_sha: a35fc5f737b0
-source_commit: 6c046e8
+source_sha: c6ef90fa5ddf
+source_commit: 6e431fe
 model: claude-opus-5
 ---
 
@@ -46,7 +46,7 @@ ed ecco un run in cui sei check sono peggiorati:
 
 <!-- digline: a comparison where something did -->
 
-Entrambi sono ciò che `digline compare` ha stampato sulla suite di esempio del primo capitolo della [Guida](../product/guide.md), catturati dalla release da cui provengono questi documenti. I numeri sono quelli misurati da quei run.
+Entrambi sono ciò che `digline compare` ha stampato sulla suite di esempio del primo capitolo della [Guida](../product/guide.md), catturati dalla release da cui provengono questi documenti. Il modello e il giudice di quella suite sono preconfezionati e non viene chiamato alcun provider, quindi le risposte e i loro costi sono fissati dall'esempio e si riproducono in modo identico; i numeri sono quelli che digline ha calcolato a partire da essi.
 
 La baseline è un file in git. Ha una cronologia, si può confrontare con diff, e nessuno la promuove tranne te. Non c'è una dashboard a cui accedere né un servizio che riceve i tuoi dati: digline gira dove gira il tuo codice.
 
@@ -68,4 +68,4 @@ La baseline è un file in git. Ha una cronologia, si può confrontare con diff, 
 - [La GitHub Action](../product/github-action.md) — lo stesso gate su ogni pull request, e cosa significa ciascun exit code.
 - [Come si colloca digline](../comparison/index.md) — se usi già uno strumento di eval e vuoi sapere cosa cambia.
 
-Dieci parole che incontrerai lungo la strada: **run**, **baseline**, **confronto**, **promozione**, **check**, **giudizio**, **tolleranza**, **noise floor**, **regressione**, **gate**. Ciascuna è spiegata la prima volta che compare nella Guida.
+Dieci parole che incontrerai lungo la strada: **run**, **baseline**, **confronto**, **promozione**, **check**, **giudice**, **tolleranza**, **noise floor**, **regressione**, **gate**. Ciascuna è spiegata la prima volta che compare nella Guida.

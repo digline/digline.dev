@@ -7,8 +7,8 @@ description: Was eine LLM-Regression ist, warum normale Tests sie nicht erkennen
 search:
   exclude: true
 source: start.md
-source_sha: a35fc5f737b0
-source_commit: 6c046e8
+source_sha: c6ef90fa5ddf
+source_commit: 6e431fe
 model: claude-opus-5
 ---
 
@@ -31,7 +31,7 @@ Normale Tests vergleichen eine Ausgabe mit einem erwarteten Wert. Ein Sprachmode
 Die praktischen Fragen lauten dann:
 
 - Verglichen *womit*? Du brauchst eine Referenz — das Verhalten, das du zuletzt akzeptiert hast.
-- *Wie viel* schlechter? Ein Wert, der von 0.88 auf 0.86 wandert, kann Rauschen sein. Von 0.88 auf 0.73 ist eine Regression. Ohne zu wissen, wie stark das System von sich aus schwankt, kannst du beides nicht unterscheiden.
+- *Wie viel* schlechter? Ein Wert, der von 0.88 auf 0.86 fällt, kann Rauschen sein. Von 0.88 auf 0.73 ist eine Regression. Ohne zu wissen, wie stark das System von sich aus schwankt, kannst du beides nicht unterscheiden.
 - Wer entscheidet, was „richtig“ heißt, und wo ist diese Entscheidung festgehalten?
 
 ## Was digline macht
@@ -46,7 +46,7 @@ und hier einer, bei dem sechs checks schlechter geworden sind:
 
 <!-- digline: a comparison where something did -->
 
-Beides ist die Ausgabe von `digline compare` auf der Beispiel-Suite aus dem ersten Kapitel des [Guide](../product/guide.md), aufgenommen aus dem Release, aus dem diese Dokumentation stammt. Die Zahlen sind die, die diese runs gemessen haben.
+Beides ist die Ausgabe von `digline compare` auf der Beispiel-Suite aus dem ersten Kapitel des [Guide](../product/guide.md), aufgenommen aus dem Release, aus dem diese Dokumentation stammt. Das Modell und der Richter in dieser Suite sind vorgefertigt, und es wird kein Anbieter aufgerufen; die Antworten und ihre Kosten sind damit durch das Beispiel festgelegt und reproduzieren sich exakt. Die Zahlen sind das, was digline daraus berechnet hat.
 
 Die baseline ist eine Datei in git. Sie hat eine Historie, sie lässt sich diffen, und niemand außer dir gibt sie frei. Es gibt kein Dashboard, in das man sich einloggen muss, und keinen Dienst, der deine Daten erhält — digline läuft dort, wo dein Code läuft.
 
@@ -59,7 +59,7 @@ Die baseline ist eine Datei in git. Sie hat eine Historie, sie lässt sich diffe
   Dein Browser unterstützt das video-Tag nicht. <a href="/assets/video/ep01.mp4">Video herunterladen</a>.
 </video>
 
-*Folge 1 einer kurzen Reihe über LLM-Regression. Ausgeliefert von dieser Seite — kein Drittanbieter-Player, keine Cookies.*
+*Folge 1 einer kurzen Reihe über LLM-Regression. Von dieser Website ausgeliefert — kein Drittanbieter-Player, keine Cookies.*
 
 ## Wie es weitergeht
 
