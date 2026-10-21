@@ -155,7 +155,7 @@ home:
     with_reference: "With an approved reference in the repo"
     with_reference_items:
       compared: "Every change is compared case by case"
-      noise: "The judge&rsquo;s noise is measured before a drop is called"
+      noise: "The judge&rsquo;s noise is measured, and a check can ask for a drop to be read against it"
       file: "The reference is a file in a PR, with a commit and a name on it"
       ci: "CI stops before the release does"
 
@@ -288,9 +288,9 @@ home:
     title_accent: "headed"
     shipped_label: "Shipped &mdash; verdict credibility:"
     shipped_text: |-
-      a drop is a regression only when
-        it leaves the interval the baseline measured across its own samples, and the
-        open work now is adoption.
+      a check that asks for a noise floor gets one, measured from its reference's
+      own samples, and a check that does not is decided by the tolerance its author
+      wrote; the open work now is adoption.
     never_label: "Two things will never be on the roadmap."
     never_text: |-
       A hosted service that

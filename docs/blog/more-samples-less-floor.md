@@ -8,6 +8,13 @@ date: 2026-10-16
 
 # The more samples I took, the less my noise floor could see
 
+*Updated 2026-10-21: The floor this post describes is gone. ADR 0050,
+accepted on 2026-10-20 and amended on 2026-10-21, replaced it: a check gets a
+floor only where it declares one, and the floor is a multiple of the standard
+error of the movement between two means, so more samples now narrows it rather
+than widening it. The post stands as the measurement that led there; the
+sentence below citing ADR 0050 as proposed was true when it was written.*
+
 On 21 September I noted a problem in a commit message, in a private repository. The note said that the samples of one check are binary, so for any case whose samples disagree the recorded minimum is 0.0 and the maximum is 1.0.
 
 I pushed the commit and kept shipping the feature. Three weeks later I measured it properly. The defect was worse than the one I had written down.

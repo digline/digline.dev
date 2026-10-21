@@ -126,7 +126,7 @@ home:
     with_reference: Con un riferimento approvato nel repo
     with_reference_items:
       compared: Ogni modifica viene confrontata caso per caso
-      noise: Il rumore del giudice viene misurato prima di dichiarare un calo
+      noise: Il rumore del giudice viene misurato, e un check può chiedere che un calo sia letto rispetto a quel rumore
       file: Il riferimento è un file in una PR, con sopra un commit e un nome
       ci: La CI si ferma prima che lo faccia il rilascio
   fits:
@@ -238,7 +238,7 @@ home:
     title: Dove sta
     title_accent: andando
     shipped_label: 'Rilasciato &mdash; credibilità del verdetto:'
-    shipped_text: un calo è una regressione solo quando esce dall&rsquo;intervallo che la baseline ha misurato sui propri campioni, e il lavoro aperto adesso è l&rsquo;adozione.
+    shipped_text: un check che chiede un noise floor lo ottiene, misurato sui campioni del proprio riferimento, e un check che non lo chiede è deciso dalla tolleranza che il suo autore ha scritto; il lavoro aperto adesso è l&rsquo;adozione.
     never_label: Due cose non entreranno mai nella roadmap.
     never_text: Un servizio in hosting che riceve i tuoi payload &mdash; prompt, output e giudice restano nel tuo perimetro. E la raccolta di dati d&rsquo;uso, mai.
     more: l&rsquo;intera roadmap, per percorsi e gate anziché per date &rarr;
@@ -387,7 +387,7 @@ source_keys:
         ci: a3b241cea305
         compared: d7f22d7416d0
         file: 9268df605542
-        noise: 19a7fa5dbeb6
+        noise: dc7d087c7c05
     python:
       or_newer: 57613e146b4f
     readings:
@@ -416,7 +416,7 @@ source_keys:
       never_label: 7d28fb40af98
       never_text: 33f7bcb41643
       shipped_label: bb070b8e3da5
-      shipped_text: 98e46d4af20f
+      shipped_text: 6a14cbf4624e
       title: 87ab0cab1a67
       title_accent: 3aada874b683
     stack:
