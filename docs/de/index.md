@@ -9,7 +9,7 @@ search:
   exclude: true
 source: index.md
 source_sha: b1ed04161a9c
-source_commit: 3185dfb
+source_commit: de1d2ec
 model: claude-opus-5
 ---
 
