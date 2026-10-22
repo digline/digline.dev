@@ -232,7 +232,7 @@ home:
     title: Dónde se sitúa el check
     title_accent: cuando un agente hace los cambios.
     intro: El agente edita; digline decide si la edición puede seguir adelante.
-    alt: 'Diagrama animado de digline en un flujo con agentes: el cambio de un agente de programación pasa por digline, un gate dentro de tu repositorio, que lo compara con el baseline aprobado. La deriva que se mantiene dentro de un noise floor declarado se absorbe en silencio, y donde un check no declara ninguno decide su tolerancia; una deriva real llega a una persona en forma de dossier, y solo la firma de esa persona actualiza el baseline. Cuando el agente intenta recurrir a promote, el servidor responde que esa herramienta no existe.'
+    alt: 'Diagrama animado de digline en un flujo con agentes: el cambio de un agente de programación pasa por digline, un gate dentro de tu repositorio, que lo compara con el baseline aprobado. La deriva que se mantiene dentro de un noise floor declarado se absorbe sin que el gate falle, y el resumen la cuenta; donde un check no declara ninguno decide su tolerancia; una deriva real llega a una persona en forma de dossier, y solo la firma de esa persona actualiza el baseline. Cuando el agente intenta recurrir a promote, el servidor responde que esa herramienta no existe.'
   roadmap:
     kicker: Hoja de ruta
     title: Hacia dónde
@@ -342,7 +342,7 @@ source_keys:
       title: f5c04e5b9def
       title_accent: dd712cf62d1a
     flow:
-      alt: 19ea5e050a47
+      alt: cbf58e56f5ac
       intro: 164b5787998c
       kicker: 173d98ef1236
       title: 643212005eca
