@@ -660,6 +660,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "loads another in the same process, and a module it did not load is to "
         "be named, not refused.",
     ),
+    "product/adr/0053-promote-refuses-a-pin-nobody-named.md": (
+        "ADR 0053: A promotion refuses a pin nobody named",
+        "Why a drifted or lost pin is to refuse a promotion whatever the exit "
+        "code, and how --accepting-pin names the paths that accept it.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
