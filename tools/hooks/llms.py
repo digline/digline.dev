@@ -788,6 +788,13 @@ DESCRIPTIONS: dict[str, str] = {
         "modules_unchecked, not refused, and read in the comparison's headline "
         "from the judged run only, moving no number"
     ),
+    "product/adr/0053-promote-refuses-a-pin-nobody-named.md": (
+        "A promotion is to be refused while a pinned file drifted or a pin lost "
+        "its path against the baseline it replaces, whatever the exit code, "
+        "unless --accepting-pin names exactly the paths implicated; the causes "
+        "of exit 2 are written once, in core, and read by exit_code and by the "
+        "promotion's write step, after condition 8"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
