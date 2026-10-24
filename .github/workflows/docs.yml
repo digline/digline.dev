@@ -2,9 +2,16 @@ name: docs
 
 # The site is built from two repositories: this one, which is the presentation
 # pages and the theme, and digline/digline, which is the documentation. It is
-# rebuilt when this repository changes, and again on every release of digline —
-# publish.yml over there sends the dispatch once the version is on PyPI, so the
-# documentation on the site is the documentation of what you can install.
+# rebuilt when this repository changes, when digline's documentation moves on
+# its main (a `digline-docs` dispatch), and on every release of digline
+# (`digline-release`, which publish.yml over there sends once the version is on
+# PyPI).
+#
+# **The documentation on the site is digline's main**, not the last release: a
+# push here and a `digline-docs` dispatch both build from the tip of digline's
+# main. A release dispatch builds from the tag it published, and the next build
+# of either other kind moves the site back to main. So the site documents what
+# digline's main says, which can be ahead of what a reader can install.
 #
 # A pull request into main runs the same build and every gate, and stops there:
 # the artifact is not uploaded and the Deploy job does not run. Deploying is for
@@ -16,7 +23,11 @@ on:
   pull_request:
     branches: [main]
   repository_dispatch:
-    types: [digline-release]
+    # Both sent by digline/digline. tools/check-deploy.py, in the build below,
+    # refuses a type here that the Deploy job's `if:` does not name, and one it
+    # names that is not here: the two go together, or a dispatch builds and
+    # does not publish.
+    types: [digline-release, digline-docs]
   workflow_dispatch:
 
 permissions:
@@ -50,8 +61,9 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: digline/digline
-          # The release dispatch carries the tag it published; a push here
-          # carries nothing and gets the default branch.
+          # The release dispatch carries the tag it published; a push here and
+          # a `digline-docs` dispatch carry nothing, and get the default branch
+          # at its tip.
           ref: ${{ github.event.client_payload.ref }}
           path: _digline
           fetch-depth: 0
@@ -74,6 +86,16 @@ jobs:
         run: |
           uv run tools/check-actions.py --selftest
           uv run tools/check-actions.py
+
+      - name: Check that every dispatch is one the site deploys
+        # tools/check-deploy.py: every type in on.repository_dispatch.types is
+        # in the Deploy job's `if:` and every type that names is accepted, and
+        # digline's two are among them. --selftest first: both deployed passes,
+        # a type on one side only, either of digline's missing, and a branch
+        # that reads the action without asking for a dispatch are refused.
+        run: |
+          uv run tools/check-deploy.py --selftest
+          uv run tools/check-deploy.py
 
       - name: Refuse an unreleased source
         # sync-docs.sh above has already refused a _digline that is dirty or
@@ -305,14 +327,15 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    # A push to main, or a digline release. Not a pull request, and not a manual
-    # workflow_dispatch either: that one builds and checks. To publish again
-    # with nothing new to push, use "Re-run jobs" on the latest push run on
-    # main — an older run would deploy the commit it was built from — or push
-    # an empty commit to main.
+    # A push to main, a digline release, or digline's documentation moving on
+    # its main. Not a pull request, and not a manual workflow_dispatch either:
+    # that one builds and checks. To publish again with nothing new to push,
+    # use "Re-run jobs" on the latest push run on main — an older run would
+    # deploy the commit it was built from — or push an empty commit to main.
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'repository_dispatch' && github.event.action == 'digline-release')
+      (github.event_name == 'repository_dispatch' && github.event.action == 'digline-release') ||
+      (github.event_name == 'repository_dispatch' && github.event.action == 'digline-docs')
     runs-on: ubuntu-latest
     permissions:
       pages: write
