@@ -665,6 +665,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why a drifted or lost pin is to refuse a promotion whatever the exit "
         "code, and how --accepting-pin names the paths that accept it.",
     ),
+    "product/adr/0054-the-names-a-server-lets-out.md": (
+        "ADR 0054: The names a server lets out",
+        "Why digline-mcp is to require a declaration of whether a store's names "
+        "may leave in clear, and how it is to project them when they may not.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
