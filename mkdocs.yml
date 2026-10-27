@@ -358,6 +358,7 @@ nav:
           - ADR 0051 — A pinned path the judged run no longer records: product/adr/0051-a-pinned-path-the-run-no-longer-records.md
           - ADR 0052 — A suite loaded again reads its application again: product/adr/0052-a-suite-loaded-again-reads-its-application-again.md
           - ADR 0053 — A promotion refuses a pin nobody named: product/adr/0053-promote-refuses-a-pin-nobody-named.md
+          - ADR 0054 — The names a server lets out: product/adr/0054-the-names-a-server-lets-out.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

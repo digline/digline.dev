@@ -795,6 +795,14 @@ DESCRIPTIONS: dict[str, str] = {
         "of exit 2 are written once, in core, and read by exit_code and by the "
         "promotion's write step, after condition 8"
     ),
+    "product/adr/0054-the-names-a-server-lets-out.md": (
+        "digline-mcp is to require at start a declaration, clear or project, "
+        "with no default; under project every tool's response and refusal "
+        "carries tokens where it carries names, from the name table's two "
+        "callables named by --name-table, a gate fails closed on a string it "
+        "does not classify, and tenant and suite stay in clear; a minor, "
+        "digline-mcp 0.7.0"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
