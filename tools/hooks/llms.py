@@ -803,6 +803,13 @@ DESCRIPTIONS: dict[str, str] = {
         "does not classify, and tenant and suite stay in clear; a minor, "
         "digline-mcp 0.7.0"
     ),
+    "product/adr/0055-a-migration-step-that-renames.md": (
+        "a migration step that renames a stored key carries the value "
+        "unchanged, finds it by its position in the schema, leaves an absent "
+        "key absent, refuses a document with both names, removes the old name, "
+        "runs forward only, and owes a gate that reads every step by its "
+        "declared nature; proposed, nothing built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
