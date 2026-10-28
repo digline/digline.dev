@@ -360,6 +360,7 @@ nav:
           - ADR 0053 — A promotion refuses a pin nobody named: product/adr/0053-promote-refuses-a-pin-nobody-named.md
           - ADR 0054 — The names a server lets out: product/adr/0054-the-names-a-server-lets-out.md
           - ADR 0055 — A migration step that renames: product/adr/0055-a-migration-step-that-renames.md
+          - ADR 0056 — A migration step that transforms: product/adr/0056-a-migration-step-that-transforms.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

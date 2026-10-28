@@ -675,6 +675,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "The rule for a schema migration step that renames a key instead of "
         "adding one: the value carried unchanged, absent left absent, both names refused.",
     ),
+    "product/adr/0056-a-migration-step-that-transforms.md": (
+        "ADR 0056: A migration step that transforms",
+        "The rule for a schema migration step that computes a new shape from the "
+        "old one: no default, a named refusal, and no silent third outcome.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
