@@ -810,6 +810,13 @@ DESCRIPTIONS: dict[str, str] = {
         "runs forward only, and owes a gate that reads every step by its "
         "declared nature; proposed, nothing built"
     ),
+    "product/adr/0056-a-migration-step-that-transforms.md": (
+        "a migration step that transforms reads declared paths and writes one "
+        "of a new shape at a path it read; when the old value does not "
+        "determine the new one it refuses by name and writes no default, every "
+        "document ends transformed, refused or outside its declared domain, it "
+        "runs forward only, and it owes a gate; proposed, nothing built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
