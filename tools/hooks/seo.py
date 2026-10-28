@@ -670,6 +670,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why digline-mcp is to require a declaration of whether a store's names "
         "may leave in clear, and how it is to project them when they may not.",
     ),
+    "product/adr/0055-a-migration-step-that-renames.md": (
+        "ADR 0055: A migration step that renames",
+        "The rule for a schema migration step that renames a key instead of "
+        "adding one: the value carried unchanged, absent left absent, both names refused.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
