@@ -86,7 +86,7 @@ home:
     title_quiet: Cos&rsquo;altro è peggiorato?
     lede: Un prompt nuovo, una versione del modello, l&rsquo;aggiornamento di una libreria. L&rsquo;applicazione funziona ancora, i test passano ancora, e una risposta su cui il tuo cliente contava adesso è peggiorata.
     question: Peggiorata, o solo diversa? Esegui due volte la stessa suite e i punteggi si spostano da soli.
-    answer: digline registra un run e confronta con quello il run successivo. Misura quanto il modello varia per conto suo, e chiama regressione una differenza solo quando è più grande di quella variazione.
+    answer: digline congela un run che hai approvato come riferimento, e ti dice cosa si è spostato rispetto a quello.
     found: Ce ne siamo accorti perché il nostro stesso noise floor è risultato più largo della tolleranza che avevamo dichiarato.
     requires: Richiede Python {python}
     start: Inizia qui
@@ -346,7 +346,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: cb00cd5c6f98
+      answer: 29e05dda935e
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1

@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — pruebas de regresión para LLM con un noise floor declarado
 lang: es
 translation_of: index.md
-description: ¿Mi cambio lo empeoró? digline graba un run y compara el siguiente con él. Mide cuánto varía el modelo por sí solo, y solo llama regresión a una diferencia cuando es mayor que eso.
+description: ¿Mi cambio lo empeoró?
 search:
   exclude: true
 source: index.md
-source_sha: 6fa987b1df77
-source_commit: c818ccf
+source_sha: 53cd6a1c6d9d
+source_commit: 41d8a08
 model: claude-opus-5
 ---
 

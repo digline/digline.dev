@@ -86,7 +86,7 @@ home:
     title_quiet: Was ist sonst noch schlechter geworden?
     lede: Ein neuer Prompt, eine Modellversion, ein Bibliotheks-Upgrade. Die Anwendung läuft weiter, die Tests sind weiter grün, und eine Antwort, auf die sich dein Kunde verlassen hat, ist jetzt schlechter.
     question: Schlechter oder nur anders? Lass dieselbe Suite zweimal laufen, und die Scores bewegen sich von selbst.
-    answer: digline zeichnet einen run auf und vergleicht den nächsten damit. Es misst, wie stark das Modell von sich aus schwankt, und nennt einen Unterschied nur dann eine Regression, wenn er größer ist als diese Schwankung.
+    answer: digline friert einen run, den du freigegeben hast, als Referenz ein und sagt dir, was sich dagegen verschoben hat.
     found: Aufgefallen ist uns das, weil unser eigener noise floor breiter war als die Toleranz, die wir festgelegt hatten.
     requires: Benötigt Python {python}
     start: Hier starten
@@ -346,7 +346,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: cb00cd5c6f98
+      answer: 29e05dda935e
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
