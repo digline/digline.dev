@@ -135,7 +135,7 @@ def _attr(value: str) -> str:
 # size is not written here: it is measured, like every other card's, in
 # on_config, and a build whose default image is gone or unreadable stops there.
 OG_IMAGE = "assets/digline-wordmark.png"
-OG_IMAGE_ALT = "digline — regression testing for LLM applications"
+OG_IMAGE_ALT = "digline — did my change make it worse?"
 
 # A page may put its own image on the card instead. A post whose subject *is* a
 # screenshot is better pasted as that screenshot than as the wordmark, and every

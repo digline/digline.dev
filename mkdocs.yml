@@ -11,9 +11,9 @@
 site_name: digline
 site_url: https://digline.dev/
 site_description: >-
-  Regression testing for LLM applications: sample your reference and a score
-  drop is read against how much that score moves on its own. A flip from pass
-  to fail is always a regression.
+  Did my change make it worse? digline records a run and compares the next one
+  against it. It measures how much the model varies on its own, and calls a
+  difference a regression only when it is bigger than that.
 site_author: Alessandro Prandini
 copyright: Apache-2.0
 
