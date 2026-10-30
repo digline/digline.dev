@@ -59,13 +59,11 @@ footer:
     about: Über
     contact: Kontakt
 pager:
-  previous: "Zurück"
-  next: "Weiter"
-  label: "Zurück und weiter"
-
+  previous: Zurück
+  next: Weiter
+  label: Zurück und weiter
 nav:
-  english_docs: "Dokumentation, auf Englisch"
-
+  english_docs: Dokumentation, auf Englisch
 closing:
   title: Beginne mit einer Suite und
   title_accent: einem freigegebenen run.
@@ -88,7 +86,7 @@ home:
     title_quiet: Was ist sonst noch schlechter geworden?
     lede: Ein neuer Prompt, eine Modellversion, ein Bibliotheks-Upgrade. Die Anwendung läuft weiter, die Tests sind weiter grün, und eine Antwort, auf die sich dein Kunde verlassen hat, ist jetzt schlechter.
     question: Schlechter oder nur anders? Lass dieselbe Suite zweimal laufen, und die Scores bewegen sich von selbst.
-    answer: 'digline benennt, was schlechter geworden ist: welcher Fall, welcher check, um wie viel. Ziehst du Stichproben für deine Referenz und legst dort einen noise floor fest, wo ein check ihn braucht, sagt es dir auch, wie stark sich dieser Score von selbst bewegt, damit du siehst, ob der Abfall größer ist als die Schwankung der Messung.'
+    answer: digline zeichnet einen run auf und vergleicht den nächsten damit. Es misst, wie stark das Modell von sich aus schwankt, und nennt einen Unterschied nur dann eine Regression, wenn er größer ist als diese Schwankung.
     found: Aufgefallen ist uns das, weil unser eigener noise floor breiter war als die Toleranz, die wir festgelegt hatten.
     requires: Benötigt Python {python}
     start: Hier starten
@@ -348,7 +346,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: d3758b85d72c
+      answer: cb00cd5c6f98
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
@@ -424,8 +422,8 @@ source_keys:
       examples_text: df62c6ce232d
       examples_title: 936698aa1941
       mcp: d938c8168e3a
-      plugin: 23c468285d1a
       openai_compatible: 2b6834dd6a7e
+      plugin: 23c468285d1a
       providers_text: 94c9fedb11ec
       providers_title: 996c32b35f21
       run_text: a05244958e06
@@ -452,6 +450,8 @@ source_keys:
       got_worse: ca5b318393bf
       scale_ref: 5ae084af93a4
       scale_run: 5537e3975c73
+  nav:
+    english_docs: 33b9aad6b620
   not_found:
     title: 53c6279bf75b
   numbers:
@@ -475,8 +475,6 @@ source_keys:
     '7': 3ba8d02b16fd
     '8': c195d2d87562
     '9': edcd8e701a2d
-  nav:
-    english_docs: 33b9aad6b620
   pager:
     label: 4ff43b195361
     next: 1ff57a29d7c9
