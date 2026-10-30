@@ -64,11 +64,12 @@ ROOT_SECTION = "Overview"
 # sentence is in one place. Material prints the same value as the meta
 # description of the 404, which declares none of its own.
 SUMMARY = """\
-digline gives you an approved reference — the baseline — and on every change
-tells you whether you are below it: which case, which check, by how much. The
-baseline is a JSON file in your repository, so it goes through code review and
-it rolls back with git. There is no hosted service that receives your payloads
-and no usage data collection: the runs happen on your machines.
+You changed a prompt, or a model, or a temperature. Run it twice and you get
+two different answers, so you cannot tell a regression from the model's own
+noise by reading a few outputs. The reference is a file in your repo, reviewed
+like any other change. The answer is an exit code, so the same commands run in
+CI. There is no hosted service that receives your payloads and no usage data
+collection: the runs happen on your machines.
 
 Every link below is the page's Markdown source. Drop the `.md` for the rendered
 page — `/why.md` is `/why/`.\

@@ -4,9 +4,9 @@ template: home.html
 seo_title: >-
   digline — LLM regression testing with a declared noise floor
 description: >-
-  Regression tests for LLM apps in CI, pytest or MCP: digline names the checks
-  that got worse, and where you declare a floor, how much the score moves on
-  its own.
+  Did my change make it worse? digline records a run and compares the next one
+  against it. It measures how much the model varies on its own, and calls a
+  difference a regression only when it is bigger than that.
 ---
 
 <!--
