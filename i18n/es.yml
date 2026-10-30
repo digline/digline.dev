@@ -59,13 +59,11 @@ footer:
     about: Acerca de
     contact: Contacto
 pager:
-  previous: "Anterior"
-  next: "Siguiente"
-  label: "Anterior y siguiente"
-
+  previous: Anterior
+  next: Siguiente
+  label: Anterior y siguiente
 nav:
-  english_docs: "Documentación, en inglés"
-
+  english_docs: Documentación, en inglés
 closing:
   title: Empieza con una suite y
   title_accent: un run aprobado.
@@ -88,7 +86,7 @@ home:
     title_quiet: ¿Qué más empeoró?
     lede: Un prompt nuevo, una versión de modelo, la actualización de una biblioteca. La aplicación sigue funcionando, las pruebas siguen pasando y una respuesta de la que dependía tu cliente ahora es peor.
     question: ¿Peor, o solo distinta? Ejecuta la misma suite dos veces y las puntuaciones se mueven solas.
-    answer: 'digline nombra lo que empeoró: qué caso, qué check, en cuánto. Si muestreas tu referencia y declaras un noise floor en los checks que lo necesitan, también te dice cuánto se mueve esa puntuación por sí sola, para que veas si la caída es mayor que lo que oscila la medición.'
+    answer: digline registra un run y compara el siguiente con él. Mide cuánto varía el modelo por sí solo, y solo llama regresión a una diferencia cuando es mayor que eso.
     found: Nos dimos cuenta porque nuestro propio noise floor resultó ser más ancho que la tolerancia que habíamos declarado.
     requires: Requiere Python {python}
     start: Empieza aquí
@@ -348,7 +346,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: d3758b85d72c
+      answer: cb00cd5c6f98
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
@@ -424,8 +422,8 @@ source_keys:
       examples_text: df62c6ce232d
       examples_title: 936698aa1941
       mcp: d938c8168e3a
-      plugin: 23c468285d1a
       openai_compatible: 2b6834dd6a7e
+      plugin: 23c468285d1a
       providers_text: 94c9fedb11ec
       providers_title: 996c32b35f21
       run_text: a05244958e06
@@ -452,6 +450,8 @@ source_keys:
       got_worse: ca5b318393bf
       scale_ref: 5ae084af93a4
       scale_run: 5537e3975c73
+  nav:
+    english_docs: 33b9aad6b620
   not_found:
     title: 53c6279bf75b
   numbers:
@@ -475,8 +475,6 @@ source_keys:
     '7': 3ba8d02b16fd
     '8': c195d2d87562
     '9': edcd8e701a2d
-  nav:
-    english_docs: 33b9aad6b620
   pager:
     label: 4ff43b195361
     next: 1ff57a29d7c9

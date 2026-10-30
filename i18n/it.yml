@@ -59,13 +59,11 @@ footer:
     about: Informazioni
     contact: Contatti
 pager:
-  previous: "Precedente"
-  next: "Successivo"
-  label: "Precedente e successivo"
-
+  previous: Precedente
+  next: Successivo
+  label: Precedente e successivo
 nav:
-  english_docs: "Documentazione, in inglese"
-
+  english_docs: Documentazione, in inglese
 closing:
   title: Inizia con una suite e
   title_accent: un run approvato.
@@ -88,7 +86,7 @@ home:
     title_quiet: Cos&rsquo;altro è peggiorato?
     lede: Un prompt nuovo, una versione del modello, l&rsquo;aggiornamento di una libreria. L&rsquo;applicazione funziona ancora, i test passano ancora, e una risposta su cui il tuo cliente contava adesso è peggiorata.
     question: Peggiorata, o solo diversa? Esegui due volte la stessa suite e i punteggi si spostano da soli.
-    answer: 'digline dice cosa è peggiorato: quale caso, quale check, di quanto. Se campioni il tuo riferimento e dichiari un noise floor sui check che ne hanno bisogno, ti dice anche quanto quel punteggio si sposta da solo, così vedi se il calo è più grande di quanto oscilla la misura.'
+    answer: digline registra un run e confronta con quello il run successivo. Misura quanto il modello varia per conto suo, e chiama regressione una differenza solo quando è più grande di quella variazione.
     found: Ce ne siamo accorti perché il nostro stesso noise floor è risultato più largo della tolleranza che avevamo dichiarato.
     requires: Richiede Python {python}
     start: Inizia qui
@@ -348,7 +346,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: d3758b85d72c
+      answer: cb00cd5c6f98
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1
@@ -424,8 +422,8 @@ source_keys:
       examples_text: df62c6ce232d
       examples_title: 936698aa1941
       mcp: d938c8168e3a
-      plugin: 23c468285d1a
       openai_compatible: 2b6834dd6a7e
+      plugin: 23c468285d1a
       providers_text: 94c9fedb11ec
       providers_title: 996c32b35f21
       run_text: a05244958e06
@@ -452,6 +450,8 @@ source_keys:
       got_worse: ca5b318393bf
       scale_ref: 5ae084af93a4
       scale_run: 5537e3975c73
+  nav:
+    english_docs: 33b9aad6b620
   not_found:
     title: 53c6279bf75b
   numbers:
@@ -475,8 +475,6 @@ source_keys:
     '7': 3ba8d02b16fd
     '8': c195d2d87562
     '9': edcd8e701a2d
-  nav:
-    english_docs: 33b9aad6b620
   pager:
     label: 4ff43b195361
     next: 1ff57a29d7c9
