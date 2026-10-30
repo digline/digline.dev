@@ -11,9 +11,7 @@
 site_name: digline
 site_url: https://digline.dev/
 site_description: >-
-  Did my change make it worse? digline records a run and compares the next one
-  against it. It measures how much the model varies on its own, and calls a
-  difference a regression only when it is bigger than that.
+  Did my change make it worse?
 site_author: Alessandro Prandini
 copyright: Apache-2.0
 

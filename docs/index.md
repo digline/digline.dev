@@ -4,9 +4,7 @@ template: home.html
 seo_title: >-
   digline — LLM regression testing with a declared noise floor
 description: >-
-  Did my change make it worse? digline records a run and compares the next one
-  against it. It measures how much the model varies on its own, and calls a
-  difference a regression only when it is bigger than that.
+  Did my change make it worse?
 ---
 
 <!--
