@@ -86,7 +86,7 @@ home:
     title_quiet: ¿Qué más empeoró?
     lede: Un prompt nuevo, una versión de modelo, la actualización de una biblioteca. La aplicación sigue funcionando, las pruebas siguen pasando y una respuesta de la que dependía tu cliente ahora es peor.
     question: ¿Peor, o solo distinta? Ejecuta la misma suite dos veces y las puntuaciones se mueven solas.
-    answer: digline registra un run y compara el siguiente con él. Mide cuánto varía el modelo por sí solo, y solo llama regresión a una diferencia cuando es mayor que eso.
+    answer: digline congela un run que aprobaste como referencia y te dice qué se movió frente a ella.
     found: Nos dimos cuenta porque nuestro propio noise floor resultó ser más ancho que la tolerancia que habíamos declarado.
     requires: Requiere Python {python}
     start: Empieza aquí
@@ -346,7 +346,7 @@ source_keys:
       title: 643212005eca
       title_accent: 715190aecf13
     hero:
-      answer: cb00cd5c6f98
+      answer: 29e05dda935e
       facts:
         exit_code: 2b1739c50e37
         no_key: ff65c9ef70d1

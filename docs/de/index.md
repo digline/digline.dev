@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — Regressionstests für LLMs mit festgelegtem noise floor
 lang: de
 translation_of: index.md
-description: Hat meine Änderung es verschlechtert? digline zeichnet einen run auf und vergleicht den nächsten damit. Es misst, wie stark das Modell von selbst schwankt, und nennt einen Unterschied nur dann eine Regression, wenn er größer ist als diese Schwankung.
+description: Hat meine Änderung es verschlechtert?
 search:
   exclude: true
 source: index.md
-source_sha: 6fa987b1df77
-source_commit: c818ccf
+source_sha: 53cd6a1c6d9d
+source_commit: 41d8a08
 model: claude-opus-5
 ---
 
