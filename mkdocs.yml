@@ -11,7 +11,8 @@
 site_name: digline
 site_url: https://digline.dev/
 site_description: >-
-  Did my change make it worse?
+  Did my change make it worse? digline freezes a run you approved as the
+  reference, and tells you what moved against it.
 site_author: Alessandro Prandini
 copyright: Apache-2.0
 
