@@ -4,11 +4,11 @@ template: home.html
 seo_title: digline — Regressionstests für LLMs mit festgelegtem noise floor
 lang: de
 translation_of: index.md
-description: Hat meine Änderung es verschlechtert?
+description: Hat meine Änderung es verschlechtert? digline friert einen von dir freigegebenen run als Referenz ein und zeigt dir, was sich im Vergleich dazu verändert hat.
 search:
   exclude: true
 source: index.md
-source_sha: 53cd6a1c6d9d
+source_sha: 5795691097ea
 source_commit: 41d8a08
 model: claude-opus-5
 ---
