@@ -4,11 +4,11 @@ template: home.html
 seo_title: digline — pruebas de regresión para LLM con un noise floor declarado
 lang: es
 translation_of: index.md
-description: ¿Mi cambio lo empeoró?
+description: ¿Mi cambio lo empeoró? digline congela un run que aprobaste como referencia y te dice qué cambió respecto a él.
 search:
   exclude: true
 source: index.md
-source_sha: 53cd6a1c6d9d
+source_sha: 5795691097ea
 source_commit: 41d8a08
 model: claude-opus-5
 ---
