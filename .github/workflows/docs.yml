@@ -87,6 +87,17 @@ jobs:
           uv run tools/check-actions.py --selftest
           uv run tools/check-actions.py
 
+      - name: Check that every lock keeps its revision
+        # tools/check-lock-revision.py: every committed uv.lock has a row in
+        # the script, and reads the `revision` declared there. A uv other than
+        # the one that wrote a lock rewrites its format; #233 moved this one
+        # from 3 to 5 beside two version bumps. --selftest first, on a
+        # repository of its own: a lock at its revision passes, a moved one, a
+        # lock with no row and a row with no lock are refused.
+        run: |
+          uv run tools/check-lock-revision.py --selftest
+          uv run tools/check-lock-revision.py
+
       - name: Check that every dispatch is one the site deploys
         # tools/check-deploy.py: every type in on.repository_dispatch.types is
         # in the Deploy job's `if:` and every type that names is accepted, and
