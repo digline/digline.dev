@@ -818,6 +818,12 @@ DESCRIPTIONS: dict[str, str] = {
         "document ends transformed, refused or outside its declared domain, it "
         "runs forward only, and it owes a gate; proposed, nothing built"
     ),
+    "product/adr/0057-the-replay-reads-the-trajectory-the-live-run-read.md": (
+        "the run document keeps a reply's finish and its tool names beside its "
+        "tool calls, written when the target reports them and absent where it "
+        "did not, so a replay judges the trajectory the live run judged; "
+        "schema 23, with a step that writes nothing; accepted, nothing built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

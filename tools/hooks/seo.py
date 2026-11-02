@@ -680,6 +680,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "The rule for a schema migration step that computes a new shape from the "
         "old one: no default, a named refusal, and no silent third outcome.",
     ),
+    "product/adr/0057-the-replay-reads-the-trajectory-the-live-run-read.md": (
+        "ADR 0057: The replay reads the trajectory the live run read",
+        "Why a run records a reply's finish and tool names beside its tool calls, "
+        "so a re-judged run reads the trajectory the live run read.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
