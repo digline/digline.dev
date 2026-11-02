@@ -685,6 +685,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why a run records a reply's finish and tool names beside its tool calls, "
         "so a re-judged run reads the trajectory the live run read.",
     ),
+    "product/adr/0058-the-recorder-a-call-recorded-where-the-application-makes-it.md": (
+        "ADR 0058: The recorder: a call recorded where the application makes it",
+        "Why a test set made by hand lags the application it tests, and how a "
+        "call is recorded where the application makes it, in the shape a suite reads.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "

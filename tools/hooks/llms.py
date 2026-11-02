@@ -824,6 +824,14 @@ DESCRIPTIONS: dict[str, str] = {
         "did not, so a replay judges the trajectory the live run judged; "
         "schema 23, with a step that writes nothing; accepted, nothing built"
     ),
+    "product/adr/0058-the-recorder-a-call-recorded-where-the-application-makes-it.md": (
+        "a call to a model is recorded where the application makes it, in three "
+        "compartments, case, setup and response, under the tenant it was made "
+        "for; each call site names its suite, the recorder is off by default and "
+        "switched on outside the code, an import refuses another tenant's "
+        "recording, and a recording carries a version of its own; accepted, "
+        "nothing built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
