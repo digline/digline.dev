@@ -361,6 +361,7 @@ nav:
           - ADR 0055 — A migration step that renames: product/adr/0055-a-migration-step-that-renames.md
           - ADR 0056 — A migration step that transforms: product/adr/0056-a-migration-step-that-transforms.md
           - ADR 0057 — The replay reads the trajectory the live run read: product/adr/0057-the-replay-reads-the-trajectory-the-live-run-read.md
+          - "ADR 0058 — The recorder: a call recorded where the application makes it": product/adr/0058-the-recorder-a-call-recorded-where-the-application-makes-it.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
