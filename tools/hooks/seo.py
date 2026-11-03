@@ -276,6 +276,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Remove a run and every replay chained from it from the store. A "
         "promoted run is refused, and a delete is not an erasure.",
     ),
+    "product/record.md": (
+        "digline record",
+        "Keep the calls an application makes to a model as cases: a wrapper "
+        "around the provider's client, a switch, and an import a person "
+        "names. The command arrives with digline 1.1.",
+    ),
     "product/docker.md": (
         "The Docker image",
         "The official ghcr.io/digline/digline image: what it contains and what "

@@ -249,6 +249,11 @@ nav:
           - Testing a selection: product/selection.md
           - Watching an MCP server: product/tools.md
           - Suites as data: product/declarative.md
+          # A command page, here until the release that carries `digline
+          # record`: tools/hooks/home.py groups only the commands home.json
+          # lists, and home.json is captured at a release. It moves under
+          # Commands then, with its group, as `digline delete` did (e96f4b9).
+          - Recording calls as cases: product/record.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
       # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
       # grouping the home shows, and fails the build for a command page that

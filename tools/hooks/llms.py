@@ -275,6 +275,13 @@ DESCRIPTIONS: dict[str, str] = {
         "baseline before anything is removed, and it removes documents from "
         "the store's directory rather than erasing them"
     ),
+    "product/record.md": (
+        "Keeps the calls an application makes to a model, where it makes "
+        "them, in the shape a suite reads: digline.recorder.wrap around the "
+        "provider's client, a switch per tenant with digline record on, off "
+        "and status, and digline record import, which writes the cases a "
+        "person names into a file the suite loads"
+    ),
     "product/docker.md": (
         "What the official `ghcr.io/digline/digline` image contains and what it "
         "deliberately does not, which tag to pin in CI, and how to derive it "
