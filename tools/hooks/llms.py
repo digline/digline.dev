@@ -839,6 +839,27 @@ DESCRIPTIONS: dict[str, str] = {
         "recording, and a recording carries a version of its own; accepted, "
         "nothing built"
     ),
+    "product/adr/0059-a-reviewed-answer-a-grouped-listing-a-source-as-data.md": (
+        "the yes or no a person gives at the import of recordings makes a "
+        "reviewed answer, not a case's label; a yes becomes an expected only "
+        "where the suite declares it, the listing groups and counts and never "
+        "ranks or proposes, and a suite can declare its source as data; "
+        "accepted, unreleased"
+    ),
+    "product/adr/0060-the-steps-of-a-trajectory-live-recorded-and-collected.md": (
+        "one function makes the steps of an agent's trajectory, read live as "
+        "the response's steps, collected from every call a target makes and "
+        "recorded in the run document, with four assertions on their order "
+        "and their number; accepted, unreleased"
+    ),
+    "product/adr/0061-a-local-page-whose-views-other-packages-may-extend.md": (
+        "digline view becomes a local page over .digline/ that reads the "
+        "recordings, compares a case across setups and writes two things, the "
+        "recorder's switch and an imported case, only behind --allow-record "
+        "and the launch key; on loopback alone, nothing inline under a strict "
+        "policy, and views from other packages read-only; accepted, nothing "
+        "built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
