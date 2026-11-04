@@ -287,6 +287,13 @@ DESCRIPTIONS: dict[str, str] = {
         "answers by setup, and the same on the local page of digline view, "
         "whose writes sit behind --allow-record"
     ),
+    "product/recording-format.md": (
+        "The contract of a recording, the JSON file one call to a model is "
+        "kept as: where a file goes, the smallest one, the fields a writer must "
+        "write and the ones that are free, so that a program in another "
+        "language writes a file the import, digline record compare and digline "
+        "record status read like one digline wrote"
+    ),
     "product/docker.md": (
         "What the official `ghcr.io/digline/digline` image contains and what it "
         "deliberately does not, which tag to pin in CI, and how to derive it "
@@ -871,8 +878,8 @@ DESCRIPTIONS: dict[str, str] = {
         "record proxy on 127.0.0.1 between an SDK and its provider, and an "
         "interceptor copied into the project, Java in 1.1; each writes the same "
         "recording, a public contract with its own version, and everything "
-        "downstream reads it unchanged; accepted, nothing built but the "
-        "recording's input"
+        "downstream reads it unchanged; accepted, the recording's input and the "
+        "format contract built"
     ),
     # Writing
     "blog/index.md": (

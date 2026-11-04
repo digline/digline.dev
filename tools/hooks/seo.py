@@ -282,6 +282,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "switch, an import a person names, a comparison by setup, and a local "
         "page. The command arrives with digline 1.1.",
     ),
+    "product/recording-format.md": (
+        "The recording document",
+        "The contract of a recording: the JSON file one call is kept as, and "
+        "what a writer in another language must put in it to be read.",
+    ),
     "product/docker.md": (
         "The Docker image",
         "The official ghcr.io/digline/digline image: what it contains and what "
