@@ -367,6 +367,9 @@ nav:
           - ADR 0056 — A migration step that transforms: product/adr/0056-a-migration-step-that-transforms.md
           - ADR 0057 — The replay reads the trajectory the live run read: product/adr/0057-the-replay-reads-the-trajectory-the-live-run-read.md
           - "ADR 0058 — The recorder: a call recorded where the application makes it": product/adr/0058-the-recorder-a-call-recorded-where-the-application-makes-it.md
+          - "ADR 0059 — The import of recordings: a reviewed answer, a grouped listing, a source declared as data": product/adr/0059-a-reviewed-answer-a-grouped-listing-a-source-as-data.md
+          - "ADR 0060 — The steps of a trajectory: read live, recorded in the run, collected from the calls a target makes": product/adr/0060-the-steps-of-a-trajectory-live-recorded-and-collected.md
+          - ADR 0061 — A local page over .digline/, whose views other packages may extend: product/adr/0061-a-local-page-whose-views-other-packages-may-extend.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

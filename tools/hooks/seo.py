@@ -696,6 +696,23 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why a test set made by hand lags the application it tests, and how a "
         "call is recorded where the application makes it, in the shape a suite reads.",
     ),
+    "product/adr/0059-a-reviewed-answer-a-grouped-listing-a-source-as-data.md": (
+        "ADR 0059: The import of recordings: a reviewed answer, a grouped listing, "
+        "a source declared as data",
+        "Why a person's yes or no at the import judges the recorded answer and not "
+        "the class of the input, and how the listing groups without ranking.",
+    ),
+    "product/adr/0060-the-steps-of-a-trajectory-live-recorded-and-collected.md": (
+        "ADR 0060: The steps of a trajectory: read live, recorded in the run, "
+        "collected from the calls a target makes",
+        "Why an agent's trajectory was one reply long, and how every call a target "
+        "makes becomes steps that four assertions can judge.",
+    ),
+    "product/adr/0061-a-local-page-whose-views-other-packages-may-extend.md": (
+        "ADR 0061: A local page over .digline/, whose views other packages may extend",
+        "How digline view becomes a local page that reads recordings and writes "
+        "only behind a flag and a launch key, on loopback, with nothing inline.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
