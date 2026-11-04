@@ -246,6 +246,7 @@ nav:
       - Essentials:
           - Guide: product/guide.md
           - Metrics: product/metrics.md
+          - Calibrating a judge: product/calibration.md
           - Testing a selection: product/selection.md
           - Watching an MCP server: product/tools.md
           - Suites as data: product/declarative.md

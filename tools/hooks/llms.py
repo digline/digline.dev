@@ -210,6 +210,13 @@ DESCRIPTIONS: dict[str, str] = {
         "one takes, what it produces, and how it misleads you if you are not "
         "looking"
     ),
+    "product/calibration.md": (
+        "Whether a judge can be believed, asked four ways in one suite: "
+        "reviewed answers against a person's yes or no, calibration cases "
+        "against a band on the scale, the aggregates against the labels, and "
+        "repeated samples against the judge itself; each read in explain, the "
+        "report or --json, and none a command of its own"
+    ),
     "product/selection.md": (
         "How to test a system that selects items from its input: the offered "
         "set declared per case in a `suite.py`, and why an empty selection must "

@@ -1468,9 +1468,12 @@ def selftest() -> int:
                (any("index.html: no id 'install'" in e for e in errors),
                 any("leads to #install, which / does not have" in e for e in errors)), (True, True))
         errors, _, _ = anchors_planted("product/metrics/index.html", lambda h: h.replace(' id="repeated"', ' id="repeated-renamed"', 1))
-        expect("the anchor gate refuses the home's links to a renamed id on /product/metrics/, in English and Italian",
+        # Every page that links to #repeated: the home in both languages,
+        # /product/metrics/ itself, and /product/calibration/, whose section on
+        # repeated samples points there.
+        expect("the anchor gate refuses the links to a renamed id on /product/metrics/, from the home in English and Italian and from the pages that cite it",
                sorted({e.split(":")[0] for e in errors if "#repeated, which /product/metrics/ does not have" in e}),
-               ["index.html", "it/index.html", "product/metrics/index.html"])
+               ["index.html", "it/index.html", "product/calibration/index.html", "product/metrics/index.html"])
         _groups.clear()
         _groups.update(groups)
         _behind.clear()
