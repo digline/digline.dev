@@ -278,9 +278,14 @@ PRODUCT: dict[str, tuple[str, str]] = {
     ),
     "product/record.md": (
         "digline record",
-        "Keep the calls an application makes to a model as cases: a wrapper "
-        "around the provider's client, a switch, and an import a person "
-        "names. The command arrives with digline 1.1.",
+        "Keep the calls an application makes to a model as cases: a wrapper, a "
+        "switch, an import a person names, a comparison by setup, and a local "
+        "page. The command arrives with digline 1.1.",
+    ),
+    "product/recording-format.md": (
+        "The recording document",
+        "The contract of a recording: the JSON file one call is kept as, and "
+        "what a writer in another language must put in it to be read.",
     ),
     "product/docker.md": (
         "The Docker image",
@@ -712,6 +717,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "ADR 0061: A local page over .digline/, whose views other packages may extend",
         "How digline view becomes a local page that reads recordings and writes "
         "only behind a flag and a launch key, on loopback, with nothing inline.",
+    ),
+    "product/adr/0062-the-recorder-out-of-process-and-in-other-processes.md": (
+        "ADR 0062: The recorder out of process, and in other processes",
+        "How an application not written in Python is recorded: a proxy, an "
+        "interceptor per language, and one format everything downstream reads.",
     ),
     "product/examples/index.md": (
         "Examples",

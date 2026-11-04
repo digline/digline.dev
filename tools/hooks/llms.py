@@ -278,9 +278,21 @@ DESCRIPTIONS: dict[str, str] = {
     "product/record.md": (
         "Keeps the calls an application makes to a model, where it makes "
         "them, in the shape a suite reads: digline.recorder.wrap around the "
-        "provider's client, a switch per tenant with digline record on, off "
-        "and status, and digline record import, which writes the cases a "
-        "person names into a file the suite loads"
+        "provider's client, streamed and asynchronous replies included, an "
+        "agent's turn as an episode and its steps read live, a switch per "
+        "tenant with digline record on, off and status, digline record import, "
+        "which lists the recordings grouped and writes the answers a person "
+        "names with --good, --bad and --by into the file the suite's capture "
+        "source declares, digline record compare, which shows a case's "
+        "answers by setup, and the same on the local page of digline view, "
+        "whose writes sit behind --allow-record"
+    ),
+    "product/recording-format.md": (
+        "The contract of a recording, the JSON file one call to a model is "
+        "kept as: where a file goes, the smallest one, the fields a writer must "
+        "write and the ones that are free, so that a program in another "
+        "language writes a file the import, digline record compare and digline "
+        "record status read like one digline wrote"
     ),
     "product/docker.md": (
         "What the official `ghcr.io/digline/digline` image contains and what it "
@@ -859,6 +871,15 @@ DESCRIPTIONS: dict[str, str] = {
         "and the launch key; on loopback alone, nothing inline under a strict "
         "policy, and views from other packages read-only; accepted, nothing "
         "built"
+    ),
+    "product/adr/0062-the-recorder-out-of-process-and-in-other-processes.md": (
+        "an application not written in Python is recorded through three doors "
+        "and one format: digline.recorder.wrap in a Python process, digline "
+        "record proxy on 127.0.0.1 between an SDK and its provider, and an "
+        "interceptor copied into the project, Java in 1.1; each writes the same "
+        "recording, a public contract with its own version, and everything "
+        "downstream reads it unchanged; accepted, the recording's input and the "
+        "format contract built"
     ),
     # Writing
     "blog/index.md": (
