@@ -287,6 +287,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "switch, an import a person names, a comparison by setup, and a local "
         "page. The command arrives with digline 1.1.",
     ),
+    "product/proposing-a-suite.md": (
+        "Letting an agent propose a suite",
+        "A coding agent proposes a first digline suite by its method: it never "
+        "marks an answer, always adds a counterexample, and you commit. The "
+        "skill arrives with digline 1.1.",
+    ),
     "product/recording-format.md": (
         "The recording document",
         "The contract of a recording: the JSON file one call is kept as, and "

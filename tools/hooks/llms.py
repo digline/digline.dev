@@ -294,6 +294,14 @@ DESCRIPTIONS: dict[str, str] = {
         "answers by setup, and the same on the local page of digline view, "
         "whose writes sit behind --allow-record"
     ),
+    "product/proposing-a-suite.md": (
+        "How a coding agent proposes a first suite by digline's method, with "
+        "the proposing-a-suite skill of the Claude Code plugin or the same "
+        "procedure in AGENTS.md: it reads the recordings and the reviewed "
+        "answers, chooses the checks, writes the suite with a case it fails "
+        "on, runs it once, and hands it over; it never marks an answer, "
+        "promotes or imports, and the commit is the person's"
+    ),
     "product/recording-format.md": (
         "The contract of a recording, the JSON file one call to a model is "
         "kept as: where a file goes, the smallest one, the fields a writer must "
