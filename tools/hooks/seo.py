@@ -293,6 +293,16 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "marks an answer, always adds a counterexample, and you commit. The "
         "skill arrives with digline 1.1.",
     ),
+    "product/record-java.md": (
+        "digline for Java",
+        "Record a Java application's calls to a model: a writer and a hook "
+        "for the official SDKs, or the proxy. Arrives with digline 1.1.",
+    ),
+    "product/record-node.md": (
+        "digline for Node",
+        "Record a Node application's calls to a model through digline record "
+        "proxy: three lines, nothing installed. Arrives with digline 1.1.",
+    ),
     "product/recording-format.md": (
         "The recording document",
         "The contract of a recording: the JSON file one call is kept as, and "
