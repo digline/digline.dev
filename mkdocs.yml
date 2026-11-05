@@ -256,6 +256,7 @@ nav:
           # Commands then, with its group, as `digline delete` did (e96f4b9).
           - Recording calls as cases: product/record.md
           - The recording document: product/recording-format.md
+          - Letting an agent propose a suite: product/proposing-a-suite.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
       # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
       # grouping the home shows, and fails the build for a command page that
