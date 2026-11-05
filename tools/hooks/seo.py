@@ -205,6 +205,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "it takes, what it produces, and what it will do to you if you are not "
         "looking.",
     ),
+    "product/calibration.md": (
+        "Calibrating a judge",
+        "Four ways to ask whether an LLM judge can be believed: a person's yes "
+        "or no, a band on the scale, the labels, and the judge against itself.",
+    ),
     "product/selection.md": (
         "Testing a selection",
         "How to check a system that chooses items from a set it was given: "
