@@ -302,6 +302,19 @@ DESCRIPTIONS: dict[str, str] = {
         "on, runs it once, and hands it over; it never marks an answer, "
         "promotes or imports, and the commit is the person's"
     ),
+    "product/record-java.md": (
+        "How a Java application records its calls to a model as digline "
+        "recordings: two files copied into the project, a writer and a hook "
+        "for the official OpenAI, Anthropic or Bedrock client, with a suite "
+        "named per call and a turn kept as an episode; LangChain4j and "
+        "Quarkus through digline record proxy instead"
+    ),
+    "product/record-node.md": (
+        "How a Node application records its calls to a model through digline "
+        "record proxy, with nothing installed in it: the base URL, the suite "
+        "in a header and the episode in another, each line run by a CI job "
+        "against the openai and Anthropic SDKs"
+    ),
     "product/recording-format.md": (
         "The contract of a recording, the JSON file one call to a model is "
         "kept as: where a file goes, the smallest one, the fields a writer must "

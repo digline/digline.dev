@@ -255,6 +255,8 @@ nav:
           # lists, and home.json is captured at a release. It moves under
           # Commands then, with its group, as `digline delete` did (e96f4b9).
           - Recording calls as cases: product/record.md
+          - digline for Java: product/record-java.md
+          - digline for Node: product/record-node.md
           - The recording document: product/recording-format.md
           - Letting an agent propose a suite: product/proposing-a-suite.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
