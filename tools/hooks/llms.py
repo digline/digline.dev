@@ -302,6 +302,13 @@ DESCRIPTIONS: dict[str, str] = {
         "on, runs it once, and hands it over; it never marks an answer, "
         "promotes or imports, and the commit is the person's"
     ),
+    "product/suggest.md": (
+        "digline suggest writes a first suite into suite.proposed.toml, beside "
+        "the suite or for one that does not exist yet: the checks every "
+        "recording holds, limits from the runs or a marked placeholder, a "
+        "counterexample and a calibration skeleton; it chooses no case, marks "
+        "nothing, and no command reads the file until you copy its lines"
+    ),
     "product/record-java.md": (
         "How a Java application records its calls to a model as digline "
         "recordings: two files copied into the project, a writer and a hook "
@@ -908,6 +915,13 @@ DESCRIPTIONS: dict[str, str] = {
         "recording, a public contract with its own version, and everything "
         "downstream reads it unchanged; accepted, the recording's input and the "
         "format contract built"
+    ),
+    "product/adr/0063-suggest-a-first-suite-proposed-and-never-marked.md": (
+        "digline suggest proposes a first suite in suite.proposed.toml, a file "
+        "no command reads: the checks every recording holds, limits from the "
+        "runs or a marked placeholder, a counterexample and a calibration "
+        "skeleton; it chooses no case and marks no answer; accepted, built "
+        "without the model that would draft the rubric"
     ),
     # Writing
     "blog/index.md": (

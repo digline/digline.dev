@@ -293,6 +293,12 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "marks an answer, always adds a counterexample, and you commit. The "
         "skill arrives with digline 1.1.",
     ),
+    "product/suggest.md": (
+        "digline suggest",
+        "A first suite, proposed beside yours from the recordings, the reviewed "
+        "answers and the runs: nothing marked, nothing read until you copy it. "
+        "The command arrives with digline 1.1.",
+    ),
     "product/record-java.md": (
         "digline for Java",
         "Record a Java application's calls to a model: a writer and a hook "
@@ -743,6 +749,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "ADR 0062: The recorder out of process, and in other processes",
         "How an application not written in Python is recorded: a proxy, an "
         "interceptor per language, and one format everything downstream reads.",
+    ),
+    "product/adr/0063-suggest-a-first-suite-proposed-and-never-marked.md": (
+        "ADR 0063: digline suggest, a first suite, proposed and never marked",
+        "Why digline proposes a first suite in a file of its own that no command "
+        "reads, chooses no case, and marks no answer.",
     ),
     "product/examples/index.md": (
         "Examples",
