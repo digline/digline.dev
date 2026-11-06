@@ -221,7 +221,7 @@ home:
     kinds:
       deterministic:
         label: "Deterministic"
-        description: "No model involved. Same output, same verdict."
+        description: "No model involved. Same response, same verdict."
       judged:
         label: "Judged"
         description: "A second model scores the answer, and its noise is measured."

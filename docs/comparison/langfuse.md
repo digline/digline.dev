@@ -34,6 +34,8 @@ The self-hosted deployment is real. All core features and APIs are in the MIT-li
 
 **`promote` is absent from every surface an agent can reach.** None of the MCP server's tools writes a baseline, nor does any flag in `pytest-digline` or any input in the GitHub Action. Measurement can be delegated; deciding what counts as acceptable cannot, and in digline that is an absence rather than a refusal an agent could argue with. [digline for agents](../agents.md).
 
+**digline checks the steps an agent takes.** `Subsequence`, `Before`, `Never` and `MaxSteps` read an agent's turn, beside `ToolsCalled` and `ToolCalledWith` on its tool calls and the checks on its answer, and each is held against the reference like any other check ([the metrics](../product/metrics.md#subsequence)).
+
 ## When to use which
 
 Use **Langfuse** when you need to see what the application did: traces of real runs, sessions, cost and latency, an agent's path rendered as a graph, prompts versioned and deployed by label, a judge tested against traffic you already collected. Use it when several people need the same view, and when self-hosting under MIT with a published list of paid features is what the organisation requires.

@@ -32,6 +32,8 @@ Two pieces of it are things digline has no equivalent for. **Sandboxing** runs u
 
 **`promote` is absent from every surface an agent can reach.** None of the MCP server's tools writes a baseline; neither does any flag in `pytest-digline` or any input in the GitHub Action. An agent can measure everything and approve nothing — an absence rather than a refusal, because a refusal is a conversation an agent can reopen. [digline for agents](../agents.md).
 
+**digline checks the steps an agent takes.** `Subsequence`, `Before`, `Never` and `MaxSteps` read an agent's turn, beside `ToolsCalled` and `ToolCalledWith` on its tool calls and the checks on its answer, and each is held against the reference like any other check ([the metrics](../product/metrics.md#subsequence)).
+
 ## When to use which
 
 Use **Inspect AI** when the subject is a model or a capability: benchmarks, comparisons across providers, agentic tasks that need a sandbox, safety and security evaluations, anything where the sample has a `target` and the question is how often the model hits it. Its solver and scorer vocabulary is the right one for that work, and nothing in digline replaces the sandboxing.

@@ -15,7 +15,7 @@ Chapter 4 ended with a rule: at most one judged check, sampled, with a measured 
 
 There are two places a model can change its mind, and they need different remedies.
 
-**The system under test** is a model. Ask it the same thing twice and it may answer differently. In the newsletter project the judge *is* the system: it scores articles. Run the suite twice, fifteen minutes apart, with nothing changed, and one article in twenty-one changes verdict.
+**The system under test** is, or contains, a model: one call, or an agent's loop of them. Ask it the same thing twice and it may answer, or act, differently. In the newsletter project the judge *is* the system: it scores articles. Run the suite twice, fifteen minutes apart, with nothing changed, and one article in twenty-one changes verdict.
 
 **The judge** — the model you use inside a check to evaluate an output — is also a model, and also flips. If your rubric asks "is this reply polite?", the judge may say 0.8 today and 0.7 tomorrow about the same reply.
 

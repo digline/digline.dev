@@ -2,18 +2,18 @@
 seo_title: >-
   Checks: deterministic first, judge last
 description: >-
-  How to turn an LLM output into a verdict, and the rule that saves the
-  most time in evaluation: use a model to judge only what nothing else
-  can.
+  How to turn an LLM output, or an agent's steps, into a verdict, and the
+  rule that saves the most time in evaluation: use a model to judge only
+  what nothing else can.
 ---
 
 # 4. Checks: deterministic first, judge last
 
-A case says what goes in and what you know about the right answer. A check is how you turn an output into a verdict. This chapter is about choosing checks — and about a rule that sounds too simple to matter and saves more time than anything else here: **use a model to judge only what nothing else can.**
+A case says what goes in and what you know about the right answer. A check is how you turn an output, or for an agent the steps it took, into a verdict. This chapter is about choosing checks — and about a rule that sounds too simple to matter and saves more time than anything else here: **use a model to judge only what nothing else can.**
 
 ## Two kinds of check
 
-**Deterministic checks** need no model. They look at the output and answer a question mechanically: does it contain this phrase, is it valid JSON, does it match this schema, is it under 200 words, does it cost less than a cent, does it contain a tax code. Same output, same verdict, every time, instantly, for free.
+**Deterministic checks** need no model. They look at the output, or at the steps that produced it, and answer a question mechanically: does it contain this phrase, is it valid JSON, does it match this schema, is it under 200 words, does it cost less than a cent, does it contain a tax code, did the agent look the order up before refunding it, did it stop within ten steps. Same response, same verdict, every time, instantly, for free.
 
 **Judged checks** ask a model to evaluate the output: is this reply polite, does it answer the question, is it supported by the retrieved documents, is it better than the previous version. They can express things no regex can. They are also a second distribution on top of the first — the judge samples too — and every judged check inherits the noise, the cost and the latency of a model call.
 

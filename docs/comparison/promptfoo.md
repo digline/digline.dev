@@ -36,6 +36,8 @@ Five things, and none of them is a longer assertion list.
 
 **`promote` is absent from every surface an agent can reach.** The MCP server has tools and none of them writes a baseline; no flag in `pytest-digline` and no input in the GitHub Action does either. An agent can measure everything and approve nothing — not because it is refused, but because the call does not exist. [digline for agents](../agents.md) has the rest.
 
+**digline checks the steps an agent takes.** `Subsequence`, `Before`, `Never` and `MaxSteps` read an agent's turn, beside `ToolsCalled` and `ToolCalledWith` on its tool calls and the checks on its answer, and each is held against the reference like any other check ([the metrics](../product/metrics.md#subsequence)).
+
 ## When to use which
 
 Use **promptfoo** when you are choosing: comparing prompts, models or configurations against each other, sweeping a matrix, looking for the variant that wins. Use it when you need red teaming. Use it when the team wants one YAML file and a viewer and nothing else.
