@@ -32,6 +32,8 @@ And the licence is the part worth stating plainly: Apache-2.0, with the server b
 
 **`promote` is absent from every surface an agent can reach.** None of the MCP server's tools writes a baseline, and neither does any flag in `pytest-digline` or any input in the GitHub Action. Opik's optimizer changes prompts against a dataset; nothing in digline changes anything, and nothing in it lets an agent move the line the build is measured against. An absence rather than a refusal. [digline for agents](../agents.md).
 
+**digline checks the steps an agent takes.** `Subsequence`, `Before`, `Never` and `MaxSteps` read an agent's turn, beside `ToolsCalled` and `ToolCalledWith` on its tool calls and the checks on its answer, and each is held against the reference like any other check ([the metrics](../product/metrics.md#subsequence)).
+
 ## When to use which
 
 Use **Opik** when you need tracing and want one platform across the lifecycle: traces of real runs, datasets grown out of them, experiments, guardrails in the path, online rules over production traffic, and an optimizer that proposes better prompts. Use it when Apache-2.0 self-hosting of the whole platform is the requirement.

@@ -36,9 +36,11 @@ DeepTeam, from the same team, red-teams the application against a library of vul
 
 **`promote` is absent from every surface an agent can reach.** The MCP server's tools read runs and measure new ones; none writes a baseline. Neither does any flag in `pytest-digline` or any input in the GitHub Action. An agent can measure everything and approve nothing, and not because it is refused: the call does not exist. [digline for agents](../agents.md) explains why an absence and a refusal are not the same thing.
 
+**digline checks the steps an agent takes.** `Subsequence`, `Before`, `Never` and `MaxSteps` read an agent's turn, beside `ToolsCalled` and `ToolCalledWith` on its tool calls and the checks on its answer, and each is held against the reference like any other check ([the metrics](../product/metrics.md#subsequence)).
+
 ## When to use which
 
-Use **DeepEval** when the work is *measuring*: you need a metric for faithfulness or tool correctness or role adherence and you would rather not write it, you want `GEval` to turn a sentence into a judge, you want `Synthesizer` to give you cases, or you want DeepTeam's red teaming. Use it when a shared platform is what the team needs — reports people outside the repository can open, production monitoring, annotation queues — and Confident AI is a good answer to that.
+Use **DeepEval** when the work is *measuring*: you need a metric for task completion or plan adherence or role adherence and you would rather not write it, you want `GEval` to turn a sentence into a judge, you want `Synthesizer` to give you cases, or you want DeepTeam's red teaming. Use it when a shared platform is what the team needs — reports people outside the repository can open, production monitoring, annotation queues — and Confident AI is a good answer to that.
 
 Use **digline** when the work is *holding a line*: the reference is approved by a person, lives in the repository, and the comparison on every change knows how much each check moves on its own. Use it when the record has to be auditable without an account, or when the approval must not be reachable by an agent.
 

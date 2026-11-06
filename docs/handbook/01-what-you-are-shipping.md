@@ -44,7 +44,7 @@ What matches the thing is what you would do with any other measurement that has 
 Everything in the rest of this handbook comes down to four things, and the order matters:
 
 1. **Cases** — a set of inputs you care about, with what you know about the right answers. Held out from the prompt. Growing over time. This is the asset, and [chapter 2](02-cases.md) is about it; [chapter 3](03-ground-truth.md) is about where the answers come from when nobody gives you any.
-2. **Checks** — what you verify on each output. The ones that need no model come first; the ones that need a judge come last, because a judge is another distribution. [Chapter 4](04-checks.md), [chapter 5](05-the-judge.md).
+2. **Checks** — what you verify on each output, and for an agent on the steps it took to reach it. The ones that need no model come first; the ones that need a judge come last, because a judge is another distribution. [Chapter 4](04-checks.md), [chapter 5](05-the-judge.md).
 3. **A reference** — a run you looked at and approved, recorded with the prompt and the commit that produced it, so that every future run has something to be compared against. [Chapter 6](06-the-reference.md).
 4. **A routine** — when to run, what triggers a look, what to do when the comparison turns red. [Chapter 7](07-maintenance.md).
 

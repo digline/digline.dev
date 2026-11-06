@@ -29,8 +29,9 @@ and read them in order — each one leans on the one before it.
   the right answers come from when there is no labelled data, and why that is
   decided when you write the feature.
 - **[4. Checks: deterministic first, judge last](04-checks.md)** — how to turn
-  an output into a verdict, and the rule that saves the most time: use a model
-  to judge only what nothing else can.
+  an output, or the steps an agent took to reach it, into a verdict, and the
+  rule that saves the most time: use a model to judge only what nothing else
+  can.
 - **[5. The judge](05-the-judge.md)** — the two noises, why you have to measure
   the judge's before you can read your system's, and the procedure
   that replaces guessing with a number.

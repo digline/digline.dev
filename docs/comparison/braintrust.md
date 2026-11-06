@@ -34,6 +34,8 @@ Around the eval there is a platform: **playgrounds** for iterating on prompts in
 
 **`promote` is absent from every surface an agent can reach.** The MCP server's tools read and measure; none writes a baseline, and neither does any flag in `pytest-digline` or any input in the GitHub Action. Braintrust's own agent, Loop, builds scorers and datasets — useful, and a different question from who is allowed to move the line the build is measured against. In digline that call does not exist rather than being refused. [digline for agents](../agents.md).
 
+**digline checks the steps an agent takes.** `Subsequence`, `Before`, `Never` and `MaxSteps` read an agent's turn, beside `ToolsCalled` and `ToolCalledWith` on its tool calls and the checks on its answer, and each is held against the reference like any other check ([the metrics](../product/metrics.md#subsequence)).
+
 ## When to use which
 
 Use **Braintrust** when more than one person needs to look at the results: a playground for someone who does not write the eval, datasets grown from production traces, human review, online scoring over live traffic, dashboards over time. Use it when the platform is the point — one system from logging to eval to monitoring — and the hybrid deployment answers your data-residency requirement.

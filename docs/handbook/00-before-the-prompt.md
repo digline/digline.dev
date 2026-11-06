@@ -37,7 +37,7 @@ Today it is an ordering on a query. Later it is that, plus every run recorded be
 
 ## 3. Record the call from the first day
 
-The assembled input as the model received it, the reply as it came back, which model answered, and when. Four fields.
+The assembled input as the model received it, the reply as it came back, which model answered, and when. Four fields. For an agent, the whole turn as well: every model call it made and every tool call it asked for, in order, beside the final answer. The reply alone loses the path.
 
 This is the one item that serves nothing on the day you write it: no feature reads it, no screen shows it, and it is the first thing questioned in review. It is also the only one that cannot be added late at any price. The others are expensive to retrofit; this one is not retrofittable, because what it would have held is gone.
 
@@ -75,7 +75,7 @@ Only then the suite.
 What has to be true before the prompt is worth writing?
 ├── the decision comes back as data ..... the ids it chose, in order, beside the prose
 ├── the input cannot move on its own .... same data in, same assembled context out
-├── every call is written down .......... the input · the reply · which model · when
+├── every call is written down .......... input · reply · which model · when · an agent's steps
 └── a failure is not an empty answer .... two outcomes, two rows, never one
 
                                      ── the prompt ──
@@ -95,7 +95,7 @@ Seven questions, one per step. Answer them on a whiteboard before a line of the 
 |---|---|
 | 1. Does the feature say *which* things it chose, as data, and not only in prose? | Nothing can be asserted on, and no gesture can point at a choice. |
 | 2. Given the same stored data, does the same context reach the model? | No input to freeze, so no case — and no red run that can be attributed. |
-| 3. Is the assembled input, the reply, the answering model and the time written on every call? | The only one that cannot be added later at any price. |
+| 3. Is the assembled input, the reply, the answering model and the time written on every call — and, for an agent, every tool call in the turn? | The only one that cannot be added later at any price. |
 | 4. Can you tell a failed call from a genuine "nothing to report"? | An outage is stored as a calm morning, and every count over those rows reads silence as agreement. |
 | 5. Is the prompt the only thing that has to change when you want a different answer? | The prompt stops being cheap: changing it becomes a change to everything downstream. |
 | 6. What is true of a correct output on every possible day, and can it be checked with no model? | You start at the most expensive end, a judge, on a system nobody has shown to be consistent. |
