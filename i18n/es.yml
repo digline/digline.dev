@@ -177,7 +177,7 @@ home:
     kinds:
       deterministic:
         label: Deterministas
-        description: No interviene ningún modelo. La misma salida, el mismo veredicto.
+        description: Sin modelo de por medio. Misma respuesta, mismo veredicto.
       judged:
         label: Con juez
         description: Un segundo modelo puntúa la respuesta y se mide su ruido.
@@ -308,7 +308,7 @@ source_keys:
           description: 4b510efcee4d
           label: a1a06e046b0b
         deterministic:
-          description: fadb563e23ba
+          description: 648ab8748bfd
           label: ec6b656e17f0
         judged:
           description: 51c69e87c947

@@ -177,7 +177,7 @@ home:
     kinds:
       deterministic:
         label: Deterministisch
-        description: Kein Modell beteiligt. Gleiche Ausgabe, gleiches Urteil.
+        description: Kein Modell beteiligt. Gleiche Antwort, gleiches Urteil.
       judged:
         label: Vom Judge bewertet
         description: Ein zweites Modell bewertet die Antwort, und sein Rauschen wird gemessen.
@@ -308,7 +308,7 @@ source_keys:
           description: 4b510efcee4d
           label: a1a06e046b0b
         deterministic:
-          description: fadb563e23ba
+          description: 648ab8748bfd
           label: ec6b656e17f0
         judged:
           description: 51c69e87c947
