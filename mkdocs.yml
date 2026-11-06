@@ -259,6 +259,9 @@ nav:
           - digline for Node: product/record-node.md
           - The recording document: product/recording-format.md
           - Letting an agent propose a suite: product/proposing-a-suite.md
+          # A command page too, here until the release that carries `digline
+          # suggest`, for the reason above `digline record`'s.
+          - "digline suggest": product/suggest.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
       # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
       # grouping the home shows, and fails the build for a command page that
@@ -376,6 +379,7 @@ nav:
           - "ADR 0060 — The steps of a trajectory: read live, recorded in the run, collected from the calls a target makes": product/adr/0060-the-steps-of-a-trajectory-live-recorded-and-collected.md
           - ADR 0061 — A local page over .digline/, whose views other packages may extend: product/adr/0061-a-local-page-whose-views-other-packages-may-extend.md
           - ADR 0062 — The recorder out of process, and in other processes: product/adr/0062-the-recorder-out-of-process-and-in-other-processes.md
+          - "ADR 0063 — digline suggest: a first suite, proposed and never marked": product/adr/0063-suggest-a-first-suite-proposed-and-never-marked.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
