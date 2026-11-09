@@ -291,6 +291,18 @@ nav:
           # describes every surface at once.
           - Security: product/security.md
       # Closed unless you are in it, like every group here, and a link of its
+      # own: the index is pages/product/walkthroughs/index.md, which says the
+      # section's sentence and lists the five. The pages are digline's
+      # docs/walkthroughs/, each an application from its first recorded call
+      # to a gate, every step run.
+      - Walkthroughs:
+          - product/walkthroughs/index.md
+          - Java on Quarkus with Bedrock: product/walkthroughs/java-quarkus-bedrock.md
+          - Python with three prompts: product/walkthroughs/python-three-prompts.md
+          - Node: product/walkthroughs/node.md
+          - From the IDE, over MCP: product/walkthroughs/from-the-ide-over-mcp.md
+          - An agent: product/walkthroughs/an-agent.md
+      # Closed unless you are in it, like every group here, and a link of its
       # own: the index is pages/product/examples/index.md, its tiles filled by
       # tools/hooks/indexes.py from the pages below and their titles.
       - Examples:
