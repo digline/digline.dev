@@ -60,14 +60,14 @@ import languages  # noqa: E402  tools/languages.py
 ROOT_SECTION = "Overview"
 
 # The summary, after the line under the H1. That line, the `>`, is not written
-# here: it is mkdocs.yml's site_description, read in on_post_build, so the
-# sentence is in one place. Material prints the same value as the meta
-# description of the 404, which declares none of its own.
+# here: it is mkdocs.yml's site_description, read in on_post_build, so this
+# file does not repeat it. Material prints the same value as the meta
+# description of the 404, which declares none of its own. The home's
+# description, in docs/index.md's front matter, carries the same sentence, and
+# nothing holds the two equal: change one, change the other.
 SUMMARY = """\
-Did the agent, or the prompt, get worse? digline records what it says to the
-model, proposes a first suite, and gates every change against a run a person
-approved. The reference is a file in your repo, reviewed like any other change.
-The answer is an exit code, so the same commands run in CI. There is no hosted
+The reference is a file in your repo, reviewed like any other change. The
+answer is an exit code, so the same commands run in CI. There is no hosted
 service that receives your payloads and no usage data collection: the runs
 happen on your machines.
 
