@@ -60,16 +60,16 @@ import languages  # noqa: E402  tools/languages.py
 ROOT_SECTION = "Overview"
 
 # The summary, after the line under the H1. That line, the `>`, is not written
-# here: it is mkdocs.yml's site_description, read in on_post_build, so the
-# sentence is in one place. Material prints the same value as the meta
-# description of the 404, which declares none of its own.
+# here: it is mkdocs.yml's site_description, read in on_post_build, so this
+# file does not repeat it. Material prints the same value as the meta
+# description of the 404, which declares none of its own. The home's
+# description, in docs/index.md's front matter, carries the same sentence, and
+# nothing holds the two equal: change one, change the other.
 SUMMARY = """\
-You changed a prompt, or a model, or a temperature. Run it twice and you get
-two different answers, so you cannot tell a regression from the model's own
-noise by reading a few outputs. The reference is a file in your repo, reviewed
-like any other change. The answer is an exit code, so the same commands run in
-CI. There is no hosted service that receives your payloads and no usage data
-collection: the runs happen on your machines.
+The reference is a file in your repo, reviewed like any other change. The
+answer is an exit code, so the same commands run in CI. There is no hosted
+service that receives your payloads and no usage data collection: the runs
+happen on your machines.
 
 Every link below is the page's Markdown source. Drop the `.md` for the rendered
 page — `/why.md` is `/why/`.\

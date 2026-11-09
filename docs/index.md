@@ -4,8 +4,9 @@ template: home.html
 seo_title: >-
   digline — LLM regression testing with a declared noise floor
 description: >-
-  Did my change make it worse? digline freezes a run you approved as the
-  reference, and tells you what moved against it.
+  Did the agent, or the prompt, get worse? digline records what it says to
+  the model, proposes a first suite, and gates every change against a run a
+  person approved.
 ---
 
 <!--
