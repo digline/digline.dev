@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — Regressionstests für LLMs mit festgelegtem noise floor
 lang: de
 translation_of: index.md
-description: Hat meine Änderung es verschlechtert? digline friert einen von dir freigegebenen run als Referenz ein und zeigt dir, was sich im Vergleich dazu verändert hat.
+description: Ist der Agent oder der Prompt schlechter geworden? digline zeichnet auf, was an das Modell geht, schlägt eine erste Suite vor und sichert jede Änderung gegen einen run ab, den eine Person freigegeben hat.
 search:
   exclude: true
 source: index.md
-source_sha: 5795691097ea
-source_commit: 41d8a08
+source_sha: 969747335e66
+source_commit: cd22a81
 model: claude-opus-5
 ---
 

@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — pruebas de regresión para LLM con un noise floor declarado
 lang: es
 translation_of: index.md
-description: ¿Mi cambio lo empeoró? digline congela un run que aprobaste como referencia y te dice qué cambió respecto a él.
+description: ¿El agente, o el prompt, empeoró? digline registra lo que se le dice al modelo, propone una primera suite y controla cada cambio frente a un run que aprobó una persona.
 search:
   exclude: true
 source: index.md
-source_sha: 5795691097ea
-source_commit: 41d8a08
+source_sha: 969747335e66
+source_commit: cd22a81
 model: claude-opus-5
 ---
 
