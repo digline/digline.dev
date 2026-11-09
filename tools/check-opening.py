@@ -58,6 +58,12 @@ ALLOWED: dict[str, str] = {
         "that labels the page rather than opening it"
     ),
     r"product/view": "the title is followed by a console block, not a paragraph",
+    r"product/walkthroughs/(?:java-quarkus-bedrock|python-three-prompts|node"
+    r"|from-the-ide-over-mcp|an-agent)": (
+        "a walkthrough opens on the mark *Arrives with digline 1.1*, a quote, "
+        "until the cut of 1.1 takes it out (digline's RELEASING.md, *Owed to the "
+        "next version*); its first paragraph is the lede after that"
+    ),
     r"": "the home is overrides/home.html and has no Markdown at all",
     r"(it|de|es)": "a translated home, the same",
 }
@@ -179,6 +185,7 @@ def selftest() -> int:
         "product/adr/0001-verdict-not-score": WITHOUT,
         "product/docker": WITHOUT,
         "product/view": WITHOUT,
+        "product/walkthroughs/node": WITHOUT,
         "": WITHOUT,
         "it": WITHOUT,
         "de": WITHOUT,
@@ -194,7 +201,7 @@ def selftest() -> int:
         )
         expect("a site where every undeclared page has a lede", problems, [])
         expect("pages counted with a lede", with_lede, 2)
-        expect("pages declared without one", without, 7)
+        expect("pages declared without one", without, 8)
 
         # 2. A page that loses its lede. The ADR beside it is the control: the
         #    same absence, declared, and it passes in the same run.

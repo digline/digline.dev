@@ -362,6 +362,34 @@ DESCRIPTIONS: dict[str, str] = {
         "the delta-pass rule "
         "\u2014 and the attestations, pins and Scorecard run you can check"
     ),
+    # Walkthroughs
+    "product/walkthroughs/index.md": (
+        "Five applications taken from the first recorded call to a gate, every "
+        "step run: Java on Bedrock, Python with three prompts, Node, an IDE's "
+        "agent over MCP, and an agent"
+    ),
+    "product/walkthroughs/java-quarkus-bedrock.md": (
+        "How a Quarkus application calling Bedrock through the AWS SDK for Java "
+        "is recorded, gets a first suite proposed, a person's yes and no, and a "
+        "gate"
+    ),
+    "product/walkthroughs/python-three-prompts.md": (
+        "How an application with three prompts becomes three suites and three "
+        "verdicts, each gated on its own, and why there is no verdict of the "
+        "whole application"
+    ),
+    "product/walkthroughs/node.md": (
+        "How a Node service on the OpenAI, Anthropic and Bedrock SDKs is "
+        "recorded, streams included, and taken to a proposed suite and a gate"
+    ),
+    "product/walkthroughs/from-the-ide-over-mcp.md": (
+        "How the agent in an IDE takes an application's recordings to a suite "
+        "and a gate through digline-mcp, while the person gives every yes and no"
+    ),
+    "product/walkthroughs/an-agent.md": (
+        "How an agent's turns are recorded as episodes with their steps, and how "
+        "a check on the order of its tools contradicts a person's yes at the gate"
+    ),
     # Examples
     "product/examples/index.md": (
         "Every worked example by the question it answers, each a directory with "

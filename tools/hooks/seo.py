@@ -755,6 +755,39 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why digline proposes a first suite in a file of its own that no command "
         "reads, chooses no case, and marks no answer.",
     ),
+    "product/walkthroughs/index.md": (
+        "Walkthroughs",
+        "Come to see how digline is used: five applications, from the first "
+        "recorded call to a gate, every step run.",
+    ),
+    "product/walkthroughs/java-quarkus-bedrock.md": (
+        "Walkthrough: a Quarkus application on Bedrock",
+        "A Quarkus application calling Bedrock through the AWS SDK for Java, "
+        "from its first recorded call to a proposed suite, a person's yes and "
+        "no, and a gate.",
+    ),
+    "product/walkthroughs/python-three-prompts.md": (
+        "Walkthrough: a Python application with three prompts",
+        "Three prompts are three suites and three verdicts: each recorded, "
+        "proposed, reviewed and gated on its own, and no verdict of the whole "
+        "application.",
+    ),
+    "product/walkthroughs/node.md": (
+        "Walkthrough: a Node application on three SDKs",
+        "A Node service on the OpenAI, Anthropic and Bedrock SDKs, streams "
+        "included, from its first recorded call to a proposed suite and a gate.",
+    ),
+    "product/walkthroughs/from-the-ide-over-mcp.md": (
+        "Walkthrough: from the IDE's agent, over MCP",
+        "The agent in the IDE reads and measures through digline-mcp, from the "
+        "recordings to a suite and a gate, and the person gives every yes and no.",
+    ),
+    "product/walkthroughs/an-agent.md": (
+        "Walkthrough: an agent in Python",
+        "An agent's turns recorded as episodes with their steps, a check written "
+        "on the order of its tools, and the gate red where it contradicts a "
+        "person's yes.",
+    ),
     "product/examples/index.md": (
         "Examples",
         "Worked examples of digline, each named by the question it answers \u2014 "
