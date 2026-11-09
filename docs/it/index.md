@@ -4,12 +4,12 @@ template: home.html
 seo_title: digline — test di regressione per LLM con un noise floor dichiarato
 lang: it
 translation_of: index.md
-description: La mia modifica ha peggiorato le cose? digline congela come riferimento un run che hai approvato e ti dice che cosa è cambiato rispetto a quello.
+description: L'agente, o il prompt, è peggiorato? digline registra che cosa viene inviato al modello, propone una prima suite e sottopone ogni modifica a un gate rispetto a un run approvato da una persona.
 search:
   exclude: true
 source: index.md
-source_sha: 5795691097ea
-source_commit: 41d8a08
+source_sha: 969747335e66
+source_commit: cd22a81
 model: claude-opus-5
 ---
 
