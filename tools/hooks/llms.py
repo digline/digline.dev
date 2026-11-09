@@ -64,12 +64,12 @@ ROOT_SECTION = "Overview"
 # sentence is in one place. Material prints the same value as the meta
 # description of the 404, which declares none of its own.
 SUMMARY = """\
-You changed a prompt, or a model, or a temperature. Run it twice and you get
-two different answers, so you cannot tell a regression from the model's own
-noise by reading a few outputs. The reference is a file in your repo, reviewed
-like any other change. The answer is an exit code, so the same commands run in
-CI. There is no hosted service that receives your payloads and no usage data
-collection: the runs happen on your machines.
+Did the agent, or the prompt, get worse? digline records what it says to the
+model, proposes a first suite, and gates every change against a run a person
+approved. The reference is a file in your repo, reviewed like any other change.
+The answer is an exit code, so the same commands run in CI. There is no hosted
+service that receives your payloads and no usage data collection: the runs
+happen on your machines.
 
 Every link below is the page's Markdown source. Drop the `.md` for the rendered
 page — `/why.md` is `/why/`.\
