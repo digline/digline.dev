@@ -146,30 +146,30 @@ home:
     openai_compatible: e qualsiasi endpoint compatibile con OpenAI
     examples_title: Esempi svolti
     examples_text: Un&rsquo;applicazione reale su ciascun framework, con la sua suite.
-    work_title: What you work with
+    work_title: Con cosa lavori
     work:
       recorder:
         name: Il recorder
-        text: 'Python in process, Java and Node through an interceptor, any SDK through the proxy: the application is not changed.'
+        text: 'Python nel processo, Java e Node tramite un interceptor, qualsiasi SDK tramite il proxy: l&rsquo;applicazione non viene modificata.'
       suggest:
         name: digline suggest
-        text: A first suite proposed from the recordings, with an assistant if you name a model; every yes is a person&rsquo;s.
+        text: Una prima suite proposta a partire dalle registrazioni, con un assistente se indichi un modello; ogni sì è di una persona.
       view:
         name: La pagina
-        text: 'digline view: runs, recordings, the proposal, the recorder&rsquo;s switch, in a browser, with its writes behind a key.'
+        text: 'digline view: run, registrazioni, la proposta, l&rsquo;interruttore del recorder, in un browser, con le scritture protette da una chiave.'
       mcp:
         name: Il server MCP
-        text: Thirteen tools for the agent in your IDE, Claude Code plugin included, measuring and reading; the person decides.
+        text: Tredici strumenti per l&rsquo;agente nel tuo IDE, plugin per Claude Code incluso, che misurano e leggono; decide la persona.
       pytest:
         name: pytest-digline
-        text: The gate as a pytest run, one FAILURES line per contradiction.
+        text: Il gate come un run di pytest, una riga FAILURES per ogni contraddizione.
       action:
         name: La GitHub Action
-        text: The gate in CI, from the image.
+        text: Il gate in CI, dall&rsquo;immagine.
       image:
         name: L&rsquo;immagine
-        text: 'ghcr.io/digline/digline: the quickstart runs inside it.'
-    work_more: Five walkthroughs, from the first recorded call to a gate, every step run
+        text: 'ghcr.io/digline/digline: il quickstart gira al suo interno.'
+    work_more: Cinque percorsi guidati, dalla prima chiamata registrata a un gate, ogni passo eseguito
   commands:
     kicker: Comandi
     count:
@@ -449,18 +449,27 @@ source_keys:
       work:
         action:
           name: 24cb793e12c6
+          text: a8a4073727e9
         image:
           name: 59981c3f7018
+          text: d5222fcb7411
         mcp:
           name: f943de55a76f
+          text: e1d3811db073
         pytest:
           name: '190216160385'
+          text: 1094d2f34130
         recorder:
           name: f87ca4ac9799
+          text: 3bdab89fb0db
         suggest:
           name: fdd8d8cd34bc
+          text: b91516bc35e5
         view:
           name: c596285cd054
+          text: 2e1e38e36753
+      work_more: c60c41bbd345
+      work_title: 6ab5cd770cb2
     try:
       digline_prints: 49ec85ad555a
       full_guide: 800c497de8ba
