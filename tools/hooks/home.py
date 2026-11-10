@@ -46,8 +46,10 @@ Each of these is a claim the home would make that the file does not support:
     ``stack()``): a provider's package in the synced documentation, or, for a
     provider shown with any compatible endpoint, a sentence there that names
     the package and the parameter that points it elsewhere; an example's page
-    or its title, the image name on product/docker/ or the
-    package name on product/mcp/.
+    or its title; a page a row of "What you work with" links to; or what three
+    of its English sentences say: the image product/docker/ opens on, the
+    count of tools product/mcp/ heads its list with, the count of
+    walkthroughs.
 
 The pages and anchors are looked for twice: in the rendered Markdown, before
 the home is rendered, to build its links; and in site/ after the build, to
@@ -89,7 +91,7 @@ from typing import Any
 from mkdocs.exceptions import PluginError
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from catalog import ORIGINAL, page_language, t  # noqa: E402  the site's words: i18n/<lang>.yml
+from catalog import ORIGINAL, number_word, page_language, t  # noqa: E402  the site's words: i18n/<lang>.yml
 import languages  # noqa: E402  tools/languages.py
 
 # Where sync-docs.sh puts the two files, under docs_dir.
@@ -164,11 +166,11 @@ def check_kind_words(lang: str) -> dict[str, tuple[str, str]]:
                     t("home.checks.kinds.wrapper.description", lang=lang)),
     }
 
-# The stack band under "How it fits": which providers, examples and other ways
-# to run digline the home shows, in its order, with the name each row carries.
-# Everything else a row prints is read from the build by ``stack()``: the
-# package a provider is installed as, the question an example's page asks, the
-# image and the package name the Docker and MCP pages open on.
+# The stack band under "How it fits": which providers, examples and things you
+# work with the home shows, in its order, with the name each row carries.
+# What a provider's or an example's row prints besides is read from the build
+# by ``stack()``: the package a provider is installed as, the question an
+# example's page asks.
 #
 # (name, package, endpoint): endpoint, where there is one, is (the parameter
 # that sets the address, the key in stack_words() of the words after the
@@ -188,26 +190,39 @@ STACK_EXAMPLES = (
     ("LangGraph", "product/examples/langgraph.md"),
     ("LangChain4j", "product/examples/langchain4j.md"),
 )
-# (key in stack_words() of the row's name, page, the id of the section it
-# links to or None for the page itself). A row with a section reads its name in
-# code from the section's first paragraph rather than the page's: the Claude
-# Code plugin has no page of its own, it has a section on the MCP page, and a
-# page bought for it would be three entries and a sync rule for words that
-# already exist there.
-STACK_RUN = (
-    ("docker", "product/docker.md", None),
-    ("mcp", "product/mcp.md", None),
-    ("plugin", "product/mcp.md", "in-claude-code-as-a-plugin"),
+# "What you work with": (key in work_words() of the row's name and sentence,
+# the page of the documentation the row links to). The recorder's page is
+# record.md, which links on to record-java.md and record-node.md.
+STACK_WORK = (
+    ("recorder", "product/record.md"),
+    ("suggest", "product/suggest.md"),
+    ("view", "product/view.md"),
+    ("mcp", "product/mcp.md"),
+    ("pytest", "product/pytest.md"),
+    ("action", "product/github-action.md"),
+    ("image", "product/docker.md"),
 )
+# The block's last line links here, and counts the pages beside it.
+STACK_WALKTHROUGHS = "product/walkthroughs/index.md"
 
 
 def stack_words(lang: str) -> dict[str, str]:
     """The stack band's words that are not read from the build, in ``lang``."""
     return {
         "openai_compatible": t("home.stack.openai_compatible", lang=lang),
-        "docker": t("home.stack.docker", lang=lang),
-        "mcp": t("home.stack.mcp", lang=lang),
-        "plugin": t("home.stack.plugin", lang=lang),
+    }
+
+
+def work_words(lang: str) -> dict[str, tuple[str, str]]:
+    """STACK_WORK's names and sentences in ``lang``, by key."""
+    return {
+        "recorder": (t("home.stack.work.recorder.name", lang=lang), t("home.stack.work.recorder.text", lang=lang)),
+        "suggest": (t("home.stack.work.suggest.name", lang=lang), t("home.stack.work.suggest.text", lang=lang)),
+        "view": (t("home.stack.work.view.name", lang=lang), t("home.stack.work.view.text", lang=lang)),
+        "mcp": (t("home.stack.work.mcp.name", lang=lang), t("home.stack.work.mcp.text", lang=lang)),
+        "pytest": (t("home.stack.work.pytest.name", lang=lang), t("home.stack.work.pytest.text", lang=lang)),
+        "action": (t("home.stack.work.action.name", lang=lang), t("home.stack.work.action.text", lang=lang)),
+        "image": (t("home.stack.work.image.name", lang=lang), t("home.stack.work.image.text", lang=lang)),
     }
 
 # Where a command without a page of its own is written about, and where the
@@ -756,20 +771,11 @@ def page_question(page_html: str, source: str) -> str:
     return after.strip() if colon and after.strip() else title
 
 
-def opening_code(page_html: str, source: str, anchor: str | None = None) -> str:
+def opening_code(page_html: str, source: str) -> str:
     """The first thing in code in the first paragraph under a page's title:
-    `ghcr.io/digline/digline` on the Docker page, `digline-mcp` on the MCP
-    page. With ``anchor``, under the heading with that id instead:
-    `digline@digline` under the MCP page's plugin section."""
-    if anchor is None:
-        heading = _H1_TEXT.search(page_html)
-        where = source
-    else:
-        heading = re.search(rf'<h[1-6]\b[^>]*\bid="{re.escape(anchor)}"[^>]*>.*?</h[1-6]>',
-                            page_html, re.I | re.S)
-        where = f"{source}#{anchor}"
-        if not heading:
-            raise _fail_site(f"the stack band links to {where}, and {source} has no heading with that id.")
+    `ghcr.io/digline/digline` on the Docker page."""
+    heading = _H1_TEXT.search(page_html)
+    where = source
     rest = page_html[heading.end():] if heading else page_html
     paragraph = _FIRST_P.search(rest)
     code = _CODE.search(paragraph.group(1)) if paragraph else None
@@ -787,8 +793,8 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str,
     worded in ``lang``.
 
     pages      the source paths the build has
-    rendered   source path → rendered content, for the example, Docker and
-               MCP pages
+    rendered   source path → rendered content, for the example pages and
+               the pages "What you work with" links to
     docs_text  the synced documentation under product/, as Markdown, in
                which every provider's package name must be written
     """
@@ -831,10 +837,33 @@ def stack(pages: set[str], rendered: dict[str, str], docs_text: str,
     examples = [{"name": name, "question": page_question(page(source), source),
                  "href": source[: -len(".md")] + "/"}
                 for name, source in STACK_EXAMPLES]
-    run = [{"name": words[key], "code": opening_code(page(source), source, anchor),
-            "href": source[: -len(".md")] + "/" + (f"#{anchor}" if anchor else "")}
-           for key, source, anchor in STACK_RUN]
-    return {"providers": providers, "examples": examples, "run": run}
+    work_here, english = work_words(lang), work_words(ORIGINAL)
+    work = [{"name": work_here[key][0], "text": work_here[key][1], "href": source[: -len(".md")] + "/",
+             "page": page(source)}
+            for key, source in STACK_WORK]
+    # The English sentences' claims, held to the build; a translation says
+    # what its English says, and the translation's own checks hold it there.
+    image = opening_code(page("product/docker.md"), "product/docker.md")
+    if not re.search(rf"(?<![\w./-]){re.escape(image)}(?![\w/-])", _plain(english["image"][1])):
+        raise _fail_site(f"the image's row on the home does not name {image}, the image product/docker.md "
+                         f"opens on: “{_plain(english['image'][1])}”")
+    tools = _plain(english["mcp"][1]).split(" ", 1)[0].lower()
+    if not re.search(rf"<h2\b[^>]*>\s*The {re.escape(tools)} tools\b", page("product/mcp.md"), re.I):
+        raise _fail_site(f"the MCP server's row on the home says “{tools}” tools, and product/mcp.md "
+                         f"has no heading “The {tools} tools”.")
+    page(STACK_WALKTHROUGHS)
+    more = t("home.stack.work_more", lang=ORIGINAL)
+    walkthroughs = sorted(p for p in pages if p.startswith(os.path.dirname(STACK_WALKTHROUGHS) + "/")
+                          and p != STACK_WALKTHROUGHS)
+    counted = number_word(len(walkthroughs))
+    if _plain(more).split(" ", 1)[0].lower() != counted:
+        raise _fail_site(f"the home's walkthroughs line says “{_plain(more).split(' ', 1)[0]}”, and the build "
+                         f"has {counted} pages beside {STACK_WALKTHROUGHS}: {', '.join(walkthroughs)}.")
+    for row in work:
+        del row["page"]
+    return {"providers": providers, "examples": examples, "work": work,
+            "more": {"text": t("home.stack.work_more", lang=lang),
+                     "href": STACK_WALKTHROUGHS[: -len("index.md")]}}
 
 
 def load(json_path: str, changelog_path: str) -> dict[str, Any]:
@@ -965,7 +994,7 @@ def on_nav(nav, config, files, **kwargs):
     return nav
 
 
-_STACK_PAGES = {row[1] for row in STACK_EXAMPLES + STACK_RUN}
+_STACK_PAGES = {row[1] for row in STACK_EXAMPLES + STACK_WORK} | {STACK_WALKTHROUGHS}
 
 
 def on_page_content(html, page, config, files, **kwargs):
@@ -1195,7 +1224,7 @@ def on_post_build(config, **kwargs):
     hrefs = [c["href"] for g in built["commands"]["groups"] for c in g["commands"]]
     hrefs += [c["href"] for k in built["checks"]["kinds"] for c in k["checks"]]
     band = _built_stack(config)
-    hrefs += [row["href"] for row in band["examples"] + band["run"]]
+    hrefs += [row["href"] for row in band["examples"] + band["work"]] + [band["more"]["href"]]
     # The questions, read again off the pages as they were written into site/.
     for (name, source), row in zip(STACK_EXAMPLES, band["examples"]):
         written = os.path.join(site, source[: -len(".md")], "index.html")
@@ -1440,8 +1469,12 @@ def selftest() -> int:
             _catalog.default.cache_clear()
 
     # 1c. The stack band, against pages of the shape the build has: a title with
-    #     a colon, one without, the Docker and MCP pages' first paragraphs.
-    stack_pages = {row[1] for row in STACK_EXAMPLES + STACK_RUN}
+    #     a colon, one without; the Docker page's first paragraph, the MCP
+    #     page's count of tools, the walkthroughs beside their index.
+    walkthrough_pages = {f"product/walkthroughs/{name}.md"
+                         for name in ("java-quarkus-bedrock", "python-three-prompts", "node",
+                                      "from-the-ide-over-mcp", "an-agent")}
+    stack_pages = {row[1] for row in STACK_EXAMPLES + STACK_WORK} | {STACK_WALKTHROUGHS} | walkthrough_pages
     headerlink = '<a class="headerlink" href="#t" title="Link to this section">&para;</a>'
     stack_rendered = {
         "product/examples/langchain.md": f'<h1 id="t">My pipeline is LangChain: what changed when I upgraded it?{headerlink}</h1><p>Body.</p>',
@@ -1450,8 +1483,10 @@ def selftest() -> int:
         "product/examples/langchain4j.md": '<h1 id="t">My app is <code>LangChain4j</code>: what do I put in my repo?</h1>',
         "product/docker.md": '<h1 id="t">The official digline image</h1>\n<p><code>ghcr.io/digline/digline</code></p><p>The <code>other</code>.</p>',
         "product/mcp.md": '<h1 id="t">digline over MCP</h1>\n<p><code>digline-mcp</code> is the <a href="x">MCP</a> server.</p>'
-                          '<h3 id="in-claude-code-as-a-plugin">In Claude Code, as a plugin</h3>\n'
-                          '<p><code>digline@digline</code> is the plugin. It ships <code>operating-digline</code>.</p>',
+                          f'<h2 id="the-thirteen-tools">The thirteen tools{headerlink}</h2>\n<p>Tools.</p>',
+        **{source: f'<h1 id="t">{source}</h1>' for source in ("product/record.md", "product/suggest.md", "product/view.md",
+                                                             "product/pytest.md", "product/github-action.md",
+                                                             STACK_WALKTHROUGHS)},
     }
     docs_text = ("uv add digline-anthropic, or digline-openai; digline-bedrock (Converse API).\n\n"
                  "The judge lives where the output does. `digline-openai` takes a\n`base_url`, so "
@@ -1469,10 +1504,15 @@ def selftest() -> int:
             "My agent calls the right tools, but with the right arguments?",
             "what do I put in my repo?"])
     expect("example links", band["examples"][0]["href"], "product/examples/langchain/")
-    expect("run rows", [(r["name"], r["code"], r["href"]) for r in band["run"]],
-           [("Docker image", "ghcr.io/digline/digline", "product/docker/"),
-            ("MCP server", "digline-mcp", "product/mcp/"),
-            ("Claude Code plugin", "digline@digline", "product/mcp/#in-claude-code-as-a-plugin")])
+    expect("work rows, in order", [(r["name"], r["href"]) for r in band["work"]],
+           [("The recorder", "product/record/"), ("digline suggest", "product/suggest/"),
+            ("The page", "product/view/"), ("The MCP server", "product/mcp/"),
+            ("pytest-digline", "product/pytest/"), ("The GitHub Action", "product/github-action/"),
+            ("The image", "product/docker/")])
+    expect("a work row's sentence", band["work"][-1]["text"], "ghcr.io/digline/digline: the quickstart runs inside it.")
+    expect("the block's last line", band["more"],
+           {"text": "Five walkthroughs, from the first recorded call to a gate, every step run",
+            "href": "product/walkthroughs/"})
 
     stack_refusals = [
         ("a provider package no page writes",
@@ -1493,15 +1533,24 @@ def selftest() -> int:
         ("an example page with no title",
          lambda p, r, t: (p, {**r, "product/examples/llamaindex.md": "<p>No title.</p>"}, t),
          "from the title of product/examples/llamaindex.md"),
+        ("a work page the build does not have",
+         lambda p, r, t: (p - {"product/pytest.md"}, r, t),
+         "product/pytest.md, which the build does not have"),
         ("a Docker page whose first paragraph has no code",
          lambda p, r, t: (p, {**r, "product/docker.md": "<h1>Image</h1><p>No name here.</p><p><code>late</code></p>"}, t),
          "first paragraph of product/docker.md"),
-        ("a section the page no longer has",
-         lambda p, r, t: (p, {**r, "product/mcp.md": r["product/mcp.md"].replace("in-claude-code-as-a-plugin", "plugin")}, t),
-         "product/mcp.md has no heading with that id"),
-        ("a section whose first paragraph has no code",
-         lambda p, r, t: (p, {**r, "product/mcp.md": r["product/mcp.md"].replace("<code>digline@digline</code> is the plugin. It ships <code>operating-digline</code>.", "The plugin, with no name.")}, t),
-         "first paragraph of product/mcp.md#in-claude-code-as-a-plugin"),
+        ("a Docker page that opens on another image",
+         lambda p, r, t: (p, {**r, "product/docker.md": r["product/docker.md"].replace("ghcr.io/digline/digline", "ghcr.io/digline/digline-slim")}, t),
+         "does not name ghcr.io/digline/digline-slim"),
+        ("an MCP page with another count of tools",
+         lambda p, r, t: (p, {**r, "product/mcp.md": r["product/mcp.md"].replace("The thirteen tools", "The fourteen tools")}, t),
+         "has no heading “The thirteen tools”"),
+        ("a sixth walkthrough",
+         lambda p, r, t: (p | {"product/walkthroughs/rust.md"}, r, t),
+         "the build has six pages beside product/walkthroughs/index.md"),
+        ("a walkthroughs index the build does not have",
+         lambda p, r, t: (p - {STACK_WALKTHROUGHS}, r, t),
+         "product/walkthroughs/index.md, which the build does not have"),
     ]
     for label, mutate, needle in stack_refusals:
         try:

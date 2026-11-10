@@ -29,6 +29,7 @@ bar:
   sections_label: Sezioni
   start: Inizia qui
   why: Perché
+  walkthroughs: Percorsi guidati
   agents: Agenti
   handbook: Manuale
   docs: Docs
@@ -145,11 +146,30 @@ home:
     openai_compatible: e qualsiasi endpoint compatibile con OpenAI
     examples_title: Esempi svolti
     examples_text: Un&rsquo;applicazione reale su ciascun framework, con la sua suite.
-    run_title: Altri modi per eseguirlo
-    run_text: In un container, o per un agente.
-    docker: Immagine Docker
-    mcp: Server MCP
-    plugin: Plugin Claude Code
+    work_title: What you work with
+    work:
+      recorder:
+        name: Il recorder
+        text: 'Python in process, Java and Node through an interceptor, any SDK through the proxy: the application is not changed.'
+      suggest:
+        name: digline suggest
+        text: A first suite proposed from the recordings, with an assistant if you name a model; every yes is a person&rsquo;s.
+      view:
+        name: La pagina
+        text: 'digline view: runs, recordings, the proposal, the recorder&rsquo;s switch, in a browser, with its writes behind a key.'
+      mcp:
+        name: Il server MCP
+        text: Thirteen tools for the agent in your IDE, Claude Code plugin included, measuring and reading; the person decides.
+      pytest:
+        name: pytest-digline
+        text: The gate as a pytest run, one FAILURES line per contradiction.
+      action:
+        name: La GitHub Action
+        text: The gate in CI, from the image.
+      image:
+        name: L&rsquo;immagine
+        text: 'ghcr.io/digline/digline: the quickstart runs inside it.'
+    work_more: Five walkthroughs, from the first recorded call to a gate, every step run
   commands:
     kicker: Comandi
     count:
@@ -261,6 +281,7 @@ source_keys:
     search_title: 49c266baaaa7
     sections_label: 9bae918add9a
     start: 2adc964c0847
+    walkthroughs: d5c7fe9b2175
     why: d3ae14a50bfe
     writing: a8bfae3eee94
   closing:
@@ -420,16 +441,26 @@ source_keys:
       title: 87ab0cab1a67
       title_accent: 3aada874b683
     stack:
-      docker: 74c08568b7d2
       examples_text: df62c6ce232d
       examples_title: 936698aa1941
-      mcp: d938c8168e3a
       openai_compatible: 2b6834dd6a7e
-      plugin: 23c468285d1a
       providers_text: 94c9fedb11ec
       providers_title: 996c32b35f21
-      run_text: a05244958e06
-      run_title: 22fe6c73119a
+      work:
+        action:
+          name: 24cb793e12c6
+        image:
+          name: 59981c3f7018
+        mcp:
+          name: f943de55a76f
+        pytest:
+          name: '190216160385'
+        recorder:
+          name: f87ca4ac9799
+        suggest:
+          name: fdd8d8cd34bc
+        view:
+          name: c596285cd054
     try:
       digline_prints: 49ec85ad555a
       full_guide: 800c497de8ba

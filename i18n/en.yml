@@ -39,6 +39,7 @@ bar:
   sections_label: "Sections"
   start: "Start here"
   why: "Why"
+  walkthroughs: "Walkthroughs"
   agents: "Agents"
   handbook: "Handbook"
   docs: "Docs"
@@ -181,12 +182,36 @@ home:
     openai_compatible: "and any OpenAI-compatible endpoint"
     examples_title: "Worked examples"
     examples_text: "A real app on each framework, with its suite."
-    run_title: "Other ways to run it"
-    run_text: "In a container, or for an agent."
-    # home.py: the rows of "Other ways to run it".
-    docker: "Docker image"
-    mcp: "MCP server"
-    plugin: "Claude Code plugin"
+    work_title: "What you work with"
+    # home.py, STACK_WORK: the rows of "What you work with", in its order, each
+    # a name and the sentence under it. home.py holds three claims of the
+    # English sentences to the build: the image's name, the MCP server's count
+    # of tools, the count of walkthroughs.
+    work:
+      recorder:
+        name: "The recorder"
+        text: "Python in process, Java and Node through an interceptor, any SDK through the proxy: the application is not changed."
+      suggest:
+        name: "digline suggest"
+        text: "A first suite proposed from the recordings, with an assistant if you name a model; every yes is a person&rsquo;s."
+      view:
+        name: "The page"
+        text: "digline view: runs, recordings, the proposal, the recorder&rsquo;s switch, in a browser, with its writes behind a key."
+      mcp:
+        name: "The MCP server"
+        text: "Thirteen tools for the agent in your IDE, Claude Code plugin included, measuring and reading; the person decides."
+      pytest:
+        name: "pytest-digline"
+        text: "The gate as a pytest run, one FAILURES line per contradiction."
+      action:
+        name: "The GitHub Action"
+        text: "The gate in CI, from the image."
+      image:
+        name: "The image"
+        text: "ghcr.io/digline/digline: the quickstart runs inside it."
+    # The block's last line, a link to product/walkthroughs/; the arrow after
+    # it is the template's.
+    work_more: "Five walkthroughs, from the first recorded call to a gate, every step run"
 
   commands:
     kicker: "Commands"

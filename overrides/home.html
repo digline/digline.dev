@@ -170,12 +170,13 @@
       <section class="stackcol stackcol--run" aria-labelledby="stack-run-h">
         <div class="stackcol__head">
           <span class="stackcol__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>
-          <div><h3 class="stackcol__title" id="stack-run-h">{{ "home.stack.run_title" | t }}</h3><p class="stackcol__text">{{ "home.stack.run_text" | t }}</p></div>
+          <div><h3 class="stackcol__title" id="stack-run-h">{{ "home.stack.work_title" | t }}</h3></div>
         </div>
         <ul class="stackcol__rows">
-          {%- for r in home.stack.run %}
-          <li><a class="stackrow stackrow--link" href="{{ base_url.rstrip('/') }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub stackrow__sub--mono" translate="no">{{ r.code }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
+          {%- for r in home.stack.work %}
+          <li><a class="stackrow stackrow--link" href="{{ base_url.rstrip('/') }}/{{ r.href }}"><span><span class="stackrow__name">{{ r.name }}</span><span class="stackrow__sub">{{ r.text }}</span></span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
           {%- endfor %}
+          <li><a class="stackrow stackrow--link" href="{{ base_url.rstrip('/') }}/{{ home.stack.more.href }}"><span class="stackrow__sub">{{ home.stack.more.text }}</span><span class="stackrow__arrow" aria-hidden="true">&rarr;</span></a></li>
         </ul>
       </section>
     </div>
