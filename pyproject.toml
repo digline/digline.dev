@@ -24,3 +24,10 @@ dependencies = [
 
 [tool.uv]
 package = false
+# The uv the lock here is written with, the one each `setup-uv` in the
+# workflows installs: decided 2026-11-10, as digline decided it on 2026-11-09
+# (digline#960). A lock's `revision` is the format of the uv that wrote it, so
+# an unpinned uv moved it unasked (tools/check-lock-revision.py). Another uv
+# refuses to run in this project, naming both versions. Install it with
+# `uv self update 0.13.7`, or run it as `uvx --from uv==0.13.7 uv`.
+required-version = "==0.13.7"

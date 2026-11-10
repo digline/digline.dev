@@ -20,6 +20,11 @@ and fails on:
   * a lock whose `revision` is not the one declared for it, naming the file and
     both numbers.
 
+Since 2026-11-10 the tool is fixed: pyproject.toml sets `required-version`
+and every `setup-uv` installs the same uv, 0.13.7, as digline does since its
+#960. That is the repair; this stays the alarm, and says which lock moved if
+one does.
+
 A new lock is recorded, not assumed. A moved `revision` is either relocked with
 the uv that wrote it, or its row changes here with the reason. Digline holds
 its own locks the same way, in its tests/test_lock_revision.py.
@@ -43,10 +48,10 @@ import tomllib
 #: The lock, the `revision` it reads, and why it reads that.
 DECLARED: dict[str, tuple[int, str]] = {
     "uv.lock": (
-        3,
-        "3 since #235 (ed4fe131, 2026-11-02), relocked with uv 0.11.14; "
-        "Dependabot's uv 0.13.5 in #233 moved it to 5, and a version change "
-        "does not change the lock's format",
+        5,
+        "5 since #260 (2026-11-10), the format of uv 0.13.7, the uv pinned "
+        "since then in pyproject.toml and in every setup-uv; the 3 it read "
+        "before (#235) came from uv 0.11.14, which still writes 3",
     ),
 }
 
