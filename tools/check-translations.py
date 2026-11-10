@@ -29,7 +29,10 @@ when
      merged into the next, or split, or written twice, or dropped;
   e) the glossary, tools/i18n/glossary.yml: a term to keep that the original
      shows is not in the translation, or the translation uses one of its
-     language's forbidden words outside code (tools/translation.py);
+     language's forbidden words outside code (tools/translation.py). A check's
+     name, read from home.json, is a term to keep only where the original
+     shows it in code: `Before` is a check, and "Before you touch the prompt"
+     is a sentence;
   f) the translation does not hold together: its original is not one of
      languages.PAGES, its lang is not its folder's, it has no description, or it does not
      record what it was made from — source (its original), source_sha,
@@ -78,6 +81,7 @@ from __future__ import annotations
 
 import datetime
 import importlib.util
+import json
 import os
 import re
 import subprocess
@@ -405,7 +409,12 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
     changed: list[str] = []
     counted = Counter()
     words = translation.glossary(root)
-    kept = [(label, re.compile(pattern)) for label, pattern in translation.kept_terms(root)]
+    # A check's name is kept only where the original shows it as code: `Before`
+    # and `Never` are checks, and "Before you touch the prompt" is English. Every
+    # other term to keep is kept wherever the original has it.
+    code_only = {translation.term_pattern(name, False) for name in translation.data_terms(root)["checks"]}
+    kept = [(label, re.compile(pattern), pattern in code_only)
+            for label, pattern in translation.kept_terms(root)]
     docs = os.path.join(root, "docs")
 
     sources = []
@@ -522,10 +531,12 @@ def check(site: str, root: str = ROOT) -> tuple[list[str], list[str], dict]:
 
         # e) the glossary
         everything_en, everything = "".join(english.everything), "".join(page.everything)
-        for label, pattern in kept:
-            if pattern.search(everything_en):
+        code_en = "\n".join(text for _, text in english.code_texts)
+        code = "\n".join(text for _, text in page.code_texts)
+        for label, pattern, in_code in kept:
+            if pattern.search(code_en if in_code else everything_en):
                 counted["kept"] += 1
-                if not pattern.search(everything):
+                if not pattern.search(code if in_code else everything):
                     problems.append(f"{here}: the original has {label!r}, a term to keep, and the translation does not")
         prose = "".join(page.prose)
         for term in words["forbidden"].get(lang, []):
@@ -754,6 +765,42 @@ def selftest() -> int:
                 failures.append(f"{label}: not refused ({found})")
             else:
                 print(f"translations selftest: refused, as it must — {label}")
+
+        # e) a check's name, both halves. `Before` is a check, so the original
+        # showing it as code keeps it; "Before you touch the prompt" is a
+        # sentence, and a translation that does not keep the word is right.
+        # Planted in the English Why, which the Italian Why translates: in code
+        # it is refused, in the prose it is not. The check is read from
+        # home.json, so the fixture's has one named Before, added if digline's
+        # capture ever stops naming it.
+        home_json = os.path.join(root, translation.HOME_JSON)
+        with open(home_json, encoding="utf-8") as fh:
+            home_before = fh.read()
+        data = json.loads(home_before)
+        if "Before" not in {c["name"] for c in data["checks"]["items"]}:
+            data["checks"]["items"].append(dict(data["checks"]["items"][0], name="Before"))
+            with open(home_json, "w", encoding="utf-8") as fh:
+                json.dump(data, fh)
+        needle = "'Before', a term to keep"
+        english_why = "site/why/index.html"
+        try:
+            before = edit(english_why, first_in_article(r"(<p[^>]*>)", r"\1<code>Before</code> fails. "))
+            found, _, _ = check(site, root)
+            restore(english_why, before)
+            if not any(needle in p for p in found):
+                failures.append(f"e) `Before` in the original's code, missing from the translation: not refused ({found})")
+            else:
+                print("translations selftest: refused, as it must — e) a check's name the original shows as code, dropped")
+            before = edit(english_why, first_in_article(r"(<p[^>]*>)", r"\1Before you touch the prompt, "))
+            found, _, _ = check(site, root)
+            restore(english_why, before)
+            if any(needle in p for p in found):
+                failures.append(f"e) Before in the original's prose was read as a check's name: {found}")
+            else:
+                print("translations selftest: passes, as it must — e) Before in the original's prose, not a term to keep")
+        finally:
+            with open(home_json, "w", encoding="utf-8") as fh:
+                fh.write(home_before)
 
         # c) the other half on the built site: the Italian Why with a decimal
         # comma where the English has a point, passes.
