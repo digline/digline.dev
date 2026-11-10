@@ -235,15 +235,24 @@ html { scroll-padding-top: var(--bar-room); }
    Spanish (the real catalogs). Where the documentation's sections fit without
    scrolling inside the pill:
 
-                   six entries   five (no Writing)   three
-     English          739+           680+             496+
+                   seven entries   six (no Walkthroughs)   five (nor Writing)   three
+     English          912+              739+                    680+             496+
      Italian          within the English at every width
-     German           762+           712+             504+
-     Spanish          771+           705+             496+
+     German           923+              762+                    712+             504+
+     Spanish          929+              771+                    705+             496+
 
-   So: Writing goes first, at 738px and under (761 in German, 770 in Spanish)
-   — the footer carries it in its Docs column; Why and Agents follow at 679px
-   and under (711, 704) — Why is reachable from Start here, Agents from the
+   The seven were measured on 10 November 2026, when Walkthroughs joined, as
+   where the last entry's box ends inside the pill: at 911px in English (922
+   in German, 928 in Spanish) it is past the edge by under a pixel, which
+   scrollWidth rounds away and the eye does not. The rest were measured
+   before, and Walkthroughs going first leaves them as they were.
+
+   So: Walkthroughs goes first, at 911px and under (922 in German, 928 in
+   Spanish) — the home's "What you work with"
+   ends on a link to it, and the documentation's sidebar has the section;
+   Writing next, at 738px and under (761 in German, 770 in Spanish) — the
+   footer carries it in its Docs column; Why and Agents follow at 679px and
+   under (711, 704) — Why is reachable from Start here, Agents from the
    footer. Three remain on a presentation page down to a phone; on a
    documentation page the drawer takes them all under 496px (504 in German),
    in theme.css. At every width, between any two pages in one language, the
@@ -253,6 +262,9 @@ html { scroll-padding-top: var(--bar-room); }
    one, so the phone's rules further down still win over it. Two classes in
    the selector, not one: `.dg-nav a` above sets display: block and outranks a
    lone `.dg-nav__optional`. */
+@media (max-width: 911px) { .dg-nav .dg-nav__optional--wide { display: none; } }
+@media (max-width: 922px) { :where(html[lang="de"]) .dg-nav .dg-nav__optional--wide { display: none; } }
+@media (max-width: 928px) { :where(html[lang="es"]) .dg-nav .dg-nav__optional--wide { display: none; } }
 @media (max-width: 738px) { .dg-nav .dg-nav__optional--first { display: none; } }
 @media (max-width: 761px) { :where(html[lang="de"]) .dg-nav .dg-nav__optional--first { display: none; } }
 @media (max-width: 770px) { :where(html[lang="es"]) .dg-nav .dg-nav__optional--first { display: none; } }
