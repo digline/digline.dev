@@ -251,24 +251,19 @@ nav:
           - Testing a selection: product/selection.md
           - Watching an MCP server: product/tools.md
           - Suites as data: product/declarative.md
-          # A command page, here until the release that carries `digline
-          # record`: tools/hooks/home.py groups only the commands home.json
-          # lists, and home.json is captured at a release. It moves under
-          # Commands then, with its group, as `digline delete` did (e96f4b9).
-          - Recording calls as cases: product/record.md
           - digline for Java: product/record-java.md
           - digline for Node: product/record-node.md
           - The recording document: product/recording-format.md
           - Letting an agent propose a suite: product/proposing-a-suite.md
-          # A command page too, here until the release that carries `digline
-          # suggest`, for the reason above `digline record`'s.
-          - "digline suggest": product/suggest.md
       # Flat here, grouped on the page: tools/hooks/home.py splits this list
-      # into Compare, History and Maintenance by its COMMAND_GROUPS, the same
-      # grouping the home shows, and fails the build for a command page that
-      # no group names. One line per page, ending in its path, because
-      # digline's tests look for exactly that (tests/_site.py, nav_lists).
+      # into Before the suite, Compare, History and Maintenance by its
+      # COMMAND_GROUPS, the same grouping the home shows, and fails the build
+      # for a command page that no group names. One line per page, ending in
+      # its path, because digline's tests look for exactly that
+      # (tests/_site.py, nav_lists).
       - Commands:
+          - "digline record": product/record.md
+          - "digline suggest": product/suggest.md
           - "digline diff": product/diff.md
           - "digline explain": product/explain.md
           - "digline log": product/log.md

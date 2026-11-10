@@ -159,6 +159,7 @@ home:
     title_accent: je eine Aufgabe.
     intro: Jeder Befehl hat seine eigene Seite oder einen Platz in der Anleitung.
     groups:
+      before: Vor der Suite
       record: Aufzeichnen und freigeben
       compare: Vergleichen
       history: Verlauf
@@ -321,6 +322,7 @@ source_keys:
     commands:
       count: 1bd725b48897
       groups:
+        before: 165070d308a6
         compare: e888155d8c7d
         history: 0e7696009337
         maintenance: 17ccfa5b681e

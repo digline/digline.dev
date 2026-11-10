@@ -314,6 +314,18 @@
         "help": "which model answered, read down the stored runs; never a gate"
       },
       {
+        "name": "record",
+        "help": "switch the recorder on or off for a tenant, or read its status"
+      },
+      {
+        "name": "where",
+        "help": "where the project is, and the command for the next step"
+      },
+      {
+        "name": "suggest",
+        "help": "propose a first suite from the recordings, into suite.proposed.toml"
+      },
+      {
         "name": "report",
         "help": "render the report"
       }
