@@ -200,6 +200,7 @@ home:
     # home.py, COMMAND_GROUPS: the legend on the home and the groups under
     # Commands in the documentation's sidebar.
     groups:
+      before: "Before the suite"
       record: "Record and approve"
       compare: "Compare"
       history: "History"

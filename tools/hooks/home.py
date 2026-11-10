@@ -121,6 +121,7 @@ SCORE_HI = 1.0
 # Each group's label, command_group_labels(), is the legend on the home and the
 # group's title under Commands in the documentation's sidebar (split_commands).
 COMMAND_GROUPS = (
+    ("before", ("where", "record", "suggest")),
     ("record", ("run", "promote")),
     ("compare", ("compare", "diff", "explain", "report")),
     ("history", ("list", "log", "register", "view")),
@@ -136,6 +137,7 @@ NAV_LANGUAGE = "en"
 def command_group_labels(lang: str) -> dict[str, str]:
     """COMMAND_GROUPS' labels in ``lang``, by group key."""
     return {
+        "before": t("home.commands.groups.before", lang=lang),
         "record": t("home.commands.groups.record", lang=lang),
         "compare": t("home.commands.groups.compare", lang=lang),
         "history": t("home.commands.groups.history", lang=lang),
@@ -1308,11 +1310,11 @@ def selftest() -> int:
     metrics_ids = {c["anchor"] for c in grid_data["checks"]["items"]}
     g = grids(grid_data, pages, guide_html, metrics_ids, reference)
     links = {c["name"]: c["href"] for grp in g["commands"]["groups"] for c in grp["commands"]}
-    expect("command count", g["commands"]["count"], 13)
-    expect("command heading", g["commands"]["heading"], "Thirteen commands")
+    expect("command count", g["commands"]["count"], 16)
+    expect("command heading", g["commands"]["heading"], "Sixteen commands")
     expect("group order", [grp["key"] for grp in g["commands"]["groups"]],
-           ["record", "compare", "history", "maintenance"])
-    expect("group sizes", [len(grp["commands"]) for grp in g["commands"]["groups"]], [2, 4, 4, 3])
+           ["before", "record", "compare", "history", "maintenance"])
+    expect("group sizes", [len(grp["commands"]) for grp in g["commands"]["groups"]], [3, 2, 4, 4, 3])
     expect("a command with a page", links["diff"], "product/diff/")
     expect("2. a guide heading with the name in code, over the reference and the text",
            links["promote"], "product/guide/#approving")
@@ -1335,7 +1337,7 @@ def selftest() -> int:
     expect("a Reference heading does not count by text alone",
            heading_naming('<h2 id="x">digline compare</h2>', "compare", in_text=False), None)
     expect("a command's help", g["commands"]["groups"][0]["commands"][0]["help"],
-           "execute the suite and write a run")
+           "where the project is, and the command for the next step")
     expect("kind order", [k["key"] for k in g["checks"]["kinds"]],
            ["deterministic", "judged", "budget", "aggregate", "wrapper"])
     expect("kind counts", [k["count"] for k in g["checks"]["kinds"]], [12, 2, 2, 4, 2])
@@ -1406,7 +1408,8 @@ def selftest() -> int:
         shutil.copy(os.path.join(real_directory, "en.yml"), os.path.join(languages, "en.yml"))
         with open(os.path.join(real_directory, "en.yml"), encoding="utf-8") as fh:
             italian = fh.read()
-        for english, translated in (('"Record and approve"', '"Registra e approva"'),
+        for english, translated in (('"Before the suite"', '"Prima della suite"'),
+                                    ('"Record and approve"', '"Registra e approva"'),
                                     ('compare: "Compare"', 'compare: "Confronta"'),
                                     ('"History"', '"Cronologia"'), ('"Maintenance"', '"Manutenzione"')):
             assert italian.count(english) == 1, english
@@ -1422,11 +1425,11 @@ def selftest() -> int:
             expect("the home's legend follows its page into Italian",
                    [group["label"] for group in grids(grid_data, pages, guide_html, metrics_ids, reference,
                                                      lang="it")["commands"]["groups"]],
-                   ["Registra e approva", "Confronta", "Cronologia", "Manutenzione"])
+                   ["Prima della suite", "Registra e approva", "Confronta", "Cronologia", "Manutenzione"])
             expect("the home's legend in English on an English page",
                    [group["label"] for group in grids(grid_data, pages, guide_html, metrics_ids, reference,
                                                      lang="en")["commands"]["groups"]],
-                   ["Record and approve", "Compare", "History", "Maintenance"])
+                   ["Before the suite", "Record and approve", "Compare", "History", "Maintenance"])
             expect("a page's language: its lang:, else the theme's",
                    [page_language(type("P", (), {"meta": {"lang": "it"}})(), {"theme": {"language": "en"}}),
                     page_language(type("P", (), {"meta": {}})(), {"theme": {"language": "en"}}),
