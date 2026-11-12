@@ -755,6 +755,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why digline proposes a first suite in a file of its own that no command "
         "reads, chooses no case, and marks no answer.",
     ),
+    "product/adr/0064-a-runs-cost-estimated-before-and-capped-during.md": (
+        "ADR 0064: a run's cost, estimated before it and capped during it",
+        "Why digline estimates a run's cost from the last run, never as a "
+        "bound, and stops a run on what it has measured it spent.",
+    ),
     "product/walkthroughs/index.md": (
         "Walkthroughs",
         "Come to see how digline is used: five applications, from the first "
