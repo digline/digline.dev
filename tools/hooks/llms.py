@@ -951,6 +951,13 @@ DESCRIPTIONS: dict[str, str] = {
         "skeleton; it chooses no case and marks no answer; accepted, built "
         "without the model that would draft the rubric"
     ),
+    "product/adr/0064-a-runs-cost-estimated-before-and-capped-during.md": (
+        "before the first call digline run reads what the suite's newest run "
+        "spent per case and says it as an estimate, since nothing can bound a "
+        "run's cost in advance; --max-cost stops a run between two cases once "
+        "what it measured is above the ceiling, exit 2, resumable; accepted, "
+        "built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
