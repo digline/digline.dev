@@ -760,6 +760,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why digline estimates a run's cost from the last run, never as a "
         "bound, and stops a run on what it has measured it spent.",
     ),
+    "product/adr/0065-a-case-excluded-at-promotion-and-the-cases-a-run-was-made-with.md": (
+        "ADR 0065: a case excluded at promotion, and the cases a run was made with",
+        "Why digline promote leaves a case out only by name, and refuses a run "
+        "made with other cases than the suite declares.",
+    ),
     "product/walkthroughs/index.md": (
         "Walkthroughs",
         "Come to see how digline is used: five applications, from the first "
