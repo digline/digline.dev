@@ -765,6 +765,11 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why digline promote leaves a case out only by name, and refuses a run "
         "made with other cases than the suite declares.",
     ),
+    "product/adr/0066-the-state-of-a-suite-and-a-review-one-answer-at-a-time.md": (
+        "ADR 0066: the state of a suite, and a review one answer at a time",
+        "Why digline view reviews a recorded answer one at a time, read whole, "
+        "with two buttons and the person's name, and never more than one.",
+    ),
     "product/walkthroughs/index.md": (
         "Walkthroughs",
         "Come to see how digline is used: five applications, from the first "
