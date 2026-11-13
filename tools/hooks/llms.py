@@ -958,6 +958,13 @@ DESCRIPTIONS: dict[str, str] = {
         "what it measured is above the ceiling, exit 2, resumable; accepted, "
         "built"
     ),
+    "product/adr/0065-a-case-excluded-at-promotion-and-the-cases-a-run-was-made-with.md": (
+        "digline promote --exclude CASE --by NAME leaves a case the suite no "
+        "longer declares out of a reference, recorded in it and said by "
+        "compare; promote refuses a run whose case ids differ from the "
+        "suite's, read beside config_hash and never inside it; accepted, not "
+        "built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
