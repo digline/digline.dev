@@ -962,7 +962,7 @@ DESCRIPTIONS: dict[str, str] = {
         "digline promote --exclude CASE --by NAME leaves a case the suite no "
         "longer declares out of a reference, recorded in it and said by "
         "compare; promote refuses a run whose case ids differ from the "
-        "suite's, read beside config_hash and never inside it; accepted, not "
+        "suite's, read beside config_hash and never inside it; accepted, "
         "built"
     ),
     # Writing
