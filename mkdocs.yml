@@ -390,6 +390,7 @@ nav:
           - "ADR 0063 — digline suggest: a first suite, proposed and never marked": product/adr/0063-suggest-a-first-suite-proposed-and-never-marked.md
           - "ADR 0064 — A run's cost: estimated before it, capped during it": product/adr/0064-a-runs-cost-estimated-before-and-capped-during.md
           - ADR 0065 — A case excluded at promotion, and the cases a run was made with: product/adr/0065-a-case-excluded-at-promotion-and-the-cases-a-run-was-made-with.md
+          - ADR 0066 — The state of a suite, and a review one answer at a time: product/adr/0066-the-state-of-a-suite-and-a-review-one-answer-at-a-time.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md

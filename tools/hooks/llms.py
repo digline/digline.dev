@@ -965,6 +965,12 @@ DESCRIPTIONS: dict[str, str] = {
         "suite's, read beside config_hash and never inside it; accepted, "
         "built"
     ),
+    "product/adr/0066-the-state-of-a-suite-and-a-review-one-answer-at-a-time.md": (
+        "digline view gains a page that says a suite's state whole, from the "
+        "functions its commands call, and a review of recorded answers one at "
+        "a time, each press writing one answer through the path record import "
+        "takes, behind --allow-record and the page's key; accepted, not built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "
