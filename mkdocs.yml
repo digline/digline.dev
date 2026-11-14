@@ -391,6 +391,8 @@ nav:
           - "ADR 0064 — A run's cost: estimated before it, capped during it": product/adr/0064-a-runs-cost-estimated-before-and-capped-during.md
           - ADR 0065 — A case excluded at promotion, and the cases a run was made with: product/adr/0065-a-case-excluded-at-promotion-and-the-cases-a-run-was-made-with.md
           - ADR 0066 — The state of a suite, and a review one answer at a time: product/adr/0066-the-state-of-a-suite-and-a-review-one-answer-at-a-time.md
+          - "ADR 0067 — Calibrating the judge against a person: a blind verdict, a held-out set": product/adr/0067-calibrating-the-judge-against-a-person.md
+          - ADR 0068 — A judge set up in the suite.toml, and the instruction recorded per kind of judge: product/adr/0068-a-judge-set-up-in-the-suite-toml.md
       # The decisions say why it is shaped this way; the roadmap says what is
       # not decided yet. Both come out of digline/digline, like everything here.
       - Changelog: product/changelog.md
