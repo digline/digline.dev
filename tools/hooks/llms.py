@@ -971,6 +971,18 @@ DESCRIPTIONS: dict[str, str] = {
         "a time, each press writing one answer through the path record import "
         "takes, behind --allow-record and the page's key; accepted, not built"
     ),
+    "product/adr/0067-calibrating-the-judge-against-a-person.md": (
+        "How a judged suite is calibrated against a person: answers judged "
+        "first, reviewed blind, compared check by check, corrected one round "
+        "at a time on the reviewed answers alone, and tested on a held-out "
+        "set; a contradiction accepted at promotion only where the judge's "
+        "samples split, and at_least for k of n; accepted, not built"
+    ),
+    "product/adr/0068-a-judge-set-up-in-the-suite-toml.md": (
+        "A judge in a suite.toml may be a table of model, max_tokens, "
+        "temperature and pricing, and the digest of its instruction is "
+        "recorded per kind of judge; accepted, not built"
+    ),
     # Writing
     "blog/index.md": (
         "The posts, newest first, each with the runs behind it \u2014 written "

@@ -770,6 +770,16 @@ PRODUCT: dict[str, tuple[str, str]] = {
         "Why digline view reviews a recorded answer one at a time, read whole, "
         "with two buttons and the person's name, and never more than one.",
     ),
+    "product/adr/0067-calibrating-the-judge-against-a-person.md": (
+        "ADR 0067: calibrating the judge against a person",
+        "Why digline has the judge judge first, the person review blind, "
+        "and a held-out set decide whether a judged suite can gate.",
+    ),
+    "product/adr/0068-a-judge-set-up-in-the-suite-toml.md": (
+        "ADR 0068: a judge set up in the suite.toml",
+        "Why a suite.toml may give its judge a max_tokens, a temperature and "
+        "a price, and why the instruction is recorded per kind of judge.",
+    ),
     "product/walkthroughs/index.md": (
         "Walkthroughs",
         "Come to see how digline is used: five applications, from the first "
