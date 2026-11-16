@@ -969,7 +969,8 @@ DESCRIPTIONS: dict[str, str] = {
         "digline view gains a page that says a suite's state whole, from the "
         "functions its commands call, and a review of recorded answers one at "
         "a time, each press writing one answer through the path record import "
-        "takes, behind --allow-record and the page's key; accepted, not built"
+        "takes, behind --allow-record and the page's key; accepted, built in "
+        "1.3.0"
     ),
     "product/adr/0067-calibrating-the-judge-against-a-person.md": (
         "How a judged suite is calibrated against a person: answers judged "
@@ -981,7 +982,8 @@ DESCRIPTIONS: dict[str, str] = {
     "product/adr/0068-a-judge-set-up-in-the-suite-toml.md": (
         "A judge in a suite.toml may be a table of model, max_tokens, "
         "temperature and pricing, and the digest of its instruction is "
-        "recorded per kind of judge; accepted, not built"
+        "recorded per kind of judge; accepted, the digest per kind of judge "
+        "built in 1.3.0, the table not built"
     ),
     # Writing
     "blog/index.md": (
